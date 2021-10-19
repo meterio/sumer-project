@@ -53,6 +53,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
 
         // The counter starts true to prevent changing it from zero to non-zero (i.e. smaller cost/refund)
         _notEntered = true;
+        tokenType = TokenType.SDR_TOKEN;
     }
 
     /**
@@ -187,12 +188,15 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      * @param owner The address of the account to query
      * @return The amount of underlying owned by `owner`
      */
+    // YY: suToken does not have underlying
+    /***
     function balanceOfUnderlying(address owner) external returns (uint) {
         Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
         (MathError mErr, uint balance) = mulScalarTruncate(exchangeRate, accountTokens[owner]);
         require(mErr == MathError.NO_ERROR, "balance could not be calculated");
         return balance;
     }
+    ***/
 
     /**
      * @notice Get a snapshot of the account's balances, and the cached exchange rate

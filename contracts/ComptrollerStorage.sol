@@ -50,7 +50,7 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
     /**
      * @notice Per-account mapping of "assets you are in", capped by maxAssets
      */
-    mapping(address => CToken[]) public accountAssets;
+    mapping(address => Token[]) public accountAssets;
 
 }
 
@@ -104,7 +104,7 @@ contract ComptrollerV3Storage is ComptrollerV2Storage {
     }
 
     /// @notice A list of all markets
-    CToken[] public allMarkets;
+    Token[] public allMarkets;
 
     /// @notice The rate at which the flywheel distributes COMP, per block
     uint public compRate;
