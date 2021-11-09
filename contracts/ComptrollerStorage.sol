@@ -151,3 +151,26 @@ contract ComptrollerV6Storage is ComptrollerV5Storage {
     /// @notice The rate at which comp is distributed to the corresponding supply market (per block)
     mapping(address => uint) public compSupplySpeeds;
 }
+
+contract ComptrollerV7Storage is ComptrollerV6Storage {
+    /// @notice The equal assests members
+    struct EqualAssetsMember {
+        Token token;
+        uint256 collateralMantissa;
+    }
+
+    /// @notice The equal assets group
+    struct EqualAssestsGroup {
+        string groupName;
+        EqualAssetsMember[] equalAssestsMembers;
+    }
+
+    /// @notice allEqualAssestsGroups, some of groups have multiple member and some of groups
+    /// only 1 member. Groups should have all members in the markets
+    /// EqualAssestsGroup[] public allEqualAssestsGroups;
+
+    /**
+     * @notice Per-account mapping of "assets you are in", capped by maxAssets
+     */
+    mapping(address => EqualAssestsGroup[]) public allEqualAssestsGroups;
+}

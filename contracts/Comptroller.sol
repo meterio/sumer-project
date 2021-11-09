@@ -12,7 +12,7 @@ import "./Governance/Comp.sol";
  * @title Compound's Comptroller Contract
  * @author Compound
  */
-contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerErrorReporter, ExponentialNoError {
+contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerErrorReporter, ExponentialNoError {
     /// @notice Emitted when an admin supports a market
     event MarketListed(CToken cToken);
 
@@ -107,18 +107,47 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
     }
 
     /**
+     * @notice Returns the assets groups an account has entered
+     * @param account The address of the account to pull assets for
+     * @return A dynamic list with the assets the account has entered
+     */
+    function getAssetsGroups(address account) external view returns (EqualAssestsGroup[] memory) {
+
+        EqualAssestsGroup[] memory groups = allEqualAssestsGroups[account];
+        return groups;
+    }
+
+    /**
+     * @notice Returns the assets groups an account has entered
+     * @param account The address of the account to pull assets for
+     * @return A dynamic list with the assets the account has entered
+     */
+    function getAssetsGroupByName(address account, string groupName) external view returns (EqualAssestsGroup memory) {
+
+        EqualAssestsGroup[] memory groups = allEqualAssestsGroups[account];
+        EqualAssestsGroup memory group;
+        for (uint i = 0; i < roups.length; i++) {
+            group = groups[i];
+            if (group.groupName == groupName) {
+                return group;
+            }
+        }
+    }
+
+    /**
      * @notice Add assets to be included in account liquidity calculation
      * @param cTokens The list of addresses of the cToken markets to be enabled
+     * @param eqAssestGroup the list of strings of equal assets group name
+     * @param rateMantissa the list of collatera rate mantissa
      * @return Success indicator for whether each corresponding market was entered
      */
-    function enterMarkets(address[] memory cTokens) public returns (uint[] memory) {
+    function enterMarkets(address[] memory cTokens, string[] memory eqAssetGroups, uint[] rateMantissas) public returns (uint[] memory) {
         uint len = cTokens.length;
 
         uint[] memory results = new uint[](len);
         for (uint i = 0; i < len; i++) {
             CToken cToken = CToken(cTokens[i]);
-
-            results[i] = uint(addToMarketInternal(cToken, msg.sender));
+            results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAsstGroups[i], rateMantissas[i]));
         }
 
         return results;
@@ -130,7 +159,7 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
      * @param borrower The address of the account to modify
      * @return Success indicator for whether the market was entered
      */
-    function addToMarketInternal(CToken cToken, address borrower) internal returns (Error) {
+    function addToMarketInternal(CToken cToken, address borrower, string eqAssetGroup, uint rateMantissa) internal returns (Error) {
         Market storage marketToJoin = markets[address(cToken)];
 
         if (!marketToJoin.isListed) {
@@ -150,6 +179,9 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
         //  and not whenever we want to check if an account is in a particular market
         marketToJoin.accountMembership[borrower] = true;
         accountAssets[borrower].push(cToken);
+
+       // all tokens are grouped with equal assets.
+        addToEqualAssetGroupInternal(cToken, eqAssetGroup, rateMantissa);
 
         emit MarketEntered(cToken, borrower);
 
@@ -210,9 +242,62 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
         storedList[assetIndex] = storedList[storedList.length - 1];
         storedList.length--;
 
+        // remove the same
+        exitEqualAssetGroupInternal(cTokenAddress);
+
         emit MarketExited(cToken, msg.sender);
 
         return uint(Error.NO_ERROR);
+    }
+
+    function addToEqualAssetGroupInternal(address memory cToken, string memory eqAssetGroup, uint rateMantissa) internal  {
+        EqualAssestsGroup[] storage allGroups = accountAssetsGroups[cToken];
+        for (uint i = 0; i < allGroups.length; i++) {
+            if (allGroups[i].groupName == name) {
+                allGroups[i].equalAssestsMembers.push(cToken);
+                return true;
+            }
+        }
+
+        // create new group
+        EqualAssestsGroup memory group;
+        group.groupName = eqAssetGroup;
+        group.equalAssestsMembers.push(EqualAssetsMember{cToken, rateMantissa});
+
+        // add to allGroups
+        allGroups.push(group);
+    }
+
+    function exitEqualAssetGroupInternal(address memory cToken) internal  {
+
+        EqualAssestsGroup[] memory allGroups = accountAssetsGroups[cToken];
+        EqualAssetsMember memory member;
+        bool found = false;
+        uint i, j;
+        for (i = 0; i < allGroups.length; i++) {
+            group = allGroups[i];
+            for (j = 0; j < group.equalAssestsMembers.length; j++) {
+                member = group.equalAssestsMembers[i];
+                if (member == cToken) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (found == true) {
+            // remove token from member
+            EqualAssestsGroup[] storage groups = accountAssetsGroups[cToken];
+            Token[] storage memberList = group[i].equalAssestsMembers;
+            memberList[j] = memberList[memberList.length -1];
+            memberList.length --;
+
+            // remove the group if it does not have any member
+            if (memberList.length == 0) {
+                groups[i] = groups[groups.length -1];
+                groups.length --;
+            }
+        }
     }
 
     /*** Policy Hooks ***/
@@ -648,6 +733,8 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
      *  whereas `borrowBalance` is the amount of underlying that the account has borrowed.
      */
     struct AccountLiquidityLocalVars {
+        uint groupCollateral;
+        uint groupBorrowPlusEffects;
         uint sumCollateral;
         uint sumBorrowPlusEffects;
         uint cTokenBalance;
@@ -723,30 +810,48 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
         uint oErr;
 
         // For each asset the account is in
-        CToken[] memory assets = accountAssets[account];
-        for (uint i = 0; i < assets.length; i++) {
-            CToken asset = assets[i];
+        EqualAssestsGroup[] memory assetsGroup = allEqualAssestsGroups[account];
+        EqualAssetsMember[] memory members;
+        //CToken[] memory assets = accountAssets[account];
+        for (uint i = 0; i < assetsGroup.length; i++) {
 
-            // Read the balances and exchange rate from the cToken
-            (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = asset.getAccountSnapshot(account);
-            if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
-                return (Error.SNAPSHOT_ERROR, 0, 0);
+            members = assetsGroup[i].equalAssestsMembers
+            for (uint j = 0; j < members.length, j ++ ) {
+                EqualAssetsMember memory member = members[j];
+                // Read the balances and exchange rate from the cToken
+                if (Token(member.token).isDdrToken() == true) {
+                    (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(asset).getAccountSnapshot(account);
+                    if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
+                        return (Error.SNAPSHOT_ERROR, 0, 0);
+                    }
+                    // Get the normalized price of the asset
+                    vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
+                    if (vars.oraclePriceMantissa == 0) {
+                        return (Error.PRICE_ERROR, 0, 0);
+                    }
+                } else {
+                    (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = SuToken(asset).getAccountSnapshot(account));
+                    if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
+                        return (Error.SNAPSHOT_ERROR, 0, 0);
+                    }
+                    // Get the normalized price of the asset
+                    vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
+                    if (vars.oraclePriceMantissa == 0) {
+                        return (Error.PRICE_ERROR, 0, 0);
+                    }                  
+                }
+                vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
+                vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
+                vars.memberRate = Exp({mantissa: member.rateMantissa})
+
+                // Pre-compute a conversion factor from tokens -> ether (normalized price value)
+                vars.tokensToDenom = mul_(vars.exchangeRate, member.Rate);
+                vars.groupCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.groupCollateral)
+                vars.groupBorrowPlusEffects = add_(vars.borrowBalance, vars.groupBorrowPlusEffects);
             }
-            vars.collateralFactor = Exp({mantissa: markets[address(asset)].collateralFactorMantissa});
-            vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
-
-            // Get the normalized price of the asset
-            vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
-            if (vars.oraclePriceMantissa == 0) {
-                return (Error.PRICE_ERROR, 0, 0);
-            }
-            vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
-
-            // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-            vars.tokensToDenom = mul_(mul_(vars.collateralFactor, vars.exchangeRate), vars.oraclePrice);
 
             // sumCollateral += tokensToDenom * cTokenBalance
-            vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.sumCollateral);
+            vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.groupCollateral, vars.sumCollateral);
 
             // sumBorrowPlusEffects += oraclePrice * borrowBalance
             vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.sumBorrowPlusEffects);
@@ -762,6 +867,7 @@ contract Comptroller is ComptrollerV6Storage, ComptrollerInterface, ComptrollerE
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.sumBorrowPlusEffects);
             }
         }
+
 
         // These are safe, as the underflow condition is checked first
         if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
