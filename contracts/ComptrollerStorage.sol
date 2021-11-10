@@ -155,8 +155,8 @@ contract ComptrollerV6Storage is ComptrollerV5Storage {
 contract ComptrollerV7Storage is ComptrollerV6Storage {
     /// @notice The equal assests members
     struct EqualAssetsMember {
-        Token token;
-        uint256 collateralMantissa;
+        CToken token;
+        uint collateralMantissa;
     }
 
     /// @notice The equal assets group

@@ -7,7 +7,7 @@ import "./CTokenInterfaces.sol";
  * @notice CTokens which wrap an EIP-20 underlying and delegate to an implementation
  * @author Compound
  */
-contract suErc20Delegator is CTokenInterface, suErc20Interface, CDelegatorInterface {
+contract suErc20Delegator is CTokenInterface, CErc20Interface, CDelegatorInterface {
     /**
      * @notice Construct a new money market
      * @param underlying_ The address of the underlying asset

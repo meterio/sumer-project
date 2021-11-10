@@ -1,4 +1,5 @@
 pragma solidity ^0.5.16;
+pragma experimental ABIEncoderV2;
 
 import "./CToken.sol";
 import "./ErrorReporter.sol";
@@ -120,16 +121,16 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     /**
      * @notice Returns the assets groups an account has entered
      * @param account The address of the account to pull assets for
+     * @param groupName The equal assets group name
      * @return A dynamic list with the assets the account has entered
      */
-    function getAssetsGroupByName(address account, string groupName) external view returns (EqualAssestsGroup memory) {
+    function getAssetsGroupByName(address account, string calldata groupName) external view returns (EqualAssestsGroup memory) {
 
         EqualAssestsGroup[] memory groups = allEqualAssestsGroups[account];
-        EqualAssestsGroup memory group;
-        for (uint i = 0; i < roups.length; i++) {
-            group = groups[i];
-            if (group.groupName == groupName) {
-                return group;
+        //string memory groupName = _groupName;
+        for (uint i = 0; i < groups.length; i++) {
+            if (keccak256(bytes(groups[i].groupName)) == keccak256(bytes(groupName))) {
+                return groups[i];
             }
         }
     }
@@ -137,17 +138,17 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     /**
      * @notice Add assets to be included in account liquidity calculation
      * @param cTokens The list of addresses of the cToken markets to be enabled
-     * @param eqAssestGroup the list of strings of equal assets group name
-     * @param rateMantissa the list of collatera rate mantissa
+     * @param eqAssetGroups the list of strings of equal assets group name
+     * @param rateMantissas the list of collatera rate mantissa
      * @return Success indicator for whether each corresponding market was entered
      */
-    function enterMarkets(address[] memory cTokens, string[] memory eqAssetGroups, uint[] rateMantissas) public returns (uint[] memory) {
+    function enterMarkets(address[] memory cTokens, string[] memory eqAssetGroups, uint[] memory rateMantissas) public returns (uint[] memory) {
         uint len = cTokens.length;
 
         uint[] memory results = new uint[](len);
         for (uint i = 0; i < len; i++) {
             CToken cToken = CToken(cTokens[i]);
-            results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAsstGroups[i], rateMantissas[i]));
+            results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAssetGroups[i], rateMantissas[i]));
         }
 
         return results;
@@ -159,7 +160,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      * @param borrower The address of the account to modify
      * @return Success indicator for whether the market was entered
      */
-    function addToMarketInternal(CToken cToken, address borrower, string eqAssetGroup, uint rateMantissa) internal returns (Error) {
+    function addToMarketInternal(CToken cToken, address borrower, string memory eqAssetGroup, uint rateMantissa) internal returns (Error) {
         Market storage marketToJoin = markets[address(cToken)];
 
         if (!marketToJoin.isListed) {
@@ -250,35 +251,35 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         return uint(Error.NO_ERROR);
     }
 
-    function addToEqualAssetGroupInternal(address memory cToken, string memory eqAssetGroup, uint rateMantissa) internal  {
-        EqualAssestsGroup[] storage allGroups = accountAssetsGroups[cToken];
+    function addToEqualAssetGroupInternal(CToken cToken, string memory groupName, uint rateMantissa) internal  {
+        EqualAssestsGroup[] memory allGroups = allEqualAssestsGroups[address(cToken)];
         for (uint i = 0; i < allGroups.length; i++) {
-            if (allGroups[i].groupName == name) {
-                allGroups[i].equalAssestsMembers.push(cToken);
-                return true;
+            if (keccak256(bytes(allGroups[i].groupName)) == keccak256(bytes(groupName))) {
+
+                EqualAssetsMember memory member = EqualAssetsMember(cToken, rateMantissa);
+                allEqualAssestsGroups[address(cToken)][i].equalAssestsMembers.push(member);
+                return;
             }
         }
 
         // create new group
-        EqualAssestsGroup memory group;
-        group.groupName = eqAssetGroup;
-        group.equalAssestsMembers.push(EqualAssetsMember{cToken, rateMantissa});
+        EqualAssetsMember[] memory members = new EqualAssetsMember[](1);
+        members[0] = EqualAssetsMember(cToken, rateMantissa);
 
-        // add to allGroups
-        allGroups.push(group);
+        // push to allEqualAssestsGroups
+        EqualAssestsGroup memory group = EqualAssestsGroup(groupName, members);
+        allEqualAssestsGroups[address(cToken)].push(group);
     }
 
-    function exitEqualAssetGroupInternal(address memory cToken) internal  {
-
-        EqualAssestsGroup[] memory allGroups = accountAssetsGroups[cToken];
-        EqualAssetsMember memory member;
+    function exitEqualAssetGroupInternal(address cToken) internal  {
         bool found = false;
-        uint i, j;
-        for (i = 0; i < allGroups.length; i++) {
-            group = allGroups[i];
-            for (j = 0; j < group.equalAssestsMembers.length; j++) {
-                member = group.equalAssestsMembers[i];
-                if (member == cToken) {
+        uint i;
+        uint j;
+
+        EqualAssestsGroup[] memory allGroups = allEqualAssestsGroups[cToken];
+        for (i = 0; i < allGroups.length; i++) {           
+            for (j = 0; j < allGroups[i].equalAssestsMembers.length; j++) {
+                if (address(allGroups[i].equalAssestsMembers[j].token) == cToken) {
                     found = true;
                     break;
                 }
@@ -287,13 +288,13 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         if (found == true) {
             // remove token from member
-            EqualAssestsGroup[] storage groups = accountAssetsGroups[cToken];
-            Token[] storage memberList = group[i].equalAssestsMembers;
-            memberList[j] = memberList[memberList.length -1];
-            memberList.length --;
+            EqualAssetsMember[] storage members = allEqualAssestsGroups[cToken][i].equalAssestsMembers;
+            members[j] = members[members.length-1];
+            members.length --;
 
             // remove the group if it does not have any member
-            if (memberList.length == 0) {
+            if (members.length == 0) {
+                EqualAssestsGroup[] storage groups = allEqualAssestsGroups[cToken];
                 groups[i] = groups[groups.length -1];
                 groups.length --;
             }
@@ -424,6 +425,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         }
 
         if (!markets[cToken].accountMembership[borrower]) {
+            /*** XXX:
             // only cTokens may call borrowAllowed if borrower not in market
             require(msg.sender == cToken, "sender must be cToken");
 
@@ -435,6 +437,11 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
             // it should be impossible to break the important invariant
             assert(markets[cToken].accountMembership[borrower]);
+            ***/
+
+            // Do not repair this case, return error, user need to add it in first
+            return uint(Error.MARKET_NOT_ENTERED);
+
         }
 
         if (oracle.getUnderlyingPrice(CToken(cToken)) == 0) {
@@ -811,43 +818,48 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         // For each asset the account is in
         EqualAssestsGroup[] memory assetsGroup = allEqualAssestsGroups[account];
-        EqualAssetsMember[] memory members;
-        //CToken[] memory assets = accountAssets[account];
         for (uint i = 0; i < assetsGroup.length; i++) {
-
-            members = assetsGroup[i].equalAssestsMembers
-            for (uint j = 0; j < members.length, j ++ ) {
-                EqualAssetsMember memory member = members[j];
+            for (uint j = 0; j < assetsGroup[i].equalAssestsMembers.length; j ++ ) {
+                EqualAssetsMember memory member = assetsGroup[i].equalAssestsMembers[j];
                 // Read the balances and exchange rate from the cToken
-                if (Token(member.token).isDdrToken() == true) {
-                    (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(asset).getAccountSnapshot(account);
-                    if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
-                        return (Error.SNAPSHOT_ERROR, 0, 0);
-                    }
-                    // Get the normalized price of the asset
-                    vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
-                    if (vars.oraclePriceMantissa == 0) {
-                        return (Error.PRICE_ERROR, 0, 0);
-                    }
-                } else {
-                    (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = SuToken(asset).getAccountSnapshot(account));
-                    if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
-                        return (Error.SNAPSHOT_ERROR, 0, 0);
-                    }
-                    // Get the normalized price of the asset
-                    vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
-                    if (vars.oraclePriceMantissa == 0) {
-                        return (Error.PRICE_ERROR, 0, 0);
-                    }                  
+                (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(member.token).getAccountSnapshot(account);
+                if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
+                    return (Error.SNAPSHOT_ERROR, 0, 0);
                 }
+
+                // Get the normalized price of the asset
+                vars.oraclePriceMantissa = oracle.getUnderlyingPrice(member.token);
+                if (vars.oraclePriceMantissa == 0) {
+                    return (Error.PRICE_ERROR, 0, 0);
+                }
+                
                 vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
                 vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
-                vars.memberRate = Exp({mantissa: member.rateMantissa})
-
+                
                 // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-                vars.tokensToDenom = mul_(vars.exchangeRate, member.Rate);
-                vars.groupCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.groupCollateral)
+                vars.tokensToDenom = mul_(vars.exchangeRate, member.collateralMantissa);
+                vars.groupCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.groupCollateral);
                 vars.groupBorrowPlusEffects = add_(vars.borrowBalance, vars.groupBorrowPlusEffects);
+
+                // Calculate effects of interacting with cTokenModify
+                if (member.token == cTokenModify) {
+                    // redeem effect
+                    // sumBorrowPlusEffects += tokensToDenom * redeemTokens
+                    vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, vars.groupBorrowPlusEffects);
+
+                    // borrow effect
+                    // sumBorrowPlusEffects += oraclePrice * borrowAmount
+                    vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.groupBorrowPlusEffects);
+                }
+            }
+
+            // TBD:: equalAsset group can set-off early 
+            if (vars.groupCollateral >= vars.groupBorrowPlusEffects) {
+                vars.groupCollateral = vars.groupCollateral - vars.groupBorrowPlusEffects;
+                vars.groupBorrowPlusEffects = 0;
+            } else {
+                vars.groupBorrowPlusEffects = vars.groupBorrowPlusEffects - vars.groupCollateral;
+                vars.groupCollateral = 0;
             }
 
             // sumCollateral += tokensToDenom * cTokenBalance
@@ -856,8 +868,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             // sumBorrowPlusEffects += oraclePrice * borrowBalance
             vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.sumBorrowPlusEffects);
 
+/***
             // Calculate effects of interacting with cTokenModify
-            if (asset == cTokenModify) {
+            if (member.token == cTokenModify) {
                 // redeem effect
                 // sumBorrowPlusEffects += tokensToDenom * redeemTokens
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, vars.sumBorrowPlusEffects);
@@ -866,6 +879,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 // sumBorrowPlusEffects += oraclePrice * borrowAmount
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.sumBorrowPlusEffects);
             }
+***/
         }
 
 
