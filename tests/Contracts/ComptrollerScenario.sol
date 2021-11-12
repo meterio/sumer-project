@@ -7,7 +7,7 @@ contract ComptrollerScenario is Comptroller {
     uint public blockNumber;
     address public compAddress;
 
-    constructor() Comptroller() public {}
+    constructor() Comptroller(compAddress) public {}
 
     function fastForward(uint blocks) public returns (uint) {
         blockNumber += blocks;

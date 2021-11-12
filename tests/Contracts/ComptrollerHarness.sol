@@ -20,7 +20,7 @@ contract ComptrollerHarness is Comptroller {
     address compAddress;
     uint public blockNumber;
 
-    constructor() Comptroller() public {}
+    constructor() Comptroller(compAddress) public {}
 
     function setPauseGuardian(address harnessedPauseGuardian) public {
         pauseGuardian = harnessedPauseGuardian;

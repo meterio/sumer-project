@@ -3,6 +3,7 @@ module.exports = {
   // solc: "solc",                                          // Solc command to run
   solc_args: [                                              // Extra solc args
     '--allow-paths','contracts,tests/Contracts',
+    '--optimize-runs 200',
     '--evm-version', 'istanbul'
   ],
   solc_shell_args: {                                        // Args passed to `exec`, see:

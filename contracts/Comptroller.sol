@@ -80,8 +80,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     // No collateralFactorMantissa may exceed this value
     uint internal constant collateralFactorMaxMantissa = 0.9e18; // 0.9
 
-    constructor() public {
+    constructor(address _gov) public {
         admin = msg.sender;
+        governanceToken = _gov;
     }
 
     /*** Assets You Are In ***/
@@ -1540,6 +1541,19 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      * @return The address of COMP
      */
     function getCompAddress() public view returns (address) {
+        /*
         return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
+        */
+        return governanceToken;
     }
+
+    /**
+     * @notice Return the address of the COMP token
+     * @param _governanceToken The address of COMP(governance token)
+     */
+    function setGovTokenAddress(address _governanceToken) public  {
+        require(adminOrInitializing(), "only admin can set governanceToken");
+        governanceToken =  _governanceToken;
+    }
+
 }

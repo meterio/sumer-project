@@ -23,6 +23,11 @@ contract UnitrollerAdminStorage {
     * @notice Pending brains of Unitroller
     */
     address public pendingComptrollerImplementation;
+
+    /**
+    * @notice Gov token address
+    */
+    address public governanceToken;
 }
 
 contract ComptrollerV1Storage is UnitrollerAdminStorage {
