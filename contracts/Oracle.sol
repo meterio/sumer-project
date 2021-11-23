@@ -1,4 +1,5 @@
 pragma solidity ^0.5.16;
+pragma experimental ABIEncoderV2;
 
 import "./PriceOracle.sol";
 
@@ -40,12 +41,20 @@ contract Oracle is PriceOracle {
         delete feeds[address(cToken_)];
     }
 
+    function getFeed(CToken cToken_) public view returns (FeedData memory) {
+        return feeds[address(cToken_)];
+    }
+
     function setFixedPrice(CToken cToken_, uint price) public onlyOwner {
         fixedPrices[address(cToken_)] = price;
     }
 
     function removeFixedPrice(CToken cToken_) public onlyOwner {
         delete fixedPrices[address(cToken_)];
+    }
+
+    function getFixedPrice(CToken cToken_) public view returns (uint) {
+        return fixedPrices[address(cToken_)];
     }
 
     function getUnderlyingPrice(CToken cToken_) public view returns (uint) {
