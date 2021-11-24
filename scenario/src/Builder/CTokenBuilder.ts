@@ -8,6 +8,7 @@ import { AddressV, NumberV, StringV } from '../Value';
 import { Arg, Fetcher, getFetcherValue } from '../Command';
 import { storeAndSaveContract } from '../Networks';
 import { getContract, getTestContract } from '../Contract';
+import { compCommands } from '../Event/CompEvent';
 
 const CErc20Contract = getContract('CErc20Immutable');
 const CErc20Delegator = getContract('CErc20Delegator');
@@ -259,7 +260,7 @@ export async function buildCToken(
         new Arg("admin", getAddressV)
       ],
       async (world, {symbol, name, comptroller, interestRateModel, initialExchangeRate, decimals, admin}) => {
-        return {
+       return {
           invokation: await CEtherContract.deploy<CToken>(world, from, [comptroller.val, interestRateModel.val, initialExchangeRate.val, name.val, symbol.val, decimals.val, admin.val]),
           name: name.val,
           symbol: symbol.val,
@@ -290,7 +291,14 @@ export async function buildCToken(
         new Arg("admin", getAddressV)
       ],
       async (world, {symbol, name, underlying, comptroller, interestRateModel, initialExchangeRate, decimals, admin}) => {
-
+        console.log("compotroller: ", comptroller.val)
+        console.log("name: ", name.val)
+        console.log("symbol: ", symbol.val)
+        console.log("decimals: ", decimals.toNumber())
+        console.log("underlaying: ", underlying.val)
+        console.log("init_ex_rate: ", initialExchangeRate.encode().toString())
+        console.log("admin: ", admin)
+ 
         return {
           invokation: await CErc20Contract.deploy<CToken>(world, from, [underlying.val, comptroller.val, interestRateModel.val, initialExchangeRate.val, name.val, symbol.val, decimals.val, admin.val]),
           name: name.val,

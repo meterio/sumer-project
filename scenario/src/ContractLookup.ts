@@ -15,6 +15,7 @@ import { GovernorBravo } from './Contract/GovernorBravo'
 import { Erc20 } from './Contract/Erc20';
 import { InterestRateModel } from './Contract/InterestRateModel';
 import { PriceOracle } from './Contract/PriceOracle';
+import { FeedPriceOracle } from './Contract/FeedPriceOracle';
 import { Timelock } from './Contract/Timelock';
 import { AnchoredView } from './Contract/AnchoredView';
 
@@ -125,6 +126,11 @@ export async function getAnchoredView(world: World): Promise<AnchoredView> {
 export async function getPriceOracle(world: World): Promise<PriceOracle> {
   return getWorldContract(world, [['Contracts', 'PriceOracle']]);
 }
+
+export async function getFeedPriceOracle(world: World): Promise<FeedPriceOracle> {
+  return getWorldContract(world, [['Contracts', 'FeedPriceOracle']]);
+}
+
 
 export async function getComp(
   world: World,

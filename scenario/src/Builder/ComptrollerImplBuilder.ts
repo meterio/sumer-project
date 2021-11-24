@@ -272,7 +272,7 @@ export async function buildComptrollerImpl(
       }
     ),
 
-    new Fetcher<{ name: StringV }, ComptrollerImplData>(
+    new Fetcher<{ name: StringV, governanceToken: AddressV }, ComptrollerImplData>(
       `
         #### Standard
 
@@ -280,10 +280,10 @@ export async function buildComptrollerImpl(
           * E.g. "Comptroller Deploy Standard MyStandard"
       `,
       'Standard',
-      [new Arg('name', getStringV)],
-      async (world, { name }) => {
+      [new Arg('name', getStringV), new Arg('governanceToken', getAddressV)],
+      async (world, { name, governanceToken }) => {
         return {
-          invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, []),
+          invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, [governanceToken.val]),
           name: name.val,
           contract: 'Comptroller',
           description: 'Standard Comptroller Impl'

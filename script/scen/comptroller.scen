@@ -1,0 +1,12 @@
+#!/usr/bin/env yarn run repl -s
+-- Deploys new Comptroller with some BEP20 and some vTokens
+
+-- Deploy/Configure comptroller
+Gate (Comp Address) (Comp Deploy Admin)
+Gate (Comptroller Address) (Comptroller Deploy Standard Comptroller (Comp Address))
+Comptroller SetPriceOracle (PriceOracle Address)
+# Comptroller SetMaxAssets 20
+Comptroller SetCloseFactor 0.5
+Comptroller LiquidationIncentive 1.1
+
+Print "Deployed Comptroller" 

@@ -5,22 +5,22 @@ import "./PriceOracle.sol";
 
 interface Feed {
     function decimals() external view returns (uint8);
-    function latestAnswer() external view returns (uint);
+
+    function latestAnswer() external view returns (uint256);
 }
 
-contract Oracle is PriceOracle {
-
+contract FeedPriceOracle is PriceOracle {
     struct FeedData {
         address addr;
         uint8 tokenDecimals;
     }
 
     address public owner;
-    mapping (address => FeedData) public feeds; // cToken -> feed data
-    mapping (address => uint) public fixedPrices; // cToken -> price
+    mapping(address => FeedData) public feeds; // cToken -> feed data
+    mapping(address => uint256) public fixedPrices; // cToken -> price
     uint8 constant DECIMALS = 36;
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner, "ONLY OWNER");
         _;
     }
@@ -33,7 +33,11 @@ contract Oracle is PriceOracle {
         owner = owner_;
     }
 
-    function setFeed(CToken cToken_, address feed_, uint8 tokenDecimals_) public onlyOwner {
+    function setFeed(
+        CToken cToken_,
+        address feed_,
+        uint8 tokenDecimals_
+    ) public onlyOwner {
         feeds[address(cToken_)] = FeedData(feed_, tokenDecimals_);
     }
 
@@ -45,7 +49,7 @@ contract Oracle is PriceOracle {
         return feeds[address(cToken_)];
     }
 
-    function setFixedPrice(CToken cToken_, uint price) public onlyOwner {
+    function setFixedPrice(CToken cToken_, uint256 price) public onlyOwner {
         fixedPrices[address(cToken_)] = price;
     }
 
@@ -53,19 +57,20 @@ contract Oracle is PriceOracle {
         delete fixedPrices[address(cToken_)];
     }
 
-    function getFixedPrice(CToken cToken_) public view returns (uint) {
+    function getFixedPrice(CToken cToken_) public view returns (uint256) {
         return fixedPrices[address(cToken_)];
     }
 
-    function getUnderlyingPrice(CToken cToken_) public view returns (uint) {
+    function getUnderlyingPrice(CToken cToken_) public view returns (uint256) {
         FeedData memory feed = feeds[address(cToken_)]; // gas savings
-        if(feed.addr != address(0)) {
-            uint decimals = uint(DECIMALS - feed.tokenDecimals - Feed(feed.addr).decimals());
+        if (feed.addr != address(0)) {
+            uint256 decimals = uint256(
+                DECIMALS - feed.tokenDecimals - Feed(feed.addr).decimals()
+            );
             require(decimals <= DECIMALS, "DECIMAL UNDERFLOW");
-            return Feed(feed.addr).latestAnswer() * (10 ** decimals);
+            return Feed(feed.addr).latestAnswer() * (10**decimals);
         }
 
         return fixedPrices[address(cToken_)];
     }
-
 }

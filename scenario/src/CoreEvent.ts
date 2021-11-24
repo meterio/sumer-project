@@ -21,6 +21,7 @@ import { erc20Commands, processErc20Event } from './Event/Erc20Event';
 import { interestRateModelCommands, processInterestRateModelEvent } from './Event/InterestRateModelEvent';
 import { priceOracleCommands, processPriceOracleEvent } from './Event/PriceOracleEvent';
 import { priceOracleProxyCommands, processPriceOracleProxyEvent } from './Event/PriceOracleProxyEvent';
+import { feedPriceOracleCommands, processFeedPriceOracleEvent} from './Event/FeedPriceOracleEvent';
 import { maximillionCommands, processMaximillionEvent } from './Event/MaximillionEvent';
 import { invariantCommands, processInvariantEvent } from './Event/InvariantEvent';
 import { expectationCommands, processExpectationEvent } from './Event/ExpectationEvent';
@@ -750,6 +751,20 @@ export const commands: (View<any> | ((world: World) => Promise<View<any>>))[] = 
     { subExpressions: priceOracleProxyCommands() }
   ),
 
+  new Command<{ event: EventV }>(
+    `
+      #### FeedPriceOracle
+
+      * "FeedPriceOracle ...event" - Runs given Price Oracle event
+      * E.g. "FeedPriceOracle SetFeed (ETH Address) (ETHFeed Address) 16"
+    `,
+    'FeedPriceOracle',
+    [new Arg('event', getEventV, { variadic: true })],
+    (world, from, { event }) => {
+      return processFeedPriceOracleEvent(world, event.val, from);
+    },
+    { subExpressions: feedPriceOracleCommands() }
+  ),
   new Command<{ event: EventV }>(
     `
       #### Maximillion
