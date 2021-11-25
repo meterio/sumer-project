@@ -87,6 +87,24 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
     /*** Assets You Are In ***/
 
+    function setEqAssetGroup(CToken cToken_, string memory groupName, uint rateMantissa) public returns (uint) {
+        // Check caller is admin
+        if (msg.sender != admin) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.SET_EQUAL_ASSET_GROUP_OWNER_CHECK);
+        }
+   
+        eqAssetGroup[address(cToken_)] = EqualAssets(groupName, rateMantissa);
+        return uint(Error.NO_ERROR);
+    }
+
+    function removeEqAssetGroup(CToken cToken_) public {
+        delete eqAssetGroup[address(cToken_)];
+    }
+
+    function getEqAssetGroup(CToken cToken_) public view returns (EqualAssets memory) {
+        return eqAssetGroup[address(cToken_)];
+    }
+
     /**
      * @notice Returns the assets an account has entered
      * @param account The address of the account to pull assets for
@@ -113,10 +131,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      * @param account The address of the account to pull assets for
      * @return A dynamic list with the assets the account has entered
      */
-    function getAssetsGroups(address account) external view returns (EqualAssestsGroup[] memory) {
-
-        EqualAssestsGroup[] memory groups = allEqualAssestsGroups[account];
-        return groups;
+    function getAssetsGroupNames(address account) external view returns (string[] memory) {
+        return allEqualAssetsGroupNames[account];
     }
 
     /**
@@ -125,31 +141,30 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      * @param groupName The equal assets group name
      * @return A dynamic list with the assets the account has entered
      */
-    function getAssetsGroupByName(address account, string calldata groupName) external view returns (EqualAssestsGroup memory) {
 
-        EqualAssestsGroup[] memory groups = allEqualAssestsGroups[account];
-        //string memory groupName = _groupName;
-        for (uint i = 0; i < groups.length; i++) {
-            if (keccak256(bytes(groups[i].groupName)) == keccak256(bytes(groupName))) {
-                return groups[i];
-            }
-        }
+    function getAssetsGroup(address account, string calldata groupName) external view returns (EqualAssetsGroup memory) {
+        return allEqualAssetsGroups[account][groupName];
+    }
+
+
+    function getAssetsGroupMembers(address account, string calldata groupName) external view returns (EqualAssetsMember[] memory) {
+        EqualAssetsGroup memory group = allEqualAssetsGroups[account][groupName];
+        return group.equalAssetsMembers;
     }
 
     /**
      * @notice Add assets to be included in account liquidity calculation
      * @param cTokens The list of addresses of the cToken markets to be enabled
-     * @param eqAssetGroups the list of strings of equal assets group name
-     * @param rateMantissas the list of collatera rate mantissa
      * @return Success indicator for whether each corresponding market was entered
      */
-    function enterMarkets(address[] memory cTokens, string[] memory eqAssetGroups, uint[] memory rateMantissas) public returns (uint[] memory) {
+    function enterMarkets(address[] memory cTokens) public returns (uint[] memory) {
         uint len = cTokens.length;
 
         uint[] memory results = new uint[](len);
         for (uint i = 0; i < len; i++) {
             CToken cToken = CToken(cTokens[i]);
-            results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAssetGroups[i], rateMantissas[i]));
+            EqualAssets memory eqAssets = getEqAssetGroup(cToken); 
+            results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAssets.groupName, eqAssets.rateMantissas));
         }
 
         return results;
@@ -253,54 +268,67 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     }
 
     function addToEqualAssetGroupInternal(CToken cToken, string memory groupName, uint rateMantissa) internal  {
-        EqualAssestsGroup[] memory allGroups = allEqualAssestsGroups[address(cToken)];
-        for (uint i = 0; i < allGroups.length; i++) {
-            if (keccak256(bytes(allGroups[i].groupName)) == keccak256(bytes(groupName))) {
 
-                EqualAssetsMember memory member = EqualAssetsMember(cToken, rateMantissa);
-                allEqualAssestsGroups[address(cToken)][i].equalAssestsMembers.push(member);
-                return;
-            }
-        }
+        EqualAssetsGroup memory group = allEqualAssetsGroups[address(cToken)][groupName];
+
+        // this group is initialized
+        if (keccak256(bytes(group.groupName)) == keccak256(bytes(groupName))) {
+ 
+            allEqualAssetsGroups[address(cToken)][groupName].equalAssetsMembers.push(EqualAssetsMember(cToken, rateMantissa));
+            return;
+        } 
 
         // create new group
-        EqualAssetsMember[] memory members = new EqualAssetsMember[](1);
-        members[0] = EqualAssetsMember(cToken, rateMantissa);
+        allEqualAssetsGroups[address(cToken)][groupName].groupName = groupName;
+        allEqualAssetsGroups[address(cToken)][groupName].equalAssetsMembers.push(EqualAssetsMember(cToken, rateMantissa));
 
-        // push to allEqualAssestsGroups
-        EqualAssestsGroup memory group = EqualAssestsGroup(groupName, members);
-        allEqualAssestsGroups[address(cToken)].push(group);
+        // add group name
+        allEqualAssetsGroupNames[address(cToken)].push(groupName);
+
     }
 
     function exitEqualAssetGroupInternal(address cToken) internal  {
-        bool found = false;
-        uint i;
-        uint j;
+        EqualAssets memory eqAssets = getEqAssetGroup(CToken(cToken)); 
 
-        EqualAssestsGroup[] memory allGroups = allEqualAssestsGroups[cToken];
-        for (i = 0; i < allGroups.length; i++) {           
-            for (j = 0; j < allGroups[i].equalAssestsMembers.length; j++) {
-                if (address(allGroups[i].equalAssestsMembers[j].token) == cToken) {
-                    found = true;
+        // remove token from member
+        EqualAssetsMember[] memory mbs = allEqualAssetsGroups[cToken][eqAssets.groupName].equalAssetsMembers;
+        uint memberIndex = mbs.length;
+        uint memberLen = mbs.length;
+        for (uint i=0; i<memberLen; i++) {
+            if (address(mbs[i].token) == cToken) {
+                memberIndex = i;
+                break;
+            }    
+        }
+        // *must* have found one
+        assert(memberIndex < memberLen);
+
+        EqualAssetsMember[] storage eqAssetMembers = allEqualAssetsGroups[cToken][eqAssets.groupName].equalAssetsMembers;
+        eqAssetMembers[memberIndex] = eqAssetMembers[memberLen-1];
+        eqAssetMembers.length --;
+
+        // remove the group if it does not have any member
+        if (eqAssetMembers.length == 0) {
+            // remove group 
+            delete allEqualAssetsGroups[cToken][eqAssets.groupName];
+
+            // remove group name
+            string[] memory gns = allEqualAssetsGroupNames[cToken];
+            uint gnIndex = gns.length;
+            uint gnLen = gns.length;
+            for (uint i=0; i<gnLen; i++) {
+                if (keccak256(bytes(eqAssets.groupName)) == keccak256(bytes(gns[i]))) {
+                    gnIndex = i;
                     break;
                 }
             }
-        }
+            assert(gnIndex < gnLen);
 
-        if (found == true) {
-            // remove token from member
-            EqualAssetsMember[] storage members = allEqualAssestsGroups[cToken][i].equalAssestsMembers;
-            members[j] = members[members.length-1];
-            members.length --;
-
-            // remove the group if it does not have any member
-            if (members.length == 0) {
-                EqualAssestsGroup[] storage groups = allEqualAssestsGroups[cToken];
-                groups[i] = groups[groups.length -1];
-                groups.length --;
-            }
+            string[] storage groupNames = allEqualAssetsGroupNames[cToken];
+            groupNames[gnIndex] = groupNames[groupNames.length -1];
+            groupNames.length --;
         }
-    }
+    }       
 
     /*** Policy Hooks ***/
 
@@ -818,10 +846,11 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         uint oErr;
 
         // For each asset the account is in
-        EqualAssestsGroup[] memory assetsGroup = allEqualAssestsGroups[account];
-        for (uint i = 0; i < assetsGroup.length; i++) {
-            for (uint j = 0; j < assetsGroup[i].equalAssestsMembers.length; j ++ ) {
-                EqualAssetsMember memory member = assetsGroup[i].equalAssestsMembers[j];
+        string[] memory groupNames = allEqualAssetsGroupNames[account];
+        for (uint i = 0; i < groupNames.length; i++) {
+            EqualAssetsMember[] memory members = allEqualAssetsGroups[account][groupNames[i]].equalAssetsMembers;
+            for (uint j = 0; j < members.length; j ++ ) {
+                EqualAssetsMember memory member = members[j];
                 // Read the balances and exchange rate from the cToken
                 (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(member.token).getAccountSnapshot(account);
                 if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
