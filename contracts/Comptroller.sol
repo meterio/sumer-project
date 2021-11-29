@@ -97,8 +97,14 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         return uint(Error.NO_ERROR);
     }
 
-    function removeEqAssetGroup(CToken cToken_) public {
+    function removeEqAssetGroup(CToken cToken_) public returns (uint) {
+        // Check caller is admin
+        if (msg.sender != admin) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.SET_EQUAL_ASSET_GROUP_OWNER_CHECK);
+        }
+
         delete eqAssetGroup[address(cToken_)];
+        return uint(Error.NO_ERROR);
     }
 
     function getEqAssetGroup(CToken cToken_) public view returns (EqualAssets memory) {
@@ -135,21 +141,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         return allEqualAssetsGroupNames[account];
     }
 
-    /**
-     * @notice Returns the assets groups an account has entered
-     * @param account The address of the account to pull assets for
-     * @param groupName The equal assets group name
-     * @return A dynamic list with the assets the account has entered
-     */
-
-    function getAssetsGroup(address account, string calldata groupName) external view returns (EqualAssetsGroup memory) {
-        return allEqualAssetsGroups[account][groupName];
-    }
-
-
     function getAssetsGroupMembers(address account, string calldata groupName) external view returns (EqualAssetsMember[] memory) {
-        EqualAssetsGroup memory group = allEqualAssetsGroups[account][groupName];
-        return group.equalAssetsMembers;
+        return allEqualAssetsGroups[account][groupName];
     }
 
     /**
@@ -268,20 +261,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     }
 
     function addToEqualAssetGroupInternal(CToken cToken, string memory groupName, uint rateMantissa) internal  {
-
-        EqualAssetsGroup memory group = allEqualAssetsGroups[address(cToken)][groupName];
-
-        // this group is initialized
-        if (keccak256(bytes(group.groupName)) == keccak256(bytes(groupName))) {
- 
-            allEqualAssetsGroups[address(cToken)][groupName].equalAssetsMembers.push(EqualAssetsMember(cToken, rateMantissa));
-            return;
-        } 
-
-        // create new group
-        allEqualAssetsGroups[address(cToken)][groupName].groupName = groupName;
-        allEqualAssetsGroups[address(cToken)][groupName].equalAssetsMembers.push(EqualAssetsMember(cToken, rateMantissa));
-
+        allEqualAssetsGroups[address(cToken)][groupName].push(EqualAssetsMember(cToken, rateMantissa));
         // add group name
         allEqualAssetsGroupNames[address(cToken)].push(groupName);
 
@@ -291,7 +271,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         EqualAssets memory eqAssets = getEqAssetGroup(CToken(cToken)); 
 
         // remove token from member
-        EqualAssetsMember[] memory mbs = allEqualAssetsGroups[cToken][eqAssets.groupName].equalAssetsMembers;
+        EqualAssetsMember[] memory mbs = allEqualAssetsGroups[cToken][eqAssets.groupName];
         uint memberIndex = mbs.length;
         uint memberLen = mbs.length;
         for (uint i=0; i<memberLen; i++) {
@@ -303,15 +283,12 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // *must* have found one
         assert(memberIndex < memberLen);
 
-        EqualAssetsMember[] storage eqAssetMembers = allEqualAssetsGroups[cToken][eqAssets.groupName].equalAssetsMembers;
+        EqualAssetsMember[] storage eqAssetMembers = allEqualAssetsGroups[cToken][eqAssets.groupName];
         eqAssetMembers[memberIndex] = eqAssetMembers[memberLen-1];
         eqAssetMembers.length --;
 
         // remove the group if it does not have any member
         if (eqAssetMembers.length == 0) {
-            // remove group 
-            delete allEqualAssetsGroups[cToken][eqAssets.groupName];
-
             // remove group name
             string[] memory gns = allEqualAssetsGroupNames[cToken];
             uint gnIndex = gns.length;
@@ -848,17 +825,16 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // For each asset the account is in
         string[] memory groupNames = allEqualAssetsGroupNames[account];
         for (uint i = 0; i < groupNames.length; i++) {
-            EqualAssetsMember[] memory members = allEqualAssetsGroups[account][groupNames[i]].equalAssetsMembers;
+            EqualAssetsMember[] memory members = allEqualAssetsGroups[account][groupNames[i]];
             for (uint j = 0; j < members.length; j ++ ) {
-                EqualAssetsMember memory member = members[j];
                 // Read the balances and exchange rate from the cToken
-                (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(member.token).getAccountSnapshot(account);
+                (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(members[j].token).getAccountSnapshot(account);
                 if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
                     return (Error.SNAPSHOT_ERROR, 0, 0);
                 }
 
                 // Get the normalized price of the asset
-                vars.oraclePriceMantissa = oracle.getUnderlyingPrice(member.token);
+                vars.oraclePriceMantissa = oracle.getUnderlyingPrice(members[j].token);
                 if (vars.oraclePriceMantissa == 0) {
                     return (Error.PRICE_ERROR, 0, 0);
                 }
@@ -867,12 +843,12 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
                 
                 // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-                vars.tokensToDenom = mul_(vars.exchangeRate, member.collateralMantissa);
+                vars.tokensToDenom = mul_(vars.exchangeRate, members[j].collateralMantissa);
                 vars.groupCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.groupCollateral);
                 vars.groupBorrowPlusEffects = add_(vars.borrowBalance, vars.groupBorrowPlusEffects);
 
                 // Calculate effects of interacting with cTokenModify
-                if (member.token == cTokenModify) {
+                if (members[j].token == cTokenModify) {
                     // redeem effect
                     // sumBorrowPlusEffects += tokensToDenom * redeemTokens
                     vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, vars.groupBorrowPlusEffects);
