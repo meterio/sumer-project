@@ -142,7 +142,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     }
 
     function getAssetsGroupMembers(address account, string calldata groupName) external view returns (EqualAssetsMember[] memory) {
-        return allEqualAssetsGroups[account][groupName];
+        return allEqualAssetsMembers[account][groupName];
     }
 
     /**
@@ -191,7 +191,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         accountAssets[borrower].push(cToken);
 
        // all tokens are grouped with equal assets.
-        addToEqualAssetGroupInternal(cToken, eqAssetGroup, rateMantissa);
+        addToEqualAssetGroupInternal(cToken, borrower, eqAssetGroup, rateMantissa);
 
         emit MarketEntered(cToken, borrower);
 
@@ -253,25 +253,25 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         storedList.length--;
 
         // remove the same
-        exitEqualAssetGroupInternal(cTokenAddress);
+        exitEqualAssetGroupInternal(cTokenAddress, msg.sender);
 
         emit MarketExited(cToken, msg.sender);
 
         return uint(Error.NO_ERROR);
     }
 
-    function addToEqualAssetGroupInternal(CToken cToken, string memory groupName, uint rateMantissa) internal  {
-        allEqualAssetsGroups[address(cToken)][groupName].push(EqualAssetsMember(cToken, rateMantissa));
+    function addToEqualAssetGroupInternal(CToken cToken, address borrower, string memory groupName, uint rateMantissa) internal  {
+        allEqualAssetsMembers[borrower][groupName].push(EqualAssetsMember(cToken, rateMantissa));
         // add group name
-        allEqualAssetsGroupNames[address(cToken)].push(groupName);
+        allEqualAssetsGroupNames[borrower].push(groupName);
 
     }
 
-    function exitEqualAssetGroupInternal(address cToken) internal  {
+    function exitEqualAssetGroupInternal(address cToken, address borrower) internal  {
         EqualAssets memory eqAssets = getEqAssetGroup(CToken(cToken)); 
 
         // remove token from member
-        EqualAssetsMember[] memory mbs = allEqualAssetsGroups[cToken][eqAssets.groupName];
+        EqualAssetsMember[] memory mbs = allEqualAssetsMembers[borrower][eqAssets.groupName];
         uint memberIndex = mbs.length;
         uint memberLen = mbs.length;
         for (uint i=0; i<memberLen; i++) {
@@ -283,14 +283,14 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // *must* have found one
         assert(memberIndex < memberLen);
 
-        EqualAssetsMember[] storage eqAssetMembers = allEqualAssetsGroups[cToken][eqAssets.groupName];
+        EqualAssetsMember[] storage eqAssetMembers = allEqualAssetsMembers[borrower][eqAssets.groupName];
         eqAssetMembers[memberIndex] = eqAssetMembers[memberLen-1];
         eqAssetMembers.length --;
 
         // remove the group if it does not have any member
         if (eqAssetMembers.length == 0) {
             // remove group name
-            string[] memory gns = allEqualAssetsGroupNames[cToken];
+            string[] memory gns = allEqualAssetsGroupNames[borrower];
             uint gnIndex = gns.length;
             uint gnLen = gns.length;
             for (uint i=0; i<gnLen; i++) {
@@ -301,7 +301,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             }
             assert(gnIndex < gnLen);
 
-            string[] storage groupNames = allEqualAssetsGroupNames[cToken];
+            string[] storage groupNames = allEqualAssetsGroupNames[borrower];
             groupNames[gnIndex] = groupNames[groupNames.length -1];
             groupNames.length --;
         }
@@ -825,7 +825,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // For each asset the account is in
         string[] memory groupNames = allEqualAssetsGroupNames[account];
         for (uint i = 0; i < groupNames.length; i++) {
-            EqualAssetsMember[] memory members = allEqualAssetsGroups[account][groupNames[i]];
+            EqualAssetsMember[] memory members = allEqualAssetsMembers[account][groupNames[i]];
             for (uint j = 0; j < members.length; j ++ ) {
                 // Read the balances and exchange rate from the cToken
                 (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CToken(members[j].token).getAccountSnapshot(account);
