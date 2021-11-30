@@ -25,9 +25,11 @@ contract UnitrollerAdminStorage {
     address public pendingComptrollerImplementation;
 
     /**
-    * @notice Gov token address
+    * @notice Gov token address  Move to Admin
     */
-    address public governanceToken;
+    //address public governanceToken;
+
+    address public underWriterAdmin;
 }
 
 contract ComptrollerV1Storage is UnitrollerAdminStorage {
@@ -55,7 +57,7 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
     /**
      * @notice Per-account mapping of "assets you are in", capped by maxAssets
      */
-    mapping(address => CToken[]) public accountAssets;
+    //mapping(address => CToken[]) public accountAssets;
 
 }
 
@@ -90,6 +92,7 @@ contract ComptrollerV2Storage is ComptrollerV1Storage {
      *  Actions which allow users to remove their own assets cannot be paused.
      *  Liquidation / seizing / transfer can only be paused globally, not by market.
      */
+    /***  Move to Admin
     address public pauseGuardian;
     bool public _mintGuardianPaused;
     bool public _borrowGuardianPaused;
@@ -97,6 +100,7 @@ contract ComptrollerV2Storage is ComptrollerV1Storage {
     bool public seizeGuardianPaused;
     mapping(address => bool) public mintGuardianPaused;
     mapping(address => bool) public borrowGuardianPaused;
+    ***/
 }
 
 contract ComptrollerV3Storage is ComptrollerV2Storage {
@@ -134,11 +138,13 @@ contract ComptrollerV3Storage is ComptrollerV2Storage {
 }
 
 contract ComptrollerV4Storage is ComptrollerV3Storage {
+    /***** Moved to Admin
     // @notice The borrowCapGuardian can set borrowCaps to any number for any market. Lowering the borrow cap could disable borrowing on the given market.
     address public borrowCapGuardian;
 
     // @notice Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
     mapping(address => uint) public borrowCaps;
+    ****/ 
 }
 
 contract ComptrollerV5Storage is ComptrollerV4Storage {
@@ -175,14 +181,16 @@ contract ComptrollerV7Storage is ComptrollerV6Storage {
     mapping(address => mapping(string => EqualAssetsMember[])) public allEqualAssetsMembers;
     mapping(address => string[]) public allEqualAssetsGroupNames;
 
+/***
     /// @notice EqualAssets, contains information of groupName and rateMantissas
     struct EqualAssets {
         string groupName;
         uint rateMantissas;
     }
-
+***/
     /**
      * @notice eqAssetGroup, cToken -> equal assets info.
      */
-    mapping(address => EqualAssets) public eqAssetGroup;
+    //mapping(address => EqualAssets) public eqAssetGroup;
+
  }
