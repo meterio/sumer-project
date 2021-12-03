@@ -855,14 +855,13 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 if (vars.oraclePriceMantissa == 0) {
                     return (Error.PRICE_ERROR, 0, 0);
                 }
-                
-                vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
                 vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
+                vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
                 
                 // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-                vars.tokensToDenom = mul_(vars.exchangeRate, members[j].collateralMantissa);
+                vars.tokensToDenom = mul_(mul_(vars.exchangeRate, Exp({mantissa: members[j].collateralMantissa})), vars.oraclePrice);
                 vars.groupCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.groupCollateral);
-                vars.groupBorrowPlusEffects = add_(vars.borrowBalance, vars.groupBorrowPlusEffects);
+                vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.groupBorrowPlusEffects);
 
                 // Calculate effects of interacting with cTokenModify
                 if (members[j].token == cTokenModify) {
@@ -871,25 +870,19 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                     vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, vars.groupBorrowPlusEffects);
 
                     // borrow effect
-                    // sumBorrowPlusEffects += oraclePrice * borrowAmount
+                    // sumBorrowPlusEffects += oracle * borrowAmount
                     vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.groupBorrowPlusEffects);
                 }
             }
 
-            // TBD:: equalAsset group can set-off early 
-            if (vars.groupCollateral >= vars.groupBorrowPlusEffects) {
-                vars.groupCollateral = vars.groupCollateral - vars.groupBorrowPlusEffects;
-                vars.groupBorrowPlusEffects = 0;
-            } else {
-                vars.groupBorrowPlusEffects = vars.groupBorrowPlusEffects - vars.groupCollateral;
-                vars.groupCollateral = 0;
-            }
+            // The members in group collateralFactor should be the same.
+            vars.collateralFactor = Exp({mantissa: markets[address(members[0].token)].collateralFactorMantissa});
 
             // sumCollateral += tokensToDenom * cTokenBalance
-            vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.groupCollateral, vars.sumCollateral);
+            vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.collateralFactor, vars.groupCollateral, vars.sumCollateral);
 
             // sumBorrowPlusEffects += oraclePrice * borrowBalance
-            vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.sumBorrowPlusEffects);
+            vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(Exp({mantissa: expScale}), vars.groupBorrowPlusEffects, vars.sumBorrowPlusEffects);
 
 /***
             // Calculate effects of interacting with cTokenModify
