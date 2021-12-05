@@ -1,9 +1,12 @@
 #!/usr/bin/env yarn run repl -s
--- Deploys new Comptroller with some BEP20 and some vTokens
+
+-- Deploy CompoundLends
+Gate (CompoundLens Address) (CompoundLens Deploy Admin)
 
 -- Deploy/Configure comptroller
 Gate (Comp Address) (Comp Deploy Admin)
-Gate (Comptroller Address) (Comptroller Deploy Standard Comptroller (Comp Address))
+Gate (UnderwriterAdmin Address) (UnderwriterAdmin Deploy Standard (Comp Address))
+Gate (Comptroller Address) (Comptroller Deploy Standard Comptroller (UnderwriterAdmin Address))
 Comptroller SetPriceOracle (PriceOracle Address)
 # Comptroller SetMaxAssets 20
 Comptroller SetCloseFactor 0.5

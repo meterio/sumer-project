@@ -1,0 +1,7 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Now deploy our cTokens
+Gate (CToken suUSD Address) (CToken Deploy SuErc20 suUSDT "Test Synthetic USD" (CToken cUSDT Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 2e-4 8 Admin)
+
+
+Print "Deployed suToken: suUSDT"
