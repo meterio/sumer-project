@@ -34,7 +34,7 @@ import { getMaximillionValue, maximillionFetchers } from './Value/MaximillionVal
 import { getCompValue, compFetchers } from './Value/CompValue';
 import { getGovernorValue, governorFetchers } from './Value/GovernorValue';
 import { getGovernorBravoValue, governorBravoFetchers } from './Value/GovernorBravoValue';
-import { getAddress } from './ContractLookup';
+import { getAddress, getUnderwriterAdmin } from './ContractLookup';
 import { getCurrentBlockNumber, getCurrentTimestamp, mustArray, sendRPC } from './Utils';
 import { toEncodableNum } from './Encoding';
 import { BigNumber } from 'bignumber.js';
@@ -47,6 +47,7 @@ import {
   toDecimal,
   toHex
 } from 'web3-utils';
+import { getUnderwriterAdminValue, underwriterAdminFetchers } from './Value/UnderwriterAdminValue';
 
 const expMantissa = new BigNumber('1000000000000000000');
 
@@ -978,6 +979,7 @@ const fetchers = [
     async (world, { res }) => res,
     { subExpressions: compFetchers() }
   ),
+ 
   new Fetcher<{ res: Value }, Value>(
     `
       #### Governor
@@ -999,6 +1001,18 @@ const fetchers = [
     [new Arg('res', getGovernorBravoValue, { variadic: true })],
     async (world, { res }) => res,
     { subExpressions: governorBravoFetchers() }
+  ),
+
+  new Fetcher<{ res: Value }, Value>(
+    `
+      #### UnderwriterAdmin
+
+      * "UnderwriterAdmin ...underwriterAdminArgs" - Returns UnderwriterAdmin value
+    `,
+    'UnderwriterAdmin',
+    [new Arg('res', getUnderwriterAdminValue, { variadic: true })],
+    async (world, { res }) => res,
+    { subExpressions: underwriterAdminFetchers() }
   ),
 ];
 

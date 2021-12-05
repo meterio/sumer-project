@@ -18,6 +18,7 @@ import { PriceOracle } from './Contract/PriceOracle';
 import { FeedPriceOracle } from './Contract/FeedPriceOracle';
 import { Timelock } from './Contract/Timelock';
 import { AnchoredView } from './Contract/AnchoredView';
+import { UnderwriterAdmin } from './Contract/UnderwriterAdmin';
 
 type ContractDataEl = string | Map<string, object> | undefined;
 
@@ -58,6 +59,7 @@ function getContractDataString(world: World, indices: string[][]): string {
 export function getWorldContract<T>(world: World, indices: string[][]): T {
   const address = getContractDataString(world, indices);
 
+  console.log("got contract ", indices , "on", address)
   return getWorldContractByAddress<T>(world, address);
 }
 
@@ -131,6 +133,9 @@ export async function getFeedPriceOracle(world: World): Promise<FeedPriceOracle>
   return getWorldContract(world, [['Contracts', 'FeedPriceOracle']]);
 }
 
+export async function getUnderwriterAdmin(world: World): Promise<UnderwriterAdmin> {
+  return getWorldContract(world, [['Contracts', 'UnderwriterAdmin']]);
+}
 
 export async function getComp(
   world: World,

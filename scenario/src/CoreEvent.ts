@@ -44,6 +44,7 @@ import { Counter } from './Contract/Counter';
 import { CompoundLens } from './Contract/CompoundLens';
 import { Reservoir } from './Contract/Reservoir';
 import Web3 from 'web3';
+import { processUnderwriterAdminEvent, underwriterAdminCommands } from './Event/UnderWriterAdminEvent';
 
 export class EventProcessingError extends Error {
   error: Error;
@@ -810,6 +811,20 @@ export const commands: (View<any> | ((world: World) => Promise<View<any>>))[] = 
     { subExpressions: compCommands() }
   ),
 
+  new Command<{ event: EventV }>(
+    `
+    #### UnderwriterAdmin
+
+    * "UnderwriterAdmin ...event" - Runs given comp event
+    * E.g. "UnderwriterAdmin Deploy"
+    `,
+    'UnderwriterAdmin',
+    [new Arg('event', getEventV, {variadic: true})],
+    (world, from, {event})=>{
+      return processUnderwriterAdminEvent(world, event.val, from);
+    },
+    {subExpressions: underwriterAdminCommands()}
+  ),
   new Command<{ event: EventV }>(
     `
       #### Governor
