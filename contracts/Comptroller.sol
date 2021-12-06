@@ -124,13 +124,29 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      * @param account The address of the account to pull assets for
      * @return A dynamic list with the assets the account has entered
      */
-    /***
+/***
     function getAssetsIn(address account) external view returns (CToken[] memory) {
-        CToken[] memory assetsIn = accountAssets[account];
+        //CToken[] memory assetsIn = accountAssets[account];
+    
+        uint count = 0;
+        string[] memory groups = allEqualAssetsGroupNames[account];
+        for (uint i=0; i<groups.length; i++) {
+            EqualAssetsMember[] memory members = allEqualAssetsMembers[account][groups[i]];
+            count += members.length;
+        }
 
-        return assetsIn;
+        CToken[] memory assets = new CToken[](count);
+        count = 0;
+        for (uint i=0; i<groups.length; i++) {
+            EqualAssetsMember[] memory members = allEqualAssetsMembers[account][groups[i]];
+            for (uint j=0; j<members.length; j++) {
+                assets[count] = members[j].token;
+                count ++;
+            }
+        }
+        return assets;
     }
-    ***/
+***/
 
     /**
      * @notice Returns whether the given account is entered in the given asset
