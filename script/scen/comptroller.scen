@@ -1,7 +1,7 @@
 #!/usr/bin/env yarn run repl -s
 
 -- Deploy CompoundLends
-Gate (CompoundLens Address) (CompoundLens Deploy Admin)
+Gate (CompoundLens CompoundLens Address) (CompoundLens Deploy CompoundLens)
 
 -- Deploy/Configure comptroller
 Gate (Comp Address) (Comp Deploy Admin)
