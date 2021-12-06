@@ -1,0 +1,7 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Deploy/Configure UnderwriterAdmin
+UnderwriterAdmin Address
+Gate (UnderwriterAdmin Address) (UnderwriterAdmin Deploy Standard (Comp Address))
+
+Print "Deployed UnderwriterAdmin" 
