@@ -155,7 +155,6 @@ contract suErc20 is CToken, CErc20Interface {
      */
     function doTransferIn(address from, uint amount) internal returns (uint) {
         EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
-        uint balanceBefore = EIP20Interface(underlying).balanceOf(address(this));
         token.burnFrom(from, amount);
 
         bool success;
@@ -175,9 +174,7 @@ contract suErc20 is CToken, CErc20Interface {
         require(success, "TOKEN_TRANSFER_IN_FAILED");
 
         // Calculate the amount that was *actually* transferred
-        uint balanceAfter = EIP20Interface(underlying).balanceOf(address(this));
-        require(balanceAfter >= balanceBefore, "TOKEN_TRANSFER_IN_OVERFLOW");
-        return balanceAfter - balanceBefore;   // underflow already checked above, just subtract
+        return amount;
     }
 
     /**
