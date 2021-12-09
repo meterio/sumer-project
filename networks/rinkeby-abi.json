@@ -6595,7 +6595,7 @@
             "constant": false,
             "inputs": [
                 {
-                    "internalType": "contract Comptroller",
+                    "internalType": "contract ComptrollerLensInterface",
                     "name": "comptroller",
                     "type": "address"
                 },
@@ -6634,6 +6634,33 @@
             "stateMutability": "nonpayable",
             "type": "function",
             "signature": "0x7dd8f6d9"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "internalType": "contract ComptrollerLensInterface",
+                    "name": "comptroller",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "getAssetsIn",
+            "outputs": [
+                {
+                    "internalType": "contract CToken[]",
+                    "name": "",
+                    "type": "address[]"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0x63d0cb53"
         },
         {
             "constant": true,
@@ -6680,6 +6707,60 @@
             "signature": "0x416405d7"
         },
         {
+            "constant": false,
+            "inputs": [
+                {
+                    "internalType": "contract Comp",
+                    "name": "comp",
+                    "type": "address"
+                },
+                {
+                    "internalType": "contract ComptrollerLensInterface",
+                    "name": "comptroller",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "getCompBalanceMetadataExt",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "balance",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "votes",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "delegate",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "allocated",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct CompoundLens.CompBalanceMetadataExt",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function",
+            "signature": "0x1ea63741"
+        },
+        {
             "constant": true,
             "inputs": [
                 {
@@ -6722,6 +6803,159 @@
             "stateMutability": "view",
             "type": "function",
             "signature": "0x59564219"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "internalType": "contract GovernorBravoInterface",
+                    "name": "governor",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "proposalIds",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "getGovBravoProposals",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "proposalId",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "proposer",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "eta",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "address[]",
+                            "name": "targets",
+                            "type": "address[]"
+                        },
+                        {
+                            "internalType": "uint256[]",
+                            "name": "values",
+                            "type": "uint256[]"
+                        },
+                        {
+                            "internalType": "string[]",
+                            "name": "signatures",
+                            "type": "string[]"
+                        },
+                        {
+                            "internalType": "bytes[]",
+                            "name": "calldatas",
+                            "type": "bytes[]"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "startBlock",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "endBlock",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "forVotes",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "againstVotes",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "abstainVotes",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "canceled",
+                            "type": "bool"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "executed",
+                            "type": "bool"
+                        }
+                    ],
+                    "internalType": "struct CompoundLens.GovBravoProposal[]",
+                    "name": "",
+                    "type": "tuple[]"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0x75d80e90"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "internalType": "contract GovernorBravoInterface",
+                    "name": "governor",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "voter",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "proposalIds",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "getGovBravoReceipts",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "proposalId",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "hasVoted",
+                            "type": "bool"
+                        },
+                        {
+                            "internalType": "uint8",
+                            "name": "support",
+                            "type": "uint8"
+                        },
+                        {
+                            "internalType": "uint96",
+                            "name": "votes",
+                            "type": "uint96"
+                        }
+                    ],
+                    "internalType": "struct CompoundLens.GovBravoReceipt[]",
+                    "name": "",
+                    "type": "tuple[]"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0x43c811cc"
         },
         {
             "constant": true,
