@@ -782,6 +782,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         uint groupCollateral;
         uint groupBorrowPlusEffects;
         uint sumCollateral;
+        //uint sumCollateralMax;
         uint sumBorrowPlusEffects;
         uint cTokenBalance;
         uint borrowBalance;
@@ -858,6 +859,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // For each asset the account is in
         string[] memory groupNames = allEqualAssetsGroupNames[account];
         for (uint i = 0; i < groupNames.length; i++) {
+            // bool inGroup = false;
             EqualAssetsMember[] memory members = allEqualAssetsMembers[account][groupNames[i]];
             for (uint j = 0; j < members.length; j ++ ) {
                 // Read the balances and exchange rate from the cToken
@@ -881,6 +883,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
                 // Calculate effects of interacting with cTokenModify
                 if (members[j].token == cTokenModify) {
+               //     inGroup = true;
+
                     // redeem effect
                     // sumBorrowPlusEffects += tokensToDenom * redeemTokens
                     vars.groupBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, vars.groupBorrowPlusEffects);
@@ -896,6 +900,13 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
             // sumCollateral += tokensToDenom * cTokenBalance
             vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.collateralFactor, vars.groupCollateral, vars.sumCollateral);
+
+            // var.sumCollateralMax
+            //if (inGroup == true) {
+            //    vars.sumCollateralMax = mul_ScalarTruncateAddUInt(Exp({mantissa: expScale}), vars.groupCollateral, vars.sumCollateralMax);
+            //} else {
+            //    vars.sumCollateralMax = mul_ScalarTruncateAddUInt(vars.collateralFactor, vars.groupCollateral, vars.sumCollateralMax);
+            //}
 
             // sumBorrowPlusEffects += oraclePrice * borrowBalance
             vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(Exp({mantissa: expScale}), vars.groupBorrowPlusEffects, vars.sumBorrowPlusEffects);
