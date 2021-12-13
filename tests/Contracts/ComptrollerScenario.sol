@@ -2,13 +2,12 @@ pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "../../contracts/Comptroller.sol";
-import "../../contracts/UnderWriterAdmin.sol";
 
-contract ComptrollerScenario is Comptroller, UnderwriterAdmin {
+contract ComptrollerScenario is Comptroller {
     uint public blockNumber;
     address public compAddress;
 
-    constructor() UnderwriterAdmin(compAddress) public {}
+    constructor(address _compAddress) public {compAddress = _compAddress;}
 
     function fastForward(uint blocks) public returns (uint) {
         blockNumber += blocks;
@@ -29,10 +28,6 @@ contract ComptrollerScenario is Comptroller, UnderwriterAdmin {
 
     function getBlockNumber() public view returns (uint) {
         return blockNumber;
-    }
-
-    function membershipLength(address account, string memory groupName) public view returns (uint) {
-        return allEqualAssetsMembers[account][groupName].length;
     }
 
     function unlist(CToken cToken) public {

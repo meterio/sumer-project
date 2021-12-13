@@ -16,7 +16,7 @@ contract ComptrollerRopsten is Comptroller {
   }
 }
 
-contract ComptrollerHarness is Comptroller, UnderwriterAdmin {
+contract ComptrollerHarness is Comptroller {
     address compAddress;
     uint public blockNumber;
 
