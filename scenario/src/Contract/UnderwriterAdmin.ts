@@ -1,4 +1,6 @@
+import { BigNumber } from 'ethers';
 import { Contract } from '../Contract';
+import { encodedNumber } from '../Encoding';
 import { Callable, Sendable } from '../Invokation';
 
 export interface UnderwriterAdminMethods {
@@ -28,7 +30,7 @@ export interface UnderwriterAdminMethods {
 	pauseGuardian(): Callable<string>;
 	removeEqAssetGroup(cToken_: string): Sendable<number>;
 	seizeGuardianPaused(): Callable<boolean>;
-	setEqAssetGroup(cToken_: string, groupName: string, rateMantissa: number): Sendable<number>;
+	setEqAssetGroup(cToken_: string, groupName: string, rateMantissa: encodedNumber): Sendable<number>;
 	setGovTokenAddress(_governanceToken: string): Sendable<number>;
 	transferGuardianPaused(): Callable<boolean>;
 }

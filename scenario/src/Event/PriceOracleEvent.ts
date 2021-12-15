@@ -74,7 +74,6 @@ export function priceOracleCommands() {
           * E.g. "PriceOracle Deploy Fixed 1.0"
           * E.g. "PriceOracle Deploy Simple"
           * E.g. "PriceOracle Deploy NotPriceOracle"
-          * E.g. "PriceOracle Deploy Feed"
       `,
       "Deploy",
       [

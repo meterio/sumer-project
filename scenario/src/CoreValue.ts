@@ -48,6 +48,7 @@ import {
   toHex
 } from 'web3-utils';
 import { getUnderwriterAdminValue, underwriterAdminFetchers } from './Value/UnderwriterAdminValue';
+import { feedPriceOracleFetchers, getFeedPriceOracleValue } from './Value/FeedPriceOracleValue';
 
 const expMantissa = new BigNumber('1000000000000000000');
 
@@ -913,6 +914,18 @@ const fetchers = [
     async (world, { res }) => res,
     { subExpressions: priceOracleFetchers() }
   ),
+  new Fetcher<{ res: Value }, Value>(
+    `
+      #### FeedPriceOracle
+
+      * "FeedPriceOracle ...priceOracleArgs" - Returns FeedPriceOracle value
+    `,
+    'FeedPriceOracle',
+    [new Arg('res', getFeedPriceOracleValue, { variadic: true })],
+    async (world, { res }) => res,
+    { subExpressions: feedPriceOracleFetchers() }
+  ),
+ 
   new Fetcher<{ res: Value }, Value>(
     `
       #### PriceOracleProxy

@@ -58,13 +58,14 @@ function getContractDataString(world: World, indices: string[][]): string {
 
 export function getWorldContract<T>(world: World, indices: string[][]): T {
   const address = getContractDataString(world, indices);
+  console.log("GOT ADDR: ", address)
 
-  console.log("got contract ", indices , "on", address)
   return getWorldContractByAddress<T>(world, address);
 }
 
 export function getWorldContractByAddress<T>(world: World, address: string): T {
   const contract = world.contractIndex[address.toLowerCase()];
+  // console.log("GOT CONTRACT:", contract)
 
   if (!contract) {
     throw new Error(

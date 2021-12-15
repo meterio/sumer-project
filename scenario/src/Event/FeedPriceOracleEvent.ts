@@ -3,15 +3,31 @@ import {addAction, World} from '../World';
 import {FeedPriceOracle} from '../Contract/FeedPriceOracle';
 import {invoke} from '../Invokation';
 import {
+  getEventV,
   getAddressV,
-  getExpNumberV,
+  getNumberV,
 } from '../CoreValue';
 import {
+  EventV,
   AddressV,
   NumberV,
 } from '../Value';
 import {Arg, Command, processCommandEvent, View} from '../Command';
 import {getFeedPriceOracle} from '../ContractLookup';
+import { buildFeedPriceOracle } from '../Builder/FeedPriceOracleBuilder';
+
+async function genFeedPriceOracle(world: World, from: string, params: Event): Promise<World> {
+  let {world: nextWorld, feedPriceOracleImpl, priceOracleData} = await buildFeedPriceOracle(world, from, params);
+  world = nextWorld;
+
+  world = addAction(
+    world,
+    `Deployed FeedPriceOracle (${priceOracleData.description}) to address ${feedPriceOracleImpl._address}`,
+    priceOracleData.invokation!
+  );
+
+  return world;
+}
 
 async function setFixedPrice(world: World, from: string, priceOracle: FeedPriceOracle, cToken: string, amount: NumberV): Promise<World> {
   return addAction(
@@ -22,6 +38,8 @@ async function setFixedPrice(world: World, from: string, priceOracle: FeedPriceO
 }
 
 async function setFeed(world: World, from: string, priceOracle: FeedPriceOracle, cToken: string, feed: string, decimals: number): Promise<World> {
+  console.log("TYPE: ", typeof priceOracle)
+  console.log("methods: ", priceOracle.methods)
   return addAction(
     world,
     `Set price oracle feed for ${cToken} to ${feed} with decimals of ${decimals}`,
@@ -31,17 +49,29 @@ async function setFeed(world: World, from: string, priceOracle: FeedPriceOracle,
 
 export function feedPriceOracleCommands() {
   return [
+    new Command<{params: EventV}>(`
+        #### Deploy
+
+        * "Deploy ...params" - Generates a new price oracle
+          * E.g. "FeedPriceOracle Deploy Feed"
+      `,
+      "Deploy",
+      [
+        new Arg("params", getEventV, {variadic: true})
+      ],
+      (world, from, {params}) => {console.log("CALLING"); return genFeedPriceOracle(world, from, params.val)}
+    ),
     new Command<{priceOracle: FeedPriceOracle, cToken: AddressV, amount: NumberV}>(`
         #### SetFixedPrice
 
         * "SetFixedPrice <CToken> <Amount>" - Sets the per-ether price for the given cToken
-          * E.g. "FeedPriceOracle SetPrice cZRX 1.0"
+          * E.g. "FeedPriceOracle SetFixedPrice cETH 1.0"
       `,
-      "SetPrice",
+      "SetFixedPrice",
       [
         new Arg("priceOracle", getFeedPriceOracle, {implicit: true}),
         new Arg("cToken", getAddressV),
-        new Arg("amount", getExpNumberV)
+        new Arg("amount", getNumberV)
       ],
       (world, from, {priceOracle, cToken, amount}) => setFixedPrice(world, from, priceOracle, cToken.val, amount)
     ),
@@ -57,7 +87,7 @@ export function feedPriceOracleCommands() {
         new Arg("priceOracle", getFeedPriceOracle, {implicit: true}),
         new Arg("cToken", getAddressV),
         new Arg("feed", getAddressV),
-        new Arg("decimals", getExpNumberV)
+        new Arg("decimals", getNumberV)
       ],
       (world, from, {priceOracle, cToken, feed, decimals}) => setFeed(world, from, priceOracle, cToken.val, feed.val,decimals.toNumber())
     ),
