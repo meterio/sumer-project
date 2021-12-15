@@ -1,0 +1,15 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Make sure UnderwriterAdmin exists
+Gate (FeedPriceOracle Address) (FeedPriceOracle Deploy Feed)
+
+-- Set Feed for known tokens
+FeedPriceOracle SetFeed (CToken cETH Address) "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e" 18
+
+-- Set fixed price for known tokens
+FeedPriceOracle SetFixedPrice (CToken cUSDC Address) 1e18
+FeedPriceOracle SetFixedPrice (CToken cMTRG Address) 8e18
+FeedPriceOracle SetFixedPrice (CToken cUSDT Address) 1e18
+FeedPriceOracle SetFixedPrice (CToken cWBTC Address) 56000e18
+
+Print "Deployed FeedPriceOracle with known feeds" 

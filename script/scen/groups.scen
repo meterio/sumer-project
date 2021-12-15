@@ -1,0 +1,13 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Make sure UnderwriterAdmin exists
+Gate (UnderwriterAdmin Address) (UnderwriterAdmin Deploy Standard (Comp Address))
+
+-- SetEqAssetGroup
+UnderwriterAdmin SetEqAssetGroup (CToken cWBTC Address) Bitcoin 6e17
+UnderwriterAdmin SetEqAssetGroup (CToken cETH Address) Ether 6e17
+UnderwriterAdmin SetEqAssetGroup (CToken cUSDT Address) Stable 9e17
+UnderwriterAdmin SetEqAssetGroup (CToken cUSDC Address) Stable 9e17
+UnderwriterAdmin SetEqAssetGroup (CToken cMTRG Address) MeterGovern 8e17
+
+Print "Update cToken equal asset groups information" 

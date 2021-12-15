@@ -6,18 +6,18 @@ Gate (InterestRateModel InterestRateModel Address) (InterestRateModel Deploy Whi
 -- Now deploy some ERC-20 faucet tokens
 Gate (Erc20 USDC Address) (Erc20 Deploy Standard USDC "USD Coin" 6)
 Gate (Erc20 USDT Address) (Erc20 Deploy Standard USDT "Tether USD" 6)
-Gate (Erc20 MTRG Address) (Erc20 Deploy Standard MTRG "Meter Governance" 16)
-Gate (Erc20 WBTC Address) (Erc20 Deploy Standard WBTC "Wrapped Bitcoin" 16)
-Gate (Erc20 WETH Address) (Erc20 Deploy Standard WETH "Wrapped Ether" 16)
+Gate (Erc20 MTRG Address) (Erc20 Deploy Standard MTRG "Meter Governance" 18)
+Gate (Erc20 WBTC Address) (Erc20 Deploy Standard WBTC "Wrapped Bitcoin" 18)
+Gate (Erc20 WETH Address) (Erc20 Deploy Standard WETH "Wrapped Ether" 18)
 
 -- Now deploy our cTokens
-Gate (CToken cUSDT Address) (CToken Deploy CErc20 cUSDT "Test Tether USD" (Erc20 USDT Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 2e-4 8 Admin)
-Gate (CToken cUSDC Address) (CToken Deploy CErc20 cUSDC "Test USD Coin" (Erc20 USDC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 2e-4 8 Admin)
-Gate (CToken cMTRG Address) (CToken Deploy CErc20 cMTRG "Test Meter Governance" (Erc20 MTRG Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 0.2e9 8 Admin)
-Gate (CToken cWBTC Address) (CToken Deploy CErc20 cWBTC "Test Wrapped Bitcoin" (Erc20 WBTC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 0.2e9 8 Admin)
-Gate (CToken cETH Address) (CToken Deploy CEther cETH "Test Wrapped Ether" (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 0.2e9 8 Admin)
+Gate (CToken cUSDT Address) (CToken Deploy CErc20 cUSDT "Test Tether USD" (Erc20 USDT Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e-2 8 Admin)
+Gate (CToken cUSDC Address) (CToken Deploy CErc20 cUSDC "Test USD Coin" (Erc20 USDC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e-2 8 Admin)
+Gate (CToken cMTRG Address) (CToken Deploy CErc20 cMTRG "Test Meter Governance" (Erc20 MTRG Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin)
+Gate (CToken cWBTC Address) (CToken Deploy CErc20 cWBTC "Test Wrapped Bitcoin" (Erc20 WBTC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin)
+Gate (CToken cETH Address) (CToken Deploy CEther cETH "Test Wrapped Ether" (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin)
 
 -- Deploy Maximillion
 Gate (Maximillion Address) (Maximillion Deploy cETH)
 
-Print "Deployed Comptroller and cTokens: cETH, cBAT, cDAI, cREP, cUSDC and cZRX"
+Print "Deployed Comptroller and cTokens: cUSDC, cUSDT, cMTRG, cWBTC, cETH"

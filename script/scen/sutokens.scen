@@ -1,7 +1,15 @@
 #!/usr/bin/env yarn run repl -s
 
--- Now deploy our cTokens
-Gate (CToken suUSD Address) (CToken Deploy SuErc20 suUSDT "Test Synthetic USD" (CToken cUSDT Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 2e-4 8 Admin)
+-- Deploy sutoken (deprecated, please use cb-cli to deploy su token)
+-- Gate (Erc20 suUSD Address) (Erc20 Deploy Standard suUSD "Sumer USD" 18)
 
+-- Deploy cSu tokens
+Gate (CToken cSuUSD Address) (CToken Deploy SuErc20 cSuUSD "Sumer USD" (Erc20 suUSD Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1 18 Admin)
 
-Print "Deployed suToken: suUSDT"
+-- SetEqAssetGroup
+UnderwriterAdmin SetEqAssetGroup (CToken cSuUSD Address) Stable 9e17
+
+-- Set fixed price
+FeedPriceOracle SetFixedPrice (CToken cSuUSD Address) 1e18
+
+Print "Deployed suToken: cSuUSD"

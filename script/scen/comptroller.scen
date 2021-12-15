@@ -1,15 +1,24 @@
 #!/usr/bin/env yarn run repl -s
 
+-- Deploy FeedPriceOracle-- Deploy a price oracle
+Gate (FeedPriceOracle Address) (FeedPriceOracle Deploy Feed)
+
 -- Deploy CompoundLends
 Gate (CompoundLens CompoundLens Address) (CompoundLens Deploy CompoundLens)
 
--- Deploy/Configure comptroller
+-- Deploy Comp
 Gate (Comp Address) (Comp Deploy Admin)
+
+-- Deploy UnderwriterAdmin
 Gate (UnderwriterAdmin Address) (UnderwriterAdmin Deploy Standard (Comp Address))
+
+-- Deploy Comptroller
 Gate (Comptroller Address) (Comptroller Deploy Standard Comptroller (UnderwriterAdmin Address))
-Comptroller SetPriceOracle (PriceOracle Address)
+
+-- Configure Comptroller
+Comptroller SetPriceOracle (FeedPriceOracle Address)
 # Comptroller SetMaxAssets 20
 Comptroller SetCloseFactor 0.5
 Comptroller LiquidationIncentive 1.1
 
-Print "Deployed Comptroller" 
+Print "Deployed FeedPriceOracle, CompoundLens, Comp, UnderwriterAdmin & Comptroller" 
