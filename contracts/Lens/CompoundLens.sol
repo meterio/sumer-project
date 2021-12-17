@@ -32,15 +32,10 @@ interface ComptrollerLensInterface {
 
     function compAccrued(address) external view returns (uint256);
 
-    function getAssetsGroupNames(address account)
+    function getAssetsIn(address account)
         external
         view
-        returns (string[] memory);
-
-    function getAssetsGroupMembers(address account, string calldata groupName)
-        external
-        view
-        returns (EqualAssetsMember[] memory);
+        returns (CToken[] memory);
 }
 
 interface GovernorBravoInterface {
@@ -248,38 +243,6 @@ contract CompoundLens {
         uint256 shortfall;
     }
 
-    function getAssetsIn(ComptrollerLensInterface comptroller, address account)
-        public
-        view
-        returns (CToken[] memory)
-    {
-        uint256 count = 0;
-        string[] memory groups = comptroller.getAssetsGroupNames(account);
-        for (uint256 i = 0; i < groups.length; i++) {
-            ComptrollerLensInterface.EqualAssetsMember[]
-                memory members = comptroller.getAssetsGroupMembers(
-                    account,
-                    groups[i]
-                );
-            count += members.length;
-        }
-
-        CToken[] memory assets = new CToken[](count);
-        count = 0;
-        for (uint256 i = 0; i < groups.length; i++) {
-            ComptrollerLensInterface.EqualAssetsMember[]
-                memory members = comptroller.getAssetsGroupMembers(
-                    account,
-                    groups[i]
-                );
-            for (uint256 j = 0; j < members.length; j++) {
-                assets[count] = members[j].token;
-                count++;
-            }
-        }
-        return assets;
-    }
-
     function getAccountLimits(
         ComptrollerLensInterface comptroller,
         address account
@@ -290,7 +253,7 @@ contract CompoundLens {
 
         return
             AccountLimits({
-                markets: getAssetsIn(comptroller, account),
+                markets: comptroller.getAssetsIn(account),
                 liquidity: liquidity,
                 shortfall: shortfall
             });

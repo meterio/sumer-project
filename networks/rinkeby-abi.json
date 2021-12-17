@@ -8497,33 +8497,6 @@
             "constant": true,
             "inputs": [
                 {
-                    "internalType": "contract ComptrollerLensInterface",
-                    "name": "comptroller",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "getAssetsIn",
-            "outputs": [
-                {
-                    "internalType": "contract CToken[]",
-                    "name": "",
-                    "type": "address[]"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function",
-            "signature": "0x63d0cb53"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
                     "internalType": "contract Comp",
                     "name": "comp",
                     "type": "address"

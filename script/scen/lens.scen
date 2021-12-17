@@ -1,0 +1,6 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Deploy CompoundLends
+Gate (CompoundLens CompoundLens Address) (CompoundLens Deploy CompoundLens)
+
+Print "Deployed CompoundLens" 
