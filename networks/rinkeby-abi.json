@@ -2943,6 +2943,11 @@
                     "internalType": "uint8",
                     "name": "decimals_",
                     "type": "uint8"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "isCToken_",
+                    "type": "bool"
                 }
             ],
             "name": "initialize",
@@ -2950,7 +2955,7 @@
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "function",
-            "signature": "0x99d8c1b4"
+            "signature": "0x5fe609db"
         },
         {
             "constant": true,
