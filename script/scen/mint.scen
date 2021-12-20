@@ -13,6 +13,6 @@
 # Erc20 ETH Faucet Admin 100000e18
 
 -- Faucet WBTC
-Erc20 WBTC Faucet Admin 100000e18
+# Erc20 WBTC Faucet Admin 100000e18
 
 Print "Minted Tokens" 
