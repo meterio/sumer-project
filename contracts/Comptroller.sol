@@ -150,6 +150,13 @@ contract Comptroller is
         return markets[address(cToken)].accountMembership[account];
     }
 
+    /**
+     * @notice set the CToken to a equal asset group
+     * @param cToken_ the CToken
+     * @param groupName the equal assest group name
+     * @param rateMantissa The cToken collateral rate in the group
+     * @return Error code
+     */
     function setEqAssetGroup(
         CToken cToken_,
         string memory groupName,
@@ -168,6 +175,11 @@ contract Comptroller is
         return uint256(Error.NO_ERROR);
     }
 
+    /**
+     * @notice remove the CToken from equal asset group
+     * @param cToken_ the CToken
+     * @return Error code
+     */
     /*** CODESIZE:::
     function removeEqAssetGroup(CToken cToken_) public returns (uint256) {
         // Check caller is admin
@@ -184,6 +196,11 @@ contract Comptroller is
     }
     ***/
 
+    /**
+     * @notice retrieve CToken's equal asset group info
+     * @param cToken_ the CToken
+     * @return Error code
+     */
     function getEqAssetGroup(CToken cToken_)
         public
         view
@@ -647,8 +664,11 @@ contract Comptroller is
             );
         } else {
             /* The borrower must have shortfall in order to be liquidatable */
-            (Error err, , uint256 shortfall) = getAccountLiquidityInternal(
-                borrower
+            (Error err, , uint256 shortfall) = getHypotheticalAccountLiquidityInternal(
+                borrower, 
+                CToken(cTokenBorrowed),
+                0, 
+                0
             );
             if (err != Error.NO_ERROR) {
                 return uint256(err);
@@ -1287,7 +1307,7 @@ contract Comptroller is
                 );
         }
 
-        cToken.isCToken(); // Sanity check to make sure its really a CToken
+        cToken.isSdrToken(); // Sanity check to make sure its really a CToken
 
         // Note that isComped is not in active use anymore
         markets[address(cToken)] = Market({

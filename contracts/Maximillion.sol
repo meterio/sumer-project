@@ -10,12 +10,12 @@ contract Maximillion {
     /**
      * @notice The default cEther market to repay in
      */
-    CEther public cEther;
+    sdrEther public cEther;
 
     /**
      * @notice Construct a Maximillion to repay max in a CEther market
      */
-    constructor(CEther cEther_) public {
+    constructor(sdrEther cEther_) public {
         cEther = cEther_;
     }
 
@@ -34,7 +34,7 @@ contract Maximillion {
      * @param borrower The address of the borrower account to repay on behalf of
      * @param cEther_ The address of the cEther contract to repay in
      */
-    function repayBehalfExplicit(address borrower, CEther cEther_) public payable {
+    function repayBehalfExplicit(address borrower, sdrEther cEther_) public payable {
         uint received = msg.value;
         uint borrows = cEther_.borrowBalanceCurrent(borrower);
         if (received > borrows) {

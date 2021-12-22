@@ -7,11 +7,11 @@ interface CompLike {
 }
 
 /**
- * @title Compound's suErc20 Contract
+ * @title Compound's sdrSuErc20 Contract
  * @notice CTokens which wrap an EIP-20 underlying
  * @author Compound
  */
-contract suErc20 is CToken, CErc20Interface {
+contract sdrSuErc20 is CToken, sdrErc20Interface {
     /**
      * @notice Initialize the new money market
      * @param underlying_ The address of the underlying asset

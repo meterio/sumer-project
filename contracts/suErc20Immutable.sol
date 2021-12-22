@@ -7,7 +7,7 @@ import "./suErc20.sol";
  * @notice CTokens which wrap an EIP-20 underlying and are immutable
  * @author Compound
  */
-contract suErc20Immutable is suErc20 {
+contract sdrSuErc20Immutable is sdrSuErc20 {
     /**
      * @notice Construct a new money market
      * @param underlying_ The address of the underlying asset

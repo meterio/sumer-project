@@ -127,7 +127,7 @@ contract CTokenInterface is CTokenStorage {
     /**
      * @notice Indicator that this is a CToken contract (for inspection)
      */
-    bool public isCToken;
+    bool public isSdrToken;
 
 
     /*** Market Events ***/
@@ -247,14 +247,14 @@ contract CTokenInterface is CTokenStorage {
     function _setInterestRateModel(InterestRateModel newInterestRateModel) public returns (uint);
 }
 
-contract CErc20Storage {
+contract sdrErc20Storage {
     /**
      * @notice Underlying asset for this CToken
      */
     address public underlying;
 }
 
-contract CErc20Interface is CErc20Storage {
+contract sdrErc20Interface is sdrErc20Storage {
 
     /*** User Interface ***/
 

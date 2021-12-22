@@ -95,7 +95,7 @@ contract PriceOracleProxy is PriceOracle {
         }
 
         // otherwise just read from v1 oracle
-        address underlying = CErc20(cTokenAddress).underlying();
+        address underlying = sdrErc20(cTokenAddress).underlying();
         return v1PriceOracle.assetPrices(underlying);
     }
 

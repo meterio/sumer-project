@@ -6,7 +6,7 @@ import "../../contracts/CErc20Delegate.sol";
 import "../../contracts/CDaiDelegate.sol";
 import "./ComptrollerScenario.sol";
 
-contract CErc20Harness is CErc20Immutable {
+contract sdrErc20Harness is sdrErc20Immutable {
     uint blockNumber = 100000;
     uint harnessExchangeRate;
     bool harnessExchangeRateStored;
@@ -21,7 +21,7 @@ contract CErc20Harness is CErc20Immutable {
                 string memory symbol_,
                 uint8 decimals_,
                 address payable admin_)
-    CErc20Immutable(
+    sdrErc20Immutable(
     underlying_,
     comptroller_,
     interestRateModel_,
@@ -151,7 +151,7 @@ contract CErc20Harness is CErc20Immutable {
     }
 }
 
-contract CErc20Scenario is CErc20Immutable {
+contract sdrErc20Scenario is sdrErc20Immutable {
     constructor(address underlying_,
                 ComptrollerInterface comptroller_,
                 InterestRateModel interestRateModel_,
@@ -160,7 +160,7 @@ contract CErc20Scenario is CErc20Immutable {
                 string memory symbol_,
                 uint8 decimals_,
                 address payable admin_)
-    CErc20Immutable(
+    sdrErc20Immutable(
     underlying_,
     comptroller_,
     interestRateModel_,
@@ -184,7 +184,7 @@ contract CErc20Scenario is CErc20Immutable {
     }
 }
 
-contract CEvil is CErc20Scenario {
+contract sdrEvil is sdrErc20Scenario {
     constructor(address underlying_,
                 ComptrollerInterface comptroller_,
                 InterestRateModel interestRateModel_,
@@ -193,7 +193,7 @@ contract CEvil is CErc20Scenario {
                 string memory symbol_,
                 uint8 decimals_,
                 address payable admin_)
-    CErc20Scenario(
+    sdrErc20Scenario(
     underlying_,
     comptroller_,
     interestRateModel_,
@@ -208,7 +208,7 @@ contract CEvil is CErc20Scenario {
     }
 }
 
-contract CErc20DelegatorScenario is CErc20Delegator {
+contract sdrErc20DelegatorScenario is sdrErc20Delegator {
     constructor(address underlying_,
                 ComptrollerInterface comptroller_,
                 InterestRateModel interestRateModel_,
@@ -219,7 +219,7 @@ contract CErc20DelegatorScenario is CErc20Delegator {
                 address payable admin_,
                 address implementation_,
                 bytes memory becomeImplementationData)
-    CErc20Delegator(
+    sdrErc20Delegator(
     underlying_,
     comptroller_,
     interestRateModel_,
@@ -240,7 +240,7 @@ contract CErc20DelegatorScenario is CErc20Delegator {
     }
 }
 
-contract CErc20DelegateHarness is CErc20Delegate {
+contract sdrErc20DelegateHarness is sdrErc20Delegate {
     event Log(string x, address y);
     event Log(string x, uint y);
 
@@ -374,7 +374,7 @@ contract CErc20DelegateHarness is CErc20Delegate {
     }
 }
 
-contract CErc20DelegateScenario is CErc20Delegate {
+contract sdrErc20DelegateScenario is sdrErc20Delegate {
     constructor() public {}
 
     function setTotalBorrows(uint totalBorrows_) public {
@@ -391,7 +391,7 @@ contract CErc20DelegateScenario is CErc20Delegate {
     }
 }
 
-contract CErc20DelegateScenarioExtra is CErc20DelegateScenario {
+contract sdrErc20DelegateScenarioExtra is sdrErc20DelegateScenario {
     function iHaveSpoken() public pure returns (string memory) {
       return "i have spoken";
     }

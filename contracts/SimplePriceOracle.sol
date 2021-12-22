@@ -11,12 +11,12 @@ contract SimplePriceOracle is PriceOracle {
         if (compareStrings(cToken.symbol(), "cETH")) {
             return 1e18;
         } else {
-            return prices[address(CErc20(address(cToken)).underlying())];
+            return prices[address(sdrErc20(address(cToken)).underlying())];
         }
     }
 
     function setUnderlyingPrice(CToken cToken, uint underlyingPriceMantissa) public {
-        address asset = address(CErc20(address(cToken)).underlying());
+        address asset = address(sdrErc20(address(cToken)).underlying());
         emit PricePosted(asset, prices[asset], underlyingPriceMantissa, underlyingPriceMantissa);
         prices[asset] = underlyingPriceMantissa;
     }

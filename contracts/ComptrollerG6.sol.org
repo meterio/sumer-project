@@ -931,7 +931,7 @@ contract ComptrollerG6 is ComptrollerV5Storage, ComptrollerInterface, Comptrolle
             return fail(Error.MARKET_ALREADY_LISTED, FailureInfo.SUPPORT_MARKET_EXISTS);
         }
 
-        cToken.isCToken(); // Sanity check to make sure its really a CToken
+        cToken.isSdrToken(); // Sanity check to make sure its really a CToken
 
         markets[address(cToken)] = Market({isListed: true, isComped: false, collateralFactorMantissa: 0});
 
