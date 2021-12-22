@@ -28,11 +28,11 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
                         string memory name_,
                         string memory symbol_,
                         uint8 decimals_,
-                        bool isCToken_) public {
+                        bool isSdrToken_) public {
         require(msg.sender == admin, "only admin may initialize the market");
         require(accrualBlockNumber == 0 && borrowIndex == 0, "market may only be initialized once");
 
-        isCToken = isCToken_;
+        isSdrToken = isSdrToken_;
 
         // Set initial exchange rate
         initialExchangeRateMantissa = initialExchangeRateMantissa_;
@@ -341,7 +341,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      */
     function exchangeRateStoredInternal() internal view returns (MathError, uint) {
 
-        if (isCToken != true) {
+        if (isSdrToken != true) {
             return (MathError.NO_ERROR, initialExchangeRateMantissa);
         }
 
@@ -685,7 +685,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient cash */
-        if ((isCToken == true) && (getCashPrior() < vars.redeemAmount)) {
+        if ((isSdrToken == true) && (getCashPrior() < vars.redeemAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
         }
 
@@ -755,7 +755,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient underlying cash */
-        if ((isCToken == true) && (getCashPrior() < borrowAmount)) {
+        if ((isSdrToken == true) && (getCashPrior() < borrowAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.BORROW_CASH_NOT_AVAILABLE);
         }
 

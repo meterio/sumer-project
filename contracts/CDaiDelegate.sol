@@ -7,7 +7,7 @@ import "./CErc20Delegate.sol";
  * @notice CToken which wraps Multi-Collateral DAI
  * @author Compound
  */
-contract CDaiDelegate is CErc20Delegate {
+contract CDaiDelegate is sdrErc20Delegate {
     /**
      * @notice DAI adapter address
      */
