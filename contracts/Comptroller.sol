@@ -619,7 +619,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             require(borrowBalance >= repayAmount, "Can not repay more than the total borrow");
         } else {
             /* The borrower must have shortfall in order to be liquidatable */
-            (Error err, , uint shortfall) = getAccountLiquidityInternal(borrower);
+            (Error err, , uint shortfall) = getHypotheticalAccountLiquidityInternal(borrower, CToken(cTokenBorrowed), 0, 0);
             if (err != Error.NO_ERROR) {
                 return uint(err);
             }
