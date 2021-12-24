@@ -797,6 +797,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         Exp exchangeRate;
         Exp oraclePrice;
         Exp tokensToDenom;
+        Exp groupCollateralFactor;
     }
 
     /**
@@ -885,18 +886,19 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
             // The members in group collateralFactor should be the same.
             vars.collateralFactor = Exp({mantissa: markets[address(asset)].collateralFactorMantissa});
+            vars.groupCollateralFactor = Exp({mantissa: eqAsset.rateMantissas});
 
             // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-            vars.tokensToDenom = mul_(mul_(Exp({mantissa:eqAsset.rateMantissas}), vars.exchangeRate), vars.oraclePriceMantissa);
+            vars.tokensToDenom = mul_(vars.exchangeRate, vars.oraclePriceMantissa);
 
             // same eq asset group 
             if (keccak256(bytes(eqAssetModify.groupName)) == keccak256(bytes(eqAsset.groupName))) {
-                vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.sumCollateral);
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.sumBorrowPlusEffects);
+                vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), vars.cTokenBalance, vars.sumCollateral);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, vars.sumBorrowPlusEffects);
             } else {
                 vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.collateralFactor), vars.cTokenBalance, vars.sumCollateral);
                 // A2 algrithom should mul_ vars.collateralFactor
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.sumBorrowPlusEffects);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, vars.sumBorrowPlusEffects);
             }
 
             // Calculate effects of interacting with cTokenModify
@@ -907,7 +909,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
                 // borrow effect
                 // sumBorrowPlusEffects += oracle * borrowAmount
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.sumBorrowPlusEffects);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, borrowAmount, vars.sumBorrowPlusEffects);
             }            
         }
 
