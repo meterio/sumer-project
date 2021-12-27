@@ -9,6 +9,7 @@ Gate (Comptroller Address) (Comptroller Deploy YesNo)
 
 -- Next an interest rate model
 Gate (InterestRateModel InterestRateModel Address) (InterestRateModel Deploy Fixed InterestRateModel 0.0004)
+Gate (InterestRateModel ZeroRateModel Address) (InterestRateModel Deploy Fixed ZeroRateModel 0)
 
 -- Now deploy some ERC-20 faucet tokens
 Gate (Erc20 ZRX Address) (Erc20 Deploy Standard ZRX "0x")

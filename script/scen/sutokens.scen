@@ -3,11 +3,14 @@
 -- Deploy sutoken (deprecated, please use cb-cli to deploy su token)
 -- Gate (Erc20 suUSD Address) (Erc20 Deploy Standard suUSD "Sumer USD" 18)
 
+-- Next an interest rate model
+Gate (InterestRateModel ZeroRateModel Address) (InterestRateModel Deploy Fixed ZeroInterestRate 0)
+
 -- Deploy cSu tokens
-Gate (CToken cSuUSD Address) (CToken Deploy SuErc20 cSuUSD "Sumer USD" (Erc20 suUSD Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1 18 Admin)
+Gate (CToken cSuUSD Address) (CToken Deploy SuErc20 cSuUSD "Sumer USD" (Erc20 suUSD Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1 18 Admin)
 
 -- SetEqAssetGroup
-UnderwriterAdmin SetEqAssetGroup (CToken cSuUSD Address) Stable 9e17
+UnderwriterAdmin SetEqAssetGroup (CToken cSuUSD Address) Stable 1e18
 
 -- Set fixed price
 FeedPriceOracle SetFixedPrice (CToken cSuUSD Address) 1e18
