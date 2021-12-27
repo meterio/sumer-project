@@ -1,6 +1,6 @@
 # Deploy
 
-### Steps
+### Steps for Contract Deployment
 
 ```bash
 # Deploy CompoundLens, Comp, UnderwriterAdmin, Comptroller
@@ -28,4 +28,19 @@ node index.js --url [rpc-url] erc20 add-minter --erc20Address [suUSD] --minter [
 node index.js --url [rpc-url] erc20 mint --amount 1000000000000000000000000 --erc20Address [suUSD] --receiver [cSuUSD]
 
 # Call Comptroller:supportMarket to actually enable ctokens
+```
+
+### Steps for UI deployment
+
+```bash
+# update constants.ts for all the contract addresses
+# remember to add UnderwriterAdmin
+# copy FeedPriceOracle with alias of PriceOracle
+# copy cSuUSD with alias of csuUSD
+# publish the new @meterio/compound-js package
+```
+
+```bash
+# update sumer-ui with new @meterio/compound-js
+# update token addresses in src/constants/index.js for ERC20 tokens
 ```
