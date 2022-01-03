@@ -117,6 +117,9 @@ contract Comptroller is
     constructor(address _gov) public {
         admin = msg.sender;
         governanceToken = _gov;
+
+        // set the initial suToken Rate as 1
+        suTokenRateMantissa = 10**18;
     }
 
     /*** Assets You Are In ***/
@@ -664,12 +667,16 @@ contract Comptroller is
             );
         } else {
             /* The borrower must have shortfall in order to be liquidatable */
-            (Error err, , uint256 shortfall) = getHypotheticalAccountLiquidityInternal(
-                borrower, 
-                CToken(cTokenBorrowed),
-                0, 
-                0
-            );
+            (
+                Error err,
+                ,
+                uint256 shortfall
+            ) = getHypotheticalAccountLiquidityInternal(
+                    borrower,
+                    CToken(cTokenBorrowed),
+                    0,
+                    0
+                );
             if (err != Error.NO_ERROR) {
                 return uint256(err);
             }
@@ -866,6 +873,9 @@ contract Comptroller is
         Exp exchangeRate;
         Exp oraclePrice;
         Exp tokensToDenom;
+        Exp groupCollateralFactor;
+        Exp suTokenCollateralRate;
+        bool isSuToken;
     }
 
     /**
@@ -978,6 +988,15 @@ contract Comptroller is
         uint256 oErr;
         EqualAssets memory eqAssetModify = getEqAssetGroup(cTokenModify);
 
+        if (
+            (address(cTokenModify) != address(0)) &&
+            (cTokenModify.isSdrToken() == false)
+        ) {
+            vars.isSuToken = true;
+        } else {
+            vars.isSuToken = false;
+        }
+
         // For each asset the account is in
         CToken[] memory assets = accountAssets[account];
         for (uint256 i = 0; i < assets.length; i++) {
@@ -1003,33 +1022,46 @@ contract Comptroller is
             }
             vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
 
-            // The members in group collateralFactor should be the same.
-            vars.collateralFactor = Exp({
-                mantissa: markets[address(asset)].collateralFactorMantissa
-            });
-
             // Pre-compute a conversion factor from tokens -> ether (normalized price value)
             vars.tokensToDenom = mul_(
-                mul_(Exp({mantissa: eqAsset.rateMantissas}), vars.exchangeRate),
+                vars.exchangeRate,
                 vars.oraclePriceMantissa
             );
 
-            // same eq asset group
+            // same equal asset group
             if (
                 keccak256(bytes(eqAssetModify.groupName)) ==
                 keccak256(bytes(eqAsset.groupName))
             ) {
-                vars.sumCollateral = mul_ScalarTruncateAddUInt(
-                    vars.tokensToDenom,
-                    vars.cTokenBalance,
-                    vars.sumCollateral
-                );
+                if (vars.isSuToken) {
+                    vars.suTokenCollateralRate = Exp({
+                        mantissa: suTokenRateMantissa
+                    });
+                    vars.sumCollateral = mul_ScalarTruncateAddUInt(
+                        mul_(vars.tokensToDenom, vars.suTokenCollateralRate),
+                        vars.cTokenBalance,
+                        vars.sumCollateral
+                    );
+                } else {
+                    vars.groupCollateralFactor = Exp({
+                        mantissa: eqAsset.rateMantissas
+                    });
+                    vars.sumCollateral = mul_ScalarTruncateAddUInt(
+                        mul_(vars.tokensToDenom, vars.groupCollateralFactor),
+                        vars.cTokenBalance,
+                        vars.sumCollateral
+                    );
+                }
+                // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                    vars.oraclePrice,
+                    vars.tokensToDenom,
                     vars.borrowBalance,
                     vars.sumBorrowPlusEffects
                 );
             } else {
+                vars.collateralFactor = Exp({
+                    mantissa: markets[address(asset)].collateralFactorMantissa
+                });
                 vars.sumCollateral = mul_ScalarTruncateAddUInt(
                     mul_(vars.tokensToDenom, vars.collateralFactor),
                     vars.cTokenBalance,
@@ -1037,7 +1069,7 @@ contract Comptroller is
                 );
                 // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                    vars.oraclePrice,
+                    vars.tokensToDenom,
                     vars.borrowBalance,
                     vars.sumBorrowPlusEffects
                 );
@@ -1940,4 +1972,17 @@ contract Comptroller is
         governanceToken = _governanceToken;
     }
     ***/
+
+    /**
+     * @notice Admin function to change the suTokenRateMantissa
+     * @param  _suTokenRateMantissa The address of the new suTokenRateMantissa
+     */
+    function _setSuTokenRateMantissa(uint256 _suTokenRateMantissa) external {
+        require(msg.sender == admin, "only admin can set suTokenRateMantissa");
+        suTokenRateMantissa = _suTokenRateMantissa;
+    }
+
+    function _getSuTokenRateMantissa() external view returns (uint256) {
+        return suTokenRateMantissa;
+    }
 }

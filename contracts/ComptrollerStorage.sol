@@ -156,5 +156,9 @@ contract ComptrollerV7Storage is ComptrollerV6Storage {
      */
     mapping(address => EqualAssets) public eqAssetGroup;
 
+    // @notice The governabceToken sumer address.
     address public governanceToken;
+
+    // @notice global suToken rate
+    uint public suTokenRateMantissa;
 }
