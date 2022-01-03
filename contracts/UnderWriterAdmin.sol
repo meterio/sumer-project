@@ -31,12 +31,16 @@ contract UnderwriterAdminInterface {
 
     function _getBorrowCapGuardian() external view returns(address);
 
+    function _getSuTokenRateMantissa() external view returns (uint);
+
 }
 
 contract UnderwriterStorage is UnderwriterAdminInterface {
 
     address public admin;
     address public governanceToken;
+
+    uint public suTokenRateMantissa;
 
     /**
      * @notice eqAssetGroup, cToken -> equal assets info.
@@ -84,6 +88,7 @@ contract UnderwriterAdmin is UnderwriterStorage, ComptrollerErrorReporter {
     constructor(address _gov) public {
         admin = msg.sender;
         governanceToken = _gov;
+        suTokenRateMantissa = 10**18;
     }
 
     function setEqAssetGroup(CToken cToken_, string memory groupName, uint rateMantissa) public returns (uint) {
@@ -255,5 +260,19 @@ contract UnderwriterAdmin is UnderwriterStorage, ComptrollerErrorReporter {
 
     function _getBorrowCapGuardian() external view returns(address) {
         return borrowCapGuardian;
+    }
+
+    /**
+     * @notice Admin function to change the Borrow Cap Guardian
+     * @param  _suTokenRateMantissa The address of the new Borrow Cap Guardian
+     */
+    function _setSuTokenRateMantissa(uint _suTokenRateMantissa) external {
+        require(msg.sender == admin, "only admin can set suTokenRateMantissa");
+        suTokenRateMantissa = _suTokenRateMantissa;
+
+    }
+
+    function _getSuTokenRateMantissa() external view returns(uint) {
+        return suTokenRateMantissa;
     }
 }

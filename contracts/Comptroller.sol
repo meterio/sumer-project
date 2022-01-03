@@ -468,7 +468,6 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         }
 
         if (!markets[cToken].accountMembership[borrower]) {
-            /*** XXX:
             // only cTokens may call borrowAllowed if borrower not in market
             require(msg.sender == cToken, "sender must be cToken");
 
@@ -480,10 +479,6 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
             // it should be impossible to break the important invariant
             assert(markets[cToken].accountMembership[borrower]);
-            ***/
-
-            // Do not repair this case, return error, user need to add it in first
-            return uint(Error.MARKET_NOT_ENTERED);
 
         }
 
@@ -798,6 +793,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         Exp oraclePrice;
         Exp tokensToDenom;
         Exp groupCollateralFactor;
+        Exp suTokenCollateralRate;
+        bool isSuToken;
     }
 
     /**
@@ -861,7 +858,13 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         AccountLiquidityLocalVars memory vars; // Holds all our calculation results
         uint oErr;
-        UnderwriterAdminInterface.EqualAssets memory eqAssetModify = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(cTokenModify); 
+        UnderwriterAdminInterface.EqualAssets memory eqAssetModify = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(cTokenModify);
+
+        if ((address(cTokenModify) != address(0)) && (cTokenModify.isCToken() == false)) {
+            vars.isSuToken = true;
+        } else {
+            vars.isSuToken = false;
+        }
 
         // For each asset the account is in
         CToken[] memory assets = accountAssets[account];
@@ -884,18 +887,22 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             }
             vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
 
-            // The members in group collateralFactor should be the same.
-            vars.collateralFactor = Exp({mantissa: markets[address(asset)].collateralFactorMantissa});
-            vars.groupCollateralFactor = Exp({mantissa: eqAsset.rateMantissas});
-
             // Pre-compute a conversion factor from tokens -> ether (normalized price value)
             vars.tokensToDenom = mul_(vars.exchangeRate, vars.oraclePriceMantissa);
 
             // same eq asset group 
             if (keccak256(bytes(eqAssetModify.groupName)) == keccak256(bytes(eqAsset.groupName))) {
-                vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), vars.cTokenBalance, vars.sumCollateral);
+                if (vars.isSuToken) {
+                    vars.suTokenCollateralRate = Exp({mantissa: UnderwriterAdminInterface(underWriterAdmin)._getSuTokenRateMantissa()});
+                    vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.suTokenCollateralRate),  vars.cTokenBalance, vars.sumCollateral);
+                } else {
+                    vars.groupCollateralFactor = Exp({mantissa: eqAsset.rateMantissas});
+                    vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), vars.cTokenBalance, vars.sumCollateral);
+                }
+                // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, vars.sumBorrowPlusEffects);
             } else {
+                vars.collateralFactor = Exp({mantissa: markets[address(asset)].collateralFactorMantissa});
                 vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.collateralFactor), vars.cTokenBalance, vars.sumCollateral);
                 // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, vars.sumBorrowPlusEffects);
@@ -909,7 +916,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
                 // borrow effect
                 // sumBorrowPlusEffects += oracle * borrowAmount
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, borrowAmount, vars.sumBorrowPlusEffects);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.sumBorrowPlusEffects);
             }            
         }
 
