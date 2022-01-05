@@ -4001,6 +4001,22 @@
         {
             "constant": true,
             "inputs": [],
+            "name": "_getSuTokenRateMantissa",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0xf598c7ac"
+        },
+        {
+            "constant": true,
+            "inputs": [],
             "name": "_getTransferPaused",
             "outputs": [
                 {
@@ -4164,6 +4180,22 @@
             "stateMutability": "nonpayable",
             "type": "function",
             "signature": "0x2d70db78"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_suTokenRateMantissa",
+                    "type": "uint256"
+                }
+            ],
+            "name": "_setSuTokenRateMantissa",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function",
+            "signature": "0x866613d8"
         },
         {
             "constant": false,
@@ -4479,6 +4511,22 @@
             "stateMutability": "nonpayable",
             "type": "function",
             "signature": "0x840f82ac"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "suTokenRateMantissa",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0x47bd11ad"
         },
         {
             "constant": true,
