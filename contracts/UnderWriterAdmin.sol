@@ -263,8 +263,8 @@ contract UnderwriterAdmin is UnderwriterStorage, ComptrollerErrorReporter {
     }
 
     /**
-     * @notice Admin function to change the Borrow Cap Guardian
-     * @param  _suTokenRateMantissa The address of the new Borrow Cap Guardian
+     * @notice Admin function to change the suTokenRateMantissa
+     * @param  _suTokenRateMantissa The address of the new suTokenRateMantissa
      */
     function _setSuTokenRateMantissa(uint _suTokenRateMantissa) external {
         require(msg.sender == admin, "only admin can set suTokenRateMantissa");
