@@ -366,6 +366,31 @@ contract Comptroller is
             return uint256(Error.MARKET_NOT_LISTED);
         }
 
+        /* Get minter's cToken balance*/
+        (uint256 oErr, uint256 tokensHeld, uint256 amountOwed, ) = CToken(
+            cToken
+        ).getAccountSnapshot(minter);
+        require(oErr == 0, "mintAllowed: getAccountSnapshot failed"); // semi-opaque error code
+
+        // only enter market automatically at the first time
+        if (
+            (!markets[cToken].accountMembership[minter]) &&
+            (tokensHeld == 0) &&
+            (amountOwed == 0)
+        ) {
+            // only cTokens may call mintAllowed if minter not in market
+            require(msg.sender == cToken, "sender must be cToken");
+
+            // attempt to add borrower to the market
+            Error err = addToMarketInternal(CToken(msg.sender), minter);
+            if (err != Error.NO_ERROR) {
+                return uint256(err);
+            }
+
+            // it should be impossible to break the important invariant
+            assert(markets[cToken].accountMembership[minter]);
+        }
+
         // Keep the flywheel moving
         updateCompSupplyIndex(cToken);
         distributeSupplierComp(cToken, minter);
@@ -1028,30 +1053,29 @@ contract Comptroller is
                 vars.oraclePriceMantissa
             );
 
+            // get the suToken rate and group collateralFactor
+            vars.suTokenCollateralRate = Exp({mantissa: suTokenRateMantissa});
+            vars.groupCollateralFactor = Exp({mantissa: eqAsset.rateMantissas});
+
             // same equal asset group
             if (
                 keccak256(bytes(eqAssetModify.groupName)) ==
                 keccak256(bytes(eqAsset.groupName))
             ) {
                 if (vars.isSuToken) {
-                    vars.suTokenCollateralRate = Exp({
-                        mantissa: suTokenRateMantissa
-                    });
                     vars.sumCollateral = mul_ScalarTruncateAddUInt(
                         mul_(vars.tokensToDenom, vars.suTokenCollateralRate),
                         vars.cTokenBalance,
                         vars.sumCollateral
                     );
                 } else {
-                    vars.groupCollateralFactor = Exp({
-                        mantissa: eqAsset.rateMantissas
-                    });
                     vars.sumCollateral = mul_ScalarTruncateAddUInt(
                         mul_(vars.tokensToDenom, vars.groupCollateralFactor),
                         vars.cTokenBalance,
                         vars.sumCollateral
                     );
                 }
+
                 // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
                     vars.tokensToDenom,
@@ -1079,11 +1103,19 @@ contract Comptroller is
             if (asset == cTokenModify) {
                 // redeem effect
                 // sumBorrowPlusEffects += tokensToDenom * redeemTokens
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                    vars.tokensToDenom,
-                    redeemTokens,
-                    vars.sumBorrowPlusEffects
-                );
+                if (vars.isSuToken) {
+                    vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
+                        mul_(vars.tokensToDenom, vars.suTokenCollateralRate),
+                        redeemTokens,
+                        vars.sumBorrowPlusEffects
+                    );
+                } else {
+                    vars.sumCollateral = mul_ScalarTruncateAddUInt(
+                        mul_(vars.tokensToDenom, vars.groupCollateralFactor),
+                        vars.cTokenBalance,
+                        vars.sumCollateral
+                    );
+                }
 
                 // borrow effect
                 // sumBorrowPlusEffects += oracle * borrowAmount
