@@ -28,6 +28,7 @@ node index.js --url [rpc-url] erc20 add-minter --erc20Address [suUSD] --minter [
 node index.js --url [rpc-url] erc20 mint --amount 1000000000000000000000000 --erc20Address [suUSD] --receiver [cSuUSD]
 
 # Call Comptroller:supportMarket to actually enable ctokens
+# Call Comptroller:setCollateralFactor to update collateral factors
 ```
 
 ### Steps for UI deployment
