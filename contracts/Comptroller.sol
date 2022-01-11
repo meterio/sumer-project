@@ -937,7 +937,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 if (vars.isSuToken) {
                     vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.suTokenCollateralRate), redeemTokens, vars.sumBorrowPlusEffects);
                 } else {
-                    vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), vars.cTokenBalance, vars.sumCollateral);
+                    vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), redeemTokens, vars.sumCollateral);
                 }
 
                 // borrow effect
