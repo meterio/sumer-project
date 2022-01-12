@@ -19,7 +19,7 @@ yarn repl -s script/scen/feeds.scen -n rinkeby
 node index.js --url [rpc-url] deploy --erc20  --erc20Symbol suUSD --erc20Name SumerUSD --gasPrice 40000000000
 
 # Update settings
-# set suUSD in "Contracts" field of rinkeby.json
+# set suUSD,suBTC,suETH in "Contracts" and "Tokens" field of rinkeby.json
 # Then you could deploy cSu token
 yarn repl -s script/scen/sutokens.scen -n rinkeby
 
@@ -27,8 +27,11 @@ yarn repl -s script/scen/sutokens.scen -n rinkeby
 node index.js --url [rpc-url] erc20 add-minter --erc20Address [suUSD] --minter [cSuUSD] 
 node index.js --url [rpc-url] erc20 mint --amount 1000000000000000000000000 --erc20Address [suUSD] --receiver [cSuUSD]
 
-# Call Comptroller:supportMarket to actually enable ctokens
-# Call Comptroller:setCollateralFactor to update collateral factors
+# support markets
+yarn repl -s script/scen/supportMarket.scen -n rinkeby
+
+# set collateral factor
+yarn repl -s script/scen/collateralFactor.scen -n rinkeby
 ```
 
 ### Steps for UI deployment
