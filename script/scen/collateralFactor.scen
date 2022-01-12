@@ -1,0 +1,15 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Set Collateral factor for c tokens
+Comptroller SetCollateralFactor (CToken cETH Address) 0.8
+Comptroller SetCollateralFactor (CToken cWBTC Address) 0.8
+Comptroller SetCollateralFactor (CToken cMTRG Address) 0.8
+Comptroller SetCollateralFactor (CToken cUSDC Address) 0.8
+Comptroller SetCollateralFactor (CToken cUSDT Address) 0.8
+
+-- Set Collateral factor for cSu tokens
+Comptroller SetCollateralFactor (CToken cSuUSD Address) 0.8
+Comptroller SetCollateralFactor (CToken cSuBTC Address) 0.8
+Comptroller SetCollateralFactor (CToken cSuETH Address) 0.8
+
+Print "Set collateral factors for c and cSu tokens"

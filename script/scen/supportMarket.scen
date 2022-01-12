@@ -1,0 +1,15 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Set Collateral factor for c tokens
+Comptroller SupportMarket (CToken cETH Address)
+Comptroller SupportMarket (CToken cWBTC Address)
+Comptroller SupportMarket (CToken cMTRG Address)
+Comptroller SupportMarket (CToken cUSDC Address)
+Comptroller SupportMarket (CToken cUSDT Address)
+
+-- Set Collateral factor for cSu tokens
+Comptroller SupportMarket (CToken cSuUSD Address)
+Comptroller SupportMarket (CToken cSuBTC Address)
+Comptroller SupportMarket (CToken cSuETH Address)
+
+Print "Support markets for c and cSu tokens"
