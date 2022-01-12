@@ -942,7 +942,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
                 // borrow effect
                 // sumBorrowPlusEffects += oracle * borrowAmount
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, borrowAmount, vars.sumBorrowPlusEffects);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.oraclePrice, expScale), borrowAmount, vars.sumBorrowPlusEffects);
             }            
         }
 
