@@ -922,12 +922,12 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 }
 
                 // A2 algrithom should mul_ vars.collateralFactor
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, vars.sumBorrowPlusEffects);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.oraclePrice, expScale), vars.borrowBalance, vars.sumBorrowPlusEffects);
             } else {
                 vars.collateralFactor = Exp({mantissa: markets[address(asset)].collateralFactorMantissa});
                 vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.collateralFactor), vars.cTokenBalance, vars.sumCollateral);
                 // A2 algrithom should mul_ vars.collateralFactor
-                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, vars.sumBorrowPlusEffects);
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.oraclePrice, expScale), vars.borrowBalance, vars.sumBorrowPlusEffects);
             }
 
             // Calculate effects of interacting with cTokenModify
