@@ -915,7 +915,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
             // same eq asset group 
             if (keccak256(bytes(eqAssetModify.groupName)) == keccak256(bytes(eqAsset.groupName))) {
-                if (vars.isSuToken) {
+                // if asset & assetModify both are suToken, should adopt the eqAsset rate
+                if ((asset.isCToken() == true) && (vars.isSuToken)) {
                     vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.suTokenCollateralRate),  vars.cTokenBalance, vars.sumCollateral);
                 } else {
                     vars.sumCollateral = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), vars.cTokenBalance, vars.sumCollateral);
@@ -934,11 +935,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             if (asset == cTokenModify) {
                 // redeem effect
                 // sumBorrowPlusEffects += tokensToDenom * redeemTokens
-                if (vars.isSuToken) {
-                    vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.suTokenCollateralRate), redeemTokens, vars.sumBorrowPlusEffects);
-                } else {
-                    vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), redeemTokens, vars.sumBorrowPlusEffects);
-                }
+                // always use groupCollateralFactor because only 2 cases here, ctoken==>ctoken and sutoken==>sutoken
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(mul_(vars.tokensToDenom, vars.groupCollateralFactor), redeemTokens, vars.sumBorrowPlusEffects);
 
                 // borrow effect
                 // sumBorrowPlusEffects += oracle * borrowAmount
