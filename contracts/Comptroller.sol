@@ -213,6 +213,19 @@ contract Comptroller is
     }
 
     /**
+     * @notice Admin function to change the suTokenRateMantissa
+     * @param  _suTokenRateMantissa The address of the new suTokenRateMantissa
+     */
+    function _setSuTokenRateMantissa(uint256 _suTokenRateMantissa) external {
+        require(msg.sender == admin, "only admin can set suTokenRateMantissa");
+        suTokenRateMantissa = _suTokenRateMantissa;
+    }
+
+    function _getSuTokenRateMantissa() external view returns (uint256) {
+        return suTokenRateMantissa;
+    }
+
+    /**
      * @notice Add assets to be included in account liquidity calculation
      * @param cTokens The list of addresses of the cToken markets to be enabled
      * @return Success indicator for whether each corresponding market was entered
@@ -1027,6 +1040,7 @@ contract Comptroller is
         for (uint256 i = 0; i < assets.length; i++) {
             CToken asset = assets[i];
             EqualAssets memory eqAsset = getEqAssetGroup(asset);
+
             // Read the balances and exchange rate from the cToken
             (
                 oErr,
@@ -1062,7 +1076,8 @@ contract Comptroller is
                 keccak256(bytes(eqAssetModify.groupName)) ==
                 keccak256(bytes(eqAsset.groupName))
             ) {
-                if (vars.isSuToken) {
+                // if asset & assetModify both are suToken, should adopt the eqAsset rate
+                if ((asset.isSdrToken() == true) && (vars.isSuToken)) {
                     vars.sumCollateral = mul_ScalarTruncateAddUInt(
                         mul_(vars.tokensToDenom, vars.suTokenCollateralRate),
                         vars.cTokenBalance,
@@ -1078,7 +1093,7 @@ contract Comptroller is
 
                 // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                    vars.tokensToDenom,
+                    mul_(vars.oraclePrice, expScale),
                     vars.borrowBalance,
                     vars.sumBorrowPlusEffects
                 );
@@ -1093,7 +1108,7 @@ contract Comptroller is
                 );
                 // A2 algrithom should mul_ vars.collateralFactor
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                    vars.tokensToDenom,
+                    mul_(vars.oraclePrice, expScale),
                     vars.borrowBalance,
                     vars.sumBorrowPlusEffects
                 );
@@ -1103,24 +1118,17 @@ contract Comptroller is
             if (asset == cTokenModify) {
                 // redeem effect
                 // sumBorrowPlusEffects += tokensToDenom * redeemTokens
-                if (vars.isSuToken) {
-                    vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                        mul_(vars.tokensToDenom, vars.suTokenCollateralRate),
-                        redeemTokens,
-                        vars.sumBorrowPlusEffects
-                    );
-                } else {
-                    vars.sumCollateral = mul_ScalarTruncateAddUInt(
-                        mul_(vars.tokensToDenom, vars.groupCollateralFactor),
-                        vars.cTokenBalance,
-                        vars.sumCollateral
-                    );
-                }
+                // always use groupCollateralFactor because only 2 cases here, ctoken==>ctoken and sutoken==>sutoken
+                vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
+                    mul_(vars.tokensToDenom, vars.groupCollateralFactor),
+                    redeemTokens,
+                    vars.sumBorrowPlusEffects
+                );
 
                 // borrow effect
                 // sumBorrowPlusEffects += oracle * borrowAmount
                 vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-                    vars.oraclePrice,
+                    mul_(vars.oraclePrice, expScale),
                     borrowAmount,
                     vars.sumBorrowPlusEffects
                 );
@@ -2004,17 +2012,4 @@ contract Comptroller is
         governanceToken = _governanceToken;
     }
     ***/
-
-    /**
-     * @notice Admin function to change the suTokenRateMantissa
-     * @param  _suTokenRateMantissa The address of the new suTokenRateMantissa
-     */
-    function _setSuTokenRateMantissa(uint256 _suTokenRateMantissa) external {
-        require(msg.sender == admin, "only admin can set suTokenRateMantissa");
-        suTokenRateMantissa = _suTokenRateMantissa;
-    }
-
-    function _getSuTokenRateMantissa() external view returns (uint256) {
-        return suTokenRateMantissa;
-    }
 }
