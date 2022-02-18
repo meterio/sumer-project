@@ -4299,13 +4299,18 @@
             "constant": true,
             "inputs": [
                 {
-                    "internalType": "address",
+                    "internalType": "uint8",
                     "name": "",
-                    "type": "address"
+                    "type": "uint8"
                 }
             ],
             "name": "eqAssetGroup",
             "outputs": [
+                {
+                    "internalType": "uint8",
+                    "name": "groupId",
+                    "type": "uint8"
+                },
                 {
                     "internalType": "string",
                     "name": "groupName",
@@ -4313,14 +4318,45 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "rateMantissas",
+                    "name": "inGroupCTokenRateMantissa",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "inGroupSuTokenRateMantissa",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "interGroupCTokenRateMantissa",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "interGroupSuTokenRateMantissa",
                     "type": "uint256"
                 }
             ],
             "payable": false,
             "stateMutability": "view",
             "type": "function",
-            "signature": "0x4066922a"
+            "signature": "0xb9412e3b"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "equalAssetsGroupNum",
+            "outputs": [
+                {
+                    "internalType": "uint8",
+                    "name": "",
+                    "type": "uint8"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0x9baa4ed1"
         },
         {
             "constant": true,
@@ -4342,9 +4378,9 @@
             "constant": true,
             "inputs": [
                 {
-                    "internalType": "contract CToken",
-                    "name": "cToken_",
-                    "type": "address"
+                    "internalType": "uint8",
+                    "name": "groupId",
+                    "type": "uint8"
                 }
             ],
             "name": "getEqAssetGroup",
@@ -4352,13 +4388,33 @@
                 {
                     "components": [
                         {
+                            "internalType": "uint8",
+                            "name": "groupId",
+                            "type": "uint8"
+                        },
+                        {
                             "internalType": "string",
                             "name": "groupName",
                             "type": "string"
                         },
                         {
                             "internalType": "uint256",
-                            "name": "rateMantissas",
+                            "name": "inGroupCTokenRateMantissa",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "inGroupSuTokenRateMantissa",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "interGroupCTokenRateMantissa",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "interGroupSuTokenRateMantissa",
                             "type": "uint256"
                         }
                     ],
@@ -4370,7 +4426,23 @@
             "payable": false,
             "stateMutability": "view",
             "type": "function",
-            "signature": "0xe32ea55a"
+            "signature": "0x9fe07e90"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "getEqAssetGroupNum",
+            "outputs": [
+                {
+                    "internalType": "uint8",
+                    "name": "",
+                    "type": "uint8"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function",
+            "signature": "0x1db9dfa4"
         },
         {
             "constant": true,
@@ -4430,9 +4502,9 @@
             "constant": false,
             "inputs": [
                 {
-                    "internalType": "contract CToken",
-                    "name": "cToken_",
-                    "type": "address"
+                    "internalType": "uint8",
+                    "name": "groupId",
+                    "type": "uint8"
                 }
             ],
             "name": "removeEqAssetGroup",
@@ -4446,7 +4518,7 @@
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "function",
-            "signature": "0xb1b9d0c5"
+            "signature": "0x58db8e3d"
         },
         {
             "constant": true,
@@ -4468,9 +4540,9 @@
             "constant": false,
             "inputs": [
                 {
-                    "internalType": "contract CToken",
-                    "name": "cToken_",
-                    "type": "address"
+                    "internalType": "uint8",
+                    "name": "groupId",
+                    "type": "uint8"
                 },
                 {
                     "internalType": "string",
@@ -4479,7 +4551,22 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "rateMantissa",
+                    "name": "inGroupCTokenRateMantissa",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "inGroupSuTokenRateMantissa",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "interGroupCTokenRateMantissa",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "interGroupSuTokenRateMantissa",
                     "type": "uint256"
                 }
             ],
@@ -4494,7 +4581,7 @@
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "function",
-            "signature": "0xf1ec9b95"
+            "signature": "0xa89695a0"
         },
         {
             "constant": false,
@@ -14840,33 +14927,6 @@
             "constant": false,
             "inputs": [
                 {
-                    "internalType": "contract CToken",
-                    "name": "cToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "newCollateralFactorMantissa",
-                    "type": "uint256"
-                }
-            ],
-            "name": "_setCollateralFactor",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function",
-            "signature": "0xe4028eee"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
                     "internalType": "contract CToken[]",
                     "name": "cTokens",
                     "type": "address[]"
@@ -14961,6 +15021,11 @@
                     "internalType": "contract CToken",
                     "name": "cToken",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint8",
+                    "name": "groupId",
+                    "type": "uint8"
                 }
             ],
             "name": "_supportMarket",
@@ -14974,7 +15039,7 @@
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "function",
-            "signature": "0xa76b3fda"
+            "signature": "0x36bdd087"
         },
         {
             "constant": true,
@@ -15866,9 +15931,9 @@
                     "type": "bool"
                 },
                 {
-                    "internalType": "uint256",
-                    "name": "collateralFactorMantissa",
-                    "type": "uint256"
+                    "internalType": "uint8",
+                    "name": "equalAssetGrouId",
+                    "type": "uint8"
                 },
                 {
                     "internalType": "bool",

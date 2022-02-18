@@ -9,11 +9,16 @@ import "./Governance/Comp.sol";
 contract UnderwriterAdminInterface {
     /// @notice EqualAssets, contains information of groupName and rateMantissas
     struct EqualAssets {
+        uint8 groupId;
         string groupName;
-        uint rateMantissas;
+        uint inGroupCTokenRateMantissa;
+        uint inGroupSuTokenRateMantissa;
+        uint interGroupCTokenRateMantissa;
+        uint interGroupSuTokenRateMantissa;
     }
+    function getEqAssetGroupNum() public view returns (uint8);
 
-    function getEqAssetGroup(CToken cToken_) public view returns (EqualAssets memory);
+    function getEqAssetGroup(uint8 groupId) public view returns (EqualAssets memory); 
 
     function _getPauseGuardian() public view returns (address);
 
@@ -45,8 +50,8 @@ contract UnderwriterStorage is UnderwriterAdminInterface {
     /**
      * @notice eqAssetGroup, cToken -> equal assets info.
      */
-    mapping(address => EqualAssets) public eqAssetGroup;
-
+    mapping(uint8 => EqualAssets) public eqAssetGroup;
+    uint8 public equalAssetsGroupNum;
 
     /**
      * @notice The Pause Guardian can pause certain actions as a safety mechanism.
@@ -91,28 +96,37 @@ contract UnderwriterAdmin is UnderwriterStorage, ComptrollerErrorReporter {
         suTokenRateMantissa = 10**18;
     }
 
-    function setEqAssetGroup(CToken cToken_, string memory groupName, uint rateMantissa) public returns (uint) {
+    function setEqAssetGroup(uint8 groupId, string memory groupName, 
+        uint inGroupCTokenRateMantissa, uint inGroupSuTokenRateMantissa,
+        uint interGroupCTokenRateMantissa, uint interGroupSuTokenRateMantissa)
+        public returns (uint) {
         // Check caller is admin
         if (msg.sender != admin) {
             return fail(Error.UNAUTHORIZED, FailureInfo.SET_EQUAL_ASSET_GROUP_OWNER_CHECK);
         }
    
-        eqAssetGroup[address(cToken_)] = EqualAssets(groupName, rateMantissa);
+        eqAssetGroup[groupId] = EqualAssets(groupId, groupName, inGroupCTokenRateMantissa, inGroupSuTokenRateMantissa, interGroupCTokenRateMantissa, interGroupSuTokenRateMantissa);
+        equalAssetsGroupNum ++;
         return uint(Error.NO_ERROR);
     }
 
-    function removeEqAssetGroup(CToken cToken_) public returns (uint) {
+    function removeEqAssetGroup(uint8 groupId) public returns (uint) {
         // Check caller is admin
         if (msg.sender != admin) {
             return fail(Error.UNAUTHORIZED, FailureInfo.SET_EQUAL_ASSET_GROUP_OWNER_CHECK);
         }
 
-        delete eqAssetGroup[address(cToken_)];
+        delete eqAssetGroup[groupId];
+        equalAssetsGroupNum --;
         return uint(Error.NO_ERROR);
     }
 
-    function getEqAssetGroup(CToken cToken_) public view returns (EqualAssets memory) {
-        return eqAssetGroup[address(cToken_)];
+    function getEqAssetGroup(uint8 groupId) public view returns (EqualAssets memory) {
+        return eqAssetGroup[groupId];
+    }
+
+    function getEqAssetGroupNum() public view returns (uint8) {
+        return equalAssetsGroupNum;
     }
 
     /**

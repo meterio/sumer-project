@@ -4,10 +4,9 @@
 Gate (UnderwriterAdmin Address) (UnderwriterAdmin Deploy Standard (Comp Address))
 
 -- SetEqAssetGroup
-UnderwriterAdmin SetEqAssetGroup (CToken cWBTC Address) Bitcoin 6e17
-UnderwriterAdmin SetEqAssetGroup (CToken cETH Address) Ether 6e17
-UnderwriterAdmin SetEqAssetGroup (CToken cUSDT Address) Stable 9e17
-UnderwriterAdmin SetEqAssetGroup (CToken cUSDC Address) Stable 9e17
-UnderwriterAdmin SetEqAssetGroup (CToken cMTRG Address) MeterGovern 8e17
+UnderwriterAdmin SetEqAssetGroup  1 Bitcoin 6e17 6e17 5e17 5e17 
+UnderwriterAdmin SetEqAssetGroup  2 Ether 6e17 6e17 5e17 5e17
+UnderwriterAdmin SetEqAssetGroup  3 Stable 9e17 7e17 8e17 7e17
+UnderwriterAdmin SetEqAssetGroup  4 MeterGovern 8e17 7e17 6e17 5e17
 
 Print "Update cToken equal asset groups information" 

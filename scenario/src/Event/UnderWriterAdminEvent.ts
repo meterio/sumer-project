@@ -38,11 +38,11 @@ async function genUnderwriterAdmin(world: World, from: string, params: Event): P
   return world;
 };
 
-async function setEqAssetGroup(world: World, from: string, underwriterAdmin: UnderwriterAdmin, cToken: string, groupName:string, rateMantissa: NumberV): Promise<World> {
+async function setEqAssetGroup(world: World, from: string, underwriterAdmin: UnderwriterAdmin, groupId: number, groupName:string, inGroupCTokenRateMantissa: NumberV, inGroupSuTokenRateMantissa: NumberV, interGroupCTokenRateMantissa: NumberV, interGroupSuTokenRateMantissa: NumberV): Promise<World> {
   return addAction(
     world,
-    `Set asset group for ${cToken} to ${groupName} with rate mantissa of ${rateMantissa.show()}`,
-    await invoke(world, underwriterAdmin.methods.setEqAssetGroup(cToken, groupName, rateMantissa.encode()), from)
+    `Set asset group for ${groupId} to ${groupName} with rate mantissa of ${inGroupCTokenRateMantissa.show()}`,
+    await invoke(world, underwriterAdmin.methods.setEqAssetGroup(groupId, groupName, inGroupCTokenRateMantissa.encode(), inGroupSuTokenRateMantissa.encode(), interGroupCTokenRateMantissa.encode(), interGroupSuTokenRateMantissa.encode()), from)
   );
 }
 
@@ -60,20 +60,23 @@ export function underwriterAdminCommands() {
       (world, from, {underwriterAdminParams}) => genUnderwriterAdmin(world, from, underwriterAdminParams.val)
     ),
 
-    new Command<{underwriterAdmin: UnderwriterAdmin, cToken: AddressV, groupName: StringV, rateMantissa:NumberV}>(`
+    new Command<{underwriterAdmin: UnderwriterAdmin, groupId: NumberV, groupName: StringV, inGroupCTokenRateMantissa:NumberV, inGroupSuTokenRateMantissa: NumberV, interGroupCTokenRateMantissa: NumberV, interGroupSuTokenRateMantissa: NumberV}>(`
         #### SetEqAssetGroup
 
-        * "SetEqAssetGroup <CToken> <GroupName> <RateMantissa>" - Sets asset group for each ctoken
+        * "SetEqAssetGroup <groupId> <GroupName> <inGroupCTokenRateMantissa> <inGroupSuTokenRateMantissa> <interGroupCTokenRateMantissa> <interGroupSuTokenRateMantissa>" - Sets asset group for each ctoken
           * E.g. "UnderwriterAdmin SetEqAssetGroup (CToken cUSDT Address) Stable 9e17"
       `,
       "SetEqAssetGroup",
       [
         new Arg("underwriterAdmin", getUnderwriterAdmin, {implicit: true}),
-        new Arg("cToken", getAddressV),
+        new Arg("groupId", getNumberV),
         new Arg("groupName", getStringV),
-        new Arg("rateMantissa", getNumberV)
+        new Arg("inGroupCTokenRateMantissa", getNumberV),
+        new Arg("inGroupSuTokenRateMantissa", getNumberV),
+        new Arg("interGroupCTokenRateMantissa", getNumberV),
+        new Arg("interGroupSuTokenRateMantissa", getNumberV)
       ],
-      (world, from, {underwriterAdmin, cToken, groupName, rateMantissa}) => setEqAssetGroup(world, from, underwriterAdmin, cToken.val, groupName.val, rateMantissa)
+      (world, from, {underwriterAdmin, groupId, groupName, inGroupCTokenRateMantissa, inGroupSuTokenRateMantissa, interGroupCTokenRateMantissa, interGroupSuTokenRateMantissa}) => setEqAssetGroup(world, from, underwriterAdmin, groupId.toNumber(), groupName.val, inGroupCTokenRateMantissa, inGroupSuTokenRateMantissa, interGroupCTokenRateMantissa, interGroupSuTokenRateMantissa),
     ),
   ];
 }

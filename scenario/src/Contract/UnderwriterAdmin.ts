@@ -30,9 +30,12 @@ export interface UnderwriterAdminMethods {
 	pauseGuardian(): Callable<string>;
 	removeEqAssetGroup(cToken_: string): Sendable<number>;
 	seizeGuardianPaused(): Callable<boolean>;
-	setEqAssetGroup(cToken_: string, groupName: string, rateMantissa: encodedNumber): Sendable<number>;
+	setEqAssetGroup(groupId: number, groupName: string, inGroupCTokenRateMantissa: encodedNumber, inGroupSuTokenRateMantissa: encodedNumber, interGroupCTokenRateMantissa: encodedNumber, interGroupSuTokenRateMantissa: encodedNumber): Sendable<number>;
 	setGovTokenAddress(_governanceToken: string): Sendable<number>;
 	transferGuardianPaused(): Callable<boolean>;
+
+	getEqAssetGroupNum(): Callable<number>;
+
 }
 
 

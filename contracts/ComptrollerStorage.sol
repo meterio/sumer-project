@@ -71,7 +71,8 @@ contract ComptrollerV2Storage is ComptrollerV1Storage {
          *  For instance, 0.9 to allow borrowing 90% of collateral value.
          *  Must be between 0 and 1, and stored as a mantissa.
          */
-        uint collateralFactorMantissa;
+        //uint collateralFactorMantissa;
+        uint8 equalAssetGrouId;
 
         /// @notice Per-market mapping of "accounts in this asset"
         mapping(address => bool) accountMembership;

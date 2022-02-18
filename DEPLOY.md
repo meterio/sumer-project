@@ -30,8 +30,9 @@ node index.js --url [rpc-url] erc20 mint --amount 1000000000000000000000000 --er
 # support markets
 yarn repl -s script/scen/supportMarket.scen -n rinkeby
 
+# does not need any more
 # set collateral factor
-yarn repl -s script/scen/collateralFactor.scen -n rinkeby
+# yarn repl -s script/scen/collateralFactor.scen -n rinkeby
 ```
 
 ### Steps for UI deployment

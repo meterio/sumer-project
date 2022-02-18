@@ -3,6 +3,7 @@
 -- Next an interest rate model
 Gate (InterestRateModel InterestRateModel Address) (InterestRateModel Deploy Whitepaper WhitepaperInterestRate 0.05 0.45)
 
+-- Yang comment out
 -- Now deploy some ERC-20 faucet tokens
 Gate (Erc20 USDC Address) (Erc20 Deploy Standard USDC "USD Coin" 6)
 Gate (Erc20 USDT Address) (Erc20 Deploy Standard USDT "Tether USD" 6)
