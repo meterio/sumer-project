@@ -912,7 +912,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             if (oErr != 0) { // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
                     return (Error.SNAPSHOT_ERROR, 0, 0);
             }
-            //vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
+            vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
 
             // Get the normalized price of the asset
             vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
@@ -959,7 +959,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // Now loop all groups
         for (uint8 i = 0; i < vars.equalAssetsGroupNum; i ++) {
             if (groupVars[i].groupId == 0) {
-                break;
+                continue;
             }
 
             // pre-process group information
@@ -971,7 +971,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 groupVars[i].cTokenBalanceSum = 0;
             }
 
-            UnderwriterAdminInterface.EqualAssets memory equalAssetsGroup = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(i);
+            UnderwriterAdminInterface.EqualAssets memory equalAssetsGroup = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(groupVars[i].groupId);
 
             vars.inGroupCTokenCollateralRate = Exp({mantissa: equalAssetsGroup.inGroupCTokenRateMantissa});
             vars.inGroupSuTokenCollateralRate = Exp({mantissa: equalAssetsGroup.inGroupSuTokenRateMantissa});
