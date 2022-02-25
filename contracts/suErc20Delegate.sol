@@ -1,13 +1,13 @@
 pragma solidity ^0.5.16;
 
-import "./CErc20.sol";
+import "./suErc20.sol";
 
 /**
  * @title Compound's CErc20Delegate Contract
  * @notice CTokens which wrap an EIP-20 underlying and are delegated to
  * @author Compound
  */
-contract suErc20Delegate is CErc20, CDelegateInterface {
+contract suErc20Delegate is suErc20, CDelegateInterface {
     /**
      * @notice Construct an empty delegate
      */
