@@ -49,6 +49,7 @@ import {
 } from 'web3-utils';
 import { getUnderwriterAdminValue, underwriterAdminFetchers } from './Value/UnderwriterAdminValue';
 import { feedPriceOracleFetchers, getFeedPriceOracleValue } from './Value/FeedPriceOracleValue';
+import { getSuTokenDelegateValue, suTokenDelegateFetchers } from './Value/SuTokenDelegateValue';
 
 const expMantissa = new BigNumber('1000000000000000000');
 
@@ -881,6 +882,19 @@ const fetchers = [
     async (world, { res }) => res,
     { subExpressions: cTokenDelegateFetchers() }
   ),
+
+  new Fetcher<{ res: Value }, Value>(
+    `
+      #### SuTokenDelegate
+
+      * "SuTokenDelegate ...suTokenDelegateArgs" - Returns suToken delegate value
+    `,
+    'SuTokenDelegate',
+    [new Arg('res', getSuTokenDelegateValue, { variadic: true })],
+    async (world, { res }) => res,
+    { subExpressions: suTokenDelegateFetchers() }
+  ),
+
   new Fetcher<{ res: Value }, Value>(
     `
       #### Erc20

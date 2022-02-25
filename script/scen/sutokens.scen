@@ -6,19 +6,24 @@
 -- Next an interest rate model
 Gate (InterestRateModel ZeroRateModel Address) (InterestRateModel Deploy Fixed ZeroInterestRate 0)
 
--- Deploy cSu tokens
-Gate (CToken cSuUSD Address) (CToken Deploy SuErc20 cSuUSD "Sumer USD" (Erc20 suUSD Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1e10 8 Admin)
-Gate (CToken cSuETH Address) (CToken Deploy SuErc20 cSuETH "Sumer ETH" (Erc20 suETH Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1e10 8 Admin)
-Gate (CToken cSuBTC Address) (CToken Deploy SuErc20 cSuBTC "Sumer BTC" (Erc20 suBTC Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1e10 8 Admin)
+-- Deploy SuToken delegate
+Gate (SuTokenDelegate suUSDDelegate) (SuTokenDelegate Deploy SuErc20Delegate suUSDDelegate)
+Gate (SuTokenDelegate suETHDelegate) (SuTokenDelegate Deploy SuErc20Delegate suETHDelegate)
+Gate (SuTokenDelegate suBTCDelegate) (SuTokenDelegate Deploy SuErc20Delegate suBTCDelegate)
 
--- No need to do this anymore
--- SetEqAssetGroup
--- UnderwriterAdmin SetEqAssetGroup (CToken cSuUSD Address) Stable 1e18
--- UnderwriterAdmin SetEqAssetGroup (CToken cSuETH Address) Ether 1e18
--- UnderwriterAdmin SetEqAssetGroup (CToken cSuBTC Address) Bitcoin 1e18
+-- Deploy cSu tokens delegators
+Gate (CToken cSuUSD Address) (CToken Deploy SuErc20Delegator cSuUSD "Sumer USD" (Erc20 suUSD Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1e10 8 Admin (SuTokenDelegate suUSDDelegate Address) "0x0")
+Gate (CToken cSuETH Address) (CToken Deploy SuErc20Delegator cSuETH "Sumer ETH" (Erc20 suETH Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1e10 8 Admin (SuTokenDelegate suETHDelegate Address) "0x0")
+Gate (CToken cSuBTC Address) (CToken Deploy SuErc20Delegator cSuBTC "Sumer BTC" (Erc20 suBTC Address) (Comptroller Address) (InterestRateModel ZeroInterestRate Address) 1e10 8 Admin (SuTokenDelegate suBTCDelegate Address) "0x0")
 
--- Set fixed price
+-- Set price oracle
 FeedPriceOracle SetFixedPrice (CToken cSuUSD Address) 1e18
 FeedPriceOracle SetFeed (CToken cSuETH Address) "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e" 18
 FeedPriceOracle SetFeed (CToken cSuBTC Address) "0xECe365B379E1dD183B20fc5f022230C044d51404" 18
+
+-- Support market
+Comptroller SupportMarket (CToken cSuUSD Address) 3
+Comptroller SupportMarket (CToken cSuBTC Address) 1
+Comptroller SupportMarket (CToken cSuETH Address) 2
+
 Print "Deployed suToken: cSuUSD, cSuETH, cSuBTC"
