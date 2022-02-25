@@ -9,12 +9,6 @@ yarn repl -s script/scen/comptroller.scen -n rinkeby
 # Deploy test tokens and cTokens
 yarn repl -s script/scen/tokens.scen -n rinkeby
 
-# Create group data on UnderwriterAdmin
-yarn repl -s script/scen/groups.scen -n rinkeby
-
-# Set feed/price data on FeedPriceOracle
-yarn repl -s script/scen/feeds.scen -n rinkeby
-
 # Deploy suUSD with cb-cli
 node index.js --url [rpc-url] deploy --erc20  --erc20Symbol suUSD --erc20Name SumerUSD --gasPrice 40000000000
 
@@ -25,14 +19,7 @@ yarn repl -s script/scen/sutokens.scen -n rinkeby
 
 # Add minter & Mint (on cb-cli)
 node index.js --url [rpc-url] erc20 add-minter --erc20Address [suUSD] --minter [cSuUSD] 
-node index.js --url [rpc-url] erc20 mint --amount 1000000000000000000000000 --erc20Address [suUSD] --receiver [cSuUSD]
-
-# support markets
-yarn repl -s script/scen/supportMarket.scen -n rinkeby
-
-# does not need any more
-# set collateral factor
-# yarn repl -s script/scen/collateralFactor.scen -n rinkeby
+# node index.js --url [rpc-url] erc20 mint --amount 1000000000000000000000000 --erc20Address [suUSD] --receiver [cSuUSD]
 ```
 
 ### Steps for UI deployment
