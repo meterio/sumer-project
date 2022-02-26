@@ -1,6 +1,7 @@
 import { Event } from '../Event';
 import { World } from '../World';
 import { CErc20Delegator, CErc20DelegatorScenario } from '../Contract/CErc20Delegator';
+import { SuErc20Delegator } from '../Contract/SuErc20Delegator';
 import { CToken } from '../Contract/CToken';
 import { Invokation, invoke } from '../Invokation';
 import { getAddressV, getExpNumberV, getNumberV, getStringV } from '../CoreValue';
@@ -12,6 +13,7 @@ import { compCommands } from '../Event/CompEvent';
 
 const CErc20Contract = getContract('CErc20Immutable');
 const SuErc20Contract = getContract('suErc20Immutable');
+const SuErc20Delegator = getContract('suErc20Delegator')
 const CErc20Delegator = getContract('CErc20Delegator');
 const CErc20DelegatorScenario = getTestContract('CErc20DelegatorScenario');
 const CEtherContract = getContract('CEther');
@@ -307,6 +309,70 @@ export async function buildCToken(
           decimals: decimals.toNumber(),
           underlying: underlying.val,
           contract: 'CErc20',
+          initial_exchange_rate_mantissa: initialExchangeRate.encode().toString(),
+          admin: admin.val
+        };
+      }
+    ),
+
+    new Fetcher<
+      {
+        symbol: StringV, name: StringV, decimals: NumberV, admin: AddressV, underlying: AddressV, comptroller: AddressV, interestRateModel: AddressV, initialExchangeRate: NumberV, implementation: AddressV, becomeImplementationData: StringV
+      },
+      TokenData
+    >(
+    `
+      #### SuErc20Delegator
+
+      * "SuErc20Delegator symbol:<String> name:<String> underlying:<Address> comptroller:<Address> interestRateModel:<Address> initialExchangeRate:<Number> decimals:<Number> admin: <Address> implementation:<Address> becomeImplementationData:<String>" - The real deal SuToken
+        * E.g. "CToken Deploy SuErc20Delegator cDAI \"Compound DAI\" (Erc20 DAI Address) (Comptroller Address) (InterestRateModel Address) 1.0 8 Geoff (CToken CDaiDelegate Address) "0x0123434anyByTes314535q" "
+    `,
+      'SuErc20Delegator',
+      [
+        new Arg('symbol', getStringV),
+        new Arg('name', getStringV),
+        new Arg('underlying', getAddressV),
+        new Arg('comptroller', getAddressV),
+        new Arg('interestRateModel', getAddressV),
+        new Arg('initialExchangeRate', getExpNumberV),
+        new Arg('decimals', getNumberV),
+        new Arg('admin', getAddressV),
+        new Arg('implementation', getAddressV),
+        new Arg('becomeImplementationData', getStringV)
+      ],
+      async (
+        world,
+        {
+          symbol,
+          name,
+          underlying,
+          comptroller,
+          interestRateModel,
+          initialExchangeRate,
+          decimals,
+          admin,
+          implementation,
+          becomeImplementationData
+        }
+      ) => {
+        return {
+          invokation: await SuErc20Delegator.deploy<SuErc20Delegator>(world, from, [
+            underlying.val,
+            comptroller.val,
+            interestRateModel.val,
+            initialExchangeRate.val,
+            name.val,
+            symbol.val,
+            decimals.val,
+            admin.val,
+            implementation.val,
+            becomeImplementationData.val
+          ]),
+          name: name.val,
+          symbol: symbol.val,
+          decimals: decimals.toNumber(),
+          underlying: underlying.val,
+          contract: 'SuErc20Delegator',
           initial_exchange_rate_mantissa: initialExchangeRate.encode().toString(),
           admin: admin.val
         };

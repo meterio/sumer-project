@@ -58,7 +58,6 @@ function getContractDataString(world: World, indices: string[][]): string {
 
 export function getWorldContract<T>(world: World, indices: string[][]): T {
   const address = getContractDataString(world, indices);
-  console.log("GOT ADDR: ", address)
 
   return getWorldContractByAddress<T>(world, address);
 }
@@ -104,6 +103,10 @@ export function getCTokenAddress(world: World, cTokenArg: string): string {
 
 export function getCTokenDelegateAddress(world: World, cTokenDelegateArg: string): string {
   return getContractDataString(world, [['CTokenDelegate', cTokenDelegateArg, 'address']]);
+}
+
+export function getSuTokenDelegateAddress(world: World, suTokenDelegateArg: string): string {
+  return getContractDataString(world, [['SuTokenDelegate', suTokenDelegateArg, 'address']]);
 }
 
 export function getErc20Address(world: World, erc20Arg: string): string {

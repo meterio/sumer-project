@@ -45,6 +45,7 @@ import { CompoundLens } from './Contract/CompoundLens';
 import { Reservoir } from './Contract/Reservoir';
 import Web3 from 'web3';
 import { processUnderwriterAdminEvent, underwriterAdminCommands } from './Event/UnderWriterAdminEvent';
+import { processSuTokenDelegateEvent, suTokenDelegateCommands } from './Event/SuTokenDelegateEvent';
 
 export class EventProcessingError extends Error {
   error: Error;
@@ -696,6 +697,19 @@ export const commands: (View<any> | ((world: World) => Promise<View<any>>))[] = 
     [new Arg('event', getEventV, { variadic: true })],
     (world, from, { event }) => processCTokenDelegateEvent(world, event.val, from),
     { subExpressions: cTokenDelegateCommands() }
+  ),
+
+  new Command<{ event: EventV }>(
+    `
+      #### SuTokenDelegate
+
+      * "SuTokenDelegate ...event" - Runs given SuTokenDelegate event
+        * E.g. "SuTokenDelegate Deploy SuErc20Delegate cDaiDelegate"
+    `,
+    'SuTokenDelegate',
+    [new Arg('event', getEventV, { variadic: true })],
+    (world, from, { event }) => processSuTokenDelegateEvent(world, event.val, from),
+    { subExpressions: suTokenDelegateCommands() }
   ),
 
   new Command<{ event: EventV }>(

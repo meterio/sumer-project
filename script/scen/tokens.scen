@@ -1,24 +1,43 @@
 #!/usr/bin/env yarn run repl -s
 
--- Next an interest rate model
+-- Interest rate model
 Gate (InterestRateModel InterestRateModel Address) (InterestRateModel Deploy Whitepaper WhitepaperInterestRate 0.05 0.45)
 
--- Yang comment out
--- Now deploy some ERC-20 faucet tokens
+-- Deploy some ERC-20 faucet tokens
 Gate (Erc20 USDC Address) (Erc20 Deploy Standard USDC "USD Coin" 6)
 Gate (Erc20 USDT Address) (Erc20 Deploy Standard USDT "Tether USD" 6)
 Gate (Erc20 MTRG Address) (Erc20 Deploy Standard MTRG "Meter Governance" 18)
 Gate (Erc20 WBTC Address) (Erc20 Deploy Standard WBTC "Wrapped Bitcoin" 18)
 Gate (Erc20 WETH Address) (Erc20 Deploy Standard WETH "Wrapped Ether" 18)
 
--- Now deploy our cTokens
-Gate (CToken cUSDT Address) (CToken Deploy CErc20 cUSDT "Test Tether USD" (Erc20 USDT Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e-2 8 Admin)
-Gate (CToken cUSDC Address) (CToken Deploy CErc20 cUSDC "Test USD Coin" (Erc20 USDC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e-2 8 Admin)
-Gate (CToken cMTRG Address) (CToken Deploy CErc20 cMTRG "Test Meter Governance" (Erc20 MTRG Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin)
-Gate (CToken cWBTC Address) (CToken Deploy CErc20 cWBTC "Test Wrapped Bitcoin" (Erc20 WBTC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin)
+-- Deploy CToken delegates
+Gate (CTokenDelegate USDCDelegate Address) (CTokenDelegate Deploy CErc20Delegate USDCDelegate)
+Gate (CTokenDelegate USDTDelegate Address) (CTokenDelegate Deploy CErc20Delegate USDTDelegate)
+Gate (CTokenDelegate MTRGDelegate Address) (CTokenDelegate Deploy CErc20Delegate MTRGDelegate)
+Gate (CTokenDelegate WBTCDelegate Address) (CTokenDelegate Deploy CErc20Delegate WBTCDelegate)
+
+-- Deploy cTokens delegators
+Gate (CToken cUSDC Address) (CToken Deploy CErc20Delegator cUSDC "Test USD Coin" (Erc20 USDC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e-2 8 Admin (CTokenDelegate USDCDelegate Address) "0x0")
+Gate (CToken cUSDT Address) (CToken Deploy CErc20Delegator cUSDT "Test Tether USD" (Erc20 USDT Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e-2 8 Admin (CTokenDelegate USDTDelegate Address) "0x0")
+Gate (CToken cMTRG Address) (CToken Deploy CErc20Delegator cMTRG "Test Meter Governance" (Erc20 MTRG Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin (CTokenDelegate MTRGDelegate Address) "0x0")
+Gate (CToken cWBTC Address) (CToken Deploy CErc20Delegator cWBTC "Test Wrapped Bitcoin" (Erc20 WBTC Address) (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin (CTokenDelegate WBTCDelegate Address) "0x0")
 Gate (CToken cETH Address) (CToken Deploy CEther cETH "Test Wrapped Ether" (Comptroller Address) (InterestRateModel WhitepaperInterestRate Address) 1e10 8 Admin)
 
 -- Deploy Maximillion
 Gate (Maximillion Address) (Maximillion Deploy cETH)
 
-Print "Deployed Comptroller and cTokens: cUSDC, cUSDT, cMTRG, cWBTC, cETH"
+-- Set price oracle
+FeedPriceOracle SetFeed (CToken cETH Address) "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e" 18
+FeedPriceOracle SetFeed (CToken cWBTC Address) "0xECe365B379E1dD183B20fc5f022230C044d51404" 18
+FeedPriceOracle SetFixedPrice (CToken cUSDC Address) 1e30
+FeedPriceOracle SetFixedPrice (CToken cMTRG Address) 8e18
+FeedPriceOracle SetFixedPrice (CToken cUSDT Address) 1e30
+
+-- Support market
+Comptroller SupportMarket (CToken cETH Address) 2
+Comptroller SupportMarket (CToken cWBTC Address) 1
+Comptroller SupportMarket (CToken cMTRG Address) 4
+Comptroller SupportMarket (CToken cUSDC Address) 3
+Comptroller SupportMarket (CToken cUSDT Address) 3
+
+Print "Deployed cTokens: cUSDC, cUSDT, cMTRG, cWBTC, cETH"
