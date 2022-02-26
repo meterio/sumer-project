@@ -87,10 +87,10 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         governanceToken = _gov;
     }
 ***/
-    constructor(address _underWriter) public {
+    constructor() public {
         admin = msg.sender;
-        underWriterAdmin = _underWriter;
-    }   
+    }  
+
     /*** Assets You Are In ***/
 
 /*** Moved to Admin
@@ -1088,6 +1088,13 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         emit NewCloseFactor(oldCloseFactorMantissa, closeFactorMantissa);
 
         return uint(Error.NO_ERROR);
+    }
+
+    function _setUnderWriterAdmin(address underWriter) external returns (address) {
+        // Check caller is admin
+        require(msg.sender == admin, "only admin can set close factor");
+        underWriterAdmin = underWriter;
+        return underWriter;
     }
 
     /**

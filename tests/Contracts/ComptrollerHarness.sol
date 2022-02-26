@@ -20,7 +20,7 @@ contract ComptrollerHarness is Comptroller, UnderwriterAdmin {
     address compAddress;
     uint public blockNumber;
 
-    constructor() Comptroller(compAddress) public {}
+    constructor() Comptroller() public {}
 
     function setPauseGuardian(address harnessedPauseGuardian) public {
         pauseGuardian = harnessedPauseGuardian;
