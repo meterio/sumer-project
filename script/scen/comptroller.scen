@@ -16,7 +16,7 @@ Gate (UnderwriterAdmin Address) (UnderwriterAdmin Deploy Standard (Comp Address)
 Gate (Unitroller Address) (Unitroller Deploy)
 
 -- Comptroller
-Gate (Comptroller Address) (Comptroller Deploy Standard Comptroller (UnderwriterAdmin Address))
+Gate (Comptroller Address) (Comptroller Deploy Standard Comptroller)
 
 -- SetPendingImpl for Unitroller
 Unitroller SetPendingImpl Comptroller
@@ -29,5 +29,6 @@ Comptroller SetPriceOracle (FeedPriceOracle Address)
 # Comptroller SetMaxAssets 20
 Comptroller SetCloseFactor 0.5
 Comptroller LiquidationIncentive 1.1
+Comptroller SetUnderWriterAdmin (UnderwriterAdmin Address)
 
 Print "Deployed FeedPriceOracle, CompoundLens, Comp, UnderwriterAdmin, Unitroller && Comptroller" 

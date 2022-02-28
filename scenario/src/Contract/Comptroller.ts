@@ -22,6 +22,7 @@ interface ComptrollerMethods {
   _supportMarket(ctoken: string, groupId: number): Sendable<number>
   _setPriceOracle(string): Sendable<number>
  // _setCollateralFactor(string, encodedNumber): Sendable<number>
+ _setUnderWriterAdmin(string): Sendable<Number>
   _setCloseFactor(encodedNumber): Sendable<number>
   enterMarkets(markets: string[]): Sendable<number>
   exitMarket(market: string): Sendable<number>

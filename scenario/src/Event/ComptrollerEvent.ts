@@ -168,6 +168,19 @@ async function setCollateralFactor(world: World, from: string, comptroller: Comp
 }
 ****/
 
+async function setUnderWriterAdmin(world: World, from: string, comptroller: Comptroller, underWriter: string): Promise<World> {
+  let invokation = await invoke(world, comptroller.methods._setUnderWriterAdmin(underWriter), from, ComptrollerErrorReporter);
+
+  world = addAction(
+    world,
+    `Set underWriterAdmin to ${underWriter}`,
+    invokation
+  );
+
+  return world;
+}
+
+
 async function setCloseFactor(world: World, from: string, comptroller: Comptroller, closeFactor: NumberV): Promise<World> {
   let invokation = await invoke(world, comptroller.methods._setCloseFactor(closeFactor.encode()), from, ComptrollerErrorReporter);
 
@@ -590,6 +603,19 @@ export function comptrollerCommands() {
       (world, from, {comptroller, cToken, collateralFactor}) => setCollateralFactor(world, from, comptroller, cToken, collateralFactor)
     ),
 ***/
+    new Command<{comptroller: Comptroller, underWriter: AddressV}>(`
+        #### SetUnderWriterAdmin
+
+        * "Comptroller SetUnderWriterAdmin underWriter:<Address>" - Sets the underWriterAdmin address 
+          * E.g. "Comptroller SetUnderWriterAdmin underWriter "
+      `,
+      "SetUnderWriterAdmin",
+      [
+        new Arg("comptroller", getComptroller, {implicit: true}),
+        new Arg("underWriter", getAddressV)
+      ],
+      (world, from, {comptroller, underWriter}) => setUnderWriterAdmin(world, from, comptroller, underWriter.val)
+    ),
     new Command<{comptroller: Comptroller, closeFactor: NumberV}>(`
         #### SetCloseFactor
 

@@ -280,10 +280,12 @@ export async function buildComptrollerImpl(
           * E.g. "Comptroller Deploy Standard MyStandard"
       `,
       'Standard',
-      [new Arg('name', getStringV), new Arg('governanceToken', getAddressV)],
+      // [new Arg('name', getStringV), new Arg('governanceToken', getAddressV)],
+      [new Arg('name', getStringV)],
       async (world, { name, governanceToken }) => {
         return {
-          invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, [governanceToken.val]),
+          //invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, [governanceToken.val]),
+          invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, []),
           name: name.val,
           contract: 'Comptroller',
           description: 'Standard Comptroller Impl'

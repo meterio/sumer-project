@@ -22272,13 +22272,7 @@
     ],
     "Comptroller": [
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_underWriter",
-                    "type": "address"
-                }
-            ],
+            "inputs": [],
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "constructor",
@@ -23090,6 +23084,28 @@
             "stateMutability": "nonpayable",
             "type": "function",
             "signature": "0x55ee1fe1"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "underWriter",
+                    "type": "address"
+                }
+            ],
+            "name": "_setUnderWriterAdmin",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function",
+            "signature": "0x0fb3946f"
         },
         {
             "constant": false,
