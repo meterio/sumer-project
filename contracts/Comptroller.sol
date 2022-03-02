@@ -939,7 +939,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
             if (asset.isCToken() == true) {
                 groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, groupVars[index].cTokenBalanceSum);
-                groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, groupVars[index].cTokenBorrowSum);
+                groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(mul_(vars.oraclePrice, expScale), vars.borrowBalance, groupVars[index].cTokenBorrowSum);
 
                 if (asset == cTokenModify) {
                     groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, groupVars[index].cTokenBorrowSum);
@@ -947,7 +947,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
                 }   
             } else {
                 groupVars[index].suTokenBalanceSum = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, groupVars[index].suTokenBalanceSum);
-                groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.borrowBalance, groupVars[index].suTokenBorrowSum);
+                groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(mul_(vars.oraclePrice, expScale), vars.borrowBalance, groupVars[index].suTokenBorrowSum);
 
                 if (asset == cTokenModify) {
                     groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, groupVars[index].suTokenBorrowSum);

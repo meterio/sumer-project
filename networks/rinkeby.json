@@ -10,7 +10,7 @@
         "WETHDelegate": "0x20958A433130389e7fDDA7D16c4f8daE7D6F503A",
         "Maximillion": "0x87303dA27Ea29C7e0876133A15a3829573811541",
         "suUSDDelegate": "0x046833287AD03AfC995ED1D3d46343D2e2d09245",
-        "CompoundLens": "0x0e96Ac3C90763A0e76deaa83DB9409DE45555075",
+        "CompoundLens": "0x7066C68F0bCd0D546673D547aeB31C204fe74085",
         "FeedPriceOracle": "0xE4b15D09F2CA5a6DbF1f4dC3f20088180567640f",
         "cSuBTC": "0x2EE7a0938cde3Aa0811F9A2f08FA33eA1e82aABc",
         "WhitepaperInterestRate": "0xB04D78670AC9CbE86c509bC134fF4374f4F79A80",
@@ -51,13 +51,13 @@
         "WETHDelegate": 10231296,
         "Maximillion": 10231321,
         "suUSDDelegate": 10231343,
-        "CompoundLens": 10248960,
+        "CompoundLens": 10255802,
         "FeedPriceOracle": 10231278,
         "cSuBTC": 10231348,
         "WhitepaperInterestRate": 10231319,
         "Unitroller": 10231282,
         "USDT": 10186188,
-        "Comptroller": 10248961,
+        "Comptroller": 10255803,
         "Comp": 10231280,
         "cUSDT": 10231310,
         "ZeroInterestRate": 10231342,
@@ -95,7 +95,7 @@
     },
     "Comptroller": {
         "Comptroller": {
-            "address": "0xF70aC0c1b12E11Af67d5b615E8bfc7E265a832e2",
+            "address": "0x779b5ac175d981463b5171Ee77031a602105BF5E",
             "contract": "Comptroller",
             "description": "Standard Comptroller Impl"
         }
