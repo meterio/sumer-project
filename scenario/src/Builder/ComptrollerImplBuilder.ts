@@ -44,7 +44,7 @@ export async function buildComptrollerImpl(
   event: Event
 ): Promise<{ world: World; comptrollerImpl: ComptrollerImpl; comptrollerImplData: ComptrollerImplData }> {
   const fetchers = [
-    new Fetcher<{ name: StringV }, ComptrollerImplData>(
+    new Fetcher<{ name: StringV, underwriterAdmin: AddressV }, ComptrollerImplData>(
       `
         #### ScenarioG1
 
@@ -52,9 +52,9 @@ export async function buildComptrollerImpl(
           * E.g. "ComptrollerImpl Deploy ScenarioG1 MyScen"
       `,
       'ScenarioG1',
-      [new Arg('name', getStringV)],
-      async (world, { name }) => ({
-        invokation: await ComptrollerScenarioG1Contract.deploy<ComptrollerImpl>(world, from, []),
+      [new Arg('name', getStringV), new Arg('underwriterAdmin', getAddressV)],
+      async (world, { name, underwriterAdmin }) => ({
+        invokation: await ComptrollerScenarioG1Contract.deploy<ComptrollerImpl>(world, from, [underwriterAdmin.val]),
         name: name.val,
         contract: 'ComptrollerScenarioG1',
         description: 'ScenarioG1 Comptroller Impl'
@@ -272,7 +272,7 @@ export async function buildComptrollerImpl(
       }
     ),
 
-    new Fetcher<{ name: StringV }, ComptrollerImplData>(
+    new Fetcher<{ name: StringV, governanceToken: AddressV }, ComptrollerImplData>(
       `
         #### Standard
 
@@ -280,9 +280,11 @@ export async function buildComptrollerImpl(
           * E.g. "Comptroller Deploy Standard MyStandard"
       `,
       'Standard',
+      // [new Arg('name', getStringV), new Arg('governanceToken', getAddressV)],
       [new Arg('name', getStringV)],
-      async (world, { name }) => {
+      async (world, { name, governanceToken }) => {
         return {
+          //invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, [governanceToken.val]),
           invokation: await ComptrollerContract.deploy<ComptrollerImpl>(world, from, []),
           name: name.val,
           contract: 'Comptroller',

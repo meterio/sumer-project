@@ -1,4 +1,5 @@
 pragma solidity ^0.5.16;
+pragma experimental ABIEncoderV2;
 
 import "../../contracts/Comptroller.sol";
 import "../../contracts/PriceOracle.sol";
@@ -15,7 +16,7 @@ contract ComptrollerRopsten is Comptroller {
   }
 }
 
-contract ComptrollerHarness is Comptroller {
+contract ComptrollerHarness is Comptroller, UnderwriterAdmin {
     address compAddress;
     uint public blockNumber;
 

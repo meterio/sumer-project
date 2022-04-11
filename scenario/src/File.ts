@@ -16,6 +16,7 @@ export async function readFile<T>(world: World | null, file: string, def: T, fn:
         if (err) {
           resolve(def);
         } else {
+          console.log("file", file);
           fs.readFile(file, 'utf8', (err, data) => {
             return err ? reject(err) : resolve(fn(data));
           });

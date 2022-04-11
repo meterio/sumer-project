@@ -23,6 +23,7 @@ const SimplePriceOracle = getContract('SimplePriceOracle');
 const AnchorPriceOracle = getContract('AnchorPriceOracle');
 const NotPriceOracle = getTestContract('NotPriceOracle');
 const PriceOracleInterface = getTestContract('PriceOracle');
+const FeedPriceOracle = getContract("FeedPriceOracle")
 
 export interface PriceOracleData {
   invokation?: Invokation<PriceOracle>,
@@ -65,6 +66,20 @@ export async function buildPriceOracle(world: World, from: string, event: Event)
         };
       }
     ),
+    new Fetcher<{}, PriceOracleData>(`
+        #### Feed
+
+        * "Feed" - The feed price oracle that read price from Chainlink aggregators
+          * E.g. "PriceOracle Deploy Feed"
+    `,
+    "Feed",
+    [],
+    async (world, {})=>{
+      return {
+        invokation: await FeedPriceOracle.deploy<PriceOracle>(world, from, []),
+        description: "Feed Price Oracle"
+      }
+    }),
     new Fetcher<{poster: AddressV}, PriceOracleData>(`
         #### Anchor
 

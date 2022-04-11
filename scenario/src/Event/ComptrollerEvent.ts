@@ -88,14 +88,14 @@ async function setLiquidationIncentive(world: World, from: string, comptroller: 
   return world;
 }
 
-async function supportMarket(world: World, from: string, comptroller: Comptroller, cToken: CToken): Promise<World> {
+async function supportMarket(world: World, from: string, comptroller: Comptroller, cToken: CToken, groupId: number): Promise<World> {
   if (world.dryRun) {
     // Skip this specifically on dry runs since it's likely to crash due to a number of reasons
     world.printer.printLine(`Dry run: Supporting market  \`${cToken._address}\``);
     return world;
   }
 
-  let invokation = await invoke(world, comptroller.methods._supportMarket(cToken._address), from, ComptrollerErrorReporter);
+  let invokation = await invoke(world, comptroller.methods._supportMarket(cToken._address, groupId), from, ComptrollerErrorReporter);
 
   world = addAction(
     world,
@@ -154,6 +154,7 @@ async function setPriceOracle(world: World, from: string, comptroller: Comptroll
   return world;
 }
 
+/****
 async function setCollateralFactor(world: World, from: string, comptroller: Comptroller, cToken: CToken, collateralFactor: NumberV): Promise<World> {
   let invokation = await invoke(world, comptroller.methods._setCollateralFactor(cToken._address, collateralFactor.encode()), from, ComptrollerErrorReporter);
 
@@ -165,6 +166,20 @@ async function setCollateralFactor(world: World, from: string, comptroller: Comp
 
   return world;
 }
+****/
+
+async function setUnderWriterAdmin(world: World, from: string, comptroller: Comptroller, underWriter: string): Promise<World> {
+  let invokation = await invoke(world, comptroller.methods._setUnderWriterAdmin(underWriter), from, ComptrollerErrorReporter);
+
+  world = addAction(
+    world,
+    `Set underWriterAdmin to ${underWriter}`,
+    invokation
+  );
+
+  return world;
+}
+
 
 async function setCloseFactor(world: World, from: string, comptroller: Comptroller, closeFactor: NumberV): Promise<World> {
   let invokation = await invoke(world, comptroller.methods._setCloseFactor(closeFactor.encode()), from, ComptrollerErrorReporter);
@@ -480,7 +495,7 @@ export function comptrollerCommands() {
       ],
       (world, from, {comptroller, action, isPaused}) => setPaused(world, from, comptroller, action.val, isPaused.val)
     ),
-    new Command<{comptroller: Comptroller, cToken: CToken}>(`
+    new Command<{comptroller: Comptroller, cToken: CToken, groupId: NumberV}>(`
         #### SupportMarket
 
         * "Comptroller SupportMarket <CToken>" - Adds support in the Comptroller for the given cToken
@@ -489,9 +504,10 @@ export function comptrollerCommands() {
       "SupportMarket",
       [
         new Arg("comptroller", getComptroller, {implicit: true}),
-        new Arg("cToken", getCTokenV)
+        new Arg("cToken", getCTokenV),
+        new Arg("groupId", getNumberV)
       ],
-      (world, from, {comptroller, cToken}) => supportMarket(world, from, comptroller, cToken)
+      (world, from, {comptroller, cToken, groupId}) => supportMarket(world, from, comptroller, cToken, groupId.toNumber())
     ),
     new Command<{comptroller: Comptroller, cToken: CToken}>(`
         #### UnList
@@ -571,6 +587,7 @@ export function comptrollerCommands() {
       ],
       (world, from, {comptroller, priceOracle}) => setPriceOracle(world, from, comptroller, priceOracle.val)
     ),
+/***
     new Command<{comptroller: Comptroller, cToken: CToken, collateralFactor: NumberV}>(`
         #### SetCollateralFactor
 
@@ -584,6 +601,20 @@ export function comptrollerCommands() {
         new Arg("collateralFactor", getExpNumberV)
       ],
       (world, from, {comptroller, cToken, collateralFactor}) => setCollateralFactor(world, from, comptroller, cToken, collateralFactor)
+    ),
+***/
+    new Command<{comptroller: Comptroller, underWriter: AddressV}>(`
+        #### SetUnderWriterAdmin
+
+        * "Comptroller SetUnderWriterAdmin underWriter:<Address>" - Sets the underWriterAdmin address 
+          * E.g. "Comptroller SetUnderWriterAdmin underWriter "
+      `,
+      "SetUnderWriterAdmin",
+      [
+        new Arg("comptroller", getComptroller, {implicit: true}),
+        new Arg("underWriter", getAddressV)
+      ],
+      (world, from, {comptroller, underWriter}) => setUnderWriterAdmin(world, from, comptroller, underWriter.val)
     ),
     new Command<{comptroller: Comptroller, closeFactor: NumberV}>(`
         #### SetCloseFactor

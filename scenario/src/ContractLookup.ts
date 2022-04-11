@@ -15,8 +15,10 @@ import { GovernorBravo } from './Contract/GovernorBravo'
 import { Erc20 } from './Contract/Erc20';
 import { InterestRateModel } from './Contract/InterestRateModel';
 import { PriceOracle } from './Contract/PriceOracle';
+import { FeedPriceOracle } from './Contract/FeedPriceOracle';
 import { Timelock } from './Contract/Timelock';
 import { AnchoredView } from './Contract/AnchoredView';
+import { UnderwriterAdmin } from './Contract/UnderwriterAdmin';
 
 type ContractDataEl = string | Map<string, object> | undefined;
 
@@ -62,6 +64,7 @@ export function getWorldContract<T>(world: World, indices: string[][]): T {
 
 export function getWorldContractByAddress<T>(world: World, address: string): T {
   const contract = world.contractIndex[address.toLowerCase()];
+  // console.log("GOT CONTRACT:", contract)
 
   if (!contract) {
     throw new Error(
@@ -102,6 +105,10 @@ export function getCTokenDelegateAddress(world: World, cTokenDelegateArg: string
   return getContractDataString(world, [['CTokenDelegate', cTokenDelegateArg, 'address']]);
 }
 
+export function getSuTokenDelegateAddress(world: World, suTokenDelegateArg: string): string {
+  return getContractDataString(world, [['SuTokenDelegate', suTokenDelegateArg, 'address']]);
+}
+
 export function getErc20Address(world: World, erc20Arg: string): string {
   return getContractDataString(world, [['Tokens', erc20Arg, 'address']]);
 }
@@ -124,6 +131,14 @@ export async function getAnchoredView(world: World): Promise<AnchoredView> {
 
 export async function getPriceOracle(world: World): Promise<PriceOracle> {
   return getWorldContract(world, [['Contracts', 'PriceOracle']]);
+}
+
+export async function getFeedPriceOracle(world: World): Promise<FeedPriceOracle> {
+  return getWorldContract(world, [['Contracts', 'FeedPriceOracle']]);
+}
+
+export async function getUnderwriterAdmin(world: World): Promise<UnderwriterAdmin> {
+  return getWorldContract(world, [['Contracts', 'UnderwriterAdmin']]);
 }
 
 export async function getComp(

@@ -21,6 +21,7 @@ import { erc20Commands, processErc20Event } from './Event/Erc20Event';
 import { interestRateModelCommands, processInterestRateModelEvent } from './Event/InterestRateModelEvent';
 import { priceOracleCommands, processPriceOracleEvent } from './Event/PriceOracleEvent';
 import { priceOracleProxyCommands, processPriceOracleProxyEvent } from './Event/PriceOracleProxyEvent';
+import { feedPriceOracleCommands, processFeedPriceOracleEvent} from './Event/FeedPriceOracleEvent';
 import { maximillionCommands, processMaximillionEvent } from './Event/MaximillionEvent';
 import { invariantCommands, processInvariantEvent } from './Event/InvariantEvent';
 import { expectationCommands, processExpectationEvent } from './Event/ExpectationEvent';
@@ -43,6 +44,8 @@ import { Counter } from './Contract/Counter';
 import { CompoundLens } from './Contract/CompoundLens';
 import { Reservoir } from './Contract/Reservoir';
 import Web3 from 'web3';
+import { processUnderwriterAdminEvent, underwriterAdminCommands } from './Event/UnderWriterAdminEvent';
+import { processSuTokenDelegateEvent, suTokenDelegateCommands } from './Event/SuTokenDelegateEvent';
 
 export class EventProcessingError extends Error {
   error: Error;
@@ -698,6 +701,19 @@ export const commands: (View<any> | ((world: World) => Promise<View<any>>))[] = 
 
   new Command<{ event: EventV }>(
     `
+      #### SuTokenDelegate
+
+      * "SuTokenDelegate ...event" - Runs given SuTokenDelegate event
+        * E.g. "SuTokenDelegate Deploy SuErc20Delegate cDaiDelegate"
+    `,
+    'SuTokenDelegate',
+    [new Arg('event', getEventV, { variadic: true })],
+    (world, from, { event }) => processSuTokenDelegateEvent(world, event.val, from),
+    { subExpressions: suTokenDelegateCommands() }
+  ),
+
+  new Command<{ event: EventV }>(
+    `
       #### Erc20
 
       * "Erc20 ...event" - Runs given Erc20 event
@@ -752,6 +768,20 @@ export const commands: (View<any> | ((world: World) => Promise<View<any>>))[] = 
 
   new Command<{ event: EventV }>(
     `
+      #### FeedPriceOracle
+
+      * "FeedPriceOracle ...event" - Runs given Price Oracle event
+      * E.g. "FeedPriceOracle SetFeed (ETH Address) (ETHFeed Address) 16"
+    `,
+    'FeedPriceOracle',
+    [new Arg('event', getEventV, { variadic: true })],
+    (world, from, { event }) => {
+      return processFeedPriceOracleEvent(world, event.val, from);
+    },
+    { subExpressions: feedPriceOracleCommands() }
+  ),
+  new Command<{ event: EventV }>(
+    `
       #### Maximillion
 
       * "Maximillion ...event" - Runs given Maximillion event
@@ -795,6 +825,20 @@ export const commands: (View<any> | ((world: World) => Promise<View<any>>))[] = 
     { subExpressions: compCommands() }
   ),
 
+  new Command<{ event: EventV }>(
+    `
+    #### UnderwriterAdmin
+
+    * "UnderwriterAdmin ...event" - Runs given comp event
+    * E.g. "UnderwriterAdmin Deploy"
+    `,
+    'UnderwriterAdmin',
+    [new Arg('event', getEventV, {variadic: true})],
+    (world, from, {event})=>{
+      return processUnderwriterAdminEvent(world, event.val, from);
+    },
+    {subExpressions: underwriterAdminCommands()}
+  ),
   new Command<{ event: EventV }>(
     `
       #### Governor

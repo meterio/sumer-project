@@ -34,7 +34,7 @@ import { getMaximillionValue, maximillionFetchers } from './Value/MaximillionVal
 import { getCompValue, compFetchers } from './Value/CompValue';
 import { getGovernorValue, governorFetchers } from './Value/GovernorValue';
 import { getGovernorBravoValue, governorBravoFetchers } from './Value/GovernorBravoValue';
-import { getAddress } from './ContractLookup';
+import { getAddress, getUnderwriterAdmin } from './ContractLookup';
 import { getCurrentBlockNumber, getCurrentTimestamp, mustArray, sendRPC } from './Utils';
 import { toEncodableNum } from './Encoding';
 import { BigNumber } from 'bignumber.js';
@@ -47,6 +47,9 @@ import {
   toDecimal,
   toHex
 } from 'web3-utils';
+import { getUnderwriterAdminValue, underwriterAdminFetchers } from './Value/UnderwriterAdminValue';
+import { feedPriceOracleFetchers, getFeedPriceOracleValue } from './Value/FeedPriceOracleValue';
+import { getSuTokenDelegateValue, suTokenDelegateFetchers } from './Value/SuTokenDelegateValue';
 
 const expMantissa = new BigNumber('1000000000000000000');
 
@@ -879,6 +882,19 @@ const fetchers = [
     async (world, { res }) => res,
     { subExpressions: cTokenDelegateFetchers() }
   ),
+
+  new Fetcher<{ res: Value }, Value>(
+    `
+      #### SuTokenDelegate
+
+      * "SuTokenDelegate ...suTokenDelegateArgs" - Returns suToken delegate value
+    `,
+    'SuTokenDelegate',
+    [new Arg('res', getSuTokenDelegateValue, { variadic: true })],
+    async (world, { res }) => res,
+    { subExpressions: suTokenDelegateFetchers() }
+  ),
+
   new Fetcher<{ res: Value }, Value>(
     `
       #### Erc20
@@ -912,6 +928,18 @@ const fetchers = [
     async (world, { res }) => res,
     { subExpressions: priceOracleFetchers() }
   ),
+  new Fetcher<{ res: Value }, Value>(
+    `
+      #### FeedPriceOracle
+
+      * "FeedPriceOracle ...priceOracleArgs" - Returns FeedPriceOracle value
+    `,
+    'FeedPriceOracle',
+    [new Arg('res', getFeedPriceOracleValue, { variadic: true })],
+    async (world, { res }) => res,
+    { subExpressions: feedPriceOracleFetchers() }
+  ),
+ 
   new Fetcher<{ res: Value }, Value>(
     `
       #### PriceOracleProxy
@@ -978,6 +1006,7 @@ const fetchers = [
     async (world, { res }) => res,
     { subExpressions: compFetchers() }
   ),
+ 
   new Fetcher<{ res: Value }, Value>(
     `
       #### Governor
@@ -999,6 +1028,18 @@ const fetchers = [
     [new Arg('res', getGovernorBravoValue, { variadic: true })],
     async (world, { res }) => res,
     { subExpressions: governorBravoFetchers() }
+  ),
+
+  new Fetcher<{ res: Value }, Value>(
+    `
+      #### UnderwriterAdmin
+
+      * "UnderwriterAdmin ...underwriterAdminArgs" - Returns UnderwriterAdmin value
+    `,
+    'UnderwriterAdmin',
+    [new Arg('res', getUnderwriterAdminValue, { variadic: true })],
+    async (world, { res }) => res,
+    { subExpressions: underwriterAdminFetchers() }
   ),
 ];
 

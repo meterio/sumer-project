@@ -27,9 +27,12 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
                         uint initialExchangeRateMantissa_,
                         string memory name_,
                         string memory symbol_,
-                        uint8 decimals_) public {
+                        uint8 decimals_,
+                        bool isCToken_) public {
         require(msg.sender == admin, "only admin may initialize the market");
         require(accrualBlockNumber == 0 && borrowIndex == 0, "market may only be initialized once");
+
+        isCToken = isCToken_;
 
         // Set initial exchange rate
         initialExchangeRateMantissa = initialExchangeRateMantissa_;
@@ -337,6 +340,11 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      * @return (error code, calculated exchange rate scaled by 1e18)
      */
     function exchangeRateStoredInternal() internal view returns (MathError, uint) {
+
+        if (isCToken != true) {
+            return (MathError.NO_ERROR, initialExchangeRateMantissa);
+        }
+
         uint _totalSupply = totalSupply;
         if (_totalSupply == 0) {
             /*
@@ -677,7 +685,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient cash */
-        if (getCashPrior() < vars.redeemAmount) {
+        if ((isCToken == true) && (getCashPrior() < vars.redeemAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
         }
 
@@ -747,7 +755,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient underlying cash */
-        if (getCashPrior() < borrowAmount) {
+        if ((isCToken == true) && (getCashPrior() < borrowAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.BORROW_CASH_NOT_AVAILABLE);
         }
 

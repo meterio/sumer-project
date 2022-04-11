@@ -3,6 +3,7 @@ module.exports = {
   // solc: "solc",                                          // Solc command to run
   solc_args: [                                              // Extra solc args
     '--allow-paths','contracts,tests/Contracts',
+    '--optimize-runs 200',
     '--evm-version', 'istanbul'
   ],
   solc_shell_args: {                                        // Args passed to `exec`, see:
@@ -140,11 +141,14 @@ module.exports = {
       web3: {
         gas: [
           {env: "GAS"},
-          {default: "5600000"}
+          {default: "12000000"}
+        ],
+        gas_limit:[
+          {default: "12000000"}
         ],
         gas_price: [
           {env: "GAS_PRICE"},
-          {default: "12000000000"}
+          {default: "2000000000"}
         ],
         options: {
           transactionConfirmationBlocks: 1,
