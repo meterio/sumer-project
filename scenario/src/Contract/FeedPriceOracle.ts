@@ -12,6 +12,7 @@ export interface FeedPriceOracleMethods {
 	removeFeed(cToken_: string): Sendable<number>;
 	removeFixedPrice(cToken_: string): Sendable<number>;
 	setFeed(cToken_: string, feed_: string, tokenDecimals_: number): Sendable<number>;
+	setWitnetFeed(cToken_: string, feed_: string, tokenDecimals_: number, feedDecimals_: number): Sendable<number>;
 	setFixedPrice(cToken_: string, price: encodedNumber): Sendable<number>;
 }
 

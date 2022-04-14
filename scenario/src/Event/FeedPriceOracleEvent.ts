@@ -47,6 +47,16 @@ async function setFeed(world: World, from: string, priceOracle: FeedPriceOracle,
   );
 }
 
+async function setWitnetFeed(world: World, from: string, priceOracle: FeedPriceOracle, cToken: string, feed: string, tokenDecimals: number, feedDecimals: number): Promise<World> {
+  console.log("TYPE: ", typeof priceOracle)
+  console.log("methods: ", priceOracle.methods)
+  return addAction(
+    world,
+    `Set price oracle witnet feed for ${cToken} to ${feed} with tokenDecimals=${tokenDecimals} and feedDecimals=${feedDecimals}`,
+    await invoke(world, priceOracle.methods.setWitnetFeed(cToken, feed, tokenDecimals, feedDecimals), from)
+  );
+}
+
 export function feedPriceOracleCommands() {
   return [
     new Command<{params: EventV}>(`
@@ -90,6 +100,22 @@ export function feedPriceOracleCommands() {
         new Arg("decimals", getNumberV)
       ],
       (world, from, {priceOracle, cToken, feed, decimals}) => setFeed(world, from, priceOracle, cToken.val, feed.val,decimals.toNumber())
+    ),
+    new Command<{priceOracle: FeedPriceOracle, cToken: AddressV, feed: AddressV, tokenDecimals: NumberV, feedDecimals: NumberV}>(`
+        #### SetWitnetFeed
+
+        * "SetWitnetFeed <Address> <Amount> <Amount>" - Sets the witnet feed
+          * E.g. "FeedPriceOracle SetWitnetFeed (Address TTT) 18 6"
+      `,
+      "SetWitnetFeed",
+      [
+        new Arg("priceOracle", getFeedPriceOracle, {implicit: true}),
+        new Arg("cToken", getAddressV),
+        new Arg("feed", getAddressV),
+        new Arg("tokenDecimals", getNumberV),
+        new Arg("feedDecimals", getNumberV)
+      ],
+      (world, from, {priceOracle, cToken, feed, tokenDecimals, feedDecimals}) => setWitnetFeed(world, from, priceOracle, cToken.val, feed.val,tokenDecimals.toNumber(), feedDecimals.toNumber())
     ),
   ];
 }
