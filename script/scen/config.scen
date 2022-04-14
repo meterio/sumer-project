@@ -1,0 +1,7 @@
+#!/usr/bin/env yarn run repl -s
+
+-- SetEqAssetGroup
+UnderwriterAdmin SetEqAssetGroup groupId groupName inCToken inSuToken interCToken interSuToken
+UnderwriterAdmin SetEqAssetGroup groupId groupName inCToken inSuToken interCToken interSuToken
+
+Print "Deployed suToken: cSuUSD, cSuETH, cSuBTC"
