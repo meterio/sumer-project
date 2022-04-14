@@ -213,6 +213,32 @@ module.exports = {
         {file: "~/.ethereum/mainnet"}                        // Load from given file with contents as the private key (e.g. 0x...)
       ]
     },
+    kcc: {
+      providers: [ {http: "https://rpc-mainnet.kcc.network"} ],
+      web3: {
+        gas: [ {default: "12000000"} ],
+        gas_limit:[ {default: "12000000"} ],
+        gas_price: [ {default: "1000000000"} ],
+        options: {
+          transactionConfirmationBlocks: 1,
+          transactionBlockTimeout: 5
+        }
+      },
+      accounts: [ {file: "~/.ethereum/kcc"} ]
+    },
+    kcctest: {
+      providers: [ {http: "https://rpc-testnet.kcc.network"} ],
+      web3: {
+        gas: [ {default: "6000000"} ],
+        gas_limit:[ {default: "6000000"} ],
+        gas_price: [ {default: "1000000000"} ],
+        options: {
+          transactionConfirmationBlocks: 1,
+          transactionBlockTimeout: 5
+        }
+      },
+      accounts: [ {file: "~/.ethereum/kcctest"} ]
+    },
   },
   get_network_file: (network) => {
     return null;
