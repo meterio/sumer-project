@@ -224,7 +224,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
       [
         sutokenAddr,
         unitroller.address,
-        zeroInterestRateModel,
+        zeroInterestRateModel.address,
         '1',
         csuTokenSymbol,
         csuTokenSymbol,
@@ -234,7 +234,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
         constants.HashZero,
       ],
       {},
-      sutoken.symbol
+      csuTokenSymbol
     )) as SuErc20Delegator;
   }
 
