@@ -1,8 +1,0 @@
-#!/usr/bin/env yarn run repl -s
-
--- FeedPriceOracle
-Gate (FeedPriceOracle Address) (FeedPriceOracle Deploy Feed)
-
-FeedPriceOracle SetWitnetFeed (CToken cBTCK Address) "0x7bedADcb912F7A0b8E5C4269C670C55D961B4654" 18 6
-
-Print "Deployed FeedPriceOracle" 
