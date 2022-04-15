@@ -135,7 +135,7 @@ export const priceFeeds: { [key: string]: PriceFeed[] } = {
 export const suTokens: SuTokenConfig[] = [
   { name: 'suUSD', symbol: 'suUSD', decimals: 18 },
   { name: 'suETH', symbol: 'suETH', decimals: 18 },
-  // { name: 'SuBTC', symbol: 'suBTC', decimals: 18}
+  { name: 'SuBTC', symbol: 'suBTC', decimals: 18 },
 ];
 
 export const underlyingTokens: { [key: string]: UnderlyingConfig[] } = {
