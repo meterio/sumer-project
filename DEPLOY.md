@@ -64,3 +64,21 @@ node index.js --url [rpc-url] erc20 add-minter --erc20Address [suUSD] --minter [
 # update sumer-ui with new @meterio/compound-js
 # update token addresses in src/constants/index.js for ERC20 tokens
 ```
+
+### Utilities
+
+```bash
+# deploy ERC20 with proxy (decimals is 18 by default)
+npx hardhat deployERC20 --name [name] --symbol [symbol] --network [network]
+
+# add minter
+npx hardhat addMinter --token [tokenAddress] --minter [minter] --network [network]
+
+# mint token
+npx hardhat mint --token [tokenSymbol] --to [toAddress] --amount [amountInWei] --network [network]
+
+# query for price from oracle
+npx hardhat price --token [tokenSymbol]  --network [network]
+
+
+```
