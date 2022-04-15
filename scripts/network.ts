@@ -1,4 +1,4 @@
-const dotenv = require("dotenv");
+const dotenv = require('dotenv');
 dotenv.config();
 export const RPCS = {
   hardhat: {
@@ -19,9 +19,7 @@ export const RPCS = {
   },
   rinkeby: {
     url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    accounts: {
-      mnemonic: process.env.MNEMONIC,
-    },
+    accounts: [process.env.SUMER_TEST_PRIVKEY, process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY],
   },
   goerli: {
     url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -303,22 +301,18 @@ export const RPCS = {
       mnemonic: process.env.MNEMONIC,
     },
   },
-  kcctest:{
+  kcctest: {
     url: 'https://rpc-testnet.kcc.network',
     chainId: 322,
     gasPrice: 1000000000,
     gasLimit: 6000000,
-    accounts: [
-      process.env.SUMER_TEST_PRIVKEY
-    ]
+    accounts: [process.env.SUMER_TEST_PRIVKEY, process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY],
   },
-  kcc:{
+  kcc: {
     url: 'https://rpc-mainnet.kcc.network',
     chainId: 321,
     gasPrice: 1000000000,
     gasLimit: 6000000,
-    accounts: [
-      process.env.SUMER_MAIN_PRIVKEY
-    ]
+    accounts: [process.env.SUMER_MAIN_PRIVKEY, process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY],
   },
 };
