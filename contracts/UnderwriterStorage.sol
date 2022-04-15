@@ -1,6 +1,7 @@
 pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 import "./CToken.sol";
+import "./PriceOracle.sol";
 
 contract UnderwriterProxyStorage {
     /**
@@ -16,12 +17,12 @@ contract UnderwriterProxyStorage {
     /**
      * @notice Active brains of Unitroller
      */
-    address public comptrollerImplementation;
+    address public implementation;
 
     /**
      * @notice Pending brains of Unitroller
      */
-    address public pendingComptrollerImplementation;
+    address public pendingImplementation;
 
     /**
      * @notice Gov token address  Move to Admin
@@ -68,10 +69,7 @@ contract UnderwriterAdminInterface {
     function _getSuTokenRateMantissa() external view returns (uint256);
 }
 
-contract UnderwriterStorage is
-    UnderwriterProxyAdminStorage,
-    UnderwriterAdminInterface
-{
+contract UnderwriterStorage is UnderwriterAdminInterface {
     address public admin;
     address public governanceToken;
 

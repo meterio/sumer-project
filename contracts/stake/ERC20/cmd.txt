@@ -1,0 +1,1 @@
+solc-static-linux-0.6.4 --optimize --optimize-runs 200 --evm-version istanbul --overwrite --bin --abi  -o ./compiled ERC20MinterBurnerPauser.sol
