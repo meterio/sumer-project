@@ -1,6 +1,34 @@
 # Deploy
 
-### Steps for Contract Deployment
+
+### Steps for Contract Deployment with Hardhat (recommended)
+
+```bash
+yarn
+
+# config keys for deployment
+export SUMER_MAIN_PRIVKEY=
+export SUMER_TEST_PRIVKEY=
+export SUMER_TOKEN_DEPLOYER_PRIVKEY=
+
+# deploy sutokens
+npx hardhat deploySuToken --network [network]
+
+# Deploy CompoundLens, Comp, UnderwriterAdmin, Comptroller
+npx hardhat deployComptroller --network [network]
+
+# Deploy CTokens
+npx hardhat deployCToken --network [network]
+
+# before doing this, config properly in scripts/tokens.ts
+# Config price oracle feeds
+npx hardhat configOracle --network [network]
+
+# Config Comptroller with groups
+npx hardhat configGroup --network [network]
+```
+
+### Steps for Contract Deployment With Saddle (deprecated)
 
 ```bash
 # Deploy CompoundLens, Comp, UnderwriterAdmin, Comptroller
