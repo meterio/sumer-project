@@ -401,7 +401,7 @@ task('price', 'add minter')
 
     const oracle = (await ethers.getContractAt('FeedPriceOracle', oracleAddr, admin)) as FeedPriceOracle;
     const price = await oracle.getUnderlyingPrice(tokenAddr);
-    console.log(price);
+    console.log(`price for ${args.token} is ${price.toString()}`);
   });
 
 // create2 proxy contracts factory
