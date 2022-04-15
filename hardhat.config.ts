@@ -3,7 +3,7 @@ import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
 import { task } from "hardhat/config";
-import { Signer, utils } from "ethers";
+import { Signer, utils, constants, BigNumber, ContractTransaction } from "ethers";
 import { compileSetting, allowVerifyChain } from "./scripts/deployTool";
 import { RPCS } from "./scripts/network";
 
@@ -15,9 +15,19 @@ import {
   MINTER_ROLE,
 } from "./scripts/helper";
 import { getSign } from "./scripts/permitSign"
-
-
-
+import {
+  Unitroller,
+  Comptroller,
+  FeedPriceOracle,
+  CompoundLens,
+  Comp,
+  UnderwriterAdmin,
+  WhitePaperInterestRateModel,
+  ERC20MinterBurnerPauser,
+  CErc20Delegate,
+  CErc20Delegator,
+  Maximillion
+} from "./typechain-types";
 const dotenv = require("dotenv");
 dotenv.config();
 // import Colors = require("colors.ts");
@@ -35,242 +45,121 @@ task("accounts", "Prints the list of accounts", async (taskArgs, bre) => {
   }
 });
 
-// npx hardhat deploy --name ttt --symbol ttt --supply 1000000000000000000000000 --owner 0x319a0cfD7595b0085fF6003643C7eD685269F851 --network metermain
-task("deploy", "deploy contract")
-  .addParam("name", "Token name")
-  .addParam("symbol", "Token symbol")
-  .addParam("supply", "Token initialSupply require decimal")
-  .addParam("owner", "Token will mint to owner address")
-  .setAction(
-    async ({ name, symbol, supply, owner }, { ethers, run, network }) => {
-      await run("compile");
-      const signers = await ethers.getSigners();
+task("deploy", "deploy contract").setAction(
+  async (taskArgs, { ethers, run, network }) => {
+    await run("compile");
+    const [admin] = await ethers.getSigners();
+    let receipt: ContractTransaction;
+    // Deploy FeedPriceOracle
+    let feedPriceOracle = await deployContract(ethers, "FeedPriceOracle", network.name, admin) as FeedPriceOracle;
+    // Deploy CompoundLens
+    let compoundLens = await deployContract(ethers, "CompoundLens", network.name, admin) as CompoundLens;
+    // Deploy Comp
+    let comp = await deployContract(ethers, "Comp", network.name, admin, [admin.address]) as Comp;
+    // Deploy UnderwriterAdmin
+    let underwriterAdmin = await deployContract(ethers, "UnderwriterAdmin", network.name, admin, [comp.address]) as UnderwriterAdmin;
+    // Deploy Unitroller
+    let unitroller = await deployContract(ethers, "Unitroller", network.name, admin) as Unitroller;
+    // Deploy Comptroller
+    let comptroller = await deployContract(ethers, "Comptroller", network.name, admin) as Comptroller;
+    // SetPendingImpl for Unitroller
+    receipt = await unitroller._setPendingImplementation(comptroller.address);
+    console.log(await receipt.wait());
+    // Become Implementation
+    receipt = await comptroller._become(unitroller.address);
+    console.log(await receipt.wait());
+    // Configure Comptroller
+    // Comptroller SetPriceOracle
+    let comptrollerImpl = await ethers.getContractAt("Comptroller", unitroller.address, admin) as Comptroller;
+    receipt = await comptrollerImpl._setPriceOracle(feedPriceOracle.address);
+    console.log(await receipt.wait());
+    // Comptroller SetCloseFactor 0.5
+    receipt = await comptrollerImpl._setCloseFactor(BigNumber.from('500000000000000000'));
+    console.log(await receipt.wait());
+    // Comptroller LiquidationIncentive 1.1
+    receipt = await comptrollerImpl._setLiquidationIncentive(BigNumber.from('1100000000000000000'));
+    console.log(await receipt.wait());
+    // Comptroller SetUnderWriterAdmin (UnderwriterAdmin Address)
+    receipt = await comptrollerImpl._setUnderWriterAdmin(underwriterAdmin.address);
+    console.log(await receipt.wait());
+    //////////////////////////////////////////////////////////////////
+    // Deploy WhitePaperInterestRateModel 0.05 0.45
+    let whitePaperInterestRateModel = await deployContract(ethers, "WhitePaperInterestRateModel", network.name, admin, [BigNumber.from('50000000000000000'), BigNumber.from('450000000000000000')]) as WhitePaperInterestRateModel;
 
-      const token = await deployContract(
-        ethers,
-        "ERC20MintablePauseable",
-        network.name,
-        signers[0],
-        [name, symbol, supply, owner]
-      )  ;
-
-    }
-  );
-// npx hardhat setBlackList --account 0x319a0cfD7595b0085fF6003643C7eD685269F851 --network metermain
-task("setBlackList", "set BlackList")
-  .addParam("account", "black list account")
-  .setAction(
-    async ({ account }, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-
-      await token.setBlackList(account);
-    }
-  );
-
-// npx hardhat mint --to 0x319a0cfD7595b0085fF6003643C7eD685269F851 --amount 10000000000000000000000 --network metermain
-task("mint", "mint token")
-  .addParam("to", "mint to address")
-  .addParam("amount", "mint amount")
-  .setAction(
-    async ({ to, amount }, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      )) ;
-
-      await token.mint(to, amount);
-    }
-  );
-// npx hardhat pause
-task("pause", "pause contract")
-  .setAction(
-    async (taskArgs, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-
-      await token.pause();
-    }
-  );
-// npx hardhat unpause
-task("unpause", "unpause contract")
-  .setAction(
-    async (taskArgs, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-
-      await token.unpause();
-    }
-  );
-// npx hardhat grant --account 0x319a0cfD7595b0085fF6003643C7eD685269F851 --network metermain
-task("grant", "grant minter Role")
-  .addParam("account", "account")
-  .setAction(
-    async ({ account }, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-
-      await token.grantRole(MINTER_ROLE, account);
-    }
-  );
-// npx hardhat revoke --account 0x319a0cfD7595b0085fF6003643C7eD685269F851 --network metermain
-task("revoke", "revoke minter Role")
-  .addParam("account", "account")
-  .setAction(
-    async ({ account }, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-
-      await token.revokeRole(MINTER_ROLE, account);
-    }
-  );
-// npx hardhat info --network metermain
-task("info", "token info")
-  .setAction(
-    async ({ }, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-
-      console.log("name:", await token.name());
-      console.log("symbol:", await token.symbol());
-      console.log("totalSupply:", await token.totalSupply());
-    }
-  );
-// npx hardhat permit --spender 0x319a0cfD7595b0085fF6003643C7eD685269F851 --value 10000000000000000000000 --network metermain
-task("permit", "revoke minter Role")
-  .addParam("spender", "spender")
-  .addParam("value", "value")
-  .setAction(
-    async ({ spender, value }, { ethers, run, network }) => {
-
-      await run("compile");
-      const signers = await ethers.getSigners();
-
-      let token = (await ethers.getContractAt(
-        "ERC20MintablePauseableUpgradeable",
-        getContract(network.name, "ERC20MintablePauseableUpgradeable"),
-        signers[0]
-      ))  ;
-      let nonce = 1;
-      let deadline = Math.floor(Date.now() / 1000) + 999;
-      const chainId = network.name == "ganache" ? 1 : await signers[0].getChainId();
-
-      let signature = await getSign(
-        signers[0]  ,
-        token.address,
-        signers[0].address,
-        spender,
-        value,
-        nonce,
-        deadline,
-        chainId
-      );
-      let receipt = await token.permit(
-        signers[0].address,
-        spender,
-        value,
-        deadline,
-        signature
-      );
-      console.log(await receipt.wait());
-    }
-  );
-// npx hardhat veri
-task("veri", "verify contracts").setAction(
-  async ({ }, { ethers, run, network }) => {
-    if (allowVerifyChain.indexOf(network.name) > -1) {
-      await run(
-        "verify:verify",
-        getContractJson(network.name, "ERC20MintablePauseableUpgradeable")
-      );
-    }
-  }
-);
-
-task("cf", "contracts factory").setAction(
+    // Now deploy some ERC-20 faucet tokens
+    let USDC = await deployContract(ethers, "ERC20MinterBurnerPauser", network.name, admin, ["USDC", "USD Coin", 6]) as ERC20MinterBurnerPauser;
+    // Deploy CToken delegates
+    let cUSDCDelegate = await deployContract(ethers, "CErc20Delegate", network.name, admin) as CErc20Delegate;
+    // Deploy cTokens delegators
+    let cUSDC = await deployContract(ethers, "CErc20Delegator", network.name, admin, [
+      USDC.address,
+      comptrollerImpl.address,
+      whitePaperInterestRateModel.address,
+      BigNumber.from('10000000000000000'),
+      "cToken USD Coin",
+      "cUSDC",
+      "6",
+      admin.address,
+      cUSDCDelegate.address,
+      constants.HashZero
+    ]) as CErc20Delegator;
+    // Deploy Maximillion
+    // let maximillion = await deployContract(ethers, "Maximillion", network.name, admin) as Maximillion;
+  });
+// create2 proxy contracts factory
+task("proxy", "contracts factory").setAction(
   async ({ }, { ethers, run, network }) => {
     const signers = await ethers.getSigners();
+    const sinerIndex = 1;
 
-    await signers[0].sendTransaction({
-      to: "0x4c8d290a1b368ac4728d83a9e8321fc3af2b39b1",
-      value: utils.parseEther("0.01")
-    })
-    let tx = "0xf87e8085174876e800830186a08080ad601f80600e600039806000f350fe60003681823780368234f58015156014578182fd5b80825250506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222"
-    let receipt = await ethers.provider.sendTransaction(tx);
-    console.log(await receipt.wait());
-    let BYTECODE = "0x6080604052348015600f57600080fd5b5060848061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c3cafc6f14602d575b600080fd5b6033604f565b604051808260ff1660ff16815260200191505060405180910390f35b6000602a90509056fea165627a7a72305820ab7651cb86b8c1487590004c2444f26ae30077a6b96c6bc62dda37f1328539250029"
-
-    let address = await signers[0].call({
-      to: "0x7a0d94f55792c434d74a40883c6ed8545e406d12",
-      data: BYTECODE
-    })
-    console.log("address: ",address);
-    receipt = await signers[0].sendTransaction({
-      to: "0x7a0d94f55792c434d74a40883c6ed8545e406d12",
-      data: BYTECODE
+    let receipt = await signers[sinerIndex].sendTransaction({
+      nonce: BN(0),
+      data: "0x601f80600e600039806000f350fe60003681823780368234f58015156014578182fd5b80825250506014600cf3"
     })
     console.log(await receipt.wait());
-    let result = await signers[0].call({
-      to: address,
-      data: "0xc3cafc6f"
-    })
-    console.log(result);
   }
 );
+const create2proxy = "0xCAE0947f783081F1d7c0850F69EcD75b574B3D91";
+
+// deploy contracts with create2 proxy contract
+task("pd", "contracts factory").setAction(
+  async ({ }, { ethers, run, network }) => {
+    const [signer] = await ethers.getSigners();
+
+    // Now deploy some ERC-20 faucet tokens
+    let bytecode = (await ethers.getContractFactory("ERC20MinterBurnerPauser")).bytecode;
+    let args = utils.defaultAbiCoder.encode(["string", "string", "uint8"], ["USDC", "USD Coin", 6]).slice(2);
+
+    let address = await ethers.provider.call({
+      to: create2proxy,
+      data: bytecode + args
+    })
+    console.log("address:", address);
+
+    let receipt = await signer.sendTransaction({
+      to: create2proxy,
+      data: bytecode + args
+    })
+    console.log(await receipt.wait());
+
+    let USDC = await ethers.getContractAt("ERC20MinterBurnerPauser", address, signer) as ERC20MinterBurnerPauser;
+
+    let name = await USDC.name();
+    console.log("name", name);
+
+    let admin = await USDC.getRoleMember(constants.HashZero,0);
+    console.log("admin", admin);
+
+  }
+);
+
 export default {
   networks: RPCS,
   etherscan: {
     apiKey: process.env.ETHERSCAN_APIKEY,
   },
   solidity: {
-    compilers: [compileSetting("0.6.11", 200), compileSetting("0.8.4", 200)],
+    compilers: [compileSetting("0.5.16", 200), compileSetting("0.6.11", 200), compileSetting("0.8.4", 200)],
   },
   paths: {
     sources: "./stake",
