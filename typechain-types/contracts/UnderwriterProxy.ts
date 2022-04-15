@@ -32,9 +32,9 @@ export interface UnderwriterProxyInterface extends utils.Interface {
     "_setPendingAdmin(address)": FunctionFragment;
     "_setPendingImplementation(address)": FunctionFragment;
     "admin()": FunctionFragment;
-    "comptrollerImplementation()": FunctionFragment;
+    "implementation()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
-    "pendingComptrollerImplementation()": FunctionFragment;
+    "pendingImplementation()": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
   };
 
@@ -45,9 +45,9 @@ export interface UnderwriterProxyInterface extends utils.Interface {
       | "_setPendingAdmin"
       | "_setPendingImplementation"
       | "admin"
-      | "comptrollerImplementation"
+      | "implementation"
       | "pendingAdmin"
-      | "pendingComptrollerImplementation"
+      | "pendingImplementation"
       | "underWriterAdmin"
   ): FunctionFragment;
 
@@ -69,7 +69,7 @@ export interface UnderwriterProxyInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "comptrollerImplementation",
+    functionFragment: "implementation",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -77,7 +77,7 @@ export interface UnderwriterProxyInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "pendingComptrollerImplementation",
+    functionFragment: "pendingImplementation",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -103,7 +103,7 @@ export interface UnderwriterProxyInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "comptrollerImplementation",
+    functionFragment: "implementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -111,7 +111,7 @@ export interface UnderwriterProxyInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "pendingComptrollerImplementation",
+    functionFragment: "pendingImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -236,13 +236,11 @@ export interface UnderwriterProxy extends BaseContract {
 
     admin(overrides?: CallOverrides): Promise<[string]>;
 
-    comptrollerImplementation(overrides?: CallOverrides): Promise<[string]>;
+    implementation(overrides?: CallOverrides): Promise<[string]>;
 
     pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
 
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<[string]>;
+    pendingImplementation(overrides?: CallOverrides): Promise<[string]>;
 
     underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
@@ -267,11 +265,11 @@ export interface UnderwriterProxy extends BaseContract {
 
   admin(overrides?: CallOverrides): Promise<string>;
 
-  comptrollerImplementation(overrides?: CallOverrides): Promise<string>;
+  implementation(overrides?: CallOverrides): Promise<string>;
 
   pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
-  pendingComptrollerImplementation(overrides?: CallOverrides): Promise<string>;
+  pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
   underWriterAdmin(overrides?: CallOverrides): Promise<string>;
 
@@ -292,13 +290,11 @@ export interface UnderwriterProxy extends BaseContract {
 
     admin(overrides?: CallOverrides): Promise<string>;
 
-    comptrollerImplementation(overrides?: CallOverrides): Promise<string>;
+    implementation(overrides?: CallOverrides): Promise<string>;
 
     pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<string>;
+    pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
     underWriterAdmin(overrides?: CallOverrides): Promise<string>;
   };
@@ -366,13 +362,11 @@ export interface UnderwriterProxy extends BaseContract {
 
     admin(overrides?: CallOverrides): Promise<BigNumber>;
 
-    comptrollerImplementation(overrides?: CallOverrides): Promise<BigNumber>;
+    implementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    pendingImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
   };
@@ -398,13 +392,11 @@ export interface UnderwriterProxy extends BaseContract {
 
     admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    comptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    implementation(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pendingComptrollerImplementation(
+    pendingImplementation(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -2,6 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { UnderwriterAdminInterface } from "./UnderwriterAdminInterface";
-export type { UnderwriterProxyAdminStorage } from "./UnderwriterProxyAdminStorage";
 export type { UnderwriterProxyStorage } from "./UnderwriterProxyStorage";
 export type { UnderwriterStorage } from "./UnderwriterStorage";

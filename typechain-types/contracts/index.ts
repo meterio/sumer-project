@@ -23,6 +23,8 @@ import type * as underWriterAdminSol from "./UnderWriterAdmin.sol";
 export type { underWriterAdminSol };
 import type * as underwriterStorageSol from "./UnderwriterStorage.sol";
 export type { underwriterStorageSol };
+import type * as stake from "./stake";
+export type { stake };
 import type * as suErc20Sol from "./suErc20.sol";
 export type { suErc20Sol };
 import type * as suTokenInterestModelSol from "./suTokenInterestModel.sol";

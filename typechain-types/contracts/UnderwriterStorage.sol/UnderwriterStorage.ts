@@ -65,7 +65,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
     "borrowCapGuardian()": FunctionFragment;
     "borrowCaps(address)": FunctionFragment;
     "borrowGuardianPaused(address)": FunctionFragment;
-    "comptrollerImplementation()": FunctionFragment;
     "eqAssetGroup(uint8)": FunctionFragment;
     "equalAssetsGroupNum()": FunctionFragment;
     "getCompAddress()": FunctionFragment;
@@ -74,12 +73,9 @@ export interface UnderwriterStorageInterface extends utils.Interface {
     "governanceToken()": FunctionFragment;
     "mintGuardianPaused(address)": FunctionFragment;
     "pauseGuardian()": FunctionFragment;
-    "pendingAdmin()": FunctionFragment;
-    "pendingComptrollerImplementation()": FunctionFragment;
     "seizeGuardianPaused()": FunctionFragment;
     "suTokenRateMantissa()": FunctionFragment;
     "transferGuardianPaused()": FunctionFragment;
-    "underWriterAdmin()": FunctionFragment;
   };
 
   getFunction(
@@ -98,7 +94,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
       | "borrowCapGuardian"
       | "borrowCaps"
       | "borrowGuardianPaused"
-      | "comptrollerImplementation"
       | "eqAssetGroup"
       | "equalAssetsGroupNum"
       | "getCompAddress"
@@ -107,12 +102,9 @@ export interface UnderwriterStorageInterface extends utils.Interface {
       | "governanceToken"
       | "mintGuardianPaused"
       | "pauseGuardian"
-      | "pendingAdmin"
-      | "pendingComptrollerImplementation"
       | "seizeGuardianPaused"
       | "suTokenRateMantissa"
       | "transferGuardianPaused"
-      | "underWriterAdmin"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -166,10 +158,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "comptrollerImplementation",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "eqAssetGroup",
     values: [BigNumberish]
   ): string;
@@ -202,14 +190,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "pendingAdmin",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "pendingComptrollerImplementation",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "seizeGuardianPaused",
     values?: undefined
   ): string;
@@ -219,10 +199,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "transferGuardianPaused",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "underWriterAdmin",
     values?: undefined
   ): string;
 
@@ -277,10 +253,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "comptrollerImplementation",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "eqAssetGroup",
     data: BytesLike
   ): Result;
@@ -313,14 +285,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "pendingAdmin",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "pendingComptrollerImplementation",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "seizeGuardianPaused",
     data: BytesLike
   ): Result;
@@ -330,10 +294,6 @@ export interface UnderwriterStorageInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferGuardianPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "underWriterAdmin",
     data: BytesLike
   ): Result;
 
@@ -407,8 +367,6 @@ export interface UnderwriterStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    comptrollerImplementation(overrides?: CallOverrides): Promise<[string]>;
-
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -443,19 +401,11 @@ export interface UnderwriterStorage extends BaseContract {
 
     pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
 
-    pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
-
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     seizeGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
     suTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
 
   _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
@@ -495,8 +445,6 @@ export interface UnderwriterStorage extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  comptrollerImplementation(overrides?: CallOverrides): Promise<string>;
-
   eqAssetGroup(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -528,17 +476,11 @@ export interface UnderwriterStorage extends BaseContract {
 
   pauseGuardian(overrides?: CallOverrides): Promise<string>;
 
-  pendingAdmin(overrides?: CallOverrides): Promise<string>;
-
-  pendingComptrollerImplementation(overrides?: CallOverrides): Promise<string>;
-
   seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
-
-  underWriterAdmin(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
@@ -578,8 +520,6 @@ export interface UnderwriterStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    comptrollerImplementation(overrides?: CallOverrides): Promise<string>;
-
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -614,19 +554,11 @@ export interface UnderwriterStorage extends BaseContract {
 
     pauseGuardian(overrides?: CallOverrides): Promise<string>;
 
-    pendingAdmin(overrides?: CallOverrides): Promise<string>;
-
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
     suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
@@ -672,8 +604,6 @@ export interface UnderwriterStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    comptrollerImplementation(overrides?: CallOverrides): Promise<BigNumber>;
-
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -699,19 +629,11 @@ export interface UnderwriterStorage extends BaseContract {
 
     pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     seizeGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
     suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -768,10 +690,6 @@ export interface UnderwriterStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    comptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -801,12 +719,6 @@ export interface UnderwriterStorage extends BaseContract {
 
     pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     seizeGuardianPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -818,7 +730,5 @@ export interface UnderwriterStorage extends BaseContract {
     transferGuardianPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

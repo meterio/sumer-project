@@ -55,6 +55,7 @@ export declare namespace UnderwriterAdminInterface {
 
 export interface UnderwriterAdminInterface extends utils.Interface {
   functions: {
+    "_become(address)": FunctionFragment;
     "_borrowGuardianPaused()": FunctionFragment;
     "_getBorrowCapGuardian()": FunctionFragment;
     "_getBorrowPaused(address)": FunctionFragment;
@@ -95,6 +96,7 @@ export interface UnderwriterAdminInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "_become"
       | "_borrowGuardianPaused"
       | "_getBorrowCapGuardian"
       | "_getBorrowPaused"
@@ -133,6 +135,7 @@ export interface UnderwriterAdminInterface extends utils.Interface {
       | "transferGuardianPaused"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "_become", values: [string]): string;
   encodeFunctionData(
     functionFragment: "_borrowGuardianPaused",
     values?: undefined
@@ -279,6 +282,7 @@ export interface UnderwriterAdminInterface extends utils.Interface {
     values?: undefined
   ): string;
 
+  decodeFunctionResult(functionFragment: "_become", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "_borrowGuardianPaused",
     data: BytesLike
@@ -536,6 +540,11 @@ export interface UnderwriterAdmin extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    _become(
+      proxy: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     _borrowGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
     _getBorrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
@@ -680,6 +689,11 @@ export interface UnderwriterAdmin extends BaseContract {
     transferGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
   };
 
+  _become(
+    proxy: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
@@ -818,6 +832,8 @@ export interface UnderwriterAdmin extends BaseContract {
   transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    _become(proxy: string, overrides?: CallOverrides): Promise<void>;
+
     _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
     _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
@@ -1006,6 +1022,11 @@ export interface UnderwriterAdmin extends BaseContract {
   };
 
   estimateGas: {
+    _become(
+      proxy: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     _borrowGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
     _getBorrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1142,6 +1163,11 @@ export interface UnderwriterAdmin extends BaseContract {
   };
 
   populateTransaction: {
+    _become(
+      proxy: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     _borrowGuardianPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

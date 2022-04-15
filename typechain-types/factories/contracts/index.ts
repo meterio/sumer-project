@@ -12,6 +12,7 @@ export * as governance from "./Governance";
 export * as lens from "./Lens";
 export * as underWriterAdminSol from "./UnderWriterAdmin.sol";
 export * as underwriterStorageSol from "./UnderwriterStorage.sol";
+export * as stake from "./stake";
 export * as suErc20Sol from "./suErc20.sol";
 export * as suTokenInterestModelSol from "./suTokenInterestModel.sol";
 export { BaseJumpRateModelV2__factory } from "./BaseJumpRateModelV2__factory";
