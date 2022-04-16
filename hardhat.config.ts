@@ -348,17 +348,23 @@ task('list', 'add minter').setAction(async ({}, { ethers, run, network, upgrades
 });
 
 task('mint', 'mint token')
-  .addParam('token', 'token symbol')
+  .addParam('token', 'token address or symbol')
   .addParam('to', 'to address')
   .addParam('amount', 'mint amount', '1', types.string)
   .setAction(async (args, { ethers, run, network, upgrades }) => {
     await run('compile');
     const [admin] = await ethers.getSigners();
-    const tokenAddr = getContract(network.name, args.token);
+    let tokenAddr = args.token;
+    try {
+      utils.getAddress(tokenAddr);
+    } catch (e) {
+      tokenAddr = getContract(network.name, args.token);
+    }
     if (tokenAddr === constants.AddressZero) {
       console.log(`could not get token address for ${args.token}`);
       return;
     }
+    console.log(tokenAddr);
     const token = (await ethers.getContractAt(
       'ERC20MintablePauseableUpgradeable',
       tokenAddr,
@@ -369,14 +375,25 @@ task('mint', 'mint token')
   });
 
 task('addMinter', 'add minter')
-  .addParam('token', 'token address')
+  .addParam('token', 'token address or symbol')
   .addParam('minter', 'minter address')
   .setAction(async (args, { ethers, run, network, upgrades }) => {
     await run('compile');
     const [admin] = await ethers.getSigners();
+    let tokenAddr = args.token;
+    try {
+      utils.getAddress(tokenAddr);
+    } catch (e) {
+      tokenAddr = getContract(network.name, args.token);
+    }
+    if (tokenAddr === constants.AddressZero) {
+      console.log(`could not get token address for ${args.token}`);
+      return;
+    }
+
     const token = (await ethers.getContractAt(
       'ERC20MintablePauseableUpgradeable',
-      args.token,
+      tokenAddr,
       admin
     )) as ERC20MintablePauseableUpgradeable;
     const receipt = await token.addMinter(args.minter);
