@@ -324,7 +324,7 @@ task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, 
   }
 });
 
-task('configGroup', 'add minter').setAction(async ({}, { ethers, run, network, upgrades }) => {
+task('configGroup', 'config group').setAction(async ({}, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
@@ -342,8 +342,33 @@ task('configGroup', 'add minter').setAction(async ({}, { ethers, run, network, u
   }
 });
 
-task('list', 'add minter').setAction(async ({}, { ethers, run, network, upgrades }) => {
+task('configCsuToken', 'config csuToken with minter roles').setAction(
+  async (args, { ethers, run, network, upgrades }) => {
+    await run('compile');
+    const [admin, tokenDeployer] = await ethers.getSigners();
+
+    for (const sutoken of suTokens) {
+      const suAddr = getContract(network.name, sutoken.symbol);
+      const csuAddr = getContract(network.name, 'c' + sutoken.symbol);
+      if (suAddr && csuAddr) {
+        const suContract = (await ethers.getContractAt(
+          'ERC20MintablePauseableUpgradeable',
+          suAddr,
+          tokenDeployer
+        )) as ERC20MintablePauseableUpgradeable;
+        const re = await suContract.addMinter(csuAddr);
+        console.log(re);
+      }
+    }
+  }
+);
+
+task('list', 'list deployed contracts').setAction(async ({}, { ethers, run, network, upgrades }) => {
+  const underlys = underlyingTokens[network.name];
   const result = listContracts(network.name);
+  for (const underly of underlys) {
+    result[underly.symbol] = underly.address;
+  }
   console.log(`contracts deployed on ${network.name}:`, JSON.stringify(result, null, 2));
 });
 
