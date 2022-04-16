@@ -16,7 +16,7 @@ import {
   deployERC20WithProxy,
   listContracts,
 } from './scripts/helper';
-import { underlyingTokens, suTokens, priceFeeds, FeedType, groupNums } from './scripts/tokens';
+import { underlyingTokens, suTokens, priceFeeds, FeedType, groupNums, eqAssetGroups } from './scripts/tokens';
 import {
   Unitroller,
   Comptroller,
@@ -304,21 +304,24 @@ task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, 
         console.log(`could not get token address for ${feed.ctoken}`);
         continue;
       }
-
+      let re: ContractTransaction;
       switch (feed.type) {
         case FeedType.Fixed:
           console.log(`set fixed price ${feed.fixed} for ${feed.ctoken}`);
-          const re = await oracle.setFixedPrice(tokenAddr, feed.fixed);
+          re = await oracle.setFixedPrice(tokenAddr, feed.fixed);
           console.log(re);
           break;
         case FeedType.Chainlink:
           console.log(`set chainlink feed ${feed.feedAddr} for ${feed.ctoken}`);
-          await oracle.setFeed(tokenAddr, feed.feedAddr, 18);
+          re = await oracle.setFeed(tokenAddr, feed.feedAddr, 18);
           break;
         case FeedType.Witnet:
           console.log(`set witnet feed ${feed.feedAddr} ${feed.decimals} for ${feed.ctoken}`);
-          await oracle.setWitnetFeed(tokenAddr, feed.feedAddr, 18, feed.decimals);
+          re = await oracle.setWitnetFeed(tokenAddr, feed.feedAddr, 18, feed.decimals);
           break;
+      }
+      if (re) {
+        await re.wait();
       }
     }
   }
@@ -329,6 +332,8 @@ task('configGroup', 'config group').setAction(async ({}, { ethers, run, network,
   const [admin] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
   const unitroller = (await ethers.getContractAt('Comptroller', unitrollerAddr, admin)) as Comptroller;
+  const uwProxyAddr = getContract(network.name, 'UnderwriterProxy');
+  const uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', uwProxyAddr, admin)) as UnderwriterAdmin;
 
   for (const tokenSym in groupNums) {
     const groupNum = groupNums[tokenSym];
@@ -337,8 +342,27 @@ task('configGroup', 'config group').setAction(async ({}, { ethers, run, network,
       console.log(`could not get token address for ${tokenSym}`);
       continue;
     }
-    const re = await unitroller._supportMarket(tokenAddr, groupNum);
-    console.log(re);
+    const market = await unitroller.markets(tokenAddr);
+    if (!market.isListed || market.equalAssetGrouId != groupNum) {
+      const re = await unitroller._supportMarket(tokenAddr, groupNum);
+      await re.wait();
+      console.log(`support market ${tokenSym} with groupId ${groupNum} in ${re.hash} `);
+    } else {
+      console.log(`market ${tokenSym} is already listed`);
+    }
+  }
+
+  for (const group of eqAssetGroups) {
+    const re = await uwAdmin.setEqAssetGroup(
+      group.id,
+      group.name,
+      group.inGroupCTokenRateMantissa,
+      group.inGroupSuTokenRateMantissa,
+      group.interGroupCTokenRateMantissa,
+      group.interGroupSuTokenRateMantissa
+    );
+    await re.wait();
+    console.log(`set eq asset group for ${group.id} ${group.name} in ${re.hash}`);
   }
 });
 

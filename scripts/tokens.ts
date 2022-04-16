@@ -1,3 +1,6 @@
+import { BigNumber, utils } from 'ethers';
+import { string } from 'hardhat/internal/core/params/argumentTypes';
+
 interface UnderlyingConfig {
   name: string;
   symbol: string;
@@ -24,7 +27,7 @@ interface PriceFeed {
   decimals: number;
 }
 export const groupNums: { [key: string]: number } = {
-  cBTC: 1,
+  cBTCK: 1,
   csuBTC: 1,
 
   cETH: 2,
@@ -34,6 +37,42 @@ export const groupNums: { [key: string]: number } = {
   cUSDT: 3,
   csuUSD: 3,
 };
+
+type EqAssetConfig = {
+  id: number;
+  name: string;
+  inGroupCTokenRateMantissa: BigNumber;
+  inGroupSuTokenRateMantissa: BigNumber;
+  interGroupCTokenRateMantissa: BigNumber;
+  interGroupSuTokenRateMantissa: BigNumber;
+};
+
+export const eqAssetGroups: EqAssetConfig[] = [
+  {
+    id: 1,
+    name: 'Bitcoin',
+    inGroupCTokenRateMantissa: utils.parseUnits('1', 18),
+    inGroupSuTokenRateMantissa: utils.parseUnits('1', 18),
+    interGroupCTokenRateMantissa: utils.parseUnits('1', 18),
+    interGroupSuTokenRateMantissa: utils.parseUnits('1', 18),
+  },
+  {
+    id: 2,
+    name: 'Ether',
+    inGroupCTokenRateMantissa: utils.parseUnits('1', 18),
+    inGroupSuTokenRateMantissa: utils.parseUnits('1', 18),
+    interGroupCTokenRateMantissa: utils.parseUnits('1', 18),
+    interGroupSuTokenRateMantissa: utils.parseUnits('1', 18),
+  },
+  {
+    id: 3,
+    name: 'StableCoin',
+    inGroupCTokenRateMantissa: utils.parseUnits('1', 18),
+    inGroupSuTokenRateMantissa: utils.parseUnits('1', 18),
+    interGroupCTokenRateMantissa: utils.parseUnits('1', 18),
+    interGroupSuTokenRateMantissa: utils.parseUnits('1', 18),
+  },
+];
 
 export const priceFeeds: { [key: string]: PriceFeed[] } = {
   kcc: [
