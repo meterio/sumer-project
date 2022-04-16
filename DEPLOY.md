@@ -26,6 +26,9 @@ npx hardhat configOracle --network [network]
 
 # Config Comptroller with groups
 npx hardhat configGroup --network [network]
+
+# grant Csu Token with minter roles
+npx hardhat configCsuToken --network [network]
 ```
 
 ### Steps for Contract Deployment With Saddle (deprecated)
