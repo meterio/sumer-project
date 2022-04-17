@@ -35,7 +35,6 @@ export interface UnderwriterProxyInterface extends utils.Interface {
     "implementation()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "pendingImplementation()": FunctionFragment;
-    "underWriterAdmin()": FunctionFragment;
   };
 
   getFunction(
@@ -48,7 +47,6 @@ export interface UnderwriterProxyInterface extends utils.Interface {
       | "implementation"
       | "pendingAdmin"
       | "pendingImplementation"
-      | "underWriterAdmin"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -80,10 +78,6 @@ export interface UnderwriterProxyInterface extends utils.Interface {
     functionFragment: "pendingImplementation",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "underWriterAdmin",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "_acceptAdmin",
@@ -112,10 +106,6 @@ export interface UnderwriterProxyInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "pendingImplementation",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "underWriterAdmin",
     data: BytesLike
   ): Result;
 
@@ -241,8 +231,6 @@ export interface UnderwriterProxy extends BaseContract {
     pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
 
     pendingImplementation(overrides?: CallOverrides): Promise<[string]>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
 
   _acceptAdmin(
@@ -271,8 +259,6 @@ export interface UnderwriterProxy extends BaseContract {
 
   pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
-  underWriterAdmin(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     _acceptAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -295,8 +281,6 @@ export interface UnderwriterProxy extends BaseContract {
     pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
     pendingImplementation(overrides?: CallOverrides): Promise<string>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -367,8 +351,6 @@ export interface UnderwriterProxy extends BaseContract {
     pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
     pendingImplementation(overrides?: CallOverrides): Promise<BigNumber>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -399,7 +381,5 @@ export interface UnderwriterProxy extends BaseContract {
     pendingImplementation(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

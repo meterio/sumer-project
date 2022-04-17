@@ -52,6 +52,7 @@ export interface CTokenInterfaceInterface extends utils.Interface {
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
     "interestRateModel()": FunctionFragment;
+    "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
@@ -94,6 +95,7 @@ export interface CTokenInterfaceInterface extends utils.Interface {
       | "getAccountSnapshot"
       | "getCash"
       | "interestRateModel"
+      | "isCEther"
       | "isCToken"
       | "name"
       | "pendingAdmin"
@@ -194,6 +196,7 @@ export interface CTokenInterfaceInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -320,6 +323,7 @@ export interface CTokenInterfaceInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
@@ -707,6 +711,8 @@ export interface CTokenInterface extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
 
+    isCEther(overrides?: CallOverrides): Promise<[boolean]>;
+
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
@@ -841,6 +847,8 @@ export interface CTokenInterface extends BaseContract {
 
   interestRateModel(overrides?: CallOverrides): Promise<string>;
 
+  isCEther(overrides?: CallOverrides): Promise<boolean>;
+
   isCToken(overrides?: CallOverrides): Promise<boolean>;
 
   name(overrides?: CallOverrides): Promise<string>;
@@ -968,6 +976,8 @@ export interface CTokenInterface extends BaseContract {
     getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
     interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+    isCEther(overrides?: CallOverrides): Promise<boolean>;
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1271,6 +1281,8 @@ export interface CTokenInterface extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isCEther(overrides?: CallOverrides): Promise<BigNumber>;
+
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1414,6 +1426,8 @@ export interface CTokenInterface extends BaseContract {
     getCash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

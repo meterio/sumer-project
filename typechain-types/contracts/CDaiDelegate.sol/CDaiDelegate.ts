@@ -61,6 +61,7 @@ export interface CDaiDelegateInterface extends utils.Interface {
     "initialize(address,address,address,uint256,string,string,uint8)": FunctionFragment;
     "initialize(address,address,uint256,string,string,uint8,bool)": FunctionFragment;
     "interestRateModel()": FunctionFragment;
+    "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "liquidateBorrow(address,uint256,address)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
@@ -122,6 +123,7 @@ export interface CDaiDelegateInterface extends utils.Interface {
       | "initialize(address,address,address,uint256,string,string,uint8)"
       | "initialize(address,address,uint256,string,string,uint8,bool)"
       | "interestRateModel"
+      | "isCEther"
       | "isCToken"
       | "liquidateBorrow"
       | "mint"
@@ -276,6 +278,7 @@ export interface CDaiDelegateInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidateBorrow",
@@ -469,6 +472,7 @@ export interface CDaiDelegateInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidateBorrow",
@@ -928,6 +932,8 @@ export interface CDaiDelegate extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
 
+    isCEther(overrides?: CallOverrides): Promise<[boolean]>;
+
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
 
     liquidateBorrow(
@@ -1156,6 +1162,8 @@ export interface CDaiDelegate extends BaseContract {
 
   interestRateModel(overrides?: CallOverrides): Promise<string>;
 
+  isCEther(overrides?: CallOverrides): Promise<boolean>;
+
   isCToken(overrides?: CallOverrides): Promise<boolean>;
 
   liquidateBorrow(
@@ -1375,6 +1383,8 @@ export interface CDaiDelegate extends BaseContract {
     ): Promise<void>;
 
     interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+    isCEther(overrides?: CallOverrides): Promise<boolean>;
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1769,6 +1779,8 @@ export interface CDaiDelegate extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isCEther(overrides?: CallOverrides): Promise<BigNumber>;
+
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidateBorrow(
@@ -2006,6 +2018,8 @@ export interface CDaiDelegate extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

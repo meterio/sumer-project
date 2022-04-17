@@ -59,6 +59,7 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
     "_getSeizePaused()": FunctionFragment;
     "_getSuTokenRateMantissa()": FunctionFragment;
     "_getTransferPaused()": FunctionFragment;
+    "eqAssetGroup(uint8)": FunctionFragment;
     "getCompAddress()": FunctionFragment;
     "getEqAssetGroup(uint8)": FunctionFragment;
     "getEqAssetGroupNum()": FunctionFragment;
@@ -74,6 +75,7 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
       | "_getSeizePaused"
       | "_getSuTokenRateMantissa"
       | "_getTransferPaused"
+      | "eqAssetGroup"
       | "getCompAddress"
       | "getEqAssetGroup"
       | "getEqAssetGroupNum"
@@ -110,6 +112,10 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "_getTransferPaused",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "eqAssetGroup",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getCompAddress",
@@ -154,6 +160,10 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_getTransferPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "eqAssetGroup",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -224,6 +234,20 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
     _getTransferPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        groupId: number;
+        groupName: string;
+        inGroupCTokenRateMantissa: BigNumber;
+        inGroupSuTokenRateMantissa: BigNumber;
+        interGroupCTokenRateMantissa: BigNumber;
+        interGroupSuTokenRateMantissa: BigNumber;
+      }
+    >;
+
     getCompAddress(overrides?: CallOverrides): Promise<[string]>;
 
     getEqAssetGroup(
@@ -256,6 +280,20 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
   _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
+  eqAssetGroup(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      inGroupCTokenRateMantissa: BigNumber;
+      inGroupSuTokenRateMantissa: BigNumber;
+      interGroupCTokenRateMantissa: BigNumber;
+      interGroupSuTokenRateMantissa: BigNumber;
+    }
+  >;
+
   getCompAddress(overrides?: CallOverrides): Promise<string>;
 
   getEqAssetGroup(
@@ -287,6 +325,20 @@ export interface UnderwriterAdminInterface extends BaseContract {
     _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        groupId: number;
+        groupName: string;
+        inGroupCTokenRateMantissa: BigNumber;
+        inGroupSuTokenRateMantissa: BigNumber;
+        interGroupCTokenRateMantissa: BigNumber;
+        interGroupSuTokenRateMantissa: BigNumber;
+      }
+    >;
 
     getCompAddress(overrides?: CallOverrides): Promise<string>;
 
@@ -325,6 +377,11 @@ export interface UnderwriterAdminInterface extends BaseContract {
     _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     _getTransferPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -365,6 +422,11 @@ export interface UnderwriterAdminInterface extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     _getTransferPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

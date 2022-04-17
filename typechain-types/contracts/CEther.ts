@@ -56,6 +56,7 @@ export interface CEtherInterface extends utils.Interface {
     "getCash()": FunctionFragment;
     "initialize(address,address,uint256,string,string,uint8,bool)": FunctionFragment;
     "interestRateModel()": FunctionFragment;
+    "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "liquidateBorrow(address,address)": FunctionFragment;
     "mint()": FunctionFragment;
@@ -107,6 +108,7 @@ export interface CEtherInterface extends utils.Interface {
       | "getCash"
       | "initialize"
       | "interestRateModel"
+      | "isCEther"
       | "isCToken"
       | "liquidateBorrow"
       | "mint"
@@ -233,6 +235,7 @@ export interface CEtherInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidateBorrow",
@@ -386,6 +389,7 @@ export interface CEtherInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidateBorrow",
@@ -811,6 +815,8 @@ export interface CEther extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
 
+    isCEther(overrides?: CallOverrides): Promise<[boolean]>;
+
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
 
     liquidateBorrow(
@@ -994,6 +1000,8 @@ export interface CEther extends BaseContract {
 
   interestRateModel(overrides?: CallOverrides): Promise<string>;
 
+  isCEther(overrides?: CallOverrides): Promise<boolean>;
+
   isCToken(overrides?: CallOverrides): Promise<boolean>;
 
   liquidateBorrow(
@@ -1168,6 +1176,8 @@ export interface CEther extends BaseContract {
     ): Promise<void>;
 
     interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+    isCEther(overrides?: CallOverrides): Promise<boolean>;
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1516,6 +1526,8 @@ export interface CEther extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isCEther(overrides?: CallOverrides): Promise<BigNumber>;
+
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidateBorrow(
@@ -1708,6 +1720,8 @@ export interface CEther extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

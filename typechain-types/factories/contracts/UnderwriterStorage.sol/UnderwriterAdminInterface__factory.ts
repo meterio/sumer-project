@@ -150,6 +150,52 @@ const _abi = [
   },
   {
     constant: true,
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    name: "eqAssetGroup",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "groupId",
+        type: "uint8",
+      },
+      {
+        internalType: "string",
+        name: "groupName",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "inGroupCTokenRateMantissa",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "inGroupSuTokenRateMantissa",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "interGroupCTokenRateMantissa",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "interGroupSuTokenRateMantissa",
+        type: "uint256",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
     inputs: [],
     name: "getCompAddress",
     outputs: [

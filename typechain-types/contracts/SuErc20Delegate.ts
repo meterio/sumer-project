@@ -60,6 +60,7 @@ export interface SuErc20DelegateInterface extends utils.Interface {
     "initialize(address,address,address,uint256,string,string,uint8)": FunctionFragment;
     "initialize(address,address,uint256,string,string,uint8,bool)": FunctionFragment;
     "interestRateModel()": FunctionFragment;
+    "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "liquidateBorrow(address,uint256,address)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
@@ -118,6 +119,7 @@ export interface SuErc20DelegateInterface extends utils.Interface {
       | "initialize(address,address,address,uint256,string,string,uint8)"
       | "initialize(address,address,uint256,string,string,uint8,bool)"
       | "interestRateModel"
+      | "isCEther"
       | "isCToken"
       | "liquidateBorrow"
       | "mint"
@@ -266,6 +268,7 @@ export interface SuErc20DelegateInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidateBorrow",
@@ -447,6 +450,7 @@ export interface SuErc20DelegateInterface extends utils.Interface {
     functionFragment: "interestRateModel",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidateBorrow",
@@ -902,6 +906,8 @@ export interface SuErc20Delegate extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
 
+    isCEther(overrides?: CallOverrides): Promise<[boolean]>;
+
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
 
     liquidateBorrow(
@@ -1124,6 +1130,8 @@ export interface SuErc20Delegate extends BaseContract {
 
   interestRateModel(overrides?: CallOverrides): Promise<string>;
 
+  isCEther(overrides?: CallOverrides): Promise<boolean>;
+
   isCToken(overrides?: CallOverrides): Promise<boolean>;
 
   liquidateBorrow(
@@ -1337,6 +1345,8 @@ export interface SuErc20Delegate extends BaseContract {
     ): Promise<void>;
 
     interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+    isCEther(overrides?: CallOverrides): Promise<boolean>;
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1725,6 +1735,8 @@ export interface SuErc20Delegate extends BaseContract {
 
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isCEther(overrides?: CallOverrides): Promise<BigNumber>;
+
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidateBorrow(
@@ -1956,6 +1968,8 @@ export interface SuErc20Delegate extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

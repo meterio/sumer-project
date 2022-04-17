@@ -48,7 +48,7 @@ export interface ERC20MintablePauseableUpgradeableInterface
     "hasRole(bytes32,address)": FunctionFragment;
     "implementation()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "initialize(string,string)": FunctionFragment;
+    "initialize(string,string,address)": FunctionFragment;
     "mint(address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
@@ -173,7 +173,7 @@ export interface ERC20MintablePauseableUpgradeableInterface
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string]
+    values: [string, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
@@ -513,6 +513,7 @@ export interface ERC20MintablePauseableUpgradeable extends BaseContract {
     initialize(
       name: string,
       symbol: string,
+      admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -672,6 +673,7 @@ export interface ERC20MintablePauseableUpgradeable extends BaseContract {
   initialize(
     name: string,
     symbol: string,
+    admin: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -825,6 +827,7 @@ export interface ERC20MintablePauseableUpgradeable extends BaseContract {
     initialize(
       name: string,
       symbol: string,
+      admin: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1044,6 +1047,7 @@ export interface ERC20MintablePauseableUpgradeable extends BaseContract {
     initialize(
       name: string,
       symbol: string,
+      admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1215,6 +1219,7 @@ export interface ERC20MintablePauseableUpgradeable extends BaseContract {
     initialize(
       name: string,
       symbol: string,
+      admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

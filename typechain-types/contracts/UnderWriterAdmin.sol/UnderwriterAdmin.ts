@@ -84,8 +84,11 @@ export interface UnderwriterAdminInterface extends utils.Interface {
     "getEqAssetGroup(uint8)": FunctionFragment;
     "getEqAssetGroupNum()": FunctionFragment;
     "governanceToken()": FunctionFragment;
+    "implementation()": FunctionFragment;
     "mintGuardianPaused(address)": FunctionFragment;
     "pauseGuardian()": FunctionFragment;
+    "pendingAdmin()": FunctionFragment;
+    "pendingImplementation()": FunctionFragment;
     "removeEqAssetGroup(uint8)": FunctionFragment;
     "seizeGuardianPaused()": FunctionFragment;
     "setEqAssetGroup(uint8,string,uint256,uint256,uint256,uint256)": FunctionFragment;
@@ -125,8 +128,11 @@ export interface UnderwriterAdminInterface extends utils.Interface {
       | "getEqAssetGroup"
       | "getEqAssetGroupNum"
       | "governanceToken"
+      | "implementation"
       | "mintGuardianPaused"
       | "pauseGuardian"
+      | "pendingAdmin"
+      | "pendingImplementation"
       | "removeEqAssetGroup"
       | "seizeGuardianPaused"
       | "setEqAssetGroup"
@@ -243,11 +249,23 @@ export interface UnderwriterAdminInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "implementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "mintGuardianPaused",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "pauseGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pendingAdmin",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pendingImplementation",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -390,11 +408,23 @@ export interface UnderwriterAdminInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "implementation",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "mintGuardianPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "pauseGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -655,12 +685,18 @@ export interface UnderwriterAdmin extends BaseContract {
 
     governanceToken(overrides?: CallOverrides): Promise<[string]>;
 
+    implementation(overrides?: CallOverrides): Promise<[string]>;
+
     mintGuardianPaused(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
     pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingImplementation(overrides?: CallOverrides): Promise<[string]>;
 
     removeEqAssetGroup(
       groupId: BigNumberish,
@@ -801,9 +837,15 @@ export interface UnderwriterAdmin extends BaseContract {
 
   governanceToken(overrides?: CallOverrides): Promise<string>;
 
+  implementation(overrides?: CallOverrides): Promise<string>;
+
   mintGuardianPaused(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
   pauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+  pendingAdmin(overrides?: CallOverrides): Promise<string>;
+
+  pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
   removeEqAssetGroup(
     groupId: BigNumberish,
@@ -941,12 +983,18 @@ export interface UnderwriterAdmin extends BaseContract {
 
     governanceToken(overrides?: CallOverrides): Promise<string>;
 
+    implementation(overrides?: CallOverrides): Promise<string>;
+
     mintGuardianPaused(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
     pauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<string>;
+
+    pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
     removeEqAssetGroup(
       groupId: BigNumberish,
@@ -1128,12 +1176,18 @@ export interface UnderwriterAdmin extends BaseContract {
 
     governanceToken(overrides?: CallOverrides): Promise<BigNumber>;
 
+    implementation(overrides?: CallOverrides): Promise<BigNumber>;
+
     mintGuardianPaused(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     removeEqAssetGroup(
       groupId: BigNumberish,
@@ -1286,12 +1340,20 @@ export interface UnderwriterAdmin extends BaseContract {
 
     governanceToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    implementation(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     mintGuardianPaused(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingImplementation(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     removeEqAssetGroup(
       groupId: BigNumberish,
