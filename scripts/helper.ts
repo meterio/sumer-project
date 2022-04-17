@@ -84,13 +84,14 @@ export async function deployERC20WithProxy(
   network: string,
   name: string,
   symbol: string,
+  adminAddr: string,
   signer: Signer
 ) {
   const address = getContract(network, symbol);
   if (address === constants.AddressZero) {
     const tokenFactory = await ethers.getContractFactory('ERC20MintablePauseableUpgradeable', signer);
     const signerAddr = await signer.getAddress();
-    const args = [name, symbol];
+    const args = [name, symbol, adminAddr];
 
     const token = await upgrades.deployProxy(tokenFactory, args, {
       initializer: 'initialize',
@@ -98,6 +99,7 @@ export async function deployERC20WithProxy(
     await token.deployed();
     console.log('Deploying:', `ERC20MintablePauseableUpgradeable for ${name} (${symbol})`);
     console.log('  to', token.address);
+    console.log(`  owned by ${adminAddr}`);
     console.log(`  by ${signerAddr}`);
     console.log('  in', token.deployTransaction.hash);
     await saveFile(network, symbol, token, args, {});

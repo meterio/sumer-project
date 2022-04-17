@@ -12,6 +12,7 @@ interface SuTokenConfig {
   name: string;
   symbol: string;
   decimals: number;
+  minter: string;
 }
 
 export enum FeedType {
@@ -86,7 +87,7 @@ export const priceFeeds: { [key: string]: PriceFeed[] } = {
     {
       ctoken: 'cUSDT',
       type: FeedType.Witnet,
-      feedAddr: '0xA6434C9F9de740B895886A982Cfe5B3CF223be82',
+      feedAddr: '0xffa9c435D9A19072d44265cceBEf8760fC03B446',
       decimals: 6,
       fixed: '',
     },
@@ -172,9 +173,9 @@ export const priceFeeds: { [key: string]: PriceFeed[] } = {
 // please make it incremental, don't remove any tokens that already exists
 // the order will affect tx nonce and affect deployed token address
 export const suTokens: SuTokenConfig[] = [
-  { name: 'suUSD', symbol: 'suUSD', decimals: 18 },
-  { name: 'suETH', symbol: 'suETH', decimals: 18 },
-  { name: 'SuBTC', symbol: 'suBTC', decimals: 18 },
+  { name: 'suUSD', symbol: 'suUSD', decimals: 18, minter: 'csuUSD' },
+  { name: 'suETH', symbol: 'suETH', decimals: 18, minter: 'csuETH' },
+  { name: 'suBTC', symbol: 'suBTC', decimals: 18, minter: 'csuBTC' },
 ];
 
 export const underlyingTokens: { [key: string]: UnderlyingConfig[] } = {
