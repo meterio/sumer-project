@@ -1,7 +1,7 @@
-pragma solidity ^0.5.16;
+pragma solidity >=0.5.16;
+
 pragma experimental ABIEncoderV2;
 import './CToken.sol';
-import './PriceOracle.sol';
 
 contract UnderwriterProxyStorage {
   /**
@@ -57,7 +57,7 @@ contract UnderwriterStorage is UnderwriterProxyStorage {
   mapping(address => uint256) public borrowCaps;
 }
 
-contract UnderwriterAdminInterface {
+contract UnderwriterAdminInterface is UnderwriterStorage {
   /// @notice EqualAssets, contains information of groupName and rateMantissas
   struct EqualAssets {
     uint8 groupId;

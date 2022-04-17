@@ -51,6 +51,7 @@ export declare namespace UnderwriterAdminInterface {
 
 export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
   functions: {
+    "_borrowGuardianPaused()": FunctionFragment;
     "_getBorrowCapGuardian()": FunctionFragment;
     "_getBorrowPaused(address)": FunctionFragment;
     "_getMarketBorrowCap(address)": FunctionFragment;
@@ -59,14 +60,30 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
     "_getSeizePaused()": FunctionFragment;
     "_getSuTokenRateMantissa()": FunctionFragment;
     "_getTransferPaused()": FunctionFragment;
+    "_mintGuardianPaused()": FunctionFragment;
+    "admin()": FunctionFragment;
+    "borrowCapGuardian()": FunctionFragment;
+    "borrowCaps(address)": FunctionFragment;
+    "borrowGuardianPaused(address)": FunctionFragment;
     "eqAssetGroup(uint8)": FunctionFragment;
+    "equalAssetsGroupNum()": FunctionFragment;
     "getCompAddress()": FunctionFragment;
     "getEqAssetGroup(uint8)": FunctionFragment;
     "getEqAssetGroupNum()": FunctionFragment;
+    "governanceToken()": FunctionFragment;
+    "implementation()": FunctionFragment;
+    "mintGuardianPaused(address)": FunctionFragment;
+    "pauseGuardian()": FunctionFragment;
+    "pendingAdmin()": FunctionFragment;
+    "pendingImplementation()": FunctionFragment;
+    "seizeGuardianPaused()": FunctionFragment;
+    "suTokenRateMantissa()": FunctionFragment;
+    "transferGuardianPaused()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "_borrowGuardianPaused"
       | "_getBorrowCapGuardian"
       | "_getBorrowPaused"
       | "_getMarketBorrowCap"
@@ -75,13 +92,32 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
       | "_getSeizePaused"
       | "_getSuTokenRateMantissa"
       | "_getTransferPaused"
+      | "_mintGuardianPaused"
+      | "admin"
+      | "borrowCapGuardian"
+      | "borrowCaps"
+      | "borrowGuardianPaused"
       | "eqAssetGroup"
+      | "equalAssetsGroupNum"
       | "getCompAddress"
       | "getEqAssetGroup"
       | "getEqAssetGroupNum"
+      | "governanceToken"
+      | "implementation"
+      | "mintGuardianPaused"
+      | "pauseGuardian"
+      | "pendingAdmin"
+      | "pendingImplementation"
+      | "seizeGuardianPaused"
+      | "suTokenRateMantissa"
+      | "transferGuardianPaused"
   ): FunctionFragment;
 
   encodeFunctionData(
+    functionFragment: "_borrowGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "_getBorrowCapGuardian",
     values?: undefined
   ): string;
@@ -114,8 +150,26 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "_mintGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "borrowCapGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "borrowCaps", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "borrowGuardianPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "eqAssetGroup",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "equalAssetsGroupNum",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getCompAddress",
@@ -127,10 +181,50 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getEqAssetGroupNum",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "governanceToken",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "implementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintGuardianPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pauseGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pendingAdmin",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pendingImplementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "seizeGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "suTokenRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferGuardianPaused",
     values?: undefined
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "_borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "_getBorrowCapGuardian",
     data: BytesLike
   ): Result;
@@ -163,7 +257,25 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "_mintGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "borrowCapGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "eqAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "equalAssetsGroupNum",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -176,6 +288,42 @@ export interface UnderwriterAdminInterfaceInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getEqAssetGroupNum",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "governanceToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "implementation",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pauseGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingImplementation",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "seizeGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "suTokenRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferGuardianPaused",
     data: BytesLike
   ): Result;
 
@@ -209,6 +357,8 @@ export interface UnderwriterAdminInterface extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
     _getBorrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
 
     _getBorrowPaused(
@@ -234,6 +384,19 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
     _getTransferPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    admin(overrides?: CallOverrides): Promise<[string]>;
+
+    borrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -248,6 +411,8 @@ export interface UnderwriterAdminInterface extends BaseContract {
       }
     >;
 
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
     getCompAddress(overrides?: CallOverrides): Promise<[string]>;
 
     getEqAssetGroup(
@@ -256,7 +421,30 @@ export interface UnderwriterAdminInterface extends BaseContract {
     ): Promise<[UnderwriterAdminInterface.EqualAssetsStructOutput]>;
 
     getEqAssetGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
+    governanceToken(overrides?: CallOverrides): Promise<[string]>;
+
+    implementation(overrides?: CallOverrides): Promise<[string]>;
+
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingImplementation(overrides?: CallOverrides): Promise<[string]>;
+
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    transferGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
   };
+
+  _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
 
@@ -280,6 +468,19 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
   _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
+  _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  admin(overrides?: CallOverrides): Promise<string>;
+
+  borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+  borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  borrowGuardianPaused(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   eqAssetGroup(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -294,6 +495,8 @@ export interface UnderwriterAdminInterface extends BaseContract {
     }
   >;
 
+  equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
+
   getCompAddress(overrides?: CallOverrides): Promise<string>;
 
   getEqAssetGroup(
@@ -303,7 +506,27 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
   getEqAssetGroupNum(overrides?: CallOverrides): Promise<number>;
 
+  governanceToken(overrides?: CallOverrides): Promise<string>;
+
+  implementation(overrides?: CallOverrides): Promise<string>;
+
+  mintGuardianPaused(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
+  pauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+  pendingAdmin(overrides?: CallOverrides): Promise<string>;
+
+  pendingImplementation(overrides?: CallOverrides): Promise<string>;
+
+  seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
+  transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
   callStatic: {
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
     _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
 
     _getBorrowPaused(
@@ -326,6 +549,19 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
     _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    admin(overrides?: CallOverrides): Promise<string>;
+
+    borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -340,6 +576,8 @@ export interface UnderwriterAdminInterface extends BaseContract {
       }
     >;
 
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
+
     getCompAddress(overrides?: CallOverrides): Promise<string>;
 
     getEqAssetGroup(
@@ -348,11 +586,34 @@ export interface UnderwriterAdminInterface extends BaseContract {
     ): Promise<UnderwriterAdminInterface.EqualAssetsStructOutput>;
 
     getEqAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
+    governanceToken(overrides?: CallOverrides): Promise<string>;
+
+    implementation(overrides?: CallOverrides): Promise<string>;
+
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<string>;
+
+    pendingImplementation(overrides?: CallOverrides): Promise<string>;
+
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
+    transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {};
 
   estimateGas: {
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
     _getBorrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
 
     _getBorrowPaused(
@@ -378,10 +639,25 @@ export interface UnderwriterAdminInterface extends BaseContract {
 
     _getTransferPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    admin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     eqAssetGroup(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
 
     getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -391,9 +667,34 @@ export interface UnderwriterAdminInterface extends BaseContract {
     ): Promise<BigNumber>;
 
     getEqAssetGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+
+    governanceToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    implementation(overrides?: CallOverrides): Promise<BigNumber>;
+
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingImplementation(overrides?: CallOverrides): Promise<BigNumber>;
+
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
+    transferGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    _borrowGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     _getBorrowCapGuardian(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -425,8 +726,30 @@ export interface UnderwriterAdminInterface extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    _mintGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    borrowCapGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    borrowCaps(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     eqAssetGroup(
       arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    equalAssetsGroupNum(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -438,6 +761,35 @@ export interface UnderwriterAdminInterface extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getEqAssetGroupNum(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    governanceToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    implementation(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingImplementation(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    seizeGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    suTokenRateMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    transferGuardianPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
