@@ -155,7 +155,7 @@ task('deployERC20', 'deploy token (mintable/pausable/upgradable)')
   });
 
 task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
-  async ({ }, { ethers, run, network, upgrades }) => {
+  async ({}, { ethers, run, network, upgrades }) => {
     await run('compile');
     const [admin, tokenDeployer] = await ethers.getSigners();
     const adminAddr = await admin.getAddress();
@@ -184,7 +184,7 @@ task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
   }
 );
 
-task('deployCToken', async ({ }, { ethers, run, network, upgrades }) => {
+task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin, tokenDeployer] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
@@ -319,7 +319,7 @@ task('deployCToken', async ({ }, { ethers, run, network, upgrades }) => {
   }
 });
 
-task('configOracle', 'config price oracle').setAction(async ({ }, { ethers, run, network, upgrades }) => {
+task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
   const oracleAddr = getContract(network.name, 'FeedPriceOracle');
@@ -372,7 +372,7 @@ task('configOracle', 'config price oracle').setAction(async ({ }, { ethers, run,
   }
 });
 
-task('configSuMinter', 'config minter for sutokens').setAction(async ({ }, { ethers, run, network, upgrades }) => {
+task('configSuMinter', 'config minter for sutokens').setAction(async ({}, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
 
@@ -401,7 +401,7 @@ task('configSuMinter', 'config minter for sutokens').setAction(async ({ }, { eth
   }
 });
 
-task('configGroup', 'config group').setAction(async ({ }, { ethers, run, network, upgrades }) => {
+task('configGroup', 'config group').setAction(async ({}, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
@@ -440,6 +440,30 @@ task('configGroup', 'config group').setAction(async ({ }, { ethers, run, network
   }
 });
 
+task('configSuMintRate', 'config mint rate for su token')
+  .addParam('rate', 'sutoken mint rate')
+  .setAction(async (args, { ethers, run, network, upgrades }) => {
+    await run('compile');
+    const [admin] = await ethers.getSigners();
+    const uwAdminAddr = getContract(network.name, 'UnderwriterAdmin');
+    const uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', uwAdminAddr, admin)) as UnderwriterAdmin;
+
+    let num = Number(args.rate);
+    if (Number.isNaN(num) || num <= 0 || num > 1) {
+      console.log(`invalid rate, must be 0<rate<1`);
+      return;
+    }
+    const rate = utils.parseUnits(args.rate, 18);
+    const actualRate = await uwAdmin._getSuTokenRateMantissa();
+    if (actualRate.eq(rate)) {
+      console.log(`sutoken mint rate is already ${rate}`);
+    } else {
+      const receipt = await uwAdmin._setSuTokenRateMantissa(rate);
+      await receipt.wait();
+      console.log(`set sutoken mint rate to ${rate}`);
+    }
+  });
+
 task('configCsuToken', 'config csuToken with minter roles').setAction(
   async (args, { ethers, run, network, upgrades }) => {
     await run('compile');
@@ -461,7 +485,7 @@ task('configCsuToken', 'config csuToken with minter roles').setAction(
   }
 );
 
-task('list', 'list deployed contracts').setAction(async ({ }, { ethers, run, network, upgrades }) => {
+task('list', 'list deployed contracts').setAction(async ({}, { ethers, run, network, upgrades }) => {
   const underlys = underlyingTokens[network.name];
   const result = listContracts(network.name);
   for (const underly of underlys.sort((a, b) => (a.symbol < b.symbol ? 1 : -1))) {
@@ -548,7 +572,7 @@ task('price', 'query price from oracle')
   });
 
 // create2 proxy contracts factory
-task('proxy', 'contracts factory').setAction(async ({ }, { ethers, run, network }) => {
+task('proxy', 'contracts factory').setAction(async ({}, { ethers, run, network }) => {
   const signers = await ethers.getSigners();
   const sinerIndex = 1;
 
@@ -560,7 +584,7 @@ task('proxy', 'contracts factory').setAction(async ({ }, { ethers, run, network 
 });
 
 // create2 proxy contracts factory
-task('load', 'contracts factory').setAction(async ({ }, { ethers, run, network }) => {
+task('load', 'contracts factory').setAction(async ({}, { ethers, run, network }) => {
   const a = getContract(network.name, 'CompoundLens');
   console.log(a);
 });
@@ -568,7 +592,7 @@ task('load', 'contracts factory').setAction(async ({ }, { ethers, run, network }
 const create2proxy = '0xCAE0947f783081F1d7c0850F69EcD75b574B3D91';
 
 // deploy contracts with create2 proxy contract
-task('pd', 'contracts factory').setAction(async ({ }, { ethers, run, network }) => {
+task('pd', 'contracts factory').setAction(async ({}, { ethers, run, network }) => {
   const [signer] = await ethers.getSigners();
 
   // Now deploy some ERC-20 faucet tokens
