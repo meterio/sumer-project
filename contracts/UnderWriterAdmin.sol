@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity >=0.5.16;
 pragma experimental ABIEncoderV2;
 
 import './CToken.sol';
@@ -8,7 +8,7 @@ import './Governance/Comp.sol';
 import './UnderwriterStorage.sol';
 import './UnderwriterProxy.sol';
 
-contract UnderwriterAdmin is UnderwriterStorage, UnderwriterAdminInterface, ComptrollerErrorReporter {
+contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter {
   /// @notice Emitted when an action is paused globally
   event ActionPaused(string action, bool pauseState);
 

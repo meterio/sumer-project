@@ -66,6 +66,7 @@ export interface ComptrollerInterface extends utils.Interface {
     "getAssetsIn(address)": FunctionFragment;
     "getBlockNumber()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
+    "inMarket(address)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isDeprecated(address)": FunctionFragment;
     "lastContributorBlock(address)": FunctionFragment;
@@ -75,6 +76,7 @@ export interface ComptrollerInterface extends utils.Interface {
     "liquidationIncentiveMantissa()": FunctionFragment;
     "markets(address)": FunctionFragment;
     "maxAssets()": FunctionFragment;
+    "maxInMarket(address)": FunctionFragment;
     "mintAllowed(address,address,uint256)": FunctionFragment;
     "mintVerify(address,address,uint256,uint256)": FunctionFragment;
     "oracle()": FunctionFragment;
@@ -132,6 +134,7 @@ export interface ComptrollerInterface extends utils.Interface {
       | "getAssetsIn"
       | "getBlockNumber"
       | "getHypotheticalAccountLiquidity"
+      | "inMarket"
       | "isComptroller"
       | "isDeprecated"
       | "lastContributorBlock"
@@ -141,6 +144,7 @@ export interface ComptrollerInterface extends utils.Interface {
       | "liquidationIncentiveMantissa"
       | "markets"
       | "maxAssets"
+      | "maxInMarket"
       | "mintAllowed"
       | "mintVerify"
       | "oracle"
@@ -289,6 +293,7 @@ export interface ComptrollerInterface extends utils.Interface {
     functionFragment: "getHypotheticalAccountLiquidity",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "inMarket", values: [string]): string;
   encodeFunctionData(
     functionFragment: "isComptroller",
     values?: undefined
@@ -319,6 +324,7 @@ export interface ComptrollerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "markets", values: [string]): string;
   encodeFunctionData(functionFragment: "maxAssets", values?: undefined): string;
+  encodeFunctionData(functionFragment: "maxInMarket", values: [string]): string;
   encodeFunctionData(
     functionFragment: "mintAllowed",
     values: [string, string, BigNumberish]
@@ -508,6 +514,7 @@ export interface ComptrollerInterface extends utils.Interface {
     functionFragment: "getHypotheticalAccountLiquidity",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "inMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isComptroller",
     data: BytesLike
@@ -538,6 +545,10 @@ export interface ComptrollerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "markets", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "maxAssets", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "maxInMarket",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "mintAllowed",
     data: BytesLike
@@ -1073,6 +1084,8 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+    inMarket(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
     isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
 
     isDeprecated(cToken: string, overrides?: CallOverrides): Promise<[boolean]>;
@@ -1124,6 +1137,8 @@ export interface Comptroller extends BaseContract {
     >;
 
     maxAssets(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    maxInMarket(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     mintAllowed(
       cToken: string,
@@ -1393,6 +1408,8 @@ export interface Comptroller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+  inMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
   isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
   isDeprecated(cToken: string, overrides?: CallOverrides): Promise<boolean>;
@@ -1442,6 +1459,8 @@ export interface Comptroller extends BaseContract {
   >;
 
   maxAssets(overrides?: CallOverrides): Promise<BigNumber>;
+
+  maxInMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   mintAllowed(
     cToken: string,
@@ -1712,6 +1731,8 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+    inMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
     isDeprecated(cToken: string, overrides?: CallOverrides): Promise<boolean>;
@@ -1761,6 +1782,8 @@ export interface Comptroller extends BaseContract {
     >;
 
     maxAssets(overrides?: CallOverrides): Promise<BigNumber>;
+
+    maxInMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     mintAllowed(
       cToken: string,
@@ -2198,6 +2221,8 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    inMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
 
     isDeprecated(cToken: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -2238,6 +2263,8 @@ export interface Comptroller extends BaseContract {
     markets(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     maxAssets(overrides?: CallOverrides): Promise<BigNumber>;
+
+    maxInMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     mintAllowed(
       cToken: string,
@@ -2530,6 +2557,11 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    inMarket(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isDeprecated(
@@ -2578,6 +2610,11 @@ export interface Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     maxAssets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    maxInMarket(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     mintAllowed(
       cToken: string,
