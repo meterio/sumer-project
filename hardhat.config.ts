@@ -36,10 +36,13 @@ import {
   InterestRateModel,
   FeedPriceOracle__factory,
 } from './typechain-types';
+import { token } from './typechain-types/@openzeppelin/contracts-upgradeable';
 const dotenv = require('dotenv');
 dotenv.config();
 // import Colors = require("colors.ts");
 // Colors.enable();
+
+const MANTISSA_DECIMALS = 18;
 
 task('accounts', 'Prints the list of accounts', async (taskArgs, bre) => {
   const accounts = await bre.ethers.getSigners();
@@ -66,22 +69,17 @@ task('deployComptroller', 'deploy comptroller/unitroller contracts').setAction(
     const sumerAddr = getContract(network.name, 'Sumer');
 
     // Deploy UnderwriterAdmin
-    const underwriterProxy = (await deployContract(
-      ethers,
-      'UnderwriterProxy',
-      network.name,
-      admin
-    )) as UnderwriterProxy;
-    const underwriterAdmin = (await deployContract(ethers, 'UnderwriterAdmin', network.name, admin, [
+    const uwProxy = (await deployContract(ethers, 'UnderwriterProxy', network.name, admin)) as UnderwriterProxy;
+    const uwAdmin = (await deployContract(ethers, 'UnderwriterAdmin', network.name, admin, [
       sumerAddr,
     ])) as UnderwriterAdmin;
 
-    const actualUWImpl = await underwriterProxy.implementation();
-    if (actualUWImpl != underwriterAdmin.address) {
-      receipt = await underwriterProxy._setPendingImplementation(underwriterAdmin.address);
+    const actualUWImpl = await uwProxy.implementation();
+    if (actualUWImpl != uwAdmin.address) {
+      receipt = await uwProxy._setPendingImplementation(uwAdmin.address);
       console.log(await receipt.wait());
       // Become Implementation
-      receipt = await underwriterAdmin._become(underwriterProxy.address);
+      receipt = await uwAdmin._become(uwProxy.address);
       console.log(await receipt.wait());
     }
 
@@ -111,14 +109,14 @@ task('deployComptroller', 'deploy comptroller/unitroller contracts').setAction(
     }
 
     // Comptroller SetCloseFactor 0.5
-    const expectedCloseFactor = utils.parseUnits('0.5', 18);
+    const expectedCloseFactor = utils.parseUnits('0.5', MANTISSA_DECIMALS);
     const actualCloseFactor = await comptrollerProxy.closeFactorMantissa();
     if (!actualCloseFactor.eq(expectedCloseFactor)) {
       receipt = await comptrollerProxy._setCloseFactor(expectedCloseFactor);
       console.log(await receipt.wait());
     }
     // Comptroller LiquidationIncentive 1.1
-    const expectedIncentive = utils.parseUnits('1.1', 18);
+    const expectedIncentive = utils.parseUnits('1.1', MANTISSA_DECIMALS);
     const actualIncentive = await comptrollerProxy.liquidationIncentiveMantissa();
     if (!actualIncentive.eq(expectedIncentive)) {
       receipt = await comptrollerProxy._setLiquidationIncentive(expectedIncentive);
@@ -126,10 +124,10 @@ task('deployComptroller', 'deploy comptroller/unitroller contracts').setAction(
     }
 
     // Comptroller SetUnderWriterAdmin (UnderwriterAdmin Address)
-    const expectedUWAdmin = underwriterProxy.address;
+    const expectedUWAdmin = uwAdmin.address;
     const actualUWAdmin = await comptrollerProxy.underWriterAdmin();
     if (expectedUWAdmin != actualUWAdmin) {
-      receipt = await comptrollerProxy._setUnderWriterAdmin(underwriterProxy.address);
+      receipt = await comptrollerProxy._setUnderWriterAdmin(uwAdmin.address);
       console.log(await receipt.wait());
     }
   }
@@ -138,15 +136,18 @@ task('deployComptroller', 'deploy comptroller/unitroller contracts').setAction(
 task('deployERC20', 'deploy token (mintable/pausable/upgradable)')
   .addParam('name', 'token name', 'Test Token')
   .addParam('symbol', 'token symbol', 'TEST')
+  .addParam('admin', 'admin address', '')
   .setAction(async (args, { ethers, run, network, upgrades }) => {
     await run('compile');
     const [admin] = await ethers.getSigners();
+    const adminAddr = await admin.getAddress();
     const token = (await deployERC20WithProxy(
       ethers,
       upgrades,
       network.name,
       args.name,
       args.symbol,
+      args.admin || adminAddr,
       admin
     )) as ERC20MintablePauseableUpgradeable;
   });
@@ -155,6 +156,7 @@ task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
   async ({}, { ethers, run, network, upgrades }) => {
     await run('compile');
     const [admin, tokenDeployer] = await ethers.getSigners();
+    const adminAddr = await admin.getAddress();
 
     console.log('deployer:', tokenDeployer.address);
     const sumer = (await deployERC20WithProxy(
@@ -163,6 +165,7 @@ task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
       network.name,
       'Sumer',
       'SUMER',
+      adminAddr,
       tokenDeployer
     )) as ERC20MintablePauseableUpgradeable;
     for (const sutoken of suTokens) {
@@ -172,6 +175,7 @@ task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
         network.name,
         sutoken.name,
         sutoken.symbol,
+        adminAddr,
         tokenDeployer
       )) as ERC20MintablePauseableUpgradeable;
     }
@@ -201,6 +205,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
 
   const oracle = (await ethers.getContractAt('FeedPriceOracle', oracleAddr, admin)) as FeedPriceOracle;
 
+  // Deply csu Tokens
   for (const sutoken of suTokens) {
     const sutokenAddr = getContract(network.name, sutoken.symbol);
     const csuTokenSymbol = `c${sutoken.symbol}`;
@@ -216,6 +221,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
     )) as SuErc20Delegate;
 
     // Deploy csu token delegators (proxy)
+    const csuDecimals = 18;
     const delegator = (await deployContract(
       ethers,
       'suErc20Delegator',
@@ -225,10 +231,10 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
         sutokenAddr,
         unitroller.address,
         zeroInterestRateModel.address,
-        '1',
+        utils.parseUnits('1', sutoken.decimals - csuDecimals + MANTISSA_DECIMALS),
         csuTokenSymbol,
         csuTokenSymbol,
-        18,
+        csuDecimals,
         admin.address,
         delegate.address,
         constants.HashZero,
@@ -243,7 +249,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
     'WhitePaperInterestRateModel',
     network.name,
     admin,
-    [utils.parseUnits('0.05', 18), utils.parseUnits('0.45', 18)]
+    [utils.parseUnits('0.05', MANTISSA_DECIMALS), utils.parseUnits('0.45', MANTISSA_DECIMALS)]
   )) as WhitePaperInterestRateModel;
   // deploy FixedInterestRate
 
@@ -262,6 +268,8 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
         {},
         `${ctokenSymbol}Delegate`
       )) as CErc20Delegate;
+
+      const ctokenDecimals = 18;
       // Deploy cTokens delegators
       const delegator = (await deployContract(
         ethers,
@@ -272,10 +280,10 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
           underly.address,
           unitroller.address,
           whitePaperInterestRateModel.address,
-          utils.parseUnits('1', 10),
+          utils.parseUnits('1', underly.decimals - ctokenDecimals + MANTISSA_DECIMALS), // exchange rate
           underly.cTokenName,
           ctokenSymbol,
-          18,
+          ctokenDecimals,
           admin.address,
           delegate.address,
           constants.HashZero,
@@ -327,13 +335,42 @@ task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, 
   }
 });
 
+task('configSuMinter', 'config minter for sutokens').setAction(async ({}, { ethers, run, network, upgrades }) => {
+  await run('compile');
+  const [admin] = await ethers.getSigners();
+
+  for (const sutoken of suTokens) {
+    const suSymbol = sutoken.symbol;
+    const minterSymbol = sutoken.minter;
+    const suAddr = getContract(network.name, suSymbol);
+    if (suAddr === constants.AddressZero) {
+      console.log(`could not get token address for ${suSymbol}`);
+      continue;
+    }
+    const minterAddr = getContract(network.name, minterSymbol);
+    if (minterAddr === constants.AddressZero) {
+      console.log(`could not get token address for ${minterSymbol}`);
+      continue;
+    }
+    const su = (await ethers.getContractAt(
+      'ERC20MintablePauseableUpgradeable',
+      suAddr,
+      admin
+    )) as ERC20MintablePauseableUpgradeable;
+
+    const re = await su.addMinter(minterAddr);
+    await re.wait();
+    console.log(`add ${minterSymbol} as minter on ${suSymbol}`);
+  }
+});
+
 task('configGroup', 'config group').setAction(async ({}, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
   const unitroller = (await ethers.getContractAt('Comptroller', unitrollerAddr, admin)) as Comptroller;
-  const uwProxyAddr = getContract(network.name, 'UnderwriterProxy');
-  const uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', uwProxyAddr, admin)) as UnderwriterAdmin;
+  const uwAdminAddr = getContract(network.name, 'UnderwriterAdmin');
+  const uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', uwAdminAddr, admin)) as UnderwriterAdmin;
 
   for (const tokenSym in groupNums) {
     const groupNum = groupNums[tokenSym];
@@ -390,9 +427,10 @@ task('configCsuToken', 'config csuToken with minter roles').setAction(
 task('list', 'list deployed contracts').setAction(async ({}, { ethers, run, network, upgrades }) => {
   const underlys = underlyingTokens[network.name];
   const result = listContracts(network.name);
-  for (const underly of underlys) {
+  for (const underly of underlys.sort((a, b) => (a.symbol < b.symbol ? 1 : -1))) {
     result[underly.symbol] = underly.address;
   }
+
   console.log(`contracts deployed on ${network.name}:`, JSON.stringify(result, null, 2));
 });
 
@@ -413,14 +451,15 @@ task('mint', 'mint token')
       console.log(`could not get token address for ${args.token}`);
       return;
     }
-    console.log(tokenAddr);
     const token = (await ethers.getContractAt(
       'ERC20MintablePauseableUpgradeable',
       tokenAddr,
       admin
     )) as ERC20MintablePauseableUpgradeable;
     const receipt = await token.mint(args.to, args.amount);
-    console.log(receipt);
+    await receipt.wait();
+
+    console.log(`Minted ${args.amount} to ${args.to} in ${receipt.hash}`);
   });
 
 task('addMinter', 'add minter')
@@ -446,10 +485,11 @@ task('addMinter', 'add minter')
       admin
     )) as ERC20MintablePauseableUpgradeable;
     const receipt = await token.addMinter(args.minter);
-    console.log(receipt);
+    await receipt.wait();
+    console.log(`added ${args.minter} as minter on ${args.token} in ${receipt.hash}`);
   });
 
-task('price', 'add minter')
+task('price', 'query price from oracle')
   .addParam('token', 'token symbol')
   .setAction(async (args, { ethers, run, network, upgrades }) => {
     await run('compile');
