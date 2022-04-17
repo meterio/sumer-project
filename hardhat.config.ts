@@ -35,6 +35,7 @@ import {
   SuErc20Delegate,
   InterestRateModel,
   FeedPriceOracle__factory,
+  CEther,
 } from './typechain-types';
 import { token } from './typechain-types/@openzeppelin/contracts-upgradeable';
 const dotenv = require('dotenv');
@@ -254,43 +255,65 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
   // deploy FixedInterestRate
 
   const underlys = underlyingTokens[network.name];
-  console.log('network:', network.name);
   if (underlys && underlys.length > 0) {
     for (const underly of underlys) {
       // Deploy CToken delegates
       const ctokenSymbol = `c${underly.symbol}`;
-      const delegate = (await deployContract(
-        ethers,
-        'CErc20Delegate',
-        network.name,
-        admin,
-        [],
-        {},
-        `${ctokenSymbol}Delegate`
-      )) as CErc20Delegate;
-
       const ctokenDecimals = 18;
-      // Deploy cTokens delegators
-      const delegator = (await deployContract(
-        ethers,
-        'CErc20Delegator',
-        network.name,
-        admin,
-        [
-          underly.address,
-          unitroller.address,
-          whitePaperInterestRateModel.address,
-          utils.parseUnits('1', underly.decimals - ctokenDecimals + MANTISSA_DECIMALS), // exchange rate
-          underly.cTokenName,
-          ctokenSymbol,
-          ctokenDecimals,
-          admin.address,
-          delegate.address,
-          constants.HashZero,
-        ],
-        {},
-        ctokenSymbol
-      )) as CErc20Delegator;
+
+      if (underly.native) {
+        // deploy CEther for native token
+        const cether = (await deployContract(
+          ethers,
+          'CEther',
+          network.name,
+          admin,
+          [
+            unitroller.address,
+            whitePaperInterestRateModel.address,
+            utils.parseUnits('1', underly.decimals - ctokenDecimals + MANTISSA_DECIMALS), // exchange rate
+            underly.cTokenName,
+            ctokenSymbol,
+            ctokenDecimals,
+            admin.address,
+          ],
+          {},
+          `${ctokenSymbol}`
+        )) as CEther;
+      } else {
+        const delegate = (await deployContract(
+          ethers,
+          'CErc20Delegate',
+          network.name,
+          admin,
+          [],
+          {},
+          `${ctokenSymbol}Delegate`
+        )) as CErc20Delegate;
+
+        const ctokenDecimals = 18;
+        // Deploy cTokens delegators
+        const delegator = (await deployContract(
+          ethers,
+          'CErc20Delegator',
+          network.name,
+          admin,
+          [
+            underly.address,
+            unitroller.address,
+            whitePaperInterestRateModel.address,
+            utils.parseUnits('1', underly.decimals - ctokenDecimals + MANTISSA_DECIMALS), // exchange rate
+            underly.cTokenName,
+            ctokenSymbol,
+            ctokenDecimals,
+            admin.address,
+            delegate.address,
+            constants.HashZero,
+          ],
+          {},
+          ctokenSymbol
+        )) as CErc20Delegator;
+      }
     }
   }
 });
@@ -315,21 +338,34 @@ task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, 
       let re: ContractTransaction;
       switch (feed.type) {
         case FeedType.Fixed:
-          console.log(`set fixed price ${feed.fixed} for ${feed.ctoken}`);
+          const fdata = (await oracle.getFixedPrice(tokenAddr)) as BigNumber;
+          if (fdata.eq(BigNumber.from(feed.fixed))) {
+            console.log(`skip setting fixed price ${feed.fixed} for ${feed.ctoken}`);
+            continue;
+          }
           re = await oracle.setFixedPrice(tokenAddr, feed.fixed);
-          console.log(re);
+          await re.wait();
+          console.log(`set fixed price ${feed.fixed} for ${feed.ctoken} in ${re.hash}`);
           break;
         case FeedType.Chainlink:
-          console.log(`set chainlink feed ${feed.feedAddr} for ${feed.ctoken}`);
+          const cdata = (await oracle.getFeed(tokenAddr)) as FeedPriceOracle.FeedDataStruct;
+          if (cdata.addr === feed.feedAddr) {
+            console.log(`skip setting chainlink feed ${feed.feedAddr} for ${feed.ctoken}`);
+            continue;
+          }
           re = await oracle.setFeed(tokenAddr, feed.feedAddr, 18);
+          await re.wait();
+          console.log(`set chainlink feed ${feed.feedAddr} for ${feed.ctoken} in ${re.hash}`);
           break;
         case FeedType.Witnet:
-          console.log(`set witnet feed ${feed.feedAddr} ${feed.decimals} for ${feed.ctoken}`);
+          const wdata = (await oracle.getFeed(tokenAddr)) as FeedPriceOracle.FeedDataStruct;
+          if (wdata.addr === feed.feedAddr) {
+            console.log(`skip setting witnet feed ${feed.feedAddr} ${feed.decimals} for ${feed.ctoken}`);
+            continue;
+          }
           re = await oracle.setWitnetFeed(tokenAddr, feed.feedAddr, 18, feed.decimals);
-          break;
-      }
-      if (re) {
-        await re.wait();
+          await re.wait();
+          console.log(`set witnet feed ${feed.feedAddr} ${feed.decimals} for ${feed.ctoken} in ${re.hash}`);
       }
     }
   }
