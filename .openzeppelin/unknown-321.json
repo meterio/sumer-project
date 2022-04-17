@@ -1,35 +1,35 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x13525e5CA53ef14cC58AB6e97B0EFd14218C337A",
-    "txHash": "0xd14d93d0e62bac4f15e35a68fd27288d3ded9a1932ec3168f1c3c3782f1ed5b7"
+    "address": "0x3B6Ce53bE858d064DbD9F3C0B50C8c76fDC17Cc5",
+    "txHash": "0x4a4e04b4a8a65be26181fb5f66a28545d8a93917f73920a0fb81168501bcbedd"
   },
   "proxies": [
     {
-      "address": "0x778735292C504D7fEF9f13Cdf39d611C83276293",
-      "txHash": "0x813b2e528b38f47732b8e2d98d5e25c617fe22d39f84957b13e64af763cad842",
+      "address": "0x32BD90172B076516032889888f784f20CCECbAbd",
+      "txHash": "0x1ea260daae5606795b7797b7a0ba067b2065bae6ec64eeeaad91711faeb58ffb",
       "kind": "transparent"
     },
     {
-      "address": "0x66B9a9af194a4613663D708048D0D9e0aB6b65CE",
-      "txHash": "0xdb3b7acb97af1a3e6b4fa0bedbbb974148912a06ff1cc3fac7b0f1dab81e537e",
+      "address": "0x19fE342128F3A6C921199864E621D420232eEef4",
+      "txHash": "0xd1deee5074c4cda0b3119b847f3b2226d6d0d573b6e451b7079483145e418472",
       "kind": "transparent"
     },
     {
-      "address": "0x03771A547C556a5CB65512B53D5F71a6C60297C6",
-      "txHash": "0xfce5c902a40eddded2396fc3a3729ac5505986a483fe1b41922b0cb0b4c57df9",
+      "address": "0xf9C889397dC3d15E2902AeC4beb3900AA4ac2af9",
+      "txHash": "0xe2be83f6971d52b4da0ce70f38c84439cbaf44ddacc3eefc7ccd40d24a112235",
       "kind": "transparent"
     },
     {
-      "address": "0x68187c6Ef1948255B4D660f903b26617A932C23d",
-      "txHash": "0x4f25eef74ec5b5062a87fb26f206961095a7d1c6705ebd73cf70f1b4d771927b",
+      "address": "0xBD4d3df64f7C705Cbae5Ad3a1bC33B9521488f77",
+      "txHash": "0x33ab88655b9e357338d61755fb918dee698efe4b3e4c9fcd2d64c25719389669",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "cb1c5b7424ac34650e5df481f797f5a48158232f1032a47757df626c566916f2": {
-      "address": "0x8C71655008d5d034f286D40858724dFDF5B878eE",
-      "txHash": "0x3ca8e89b7b3675ae881707cb3c4c0e0f82c7dea021b6dcdec52fbb8e55ab634e",
+    "1bf97e89475964e6f86b03bfa8cbb4f9ca21bc5f1b2020dec2b5c9e6c5be51d7": {
+      "address": "0xEe79f7429c26aA2BE88f95570c06876AF0094aAb",
+      "txHash": "0x57c0a190d06e3c9d5d346c8cddbb680944e51049b0199f5465be3e412b3671ee",
       "layout": {
         "storage": [
           {
@@ -222,7 +222,7 @@
             "slot": "455",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "ERC20MintablePauseableUpgradeable",
-            "src": "contracts/stake/ERC20/ERC20MintablePauseableUpgradeable.sol:21"
+            "src": "contracts/stake/ERC20/ERC20MintablePauseableUpgradeable.sol:20"
           }
         ],
         "types": {
