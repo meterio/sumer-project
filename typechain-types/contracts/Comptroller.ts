@@ -88,6 +88,7 @@ export interface ComptrollerInterface extends utils.Interface {
     "repayBorrowVerify(address,address,address,uint256,uint256)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
     "seizeVerify(address,address,address,address,uint256)": FunctionFragment;
+    "setMaxInMarket(address,uint256)": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
     "transferVerify(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
@@ -156,6 +157,7 @@ export interface ComptrollerInterface extends utils.Interface {
       | "repayBorrowVerify"
       | "seizeAllowed"
       | "seizeVerify"
+      | "setMaxInMarket"
       | "transferAllowed"
       | "transferVerify"
       | "underWriterAdmin"
@@ -365,6 +367,10 @@ export interface ComptrollerInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "seizeVerify",
     values: [string, string, string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxInMarket",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferAllowed",
@@ -588,6 +594,10 @@ export interface ComptrollerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setMaxInMarket",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferAllowed",
     data: BytesLike
   ): Result;
@@ -624,6 +634,7 @@ export interface ComptrollerInterface extends utils.Interface {
     "NewLiquidationIncentive(uint256,uint256)": EventFragment;
     "NewPauseGuardian(address,address)": EventFragment;
     "NewPriceOracle(address,address)": EventFragment;
+    "SetMaxInMarket(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ActionPaused(string,bool)"): EventFragment;
@@ -649,6 +660,7 @@ export interface ComptrollerInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "NewLiquidationIncentive"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPauseGuardian"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPriceOracle"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetMaxInMarket"): EventFragment;
 }
 
 export interface ActionPaused_string_bool_EventObject {
@@ -873,6 +885,17 @@ export type NewPriceOracleEvent = TypedEvent<
 >;
 
 export type NewPriceOracleEventFilter = TypedEventFilter<NewPriceOracleEvent>;
+
+export interface SetMaxInMarketEventObject {
+  cToken: string;
+  amount: BigNumber;
+}
+export type SetMaxInMarketEvent = TypedEvent<
+  [string, BigNumber],
+  SetMaxInMarketEventObject
+>;
+
+export type SetMaxInMarketEventFilter = TypedEventFilter<SetMaxInMarketEvent>;
 
 export interface Comptroller extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -1213,6 +1236,12 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setMaxInMarket(
+      cToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     transferAllowed(
       cToken: string,
       src: string,
@@ -1530,6 +1559,12 @@ export interface Comptroller extends BaseContract {
     liquidator: string,
     borrower: string,
     seizeTokens: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMaxInMarket(
+    cToken: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1858,6 +1893,12 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setMaxInMarket(
+      cToken: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     transferAllowed(
       cToken: string,
       src: string,
@@ -2038,6 +2079,15 @@ export interface Comptroller extends BaseContract {
       oldPriceOracle?: null,
       newPriceOracle?: null
     ): NewPriceOracleEventFilter;
+
+    "SetMaxInMarket(address,uint256)"(
+      cToken?: string | null,
+      amount?: null
+    ): SetMaxInMarketEventFilter;
+    SetMaxInMarket(
+      cToken?: string | null,
+      amount?: null
+    ): SetMaxInMarketEventFilter;
   };
 
   estimateGas: {
@@ -2336,6 +2386,12 @@ export interface Comptroller extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMaxInMarket(
+      cToken: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2686,6 +2742,12 @@ export interface Comptroller extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMaxInMarket(
+      cToken: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

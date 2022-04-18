@@ -79,6 +79,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   /// @notice Emitted when COMP is granted by admin
   event CompGranted(address recipient, uint256 amount);
 
+  event SetMaxInMarket(CToken indexed cToken, uint256 amount);
+
   /// @notice The initial COMP index for a market
   uint224 public constant compInitialIndex = 1e36;
 
@@ -1251,6 +1253,18 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   }
 
   /*** Admin Functions ***/
+
+  function setMaxInMarket(CToken cToken, uint256 amount) public returns (uint256) {
+    // Check caller is admin
+    if (msg.sender != admin) {
+      return fail(Error.UNAUTHORIZED, FailureInfo.SET_PRICE_ORACLE_OWNER_CHECK);
+    }
+    maxInMarket[address(cToken)] = amount;
+
+    emit SetMaxInMarket(cToken, amount);
+
+    return uint256(Error.NO_ERROR);
+  }
 
   /**
    * @notice Sets a new price oracle for the comptroller
