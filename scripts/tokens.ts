@@ -142,7 +142,7 @@ export const priceFeeds: { [key: string]: PriceFeed[] } = {
     {
       ctoken: 'cUSDT',
       type: FeedType.Witnet,
-      feedAddr: '0xD1B976c7d61c616f18D657297394680026367619',
+      feedAddr: '0xbAc8068Bd402d256505FA1b0281d669e026627EB',
       decimals: 6,
       fixed: '',
     },
