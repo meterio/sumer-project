@@ -185,6 +185,5 @@ contract ComptrollerV7Storage is ComptrollerV6Storage {
    * @notice eqAssetGroup, cToken -> equal assets info.
    */
   //mapping(address => EqualAssets) public eqAssetGroup;
-  mapping(address => uint256) public maxInMarket;
-  mapping(address => uint256) public inMarket;
+  mapping(address => uint256) public maxSupply;
 }

@@ -37,12 +37,11 @@ export interface ComptrollerV7StorageInterface extends utils.Interface {
     "compSupplySpeeds(address)": FunctionFragment;
     "compSupplyState(address)": FunctionFragment;
     "comptrollerImplementation()": FunctionFragment;
-    "inMarket(address)": FunctionFragment;
     "lastContributorBlock(address)": FunctionFragment;
     "liquidationIncentiveMantissa()": FunctionFragment;
     "markets(address)": FunctionFragment;
     "maxAssets()": FunctionFragment;
-    "maxInMarket(address)": FunctionFragment;
+    "maxSupply(address)": FunctionFragment;
     "oracle()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "pendingComptrollerImplementation()": FunctionFragment;
@@ -66,12 +65,11 @@ export interface ComptrollerV7StorageInterface extends utils.Interface {
       | "compSupplySpeeds"
       | "compSupplyState"
       | "comptrollerImplementation"
-      | "inMarket"
       | "lastContributorBlock"
       | "liquidationIncentiveMantissa"
       | "markets"
       | "maxAssets"
-      | "maxInMarket"
+      | "maxSupply"
       | "oracle"
       | "pendingAdmin"
       | "pendingComptrollerImplementation"
@@ -126,7 +124,6 @@ export interface ComptrollerV7StorageInterface extends utils.Interface {
     functionFragment: "comptrollerImplementation",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "inMarket", values: [string]): string;
   encodeFunctionData(
     functionFragment: "lastContributorBlock",
     values: [string]
@@ -137,7 +134,7 @@ export interface ComptrollerV7StorageInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "markets", values: [string]): string;
   encodeFunctionData(functionFragment: "maxAssets", values?: undefined): string;
-  encodeFunctionData(functionFragment: "maxInMarket", values: [string]): string;
+  encodeFunctionData(functionFragment: "maxSupply", values: [string]): string;
   encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pendingAdmin",
@@ -200,7 +197,6 @@ export interface ComptrollerV7StorageInterface extends utils.Interface {
     functionFragment: "comptrollerImplementation",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "inMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "lastContributorBlock",
     data: BytesLike
@@ -211,10 +207,7 @@ export interface ComptrollerV7StorageInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "markets", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "maxAssets", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "maxInMarket",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "maxSupply", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingAdmin",
@@ -319,8 +312,6 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     comptrollerImplementation(overrides?: CallOverrides): Promise<[string]>;
 
-    inMarket(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
     lastContributorBlock(
       arg0: string,
       overrides?: CallOverrides
@@ -343,7 +334,7 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     maxAssets(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    maxInMarket(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    maxSupply(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     oracle(overrides?: CallOverrides): Promise<[string]>;
 
@@ -407,8 +398,6 @@ export interface ComptrollerV7Storage extends BaseContract {
 
   comptrollerImplementation(overrides?: CallOverrides): Promise<string>;
 
-  inMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
   lastContributorBlock(
     arg0: string,
     overrides?: CallOverrides
@@ -429,7 +418,7 @@ export interface ComptrollerV7Storage extends BaseContract {
 
   maxAssets(overrides?: CallOverrides): Promise<BigNumber>;
 
-  maxInMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+  maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   oracle(overrides?: CallOverrides): Promise<string>;
 
@@ -497,8 +486,6 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     comptrollerImplementation(overrides?: CallOverrides): Promise<string>;
 
-    inMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
     lastContributorBlock(
       arg0: string,
       overrides?: CallOverrides
@@ -519,7 +506,7 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     maxAssets(overrides?: CallOverrides): Promise<BigNumber>;
 
-    maxInMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     oracle(overrides?: CallOverrides): Promise<string>;
 
@@ -595,8 +582,6 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     comptrollerImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
-    inMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
     lastContributorBlock(
       arg0: string,
       overrides?: CallOverrides
@@ -608,7 +593,7 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     maxAssets(overrides?: CallOverrides): Promise<BigNumber>;
 
-    maxInMarket(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     oracle(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -692,11 +677,6 @@ export interface ComptrollerV7Storage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    inMarket(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     lastContributorBlock(
       arg0: string,
       overrides?: CallOverrides
@@ -713,7 +693,7 @@ export interface ComptrollerV7Storage extends BaseContract {
 
     maxAssets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    maxInMarket(
+    maxSupply(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

@@ -79,7 +79,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   /// @notice Emitted when COMP is granted by admin
   event CompGranted(address recipient, uint256 amount);
 
-  event SetMaxInMarket(CToken indexed cToken, uint256 amount);
+  event SetMaxSupply(CToken indexed cToken, uint256 amount);
 
   /// @notice The initial COMP index for a market
   uint224 public constant compInitialIndex = 1e36;
@@ -240,14 +240,6 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     // all tokens are grouped with equal assets.
     //addToEqualAssetGroupInternal(cToken, borrower, eqAssetGroup, rateMantissa);
 
-    require(
-      maxInMarket[address(cToken)] == 0 ||
-        (maxInMarket[address(cToken)] > 0 &&
-          inMarket[address(cToken)] + cToken.balanceOf(borrower) <= maxInMarket[address(cToken)]),
-      'cToken over max in market'
-    );
-    inMarket[address(cToken)] += cToken.balanceOf(borrower);
-
     emit MarketEntered(cToken, borrower);
 
     return Error.NO_ERROR;
@@ -309,8 +301,6 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
     // remove the same
     //exitEqualAssetGroupInternal(cTokenAddress, msg.sender);
-
-    inMarket[address(cToken)] -= cToken.balanceOf(msg.sender);
 
     emit MarketExited(cToken, msg.sender);
 
@@ -413,6 +403,11 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     // Keep the flywheel moving
     updateCompSupplyIndex(cToken);
     distributeSupplierComp(cToken, minter);
+
+    require(
+      maxSupply[cToken] == 0 || (maxSupply[cToken] > 0 && CToken(cToken).totalSupply() <= maxSupply[cToken]),
+      'cToken over max supply'
+    );
 
     return uint256(Error.NO_ERROR);
   }
@@ -1254,14 +1249,14 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
   /*** Admin Functions ***/
 
-  function setMaxInMarket(CToken cToken, uint256 amount) public returns (uint256) {
+  function setMaxSupply(CToken cToken, uint256 amount) public returns (uint256) {
     // Check caller is admin
     if (msg.sender != admin) {
       return fail(Error.UNAUTHORIZED, FailureInfo.SET_PRICE_ORACLE_OWNER_CHECK);
     }
-    maxInMarket[address(cToken)] = amount;
+    maxSupply[address(cToken)] = amount;
 
-    emit SetMaxInMarket(cToken, amount);
+    emit SetMaxSupply(cToken, amount);
 
     return uint256(Error.NO_ERROR);
   }
