@@ -406,7 +406,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
     require(
       maxSupply[cToken] == 0 ||
-        (maxSupply[cToken] > 0 && CToken(cToken).totalSupply().add(mintAmount) <= maxSupply[cToken]),
+        (maxSupply[cToken] > 0 && add_(CToken(cToken).totalSupply(), mintAmount) <= maxSupply[cToken]),
       'cToken over max supply'
     );
 
