@@ -21,11 +21,11 @@ describe('Comptroller', () => {
       });
 
       it("does not change the pause guardian", async () => {
-        let pauseGuardian = await call(comptroller, 'pauseGuardian');
+        let pauseGuardian = await comptroller.pauseGuardian();
         expect(pauseGuardian).toEqual(address(0));
         await send(comptroller, '_setPauseGuardian', [root], {from: accounts[1]});
 
-        pauseGuardian = await call(comptroller, 'pauseGuardian');
+        pauseGuardian = await comptroller.pauseGuardian();
         expect(pauseGuardian).toEqual(address(0));
       });
     });
@@ -37,7 +37,7 @@ describe('Comptroller', () => {
       beforeEach(async () => {
         comptroller = await makeComptroller();
 
-        result = await send(comptroller, '_setPauseGuardian', [accounts[1]]);
+        result = await comptroller._setPauseGuardian(accounts[1])
       });
 
       it('emits new pause guardian event', async () => {
@@ -48,7 +48,7 @@ describe('Comptroller', () => {
       });
 
       it('changes pending pause guardian', async () => {
-        let pauseGuardian = await call(comptroller, 'pauseGuardian');
+        let pauseGuardian = await comptroller.pauseGuardian();
         expect(pauseGuardian).toEqual(accounts[1]);
       });
     });
@@ -150,12 +150,12 @@ describe('Comptroller', () => {
           await send(comptroller, `_set${method}Paused`, [cToken._address, true], {from: pauseGuardian});
           switch (method) {
           case "Mint":
-            expect(await call(comptroller, 'mintAllowed', [address(1), address(2), 1])).toHaveTrollError('MARKET_NOT_LISTED');
+            expect(await comptroller.mintAllowed', [address(1), address(2), 1])).toHaveTrollError('MARKET_NOT_LISTED();
             await expect(send(comptroller, 'mintAllowed', [cToken._address, address(2), 1])).rejects.toRevert(`revert ${method.toLowerCase()} is paused`);
             break;
 
           case "Borrow":
-            expect(await call(comptroller, 'borrowAllowed', [address(1), address(2), 1])).toHaveTrollError('MARKET_NOT_LISTED');
+            expect(await comptroller.borrowAllowed', [address(1), address(2), 1])).toHaveTrollError('MARKET_NOT_LISTED();
             await expect(send(comptroller, 'borrowAllowed', [cToken._address, address(2), 1])).rejects.toRevert(`revert ${method.toLowerCase()} is paused`);
             break;
 

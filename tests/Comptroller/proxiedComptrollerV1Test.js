@@ -16,14 +16,14 @@ describe('ComptrollerV1', function() {
   });
 
   let initializeBrains = async (priceOracle, closeFactor, maxAssets) => {
-    await send(unitroller, '_setPendingImplementation', [brains._address]);
-    await send(brains, '_become', [unitroller._address, priceOracle._address, closeFactor, maxAssets, false]);
+    await unitroller._setPendingImplementation(brains._address)
+    await brains._become(unitroller._address, priceOracle._address, closeFactor, maxAssets, false)
     return await saddle.getContractAt('ComptrollerG1', unitroller._address);
   };
 
   let reinitializeBrains = async () => {
-    await send(unitroller, '_setPendingImplementation', [brains._address]);
-    await send(brains, '_become', [unitroller._address, address(0), 0, 0, true]);
+    await unitroller._setPendingImplementation(brains._address)
+    await brains._become(unitroller._address, address(0), 0, 0, true)
     return await saddle.getContractAt('ComptrollerG1', unitroller._address);
   };
 
@@ -45,33 +45,33 @@ describe('ComptrollerV1', function() {
       });
 
       it('on success it sets admin to caller of constructor', async () => {
-        expect(await call(unitrollerAsComptroller, 'admin')).toEqual(root);
-        expect(await call(unitrollerAsComptroller, 'pendingAdmin')).toBeAddressZero();
+        expect(await unitrollerAsComptroller.admin()).toEqual(root);
+        expect(await unitrollerAsComptroller.pendingAdmin()).toBeAddressZero();
       });
 
       it('on success it sets closeFactor and maxAssets as specified', async () => {
         const comptroller = await initializeBrains(oracle, closeFactor, maxAssets);
-        expect(await call(comptroller, 'closeFactorMantissa')).toEqualNumber(closeFactor);
-        expect(await call(comptroller, 'maxAssets')).toEqualNumber(maxAssets);
+        expect(await comptroller.closeFactorMantissa()).toEqualNumber(closeFactor);
+        expect(await comptroller.maxAssets()).toEqualNumber(maxAssets);
       });
 
       it("on reinitialization success, it doesn't set closeFactor or maxAssets", async () => {
         let comptroller = await initializeBrains(oracle, closeFactor, maxAssets);
-        expect(await call(unitroller, 'comptrollerImplementation')).toEqual(brains._address);
-        expect(await call(comptroller, 'closeFactorMantissa')).toEqualNumber(closeFactor);
-        expect(await call(comptroller, 'maxAssets')).toEqualNumber(maxAssets);
+        expect(await unitroller.comptrollerImplementation()).toEqual(brains._address);
+        expect(await comptroller.closeFactorMantissa()).toEqualNumber(closeFactor);
+        expect(await comptroller.maxAssets()).toEqualNumber(maxAssets);
 
         // Create new brains
         brains = await deploy('ComptrollerG1');
         comptroller = await reinitializeBrains();
 
-        expect(await call(unitroller, 'comptrollerImplementation')).toEqual(brains._address);
-        expect(await call(comptroller, 'closeFactorMantissa')).toEqualNumber(closeFactor);
-        expect(await call(comptroller, 'maxAssets')).toEqualNumber(maxAssets);
+        expect(await unitroller.comptrollerImplementation()).toEqual(brains._address);
+        expect(await comptroller.closeFactorMantissa()).toEqualNumber(closeFactor);
+        expect(await comptroller.maxAssets()).toEqualNumber(maxAssets);
       });
 
       it('reverts on invalid closeFactor', async () => {
-        await send(unitroller, '_setPendingImplementation', [brains._address]);
+        await unitroller._setPendingImplementation(brains._address)
         await expect(
           send(brains, '_become', [unitroller._address, oracle._address, 0, maxAssets, false])
         ).rejects.toRevert('revert set close factor error');
@@ -79,13 +79,13 @@ describe('ComptrollerV1', function() {
 
       it('allows 0 maxAssets', async () => {
         const comptroller = await initializeBrains(oracle, closeFactor, 0);
-        expect(await call(comptroller, 'maxAssets')).toEqualNumber(0);
+        expect(await comptroller.maxAssets()).toEqualNumber(0);
       });
 
       it('allows 5000 maxAssets', async () => {
         // 5000 is an arbitrary number larger than what we expect to ever actually use
         const comptroller = await initializeBrains(oracle, closeFactor, 5000);
-        expect(await call(comptroller, 'maxAssets')).toEqualNumber(5000);
+        expect(await comptroller.maxAssets()).toEqualNumber(5000);
       });
     });
 
@@ -123,7 +123,7 @@ describe('ComptrollerV1', function() {
 
       it('succeeds and sets market', async () => {
         const cToken = await makeCToken({ supportMarket: true, comptroller: unitrollerAsComptroller });
-        await send(oracle, 'setUnderlyingPrice', [cToken._address, 1]);
+        await oracle.setUnderlyingPrice(cToken._address, 1)
         expect(
           await send(unitrollerAsComptroller, '_setCollateralFactor', [cToken._address, half])
         ).toHaveLog('NewCollateralFactor', {
@@ -147,13 +147,13 @@ describe('ComptrollerV1', function() {
       });
 
       it('succeeds and sets market', async () => {
-        const result = await send(unitrollerAsComptroller, '_supportMarket', [cToken._address]);
+        const result = await unitrollerAsComptroller._supportMarket(cToken._address)
         expect(result).toHaveLog('MarketListed', { cToken: cToken._address });
       });
 
       it('cannot list a market a second time', async () => {
-        const result1 = await send(unitrollerAsComptroller, '_supportMarket', [cToken._address]);
-        const result2 = await send(unitrollerAsComptroller, '_supportMarket', [cToken._address]);
+        const result1 = await unitrollerAsComptroller._supportMarket(cToken._address)
+        const result2 = await unitrollerAsComptroller._supportMarket(cToken._address)
         expect(result1).toHaveLog('MarketListed', { cToken: cToken._address });
         expect(result2).toHaveTrollFailure('MARKET_ALREADY_LISTED', 'SUPPORT_MARKET_EXISTS');
       });
@@ -161,8 +161,8 @@ describe('ComptrollerV1', function() {
       it('can list two different markets', async () => {
         const cToken1 = await makeCToken({ comptroller: unitroller });
         const cToken2 = await makeCToken({ comptroller: unitroller });
-        const result1 = await send(unitrollerAsComptroller, '_supportMarket', [cToken1._address]);
-        const result2 = await send(unitrollerAsComptroller, '_supportMarket', [cToken2._address]);
+        const result1 = await unitrollerAsComptroller._supportMarket(cToken1._address)
+        const result2 = await unitrollerAsComptroller._supportMarket(cToken2._address)
         expect(result1).toHaveLog('MarketListed', { cToken: cToken1._address });
         expect(result2).toHaveLog('MarketListed', { cToken: cToken2._address });
       });

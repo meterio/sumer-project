@@ -20,13 +20,13 @@ describe('Comptroller', () => {
   describe('constructor', () => {
     it("on success it sets admin to creator and pendingAdmin is unset", async () => {
       const comptroller = await makeComptroller();
-      expect(await call(comptroller, 'admin')).toEqual(root);
-      expect(await call(comptroller, 'pendingAdmin')).toEqualNumber(0);
+      expect(await comptroller.admin()).toEqual(root);
+      expect(await comptroller.pendingAdmin()).toEqualNumber(0);
     });
 
     it("on success it sets closeFactor as specified", async () => {
       const comptroller = await makeComptroller();
-      expect(await call(comptroller, 'closeFactorMantissa')).toEqualNumber(0.051e18);
+      expect(await comptroller.closeFactorMantissa()).toEqualNumber(0.051e18);
     });
   });
 
@@ -45,7 +45,7 @@ describe('Comptroller', () => {
       const {reply, receipt} = await both(comptroller, '_setLiquidationIncentive', [initialIncentive], {from: accounts[0]});
       expect(reply).toHaveTrollError('UNAUTHORIZED');
       expect(receipt).toHaveTrollFailure('UNAUTHORIZED', 'SET_LIQUIDATION_INCENTIVE_OWNER_CHECK');
-      expect(await call(comptroller, 'liquidationIncentiveMantissa')).toEqualNumber(initialIncentive);
+      expect(await comptroller.liquidationIncentiveMantissa()).toEqualNumber(initialIncentive);
     });
 
     it("accepts a valid incentive and emits a NewLiquidationIncentive event", async () => {
@@ -55,7 +55,7 @@ describe('Comptroller', () => {
         oldLiquidationIncentiveMantissa: initialIncentive.toString(),
         newLiquidationIncentiveMantissa: validIncentive.toString()
       });
-      expect(await call(comptroller, 'liquidationIncentiveMantissa')).toEqualNumber(validIncentive);
+      expect(await comptroller.liquidationIncentiveMantissa()).toEqualNumber(validIncentive);
     });
   });
 
@@ -76,23 +76,23 @@ describe('Comptroller', () => {
 
     it.skip("reverts if passed a contract that doesn't implement isPriceOracle", async () => {
       await expect(send(comptroller, '_setPriceOracle', [comptroller._address])).rejects.toRevert();
-      expect(await call(comptroller, 'oracle')).toEqual(oldOracle._address);
+      expect(await comptroller.oracle()).toEqual(oldOracle._address);
     });
 
     it.skip("reverts if passed a contract that implements isPriceOracle as false", async () => {
-      await send(newOracle, 'setIsPriceOracle', [false]); // Note: not yet implemented
+      await newOracle.setIsPriceOracle(false) // Note: not yet implemented
       await expect(send(notOracle, '_setPriceOracle', [comptroller._address])).rejects.toRevert("revert oracle method isPriceOracle returned false");
-      expect(await call(comptroller, 'oracle')).toEqual(oldOracle._address);
+      expect(await comptroller.oracle()).toEqual(oldOracle._address);
     });
 
     it("accepts a valid price oracle and emits a NewPriceOracle event", async () => {
-      const result = await send(comptroller, '_setPriceOracle', [newOracle._address]);
+      const result = await comptroller._setPriceOracle(newOracle._address)
       expect(result).toSucceed();
       expect(result).toHaveLog('NewPriceOracle', {
         oldPriceOracle: oldOracle._address,
         newPriceOracle: newOracle._address
       });
-      expect(await call(comptroller, 'oracle')).toEqual(newOracle._address);
+      expect(await comptroller.oracle()).toEqual(newOracle._address);
     });
   });
 
@@ -132,7 +132,7 @@ describe('Comptroller', () => {
 
     it("succeeds and sets market", async () => {
       const cToken = await makeCToken({supportMarket: true, underlyingPrice: 1});
-      const result = await send(cToken.comptroller, '_setCollateralFactor', [cToken._address, half]);
+      const result = await cToken.comptroller._setCollateralFactor(cToken._address, half)
       expect(result).toHaveLog('NewCollateralFactor', {
         cToken: cToken._address,
         oldCollateralFactorMantissa: '0',
@@ -157,14 +157,14 @@ describe('Comptroller', () => {
 
     it("succeeds and sets market", async () => {
       const cToken = await makeCToken();
-      const result = await send(cToken.comptroller, '_supportMarket', [cToken._address]);
+      const result = await cToken.comptroller._supportMarket(cToken._address)
       expect(result).toHaveLog('MarketListed', {cToken: cToken._address});
     });
 
     it("cannot list a market a second time", async () => {
       const cToken = await makeCToken();
-      const result1 = await send(cToken.comptroller, '_supportMarket', [cToken._address]);
-      const result2 = await send(cToken.comptroller, '_supportMarket', [cToken._address]);
+      const result1 = await cToken.comptroller._supportMarket(cToken._address)
+      const result2 = await cToken.comptroller._supportMarket(cToken._address)
       expect(result1).toHaveLog('MarketListed', {cToken: cToken._address});
       expect(result2).toHaveTrollFailure('MARKET_ALREADY_LISTED', 'SUPPORT_MARKET_EXISTS');
     });
@@ -172,8 +172,8 @@ describe('Comptroller', () => {
     it("can list two different markets", async () => {
       const cToken1 = await makeCToken();
       const cToken2 = await makeCToken({comptroller: cToken1.comptroller});
-      const result1 = await send(cToken1.comptroller, '_supportMarket', [cToken1._address]);
-      const result2 = await send(cToken1.comptroller, '_supportMarket', [cToken2._address]);
+      const result1 = await cToken1.comptroller._supportMarket(cToken1._address)
+      const result2 = await cToken1.comptroller._supportMarket(cToken2._address)
       expect(result1).toHaveLog('MarketListed', {cToken: cToken1._address});
       expect(result2).toHaveLog('MarketListed', {cToken: cToken2._address});
     });

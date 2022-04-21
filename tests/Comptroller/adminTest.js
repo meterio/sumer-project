@@ -10,13 +10,13 @@ describe('admin / _setPendingAdmin / _acceptAdmin', () => {
 
   describe('admin()', () => {
     it('should return correct admin', async () => {
-      expect(await call(comptroller, 'admin')).toEqual(root);
+      expect(await comptroller.admin()).toEqual(root);
     });
   });
 
   describe('pendingAdmin()', () => {
     it('should return correct pending admin', async () => {
-      expect(await call(comptroller, 'pendingAdmin')).toBeAddressZero()
+      expect(await comptroller.pendingAdmin()).toBeAddressZero()
     });
   });
 
@@ -27,16 +27,16 @@ describe('admin / _setPendingAdmin / _acceptAdmin', () => {
       ).toHaveTrollFailure('UNAUTHORIZED', 'SET_PENDING_ADMIN_OWNER_CHECK');
 
       // Check admin stays the same
-      expect(await call(comptroller, 'admin')).toEqual(root);
-      expect(await call(comptroller, 'pendingAdmin')).toBeAddressZero();
+      expect(await comptroller.admin()).toEqual(root);
+      expect(await comptroller.pendingAdmin()).toBeAddressZero();
     });
 
     it('should properly set pending admin', async () => {
       expect(await send(comptroller, '_setPendingAdmin', [accounts[0]])).toSucceed();
 
       // Check admin stays the same
-      expect(await call(comptroller, 'admin')).toEqual(root);
-      expect(await call(comptroller, 'pendingAdmin')).toEqual(accounts[0]);
+      expect(await comptroller.admin()).toEqual(root);
+      expect(await comptroller.pendingAdmin()).toEqual(accounts[0]);
     });
 
     it('should properly set pending admin twice', async () => {
@@ -44,12 +44,12 @@ describe('admin / _setPendingAdmin / _acceptAdmin', () => {
       expect(await send(comptroller, '_setPendingAdmin', [accounts[1]])).toSucceed();
 
       // Check admin stays the same
-      expect(await call(comptroller, 'admin')).toEqual(root);
-      expect(await call(comptroller, 'pendingAdmin')).toEqual(accounts[1]);
+      expect(await comptroller.admin()).toEqual(root);
+      expect(await comptroller.pendingAdmin()).toEqual(accounts[1]);
     });
 
     it('should emit event', async () => {
-      const result = await send(comptroller, '_setPendingAdmin', [accounts[0]]);
+      const result = await comptroller._setPendingAdmin(accounts[0])
       expect(result).toHaveLog('NewPendingAdmin', {
         oldPendingAdmin: address(0),
         newPendingAdmin: accounts[0],
@@ -62,8 +62,8 @@ describe('admin / _setPendingAdmin / _acceptAdmin', () => {
       expect(await send(comptroller, '_acceptAdmin')).toHaveTrollFailure('UNAUTHORIZED', 'ACCEPT_ADMIN_PENDING_ADMIN_CHECK');
 
       // Check admin stays the same
-      expect(await call(comptroller, 'admin')).toEqual(root);
-      expect(await call(comptroller, 'pendingAdmin')).toBeAddressZero();
+      expect(await comptroller.admin()).toEqual(root);
+      expect(await comptroller.pendingAdmin()).toBeAddressZero();
     });
 
     it('should fail when called by another account (e.g. root)', async () => {
@@ -71,8 +71,8 @@ describe('admin / _setPendingAdmin / _acceptAdmin', () => {
       expect(await send(comptroller, '_acceptAdmin')).toHaveTrollFailure('UNAUTHORIZED', 'ACCEPT_ADMIN_PENDING_ADMIN_CHECK');
 
       // Check admin stays the same
-      expect(await call(comptroller, 'admin')).toEqual(root);
-      expect(await call(comptroller, 'pendingAdmin')).toEqual(accounts[0]);
+      expect(await comptroller.admin()).toEqual(root);
+      expect(await comptroller.pendingAdmin()).toEqual(accounts[0]);
     });
 
     it('should succeed and set admin and clear pending admin', async () => {
@@ -80,8 +80,8 @@ describe('admin / _setPendingAdmin / _acceptAdmin', () => {
       expect(await send(comptroller, '_acceptAdmin', [], {from: accounts[0]})).toSucceed();
 
       // Check admin stays the same
-      expect(await call(comptroller, 'admin')).toEqual(accounts[0]);
-      expect(await call(comptroller, 'pendingAdmin')).toBeAddressZero();
+      expect(await comptroller.admin()).toEqual(accounts[0]);
+      expect(await comptroller.pendingAdmin()).toBeAddressZero();
     });
 
     it('should emit log on success', async () => {

@@ -27,10 +27,10 @@ describe('Unitroller', () => {
 
   describe("constructor", () => {
     it("sets admin to caller and addresses to 0", async () => {
-      expect(await call(unitroller, 'admin')).toEqual(root);
-      expect(await call(unitroller, 'pendingAdmin')).toBeAddressZero();
-      expect(await call(unitroller, 'pendingComptrollerImplementation')).toBeAddressZero();
-      expect(await call(unitroller, 'comptrollerImplementation')).toBeAddressZero();
+      expect(await unitroller.admin()).toEqual(root);
+      expect(await unitroller.pendingAdmin()).toBeAddressZero();
+      expect(await unitroller.pendingComptrollerImplementation()).toBeAddressZero();
+      expect(await unitroller.comptrollerImplementation()).toBeAddressZero();
     });
   });
 
@@ -46,14 +46,14 @@ describe('Unitroller', () => {
       });
 
       it("does not change pending implementation address", async () => {
-        expect(await call(unitroller, 'pendingComptrollerImplementation')).toBeAddressZero()
+        expect(await unitroller.pendingComptrollerImplementation()).toBeAddressZero()
       });
     });
 
     describe("succeeding", () => {
       it("stores pendingComptrollerImplementation with value newPendingImplementation", async () => {
         await setPending(brains, root);
-        expect(await call(unitroller, 'pendingComptrollerImplementation')).toEqual(brains._address);
+        expect(await unitroller.pendingComptrollerImplementation()).toEqual(brains._address);
       });
 
       it("emits NewPendingImplementation event", async () => {
@@ -78,7 +78,7 @@ describe('Unitroller', () => {
       });
 
       it("does not change current implementation address", async () => {
-        expect(await call(unitroller, 'comptrollerImplementation')).not.toEqual(unitroller._address);
+        expect(await unitroller.comptrollerImplementation()).not.toEqual(unitroller._address);
       });
     });
 
@@ -90,16 +90,16 @@ describe('Unitroller', () => {
       let result;
       beforeEach(async () => {
         await setPending(brains, root);
-        result = await send(brains, '_become', [unitroller._address, oracle._address, etherMantissa(.051), 10, false]);
+        result = await brains._become(unitroller._address, oracle._address, etherMantissa(.051), 10, false)
         expect(result).toSucceed();
       });
 
       it("Store comptrollerImplementation with value pendingComptrollerImplementation", async () => {
-        expect(await call(unitroller, 'comptrollerImplementation')).toEqual(brains._address);
+        expect(await unitroller.comptrollerImplementation()).toEqual(brains._address);
       });
 
       it("Unset pendingComptrollerImplementation", async () => {
-        expect(await call(unitroller, 'pendingComptrollerImplementation')).toBeAddressZero();
+        expect(await unitroller.pendingComptrollerImplementation()).toBeAddressZero();
       });
 
       it.skip("Emit NewImplementation(oldImplementation, newImplementation)", async () => {
@@ -134,12 +134,12 @@ describe('Unitroller', () => {
         troll = await deploy('EchoTypesComptroller');
         unitroller = await deploy('Unitroller');
         await setPending(troll, root);
-        await send(troll, 'becomeBrains', [unitroller._address]);
+        await troll.becomeBrains(unitroller._address)
         troll.options.address = unitroller._address;
       });
 
       it("forwards reverts", async () => {
-        await expect(call(troll, 'reverty')).rejects.toRevert("revert gotcha sucka");
+        await expect(troll.reverty()).rejects.toRevert("revert gotcha sucka");
       });
 
       it("gets addresses", async () => {

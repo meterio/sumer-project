@@ -30,7 +30,7 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
     suTokenRateMantissa = 10**18;
   }
 
-  function _become(UnderwriterProxy proxy) public {
+  function become(UnderwriterProxy proxy) public {
     require(msg.sender == proxy.admin(), 'only unitroller admin can change brains');
     require(proxy._acceptImplementation() == 0, 'change not authorized');
   }

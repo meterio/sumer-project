@@ -76,7 +76,7 @@ describe('assetListTest', () => {
 
     it("the market must be listed for add to succeed", async () => {
       await enterAndCheckMarkets([SKT], [], ['MARKET_NOT_LISTED']);
-      await send(comptroller, '_supportMarket', [SKT._address]);
+      await comptroller._supportMarket(SKT._address)
       await enterAndCheckMarkets([SKT], [SKT]);
     });
 
@@ -89,13 +89,13 @@ describe('assetListTest', () => {
   describe('exitMarket', () => {
     it("doesn't let you exit if you have a borrow balance", async () => {
       await enterAndCheckMarkets([OMG], [OMG]);
-      await send(OMG, 'harnessSetAccountBorrows', [customer, 1, 1]);
+      await OMG.harnessSetAccountBorrows(customer, 1, 1)
       await exitAndCheckMarkets(OMG, [OMG], 'NONZERO_BORROW_BALANCE');
     });
 
     it("rejects unless redeem allowed", async () => {
       await enterAndCheckMarkets([OMG, BAT], [OMG, BAT]);
-      await send(BAT, 'harnessSetAccountBorrows', [customer, 1, 1]);
+      await BAT.harnessSetAccountBorrows(customer, 1, 1)
 
       // BAT has a negative balance and there's no supply, thus account should be underwater
       await exitAndCheckMarkets(OMG, [OMG, BAT], 'REJECTION');

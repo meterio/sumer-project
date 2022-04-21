@@ -1,6 +1,7 @@
 import '@typechain/hardhat';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
+import "@nomiclabs/hardhat-waffle";
 import '@openzeppelin/hardhat-upgrades';
 import { task, types } from 'hardhat/config';
 import { Signer, utils, constants, BigNumber, ContractTransaction } from 'ethers';
@@ -80,7 +81,7 @@ task('deployComptroller', 'deploy comptroller/unitroller contracts').setAction(
       receipt = await uwProxy._setPendingImplementation(uwAdmin.address);
       console.log(await receipt.wait());
       // Become Implementation
-      receipt = await uwAdmin._become(uwProxy.address);
+      receipt = await uwAdmin.become(uwProxy.address);
       console.log(await receipt.wait());
     }
 
