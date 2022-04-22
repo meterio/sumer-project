@@ -24,9 +24,9 @@ import type {
   TypedEvent,
   TypedListener,
   OnEvent,
-} from "../../../common";
+} from "../../common";
 
-export interface ComptrollerHarnessInterface extends utils.Interface {
+export interface ComptrollerInterface extends utils.Interface {
   functions: {
     "_become(address)": FunctionFragment;
     "_grantComp(address,uint256)": FunctionFragment;
@@ -40,7 +40,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     "accountAssets(address,uint256)": FunctionFragment;
     "admin()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
-    "blockNumber()": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
     "borrowVerify(address,address,uint256)": FunctionFragment;
     "checkMembership(address,address)": FunctionFragment;
@@ -66,20 +65,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     "getAllMarkets()": FunctionFragment;
     "getAssetsIn(address)": FunctionFragment;
     "getBlockNumber()": FunctionFragment;
-    "getCompAddress()": FunctionFragment;
-    "getCompMarkets()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
-    "harnessAddCompMarkets(address[])": FunctionFragment;
-    "harnessDistributeAllBorrowerComp(address,address,uint256)": FunctionFragment;
-    "harnessDistributeAllSupplierComp(address,address)": FunctionFragment;
-    "harnessDistributeBorrowerComp(address,address,uint256)": FunctionFragment;
-    "harnessDistributeSupplierComp(address,address)": FunctionFragment;
-    "harnessFastForward(uint256)": FunctionFragment;
-    "harnessRefreshCompSpeeds()": FunctionFragment;
-    "harnessSetCompRate(uint256)": FunctionFragment;
-    "harnessTransferComp(address,uint256,uint256)": FunctionFragment;
-    "harnessUpdateCompBorrowIndex(address,uint256)": FunctionFragment;
-    "harnessUpdateCompSupplyIndex(address)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isDeprecated(address)": FunctionFragment;
     "lastContributorBlock(address)": FunctionFragment;
@@ -93,7 +79,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     "mintAllowed(address,address,uint256)": FunctionFragment;
     "mintVerify(address,address,uint256,uint256)": FunctionFragment;
     "oracle()": FunctionFragment;
-    "pauseGuardian()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "pendingComptrollerImplementation()": FunctionFragment;
     "redeemAllowed(address,address,uint256)": FunctionFragment;
@@ -102,15 +87,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     "repayBorrowVerify(address,address,address,uint256,uint256)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
     "seizeVerify(address,address,address,address,uint256)": FunctionFragment;
-    "setBlockNumber(uint256)": FunctionFragment;
-    "setCompAccrued(address,uint256)": FunctionFragment;
-    "setCompAddress(address)": FunctionFragment;
-    "setCompBorrowState(address,uint224,uint32)": FunctionFragment;
-    "setCompBorrowerIndex(address,address,uint256)": FunctionFragment;
-    "setCompSupplierIndex(address,address,uint256)": FunctionFragment;
-    "setCompSupplyState(address,uint224,uint32)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
-    "setPauseGuardian(address)": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
     "transferVerify(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
@@ -131,7 +108,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
       | "accountAssets"
       | "admin"
       | "allMarkets"
-      | "blockNumber"
       | "borrowAllowed"
       | "borrowVerify"
       | "checkMembership"
@@ -157,20 +133,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
       | "getAllMarkets"
       | "getAssetsIn"
       | "getBlockNumber"
-      | "getCompAddress"
-      | "getCompMarkets"
       | "getHypotheticalAccountLiquidity"
-      | "harnessAddCompMarkets"
-      | "harnessDistributeAllBorrowerComp"
-      | "harnessDistributeAllSupplierComp"
-      | "harnessDistributeBorrowerComp"
-      | "harnessDistributeSupplierComp"
-      | "harnessFastForward"
-      | "harnessRefreshCompSpeeds"
-      | "harnessSetCompRate"
-      | "harnessTransferComp"
-      | "harnessUpdateCompBorrowIndex"
-      | "harnessUpdateCompSupplyIndex"
       | "isComptroller"
       | "isDeprecated"
       | "lastContributorBlock"
@@ -184,7 +147,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
       | "mintAllowed"
       | "mintVerify"
       | "oracle"
-      | "pauseGuardian"
       | "pendingAdmin"
       | "pendingComptrollerImplementation"
       | "redeemAllowed"
@@ -193,15 +155,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
       | "repayBorrowVerify"
       | "seizeAllowed"
       | "seizeVerify"
-      | "setBlockNumber"
-      | "setCompAccrued"
-      | "setCompAddress"
-      | "setCompBorrowState"
-      | "setCompBorrowerIndex"
-      | "setCompSupplierIndex"
-      | "setCompSupplyState"
       | "setMaxSupply"
-      | "setPauseGuardian"
       | "transferAllowed"
       | "transferVerify"
       | "underWriterAdmin"
@@ -249,10 +203,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "allMarkets",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "blockNumber",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "borrowAllowed",
@@ -340,60 +290,8 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getCompAddress",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getCompMarkets",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
     values: [string, string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessAddCompMarkets",
-    values: [string[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessDistributeAllBorrowerComp",
-    values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessDistributeAllSupplierComp",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessDistributeBorrowerComp",
-    values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessDistributeSupplierComp",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessFastForward",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessRefreshCompSpeeds",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessSetCompRate",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessTransferComp",
-    values: [string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessUpdateCompBorrowIndex",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "harnessUpdateCompSupplyIndex",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "isComptroller",
@@ -436,10 +334,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "pauseGuardian",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "pendingAdmin",
     values?: undefined
   ): string;
@@ -472,40 +366,8 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     values: [string, string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setBlockNumber",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setCompAccrued",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setCompAddress",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setCompBorrowState",
-    values: [string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setCompBorrowerIndex",
-    values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setCompSupplierIndex",
-    values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setCompSupplyState",
-    values: [string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setMaxSupply",
     values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setPauseGuardian",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "transferAllowed",
@@ -560,10 +422,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allMarkets", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "blockNumber",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "borrowAllowed",
     data: BytesLike
@@ -656,59 +514,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getCompAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getCompMarkets",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getHypotheticalAccountLiquidity",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessAddCompMarkets",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessDistributeAllBorrowerComp",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessDistributeAllSupplierComp",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessDistributeBorrowerComp",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessDistributeSupplierComp",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessFastForward",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessRefreshCompSpeeds",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessSetCompRate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessTransferComp",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessUpdateCompBorrowIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "harnessUpdateCompSupplyIndex",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -749,10 +555,6 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "mintVerify", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "pauseGuardian",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "pendingAdmin",
     data: BytesLike
   ): Result;
@@ -785,39 +587,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setBlockNumber",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setCompAccrued",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setCompAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setCompBorrowState",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setCompBorrowerIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setCompSupplierIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setCompSupplyState",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setMaxSupply",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setPauseGuardian",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1120,12 +890,12 @@ export type SetMaxSupplyEvent = TypedEvent<
 
 export type SetMaxSupplyEventFilter = TypedEventFilter<SetMaxSupplyEvent>;
 
-export interface ComptrollerHarness extends BaseContract {
+export interface Comptroller extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: ComptrollerHarnessInterface;
+  interface: ComptrollerInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -1209,8 +979,6 @@ export interface ComptrollerHarness extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    blockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     borrowAllowed(
       cToken: string,
@@ -1324,10 +1092,6 @@ export interface ComptrollerHarness extends BaseContract {
 
     getBlockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<[string]>;
-
-    getCompMarkets(overrides?: CallOverrides): Promise<[string[]]>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
@@ -1335,69 +1099,6 @@ export interface ComptrollerHarness extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
-
-    harnessAddCompMarkets(
-      cTokens: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessDistributeAllBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessDistributeAllSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessDistributeBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessDistributeSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessFastForward(
-      blocks: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessRefreshCompSpeeds(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessSetCompRate(
-      compRate_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessTransferComp(
-      user: string,
-      userAccrued: BigNumberish,
-      threshold: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessUpdateCompBorrowIndex(
-      cToken: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    harnessUpdateCompSupplyIndex(
-      cToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -1470,8 +1171,6 @@ export interface ComptrollerHarness extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<[string]>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
 
     pendingComptrollerImplementation(
@@ -1528,58 +1227,9 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setBlockNumber(
-      number: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setCompAccrued(
-      user: string,
-      userAccrued: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setCompAddress(
-      compAddress_: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setCompBorrowState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setCompBorrowerIndex(
-      cToken: string,
-      borrower: string,
-      index: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setCompSupplierIndex(
-      cToken: string,
-      supplier: string,
-      index: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setCompSupplyState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setPauseGuardian(
-      harnessedPauseGuardian: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1666,8 +1316,6 @@ export interface ComptrollerHarness extends BaseContract {
   admin(overrides?: CallOverrides): Promise<string>;
 
   allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-  blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
   borrowAllowed(
     cToken: string,
@@ -1772,10 +1420,6 @@ export interface ComptrollerHarness extends BaseContract {
 
   getBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-  getCompAddress(overrides?: CallOverrides): Promise<string>;
-
-  getCompMarkets(overrides?: CallOverrides): Promise<string[]>;
-
   getHypotheticalAccountLiquidity(
     account: string,
     cTokenModify: string,
@@ -1783,69 +1427,6 @@ export interface ComptrollerHarness extends BaseContract {
     borrowAmount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
-
-  harnessAddCompMarkets(
-    cTokens: string[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessDistributeAllBorrowerComp(
-    cToken: string,
-    borrower: string,
-    marketBorrowIndexMantissa: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessDistributeAllSupplierComp(
-    cToken: string,
-    supplier: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessDistributeBorrowerComp(
-    cToken: string,
-    borrower: string,
-    marketBorrowIndexMantissa: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessDistributeSupplierComp(
-    cToken: string,
-    supplier: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessFastForward(
-    blocks: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessRefreshCompSpeeds(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessSetCompRate(
-    compRate_: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessTransferComp(
-    user: string,
-    userAccrued: BigNumberish,
-    threshold: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessUpdateCompBorrowIndex(
-    cToken: string,
-    marketBorrowIndexMantissa: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  harnessUpdateCompSupplyIndex(
-    cToken: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1916,8 +1497,6 @@ export interface ComptrollerHarness extends BaseContract {
 
   oracle(overrides?: CallOverrides): Promise<string>;
 
-  pauseGuardian(overrides?: CallOverrides): Promise<string>;
-
   pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
   pendingComptrollerImplementation(overrides?: CallOverrides): Promise<string>;
@@ -1972,58 +1551,9 @@ export interface ComptrollerHarness extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setBlockNumber(
-    number: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setCompAccrued(
-    user: string,
-    userAccrued: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setCompAddress(
-    compAddress_: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setCompBorrowState(
-    cToken: string,
-    index: BigNumberish,
-    blockNumber_: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setCompBorrowerIndex(
-    cToken: string,
-    borrower: string,
-    index: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setCompSupplierIndex(
-    cToken: string,
-    supplier: string,
-    index: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setCompSupplyState(
-    cToken: string,
-    index: BigNumberish,
-    blockNumber_: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   setMaxSupply(
     cToken: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setPauseGuardian(
-    harnessedPauseGuardian: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -2107,8 +1637,6 @@ export interface ComptrollerHarness extends BaseContract {
     admin(overrides?: CallOverrides): Promise<string>;
 
     allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-    blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
     borrowAllowed(
       cToken: string,
@@ -2219,10 +1747,6 @@ export interface ComptrollerHarness extends BaseContract {
 
     getBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<string>;
-
-    getCompMarkets(overrides?: CallOverrides): Promise<string[]>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
@@ -2230,67 +1754,6 @@ export interface ComptrollerHarness extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
-
-    harnessAddCompMarkets(
-      cTokens: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessDistributeAllBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessDistributeAllSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessDistributeBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessDistributeSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessFastForward(
-      blocks: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    harnessRefreshCompSpeeds(overrides?: CallOverrides): Promise<void>;
-
-    harnessSetCompRate(
-      compRate_: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessTransferComp(
-      user: string,
-      userAccrued: BigNumberish,
-      threshold: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    harnessUpdateCompBorrowIndex(
-      cToken: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    harnessUpdateCompSupplyIndex(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
@@ -2361,8 +1824,6 @@ export interface ComptrollerHarness extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<string>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<string>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
     pendingComptrollerImplementation(
@@ -2419,60 +1880,11 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBlockNumber(
-      number: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCompAccrued(
-      user: string,
-      userAccrued: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCompAddress(
-      compAddress_: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCompBorrowState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCompBorrowerIndex(
-      cToken: string,
-      borrower: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCompSupplierIndex(
-      cToken: string,
-      supplier: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCompSupplyState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    setPauseGuardian(
-      harnessedPauseGuardian: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     transferAllowed(
       cToken: string,
@@ -2729,8 +2141,6 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -2840,79 +2250,12 @@ export interface ComptrollerHarness extends BaseContract {
 
     getBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getCompMarkets(overrides?: CallOverrides): Promise<BigNumber>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
       redeemTokens: BigNumberish,
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    harnessAddCompMarkets(
-      cTokens: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessDistributeAllBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessDistributeAllSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessDistributeBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessDistributeSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessFastForward(
-      blocks: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessRefreshCompSpeeds(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessSetCompRate(
-      compRate_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessTransferComp(
-      user: string,
-      userAccrued: BigNumberish,
-      threshold: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessUpdateCompBorrowIndex(
-      cToken: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    harnessUpdateCompSupplyIndex(
-      cToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
@@ -2975,8 +2318,6 @@ export interface ComptrollerHarness extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
     pendingComptrollerImplementation(
@@ -3033,58 +2374,9 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setBlockNumber(
-      number: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setCompAccrued(
-      user: string,
-      userAccrued: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setCompAddress(
-      compAddress_: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setCompBorrowState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setCompBorrowerIndex(
-      cToken: string,
-      borrower: string,
-      index: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setCompSupplierIndex(
-      cToken: string,
-      supplier: string,
-      index: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setCompSupplyState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setPauseGuardian(
-      harnessedPauseGuardian: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -3175,8 +2467,6 @@ export interface ComptrollerHarness extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    blockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     borrowAllowed(
       cToken: string,
@@ -3300,79 +2590,12 @@ export interface ComptrollerHarness extends BaseContract {
 
     getBlockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getCompMarkets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
       redeemTokens: BigNumberish,
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    harnessAddCompMarkets(
-      cTokens: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessDistributeAllBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessDistributeAllSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessDistributeBorrowerComp(
-      cToken: string,
-      borrower: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessDistributeSupplierComp(
-      cToken: string,
-      supplier: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessFastForward(
-      blocks: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessRefreshCompSpeeds(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessSetCompRate(
-      compRate_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessTransferComp(
-      user: string,
-      userAccrued: BigNumberish,
-      threshold: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessUpdateCompBorrowIndex(
-      cToken: string,
-      marketBorrowIndexMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    harnessUpdateCompSupplyIndex(
-      cToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -3446,8 +2669,6 @@ export interface ComptrollerHarness extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pendingComptrollerImplementation(
@@ -3504,58 +2725,9 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBlockNumber(
-      number: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCompAccrued(
-      user: string,
-      userAccrued: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCompAddress(
-      compAddress_: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCompBorrowState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCompBorrowerIndex(
-      cToken: string,
-      borrower: string,
-      index: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCompSupplierIndex(
-      cToken: string,
-      supplier: string,
-      index: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCompSupplyState(
-      cToken: string,
-      index: BigNumberish,
-      blockNumber_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setPauseGuardian(
-      harnessedPauseGuardian: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

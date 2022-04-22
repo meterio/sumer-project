@@ -113,6 +113,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Comptroller__factory>;
     getContractFactory(
+      name: "PriceOracle",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PriceOracle__factory>;
+    getContractFactory(
       name: "ComptrollerInterface",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ComptrollerInterface__factory>;
@@ -529,9 +533,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.StandardToken__factory>;
     getContractFactory(
+      name: "InterestRateModelHarness",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.InterestRateModelHarness__factory>;
+    getContractFactory(
       name: "Timelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Timelock__factory>;
+    getContractFactory(
+      name: "PriceOracle",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PriceOracle__factory>;
     getContractFactory(
       name: "UnderwriterAdmin",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -686,6 +698,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Comptroller>;
+    getContractAt(
+      name: "PriceOracle",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PriceOracle>;
     getContractAt(
       name: "ComptrollerInterface",
       address: string,
@@ -1207,10 +1224,20 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.StandardToken>;
     getContractAt(
+      name: "InterestRateModelHarness",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.InterestRateModelHarness>;
+    getContractAt(
       name: "Timelock",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Timelock>;
+    getContractAt(
+      name: "PriceOracle",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PriceOracle>;
     getContractAt(
       name: "UnderwriterAdmin",
       address: string,

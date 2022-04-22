@@ -1,7 +1,5 @@
 pragma solidity >=0.5.16;
 
-import './CToken.sol';
-import './PriceOracle.sol';
 
 contract UnitrollerAdminStorage {
   /**
@@ -36,7 +34,7 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
   /**
    * @notice Oracle which gives the price of any given asset
    */
-  PriceOracle public oracle;
+  address public oracle;
 
   /**
    * @notice Multiplier used to calculate the maximum repayAmount when liquidating a borrow
@@ -56,7 +54,7 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
   /**
    * @notice Per-account mapping of "assets you are in", capped by maxAssets
    */
-  mapping(address => CToken[]) public accountAssets;
+  mapping(address => address[]) public accountAssets;
 }
 
 contract ComptrollerV2Storage is ComptrollerV1Storage {
@@ -107,7 +105,7 @@ contract ComptrollerV3Storage is ComptrollerV2Storage {
   }
 
   /// @notice A list of all markets
-  CToken[] public allMarkets;
+  address[] public allMarkets;
 
   /// @notice The rate at which the flywheel distributes COMP, per block
   uint256 public compRate;
@@ -161,7 +159,7 @@ contract ComptrollerV7Storage is ComptrollerV6Storage {
   /// @notice The equal assests members
   /**
     struct EqualAssetsMember {
-        CToken token;
+        address token;
         uint collateralMantissa;
     }
     ***/

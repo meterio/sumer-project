@@ -69,23 +69,23 @@ contract UnderwriterAdminInterface is UnderwriterStorage {
   }
   mapping(uint8 => EqualAssets) public eqAssetGroup;
 
-  function getEqAssetGroupNum() public view returns (uint8);
+  function getEqAssetGroupNum() external view returns (uint8);
 
-  function getEqAssetGroup(uint8 groupId) public view returns (EqualAssets memory);
+  function getEqAssetGroup(uint8 groupId) external view returns (EqualAssets memory);
 
-  function _getPauseGuardian() public view returns (address);
+  function _getPauseGuardian() external view returns (address);
 
-  function _getMintPaused(CToken cToken) public returns (bool);
+  function _getMintPaused(address cToken) external returns (bool);
 
-  function _getTransferPaused() public view returns (bool);
+  function _getTransferPaused() external view returns (bool);
 
-  function _getBorrowPaused(CToken cToken) public view returns (bool);
+  function _getBorrowPaused(address cToken) external view returns (bool);
 
-  function _getSeizePaused() public view returns (bool);
+  function _getSeizePaused() external view returns (bool);
 
-  function getCompAddress() public view returns (address);
+  function getCompAddress() external view returns (address);
 
-  function _getMarketBorrowCap(CToken cToken) external view returns (uint256);
+  function _getMarketBorrowCap(address cToken) external view returns (uint256);
 
   function _getBorrowCapGuardian() external view returns (address);
 

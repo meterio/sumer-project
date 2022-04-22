@@ -1,8 +1,7 @@
-pragma solidity ^0.5.16;
+pragma solidity >=0.5.16;
 pragma experimental ABIEncoderV2;
 
 import '../Comptroller.sol';
-import '../PriceOracle.sol';
 
 contract ComptrollerKovan is Comptroller {
   function getCompAddress() public view returns (address) {
@@ -16,9 +15,10 @@ contract ComptrollerRopsten is Comptroller {
   }
 }
 
-contract ComptrollerHarness is Comptroller, UnderwriterAdmin {
+contract ComptrollerHarness is Comptroller {
   address compAddress;
   uint256 public blockNumber;
+  address public pauseGuardian;
 
   constructor() public Comptroller() {}
 
@@ -68,29 +68,29 @@ contract ComptrollerHarness is Comptroller, UnderwriterAdmin {
    * @notice Recalculate and update COMP speeds for all COMP markets
    */
   function harnessRefreshCompSpeeds() public {
-    CToken[] memory allMarkets_ = allMarkets;
+    address[] memory allMarkets_ = allMarkets;
 
     for (uint256 i = 0; i < allMarkets_.length; i++) {
-      CToken cToken = allMarkets_[i];
-      Exp memory borrowIndex = Exp({mantissa: cToken.borrowIndex()});
-      updateCompSupplyIndex(address(cToken));
-      updateCompBorrowIndex(address(cToken), borrowIndex);
+      address cToken = allMarkets_[i];
+      Exp memory borrowIndex = Exp({mantissa: CTokenInterface(cToken).borrowIndex()});
+      updateCompSupplyIndex(cToken);
+      updateCompBorrowIndex(cToken, borrowIndex);
     }
 
     Exp memory totalUtility = Exp({mantissa: 0});
     Exp[] memory utilities = new Exp[](allMarkets_.length);
     for (uint256 i = 0; i < allMarkets_.length; i++) {
-      CToken cToken = allMarkets_[i];
-      if (compSupplySpeeds[address(cToken)] > 0 || compBorrowSpeeds[address(cToken)] > 0) {
-        Exp memory assetPrice = Exp({mantissa: oracle.getUnderlyingPrice(cToken)});
-        Exp memory utility = mul_(assetPrice, cToken.totalBorrows());
+      address cToken = allMarkets_[i];
+      if (compSupplySpeeds[cToken] > 0 || compBorrowSpeeds[cToken] > 0) {
+        Exp memory assetPrice = Exp({mantissa: PriceOracle(oracle).getUnderlyingPrice(cToken)});
+        Exp memory utility = mul_(assetPrice, CTokenInterface(cToken).totalBorrows());
         utilities[i] = utility;
         totalUtility = add_(totalUtility, utility);
       }
     }
 
     for (uint256 i = 0; i < allMarkets_.length; i++) {
-      CToken cToken = allMarkets[i];
+      address cToken = allMarkets[i];
       uint256 newSpeed = totalUtility.mantissa > 0 ? mul_(compRate, div_(utilities[i], totalUtility)) : 0;
       setCompSpeedInternal(cToken, newSpeed, newSpeed);
     }
@@ -160,7 +160,7 @@ contract ComptrollerHarness is Comptroller, UnderwriterAdmin {
   function harnessAddCompMarkets(address[] memory cTokens) public {
     for (uint256 i = 0; i < cTokens.length; i++) {
       // temporarily set compSpeed to 1 (will be fixed by `harnessRefreshCompSpeeds`)
-      setCompSpeedInternal(CToken(cTokens[i]), 1, 1);
+      setCompSpeedInternal(cTokens[i], 1, 1);
     }
   }
 

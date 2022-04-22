@@ -2,10 +2,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 export const RPCS = {
   hardhat: {
-    allowUnlimitedContractSize: false,
+    allowUnlimitedContractSize: true,
     accounts: {
       mnemonic: process.env.MNEMONIC,
     },
+    gasLimit: 80000000,
   },
   ganache: {
     url: `http://127.0.0.1:8545`,

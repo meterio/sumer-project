@@ -6,3 +6,4 @@ export * as cEtherHarnessSol from "./CEtherHarness.sol";
 export * as comptrollerHarnessSol from "./ComptrollerHarness.sol";
 export * as erc20Sol from "./ERC20.sol";
 export { ComptrollerScenario__factory } from "./ComptrollerScenario__factory";
+export { InterestRateModelHarness__factory } from "./InterestRateModelHarness__factory";

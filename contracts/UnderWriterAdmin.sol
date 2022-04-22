@@ -2,12 +2,23 @@ pragma solidity >=0.5.16;
 pragma experimental ABIEncoderV2;
 
 import './CToken.sol';
-import './PriceOracle.sol';
 import './ErrorReporter.sol';
 import './Governance/Comp.sol';
 import './UnderwriterStorage.sol';
 import './UnderwriterProxy.sol';
 
+contract PriceOracle {
+  /// @notice Indicator that this is a PriceOracle contract (for inspection)
+  bool public constant isPriceOracle = true;
+
+  /**
+   * @notice Get the underlying price of a cToken asset
+   * @param cToken The cToken to get the underlying price of
+   * @return The underlying asset price mantissa (scaled by 1e18).
+   *  Zero means the price is unavailable.
+   */
+  function getUnderlyingPrice(CToken cToken) external view returns (uint256);
+}
 contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter {
   /// @notice Emitted when an action is paused globally
   event ActionPaused(string action, bool pauseState);
@@ -115,8 +126,8 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
     return state;
   }
 
-  function _getMintPaused(CToken cToken) public returns (bool) {
-    return mintGuardianPaused[address(cToken)];
+  function _getMintPaused(address cToken) public returns (bool) {
+    return mintGuardianPaused[cToken];
   }
 
   function _setBorrowPaused(CToken cToken, bool state) public returns (bool) {
@@ -129,8 +140,8 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
     return state;
   }
 
-  function _getBorrowPaused(CToken cToken) public view returns (bool) {
-    return borrowGuardianPaused[address(cToken)];
+  function _getBorrowPaused(address cToken) public view returns (bool) {
+    return borrowGuardianPaused[cToken];
   }
 
   function _setTransferPaused(bool state) public returns (bool) {
@@ -203,8 +214,8 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
     }
   }
 
-  function _getMarketBorrowCap(CToken cToken) external view returns (uint256) {
-    return borrowCaps[address(cToken)];
+  function _getMarketBorrowCap(address cToken) external view returns (uint256) {
+    return borrowCaps[cToken];
   }
 
   /**

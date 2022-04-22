@@ -26,71 +26,22 @@ import type {
   OnEvent,
 } from "../../common";
 
-export declare namespace UnderwriterAdminInterface {
-  export type EqualAssetsStruct = {
-    groupId: BigNumberish;
-    groupName: string;
-    inGroupCTokenRateMantissa: BigNumberish;
-    inGroupSuTokenRateMantissa: BigNumberish;
-    interGroupCTokenRateMantissa: BigNumberish;
-    interGroupSuTokenRateMantissa: BigNumberish;
-  };
-
-  export type EqualAssetsStructOutput = [
-    number,
-    string,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber
-  ] & {
-    groupId: number;
-    groupName: string;
-    inGroupCTokenRateMantissa: BigNumber;
-    inGroupSuTokenRateMantissa: BigNumber;
-    interGroupCTokenRateMantissa: BigNumber;
-    interGroupSuTokenRateMantissa: BigNumber;
-  };
-}
-
 export interface ComptrollerScenarioInterface extends utils.Interface {
   functions: {
     "_become(address)": FunctionFragment;
-    "_borrowGuardianPaused()": FunctionFragment;
-    "_getBorrowCapGuardian()": FunctionFragment;
-    "_getBorrowPaused(address)": FunctionFragment;
-    "_getMarketBorrowCap(address)": FunctionFragment;
-    "_getMintPaused(address)": FunctionFragment;
-    "_getPauseGuardian()": FunctionFragment;
-    "_getSeizePaused()": FunctionFragment;
-    "_getSuTokenRateMantissa()": FunctionFragment;
-    "_getTransferPaused()": FunctionFragment;
     "_grantComp(address,uint256)": FunctionFragment;
-    "_mintGuardianPaused()": FunctionFragment;
-    "_setBorrowCapGuardian(address)": FunctionFragment;
-    "_setBorrowPaused(address,bool)": FunctionFragment;
     "_setCloseFactor(uint256)": FunctionFragment;
     "_setCompSpeeds(address[],uint256[],uint256[])": FunctionFragment;
     "_setContributorCompSpeed(address,uint256)": FunctionFragment;
     "_setLiquidationIncentive(uint256)": FunctionFragment;
-    "_setMarketBorrowCaps(address[],uint256[])": FunctionFragment;
-    "_setMintPaused(address,bool)": FunctionFragment;
-    "_setPauseGuardian(address)": FunctionFragment;
     "_setPriceOracle(address)": FunctionFragment;
-    "_setSeizePaused(bool)": FunctionFragment;
-    "_setSuTokenRateMantissa(uint256)": FunctionFragment;
-    "_setTransferPaused(bool)": FunctionFragment;
     "_setUnderWriterAdmin(address)": FunctionFragment;
     "_supportMarket(address,uint8)": FunctionFragment;
     "accountAssets(address,uint256)": FunctionFragment;
     "admin()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
-    "become(address)": FunctionFragment;
     "blockNumber()": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
-    "borrowCapGuardian()": FunctionFragment;
-    "borrowCaps(address)": FunctionFragment;
-    "borrowGuardianPaused(address)": FunctionFragment;
     "borrowVerify(address,address,uint256)": FunctionFragment;
     "checkMembership(address,address)": FunctionFragment;
     "claimComp(address,address[])": FunctionFragment;
@@ -111,8 +62,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     "compSupplyState(address)": FunctionFragment;
     "comptrollerImplementation()": FunctionFragment;
     "enterMarkets(address[])": FunctionFragment;
-    "eqAssetGroup(uint8)": FunctionFragment;
-    "equalAssetsGroupNum()": FunctionFragment;
     "exitMarket(address)": FunctionFragment;
     "fastForward(uint256)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
@@ -120,11 +69,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     "getAssetsIn(address)": FunctionFragment;
     "getBlockNumber()": FunctionFragment;
     "getCompAddress()": FunctionFragment;
-    "getEqAssetGroup(uint8)": FunctionFragment;
-    "getEqAssetGroupNum()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
-    "governanceToken()": FunctionFragment;
-    "implementation()": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isDeprecated(address)": FunctionFragment;
     "lastContributorBlock(address)": FunctionFragment;
@@ -137,32 +82,23 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     "maxSupply(address)": FunctionFragment;
     "membershipLength(address,string)": FunctionFragment;
     "mintAllowed(address,address,uint256)": FunctionFragment;
-    "mintGuardianPaused(address)": FunctionFragment;
     "mintVerify(address,address,uint256,uint256)": FunctionFragment;
     "oracle()": FunctionFragment;
-    "pauseGuardian()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "pendingComptrollerImplementation()": FunctionFragment;
-    "pendingImplementation()": FunctionFragment;
     "redeemAllowed(address,address,uint256)": FunctionFragment;
     "redeemVerify(address,address,uint256,uint256)": FunctionFragment;
     "refreshCompSpeeds()": FunctionFragment;
-    "removeEqAssetGroup(uint8)": FunctionFragment;
     "repayBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "repayBorrowVerify(address,address,address,uint256,uint256)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
-    "seizeGuardianPaused()": FunctionFragment;
     "seizeVerify(address,address,address,address,uint256)": FunctionFragment;
     "setBlockNumber(uint256)": FunctionFragment;
     "setCompAddress(address)": FunctionFragment;
     "setCompBorrowerIndex(address,address,uint256)": FunctionFragment;
     "setCompSupplierIndex(address,address,uint256)": FunctionFragment;
-    "setEqAssetGroup(uint8,string,uint256,uint256,uint256,uint256)": FunctionFragment;
-    "setGovTokenAddress(address)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
-    "suTokenRateMantissa()": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
-    "transferGuardianPaused()": FunctionFragment;
     "transferVerify(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
     "unlist(address)": FunctionFragment;
@@ -172,41 +108,19 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "_become"
-      | "_borrowGuardianPaused"
-      | "_getBorrowCapGuardian"
-      | "_getBorrowPaused"
-      | "_getMarketBorrowCap"
-      | "_getMintPaused"
-      | "_getPauseGuardian"
-      | "_getSeizePaused"
-      | "_getSuTokenRateMantissa"
-      | "_getTransferPaused"
       | "_grantComp"
-      | "_mintGuardianPaused"
-      | "_setBorrowCapGuardian"
-      | "_setBorrowPaused"
       | "_setCloseFactor"
       | "_setCompSpeeds"
       | "_setContributorCompSpeed"
       | "_setLiquidationIncentive"
-      | "_setMarketBorrowCaps"
-      | "_setMintPaused"
-      | "_setPauseGuardian"
       | "_setPriceOracle"
-      | "_setSeizePaused"
-      | "_setSuTokenRateMantissa"
-      | "_setTransferPaused"
       | "_setUnderWriterAdmin"
       | "_supportMarket"
       | "accountAssets"
       | "admin"
       | "allMarkets"
-      | "become"
       | "blockNumber"
       | "borrowAllowed"
-      | "borrowCapGuardian"
-      | "borrowCaps"
-      | "borrowGuardianPaused"
       | "borrowVerify"
       | "checkMembership"
       | "claimComp(address,address[])"
@@ -227,8 +141,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
       | "compSupplyState"
       | "comptrollerImplementation"
       | "enterMarkets"
-      | "eqAssetGroup"
-      | "equalAssetsGroupNum"
       | "exitMarket"
       | "fastForward"
       | "getAccountLiquidity"
@@ -236,11 +148,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
       | "getAssetsIn"
       | "getBlockNumber"
       | "getCompAddress"
-      | "getEqAssetGroup"
-      | "getEqAssetGroupNum"
       | "getHypotheticalAccountLiquidity"
-      | "governanceToken"
-      | "implementation"
       | "isComptroller"
       | "isDeprecated"
       | "lastContributorBlock"
@@ -253,32 +161,23 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
       | "maxSupply"
       | "membershipLength"
       | "mintAllowed"
-      | "mintGuardianPaused"
       | "mintVerify"
       | "oracle"
-      | "pauseGuardian"
       | "pendingAdmin"
       | "pendingComptrollerImplementation"
-      | "pendingImplementation"
       | "redeemAllowed"
       | "redeemVerify"
       | "refreshCompSpeeds"
-      | "removeEqAssetGroup"
       | "repayBorrowAllowed"
       | "repayBorrowVerify"
       | "seizeAllowed"
-      | "seizeGuardianPaused"
       | "seizeVerify"
       | "setBlockNumber"
       | "setCompAddress"
       | "setCompBorrowerIndex"
       | "setCompSupplierIndex"
-      | "setEqAssetGroup"
-      | "setGovTokenAddress"
       | "setMaxSupply"
-      | "suTokenRateMantissa"
       | "transferAllowed"
-      | "transferGuardianPaused"
       | "transferVerify"
       | "underWriterAdmin"
       | "unlist"
@@ -287,56 +186,8 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
 
   encodeFunctionData(functionFragment: "_become", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "_borrowGuardianPaused",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getBorrowCapGuardian",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getBorrowPaused",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getMarketBorrowCap",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getMintPaused",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getPauseGuardian",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getSeizePaused",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getSuTokenRateMantissa",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getTransferPaused",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "_grantComp",
     values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_mintGuardianPaused",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setBorrowCapGuardian",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setBorrowPaused",
-    values: [string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "_setCloseFactor",
@@ -355,32 +206,8 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "_setMarketBorrowCaps",
-    values: [string[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setMintPaused",
-    values: [string, boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setPauseGuardian",
-    values: [string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "_setPriceOracle",
     values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setSeizePaused",
-    values: [boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setSuTokenRateMantissa",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_setTransferPaused",
-    values: [boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "_setUnderWriterAdmin",
@@ -399,7 +226,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     functionFragment: "allMarkets",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "become", values: [string]): string;
   encodeFunctionData(
     functionFragment: "blockNumber",
     values?: undefined
@@ -407,15 +233,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "borrowAllowed",
     values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "borrowCapGuardian",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "borrowCaps", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "borrowGuardianPaused",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "borrowVerify",
@@ -488,14 +305,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     functionFragment: "enterMarkets",
     values: [string[]]
   ): string;
-  encodeFunctionData(
-    functionFragment: "eqAssetGroup",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "equalAssetsGroupNum",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "exitMarket", values: [string]): string;
   encodeFunctionData(
     functionFragment: "fastForward",
@@ -519,24 +328,8 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getEqAssetGroup",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getEqAssetGroupNum",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
     values: [string, string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "governanceToken",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "implementation",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "isComptroller",
@@ -578,28 +371,16 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "mintGuardianPaused",
-    values: [string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "mintVerify",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "pauseGuardian",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "pendingAdmin",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "pendingComptrollerImplementation",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "pendingImplementation",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -615,10 +396,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "removeEqAssetGroup",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "repayBorrowAllowed",
     values: [string, string, string, BigNumberish]
   ): string;
@@ -629,10 +406,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "seizeAllowed",
     values: [string, string, string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "seizeGuardianPaused",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "seizeVerify",
@@ -655,35 +428,12 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setEqAssetGroup",
-    values: [
-      BigNumberish,
-      string,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setGovTokenAddress",
-    values: [string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setMaxSupply",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "suTokenRateMantissa",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "transferAllowed",
     values: [string, string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferGuardianPaused",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferVerify",
@@ -700,55 +450,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "_become", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "_borrowGuardianPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getBorrowCapGuardian",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getBorrowPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getMarketBorrowCap",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getMintPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getPauseGuardian",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getSeizePaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getSuTokenRateMantissa",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getTransferPaused",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "_grantComp", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "_mintGuardianPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setBorrowCapGuardian",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setBorrowPaused",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "_setCloseFactor",
     data: BytesLike
@@ -766,31 +468,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "_setMarketBorrowCaps",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setMintPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setPauseGuardian",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "_setPriceOracle",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setSeizePaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setSuTokenRateMantissa",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_setTransferPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -807,22 +485,12 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allMarkets", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "become", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "blockNumber",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "borrowAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "borrowCapGuardian",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "borrowGuardianPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -899,14 +567,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     functionFragment: "enterMarkets",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "eqAssetGroup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "equalAssetsGroupNum",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "fastForward",
@@ -933,23 +593,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getEqAssetGroup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getEqAssetGroupNum",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getHypotheticalAccountLiquidity",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "governanceToken",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "implementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -991,26 +635,14 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     functionFragment: "mintAllowed",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "mintGuardianPaused",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "mintVerify", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "pauseGuardian",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "pendingAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "pendingComptrollerImplementation",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "pendingImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1026,10 +658,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "removeEqAssetGroup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "repayBorrowAllowed",
     data: BytesLike
   ): Result;
@@ -1039,10 +667,6 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "seizeAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "seizeGuardianPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1066,27 +690,11 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setEqAssetGroup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setGovTokenAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setMaxSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "suTokenRateMantissa",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "transferAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferGuardianPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1418,49 +1026,9 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    _borrowGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
-
-    _getBorrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
-
-    _getBorrowPaused(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    _getMarketBorrowCap(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    _getMintPaused(
-      cToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _getPauseGuardian(overrides?: CallOverrides): Promise<[string]>;
-
-    _getSeizePaused(overrides?: CallOverrides): Promise<[boolean]>;
-
-    _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    _getTransferPaused(overrides?: CallOverrides): Promise<[boolean]>;
-
     _grantComp(
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _mintGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
-
-    _setBorrowCapGuardian(
-      newBorrowCapGuardian: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _setBorrowPaused(
-      cToken: string,
-      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1487,40 +1055,8 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    _setMarketBorrowCaps(
-      cTokens: string[],
-      newBorrowCaps: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _setMintPaused(
-      cToken: string,
-      state: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _setPauseGuardian(
-      newPauseGuardian: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     _setPriceOracle(
       newOracle: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _setSeizePaused(
-      state: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _setSuTokenRateMantissa(
-      _suTokenRateMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    _setTransferPaused(
-      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1548,11 +1084,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    become(
-      proxy: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     blockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     borrowAllowed(
@@ -1561,15 +1092,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    borrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
-
-    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    borrowGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
 
     borrowVerify(
       cToken: string,
@@ -1659,22 +1181,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    eqAssetGroup(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        groupId: number;
-        groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
-      }
-    >;
-
-    equalAssetsGroupNum(overrides?: CallOverrides): Promise<[number]>;
-
     exitMarket(
       cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1701,13 +1207,6 @@ export interface ComptrollerScenario extends BaseContract {
 
     getCompAddress(overrides?: CallOverrides): Promise<[string]>;
 
-    getEqAssetGroup(
-      groupId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[UnderwriterAdminInterface.EqualAssetsStructOutput]>;
-
-    getEqAssetGroupNum(overrides?: CallOverrides): Promise<[number]>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
@@ -1715,10 +1214,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
-
-    governanceToken(overrides?: CallOverrides): Promise<[string]>;
-
-    implementation(overrides?: CallOverrides): Promise<[string]>;
 
     isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -1787,11 +1282,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    mintGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
     mintVerify(
       cToken: string,
       minter: string,
@@ -1802,15 +1292,11 @@ export interface ComptrollerScenario extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<[string]>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
 
     pendingComptrollerImplementation(
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    pendingImplementation(overrides?: CallOverrides): Promise<[string]>;
 
     redeemAllowed(
       cToken: string,
@@ -1828,11 +1314,6 @@ export interface ComptrollerScenario extends BaseContract {
     ): Promise<ContractTransaction>;
 
     refreshCompSpeeds(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    removeEqAssetGroup(
-      groupId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1861,8 +1342,6 @@ export interface ComptrollerScenario extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    seizeGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
     seizeVerify(
       cTokenCollateral: string,
@@ -1897,28 +1376,11 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setEqAssetGroup(
-      groupId: BigNumberish,
-      groupName: string,
-      inGroupCTokenRateMantissa: BigNumberish,
-      inGroupSuTokenRateMantissa: BigNumberish,
-      interGroupCTokenRateMantissa: BigNumberish,
-      interGroupSuTokenRateMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setGovTokenAddress(
-      _governanceToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    suTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferAllowed(
       cToken: string,
@@ -1927,8 +1389,6 @@ export interface ComptrollerScenario extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    transferGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
     transferVerify(
       cToken: string,
@@ -1956,46 +1416,9 @@ export interface ComptrollerScenario extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
-
-  _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
-
-  _getBorrowPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
-
-  _getMarketBorrowCap(
-    cToken: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  _getMintPaused(
-    cToken: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _getPauseGuardian(overrides?: CallOverrides): Promise<string>;
-
-  _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
-
-  _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
-
-  _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
-
   _grantComp(
     recipient: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
-
-  _setBorrowCapGuardian(
-    newBorrowCapGuardian: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _setBorrowPaused(
-    cToken: string,
-    state: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -2022,40 +1445,8 @@ export interface ComptrollerScenario extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  _setMarketBorrowCaps(
-    cTokens: string[],
-    newBorrowCaps: BigNumberish[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _setMintPaused(
-    cToken: string,
-    state: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _setPauseGuardian(
-    newPauseGuardian: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   _setPriceOracle(
     newOracle: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _setSeizePaused(
-    state: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _setSuTokenRateMantissa(
-    _suTokenRateMantissa: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  _setTransferPaused(
-    state: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -2080,11 +1471,6 @@ export interface ComptrollerScenario extends BaseContract {
 
   allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  become(
-    proxy: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
   borrowAllowed(
@@ -2093,15 +1479,6 @@ export interface ComptrollerScenario extends BaseContract {
     borrowAmount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
-
-  borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  borrowGuardianPaused(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   borrowVerify(
     cToken: string,
@@ -2185,22 +1562,6 @@ export interface ComptrollerScenario extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  eqAssetGroup(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      groupId: number;
-      groupName: string;
-      inGroupCTokenRateMantissa: BigNumber;
-      inGroupSuTokenRateMantissa: BigNumber;
-      interGroupCTokenRateMantissa: BigNumber;
-      interGroupSuTokenRateMantissa: BigNumber;
-    }
-  >;
-
-  equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
-
   exitMarket(
     cTokenAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -2224,13 +1585,6 @@ export interface ComptrollerScenario extends BaseContract {
 
   getCompAddress(overrides?: CallOverrides): Promise<string>;
 
-  getEqAssetGroup(
-    groupId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<UnderwriterAdminInterface.EqualAssetsStructOutput>;
-
-  getEqAssetGroupNum(overrides?: CallOverrides): Promise<number>;
-
   getHypotheticalAccountLiquidity(
     account: string,
     cTokenModify: string,
@@ -2238,10 +1592,6 @@ export interface ComptrollerScenario extends BaseContract {
     borrowAmount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
-
-  governanceToken(overrides?: CallOverrides): Promise<string>;
-
-  implementation(overrides?: CallOverrides): Promise<string>;
 
   isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
@@ -2308,8 +1658,6 @@ export interface ComptrollerScenario extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  mintGuardianPaused(arg0: string, overrides?: CallOverrides): Promise<boolean>;
-
   mintVerify(
     cToken: string,
     minter: string,
@@ -2320,13 +1668,9 @@ export interface ComptrollerScenario extends BaseContract {
 
   oracle(overrides?: CallOverrides): Promise<string>;
 
-  pauseGuardian(overrides?: CallOverrides): Promise<string>;
-
   pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
   pendingComptrollerImplementation(overrides?: CallOverrides): Promise<string>;
-
-  pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
   redeemAllowed(
     cToken: string,
@@ -2344,11 +1688,6 @@ export interface ComptrollerScenario extends BaseContract {
   ): Promise<ContractTransaction>;
 
   refreshCompSpeeds(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  removeEqAssetGroup(
-    groupId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -2377,8 +1716,6 @@ export interface ComptrollerScenario extends BaseContract {
     seizeTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   seizeVerify(
     cTokenCollateral: string,
@@ -2413,28 +1750,11 @@ export interface ComptrollerScenario extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setEqAssetGroup(
-    groupId: BigNumberish,
-    groupName: string,
-    inGroupCTokenRateMantissa: BigNumberish,
-    inGroupSuTokenRateMantissa: BigNumberish,
-    interGroupCTokenRateMantissa: BigNumberish,
-    interGroupSuTokenRateMantissa: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setGovTokenAddress(
-    _governanceToken: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   setMaxSupply(
     cToken: string,
     amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferAllowed(
     cToken: string,
@@ -2443,8 +1763,6 @@ export interface ComptrollerScenario extends BaseContract {
     transferTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   transferVerify(
     cToken: string,
@@ -2469,48 +1787,11 @@ export interface ComptrollerScenario extends BaseContract {
   callStatic: {
     _become(unitroller: string, overrides?: CallOverrides): Promise<void>;
 
-    _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
-
-    _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
-
-    _getBorrowPaused(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    _getMarketBorrowCap(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _getMintPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
-
-    _getPauseGuardian(overrides?: CallOverrides): Promise<string>;
-
-    _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
-
-    _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
-
     _grantComp(
       recipient: string,
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
-
-    _setBorrowCapGuardian(
-      newBorrowCapGuardian: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _setBorrowPaused(
-      cToken: string,
-      state: boolean,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     _setCloseFactor(
       newCloseFactorMantissa: BigNumberish,
@@ -2535,42 +1816,10 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    _setMarketBorrowCaps(
-      cTokens: string[],
-      newBorrowCaps: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _setMintPaused(
-      cToken: string,
-      state: boolean,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    _setPauseGuardian(
-      newPauseGuardian: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _setPriceOracle(
       newOracle: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    _setSeizePaused(
-      state: boolean,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    _setSuTokenRateMantissa(
-      _suTokenRateMantissa: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _setTransferPaused(
-      state: boolean,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     _setUnderWriterAdmin(
       underWriter: string,
@@ -2593,8 +1842,6 @@ export interface ComptrollerScenario extends BaseContract {
 
     allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    become(proxy: string, overrides?: CallOverrides): Promise<void>;
-
     blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
     borrowAllowed(
@@ -2603,15 +1850,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
-
-    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    borrowGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     borrowVerify(
       cToken: string,
@@ -2701,22 +1939,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
-    eqAssetGroup(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        groupId: number;
-        groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
-      }
-    >;
-
-    equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
-
     exitMarket(
       cTokenAddress: string,
       overrides?: CallOverrides
@@ -2740,13 +1962,6 @@ export interface ComptrollerScenario extends BaseContract {
 
     getCompAddress(overrides?: CallOverrides): Promise<string>;
 
-    getEqAssetGroup(
-      groupId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<UnderwriterAdminInterface.EqualAssetsStructOutput>;
-
-    getEqAssetGroupNum(overrides?: CallOverrides): Promise<number>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
@@ -2754,10 +1969,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
-
-    governanceToken(overrides?: CallOverrides): Promise<string>;
-
-    implementation(overrides?: CallOverrides): Promise<string>;
 
     isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
@@ -2824,11 +2035,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    mintGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     mintVerify(
       cToken: string,
       minter: string,
@@ -2839,15 +2045,11 @@ export interface ComptrollerScenario extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<string>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<string>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<string>;
 
     pendingComptrollerImplementation(
       overrides?: CallOverrides
     ): Promise<string>;
-
-    pendingImplementation(overrides?: CallOverrides): Promise<string>;
 
     redeemAllowed(
       cToken: string,
@@ -2865,11 +2067,6 @@ export interface ComptrollerScenario extends BaseContract {
     ): Promise<void>;
 
     refreshCompSpeeds(overrides?: CallOverrides): Promise<void>;
-
-    removeEqAssetGroup(
-      groupId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     repayBorrowAllowed(
       cToken: string,
@@ -2896,8 +2093,6 @@ export interface ComptrollerScenario extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
     seizeVerify(
       cTokenCollateral: string,
@@ -2932,28 +2127,11 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setEqAssetGroup(
-      groupId: BigNumberish,
-      groupName: string,
-      inGroupCTokenRateMantissa: BigNumberish,
-      inGroupSuTokenRateMantissa: BigNumberish,
-      interGroupCTokenRateMantissa: BigNumberish,
-      interGroupSuTokenRateMantissa: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    setGovTokenAddress(
-      _governanceToken: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferAllowed(
       cToken: string,
@@ -2962,8 +2140,6 @@ export interface ComptrollerScenario extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
     transferVerify(
       cToken: string,
@@ -3156,49 +2332,9 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    _borrowGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _getBorrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _getBorrowPaused(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _getMarketBorrowCap(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _getMintPaused(
-      cToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _getPauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _getSeizePaused(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _getTransferPaused(overrides?: CallOverrides): Promise<BigNumber>;
-
     _grantComp(
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _mintGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _setBorrowCapGuardian(
-      newBorrowCapGuardian: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _setBorrowPaused(
-      cToken: string,
-      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -3225,40 +2361,8 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    _setMarketBorrowCaps(
-      cTokens: string[],
-      newBorrowCaps: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _setMintPaused(
-      cToken: string,
-      state: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _setPauseGuardian(
-      newPauseGuardian: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     _setPriceOracle(
       newOracle: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _setSeizePaused(
-      state: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _setSuTokenRateMantissa(
-      _suTokenRateMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    _setTransferPaused(
-      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -3286,11 +2390,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    become(
-      proxy: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
     borrowAllowed(
@@ -3298,15 +2397,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrower: string,
       borrowAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    borrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
-
-    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    borrowGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     borrowVerify(
@@ -3397,13 +2487,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    eqAssetGroup(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    equalAssetsGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
-
     exitMarket(
       cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -3427,13 +2510,6 @@ export interface ComptrollerScenario extends BaseContract {
 
     getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getEqAssetGroup(
-      groupId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getEqAssetGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
@@ -3441,10 +2517,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    governanceToken(overrides?: CallOverrides): Promise<BigNumber>;
-
-    implementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -3502,11 +2574,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    mintGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     mintVerify(
       cToken: string,
       minter: string,
@@ -3517,15 +2584,11 @@ export interface ComptrollerScenario extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
     pendingComptrollerImplementation(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    pendingImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     redeemAllowed(
       cToken: string,
@@ -3543,11 +2606,6 @@ export interface ComptrollerScenario extends BaseContract {
     ): Promise<BigNumber>;
 
     refreshCompSpeeds(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    removeEqAssetGroup(
-      groupId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -3576,8 +2634,6 @@ export interface ComptrollerScenario extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    seizeGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
     seizeVerify(
       cTokenCollateral: string,
@@ -3612,28 +2668,11 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setEqAssetGroup(
-      groupId: BigNumberish,
-      groupName: string,
-      inGroupCTokenRateMantissa: BigNumberish,
-      inGroupSuTokenRateMantissa: BigNumberish,
-      interGroupCTokenRateMantissa: BigNumberish,
-      interGroupSuTokenRateMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setGovTokenAddress(
-      _governanceToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferAllowed(
       cToken: string,
@@ -3642,8 +2681,6 @@ export interface ComptrollerScenario extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    transferGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferVerify(
       cToken: string,
@@ -3672,59 +2709,9 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    _borrowGuardianPaused(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _getBorrowCapGuardian(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _getBorrowPaused(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _getMarketBorrowCap(
-      cToken: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _getMintPaused(
-      cToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _getPauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    _getSeizePaused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    _getSuTokenRateMantissa(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _getTransferPaused(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _grantComp(
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _mintGuardianPaused(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _setBorrowCapGuardian(
-      newBorrowCapGuardian: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setBorrowPaused(
-      cToken: string,
-      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -3751,40 +2738,8 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    _setMarketBorrowCaps(
-      cTokens: string[],
-      newBorrowCaps: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setMintPaused(
-      cToken: string,
-      state: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setPauseGuardian(
-      newPauseGuardian: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     _setPriceOracle(
       newOracle: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setSeizePaused(
-      state: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setSuTokenRateMantissa(
-      _suTokenRateMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setTransferPaused(
-      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -3812,11 +2767,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    become(
-      proxy: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     blockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     borrowAllowed(
@@ -3824,18 +2774,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrower: string,
       borrowAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    borrowCapGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    borrowCaps(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    borrowGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     borrowVerify(
@@ -3936,15 +2874,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    eqAssetGroup(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    equalAssetsGroupNum(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     exitMarket(
       cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -3971,15 +2900,6 @@ export interface ComptrollerScenario extends BaseContract {
 
     getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getEqAssetGroup(
-      groupId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getEqAssetGroupNum(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getHypotheticalAccountLiquidity(
       account: string,
       cTokenModify: string,
@@ -3987,10 +2907,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    governanceToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    implementation(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -4059,11 +2975,6 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    mintGuardianPaused(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     mintVerify(
       cToken: string,
       minter: string,
@@ -4074,15 +2985,9 @@ export interface ComptrollerScenario extends BaseContract {
 
     oracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pendingComptrollerImplementation(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    pendingImplementation(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -4102,11 +3007,6 @@ export interface ComptrollerScenario extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     refreshCompSpeeds(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeEqAssetGroup(
-      groupId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -4134,10 +3034,6 @@ export interface ComptrollerScenario extends BaseContract {
       borrower: string,
       seizeTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    seizeGuardianPaused(
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     seizeVerify(
@@ -4173,29 +3069,10 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setEqAssetGroup(
-      groupId: BigNumberish,
-      groupName: string,
-      inGroupCTokenRateMantissa: BigNumberish,
-      inGroupSuTokenRateMantissa: BigNumberish,
-      interGroupCTokenRateMantissa: BigNumberish,
-      interGroupSuTokenRateMantissa: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setGovTokenAddress(
-      _governanceToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    suTokenRateMantissa(
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     transferAllowed(
@@ -4204,10 +3081,6 @@ export interface ComptrollerScenario extends BaseContract {
       dst: string,
       transferTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferGuardianPaused(
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     transferVerify(

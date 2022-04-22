@@ -4,6 +4,7 @@
 export * as cDaiDelegateSol from "./CDaiDelegate.sol";
 export * as cErc20Sol from "./CErc20.sol";
 export * as cTokenInterfacesSol from "./CTokenInterfaces.sol";
+export * as comptrollerSol from "./Comptroller.sol";
 export * as comptrollerStorageSol from "./ComptrollerStorage.sol";
 export * as daiInterestRateModelV3Sol from "./DAIInterestRateModelV3.sol";
 export * as errorReporterSol from "./ErrorReporter.sol";
@@ -22,7 +23,6 @@ export { CErc20Delegator__factory } from "./CErc20Delegator__factory";
 export { CErc20Immutable__factory } from "./CErc20Immutable__factory";
 export { CEther__factory } from "./CEther__factory";
 export { CToken__factory } from "./CToken__factory";
-export { Comptroller__factory } from "./Comptroller__factory";
 export { ComptrollerInterface__factory } from "./ComptrollerInterface__factory";
 export { EIP20Interface__factory } from "./EIP20Interface__factory";
 export { EIP20NonStandardInterface__factory } from "./EIP20NonStandardInterface__factory";

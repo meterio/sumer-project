@@ -11,10 +11,12 @@ import {
   InterestRateModel,
   PriceOracle,
   ERC20Harness,
-  CToken
+  CToken,
+  CErc20Storage,
+  CErc20Harness
 } from "../../typechain-types";
-import { BigNumber, utils, Wallet, Contract } from "ethers";
-import { encodeParameters, dfn, etherMantissa } from './Ethereum'
+import { BigNumber, utils, Wallet, Contract, constants } from "ethers";
+import { encodeParameters, expandTo18Decimals, etherMantissa } from './Ethereum'
 
 export type Opts = {
   root: Wallet,
@@ -52,13 +54,14 @@ export type Opts = {
 
 export const makeToken = async (
   kind: string = 'erc20',
-  quantity: BigNumber = BigNumber.from(1e25),
+  quantity: BigNumber = BigNumber.from('10000000000000000000000000'),
   decimals: BigNumber = BigNumber.from(18),
   symbol: string = 'OMG',
   name: string = 'Erc20',
 ): Promise<ERC20Harness> => {
   return await deploy('ERC20Harness', [quantity, name, decimals, symbol]) as ERC20Harness;
 }
+
 const deploy = async (name: string, args: any[] = []): Promise<Contract> => {
   return await (
     await ethers.getContractFactory(name)
@@ -112,7 +115,7 @@ export async function makeComptroller(wallet: Wallet, kind: string = 'unitroller
     const closeFactor = etherMantissa(.051);
     const liquidationIncentive = etherMantissa(1);
     const comp = await deploy('Comp', [wallet.address]);
-    const compRate = BigNumber.from(1e18);
+    const compRate = expandTo18Decimals(1);
 
     await unitroller._setPendingImplementation(comptrollerHarness.address)
     await comptrollerHarness._become(unitroller.address)
@@ -127,7 +130,7 @@ export async function makeComptroller(wallet: Wallet, kind: string = 'unitroller
   }
 }
 
-export async function makeCToken(wallet: Wallet, kind: string = 'erc20', opt: string = '', _comptroller: string = '') {
+export async function makeCToken(wallet: Wallet, kind: string = 'erc20', opt: string = '', _comptroller: string = '', underlyingPrice: number = 0) {
   const comptroller = _comptroller == '' ? await makeComptroller(wallet) as Comptroller : await ethers.getContractAt("Comptroller", _comptroller);
   const interestRateModel = await makeInterestRateModel(wallet);
   const exchangeRate = etherMantissa(1);
@@ -188,7 +191,7 @@ export async function makeCToken(wallet: Wallet, kind: string = 'erc20', opt: st
           decimals,
           admin,
           cDelegatee.address,
-          "0x0"
+          constants.HashZero
         ]
       );
       cToken = await ethers.getContractAt('CToken', cDelegator.address) as CToken;
@@ -209,7 +212,7 @@ export async function makeCToken(wallet: Wallet, kind: string = 'erc20', opt: st
           decimals,
           admin,
           cDelegatee.address,
-          "0x0"
+          constants.HashZero
         ]
       );
       cToken = await ethers.getContractAt('CToken', cDelegator.address) as CToken;
@@ -219,6 +222,12 @@ export async function makeCToken(wallet: Wallet, kind: string = 'erc20', opt: st
 
   if (opt == 'supportMarket') {
     await comptroller._supportMarket(cToken.address, 0)
+  }
+
+  if (underlyingPrice != 0) {
+    const price = etherMantissa(underlyingPrice);
+    const priceOracle = await ethers.getContractAt("SimplePriceOracle", await comptroller.oracle()) as SimplePriceOracle;
+    await priceOracle.setUnderlyingPrice(cToken.address, price);
   }
 
   return cToken;
@@ -279,4 +288,33 @@ export function failureInfo(code: string): BigNumber | undefined {
     if (FailureInfo[i] == code)
       return BigNumber.from(i);
   }
+}
+
+export async function enterMarkets(cTokens: CToken[], from: Wallet) {
+  const comptroller = await ethers.getContractAt("Comptroller", await cTokens[0].comptroller()) as Comptroller;
+  return await comptroller.connect(from).enterMarkets(cTokens.map(c => c.address));
+}
+
+export async function preApprove(cToken: CErc20Storage, from: Wallet, amount: BigNumber, faucet = false) {
+  const underlying = await ethers.getContractAt("CErc20Harness", await cToken.underlying()) as CErc20Harness;
+  if (faucet == true) {
+    await underlying.connect(from).harnessSetBalance(from.address, amount);
+  }
+  return await underlying.connect(from).approve(cToken.address, amount);
+}
+
+export async function fastForward(cToken: CErc20Harness, blocks = 5) {
+  return await cToken.harnessFastForward(blocks);
+}
+export async function quickMint(cToken: CErc20Harness, minter: Wallet, mintAmount: BigNumber, approve = false, exchangeRate = 0) {
+  // make sure to accrue interest
+  await fastForward(cToken, 1);
+
+  if (approve == true) {
+    await preApprove(cToken, minter, mintAmount);
+  }
+  if (exchangeRate != 0) {
+    await cToken.harnessSetExchangeRate(etherMantissa(exchangeRate));
+  }
+  return cToken.connect(minter).mint(mintAmount);
 }

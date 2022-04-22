@@ -10,7 +10,6 @@ import type {
 
 const _abi = [
   {
-    constant: true,
     inputs: [
       {
         internalType: "address",
@@ -26,17 +25,15 @@ const _abi = [
     name: "accountAssets",
     outputs: [
       {
-        internalType: "contract CToken",
+        internalType: "address",
         name: "",
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "admin",
     outputs: [
@@ -46,12 +43,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "closeFactorMantissa",
     outputs: [
@@ -61,12 +56,10 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "comptrollerImplementation",
     outputs: [
@@ -76,12 +69,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "liquidationIncentiveMantissa",
     outputs: [
@@ -91,12 +82,10 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [
       {
         internalType: "address",
@@ -122,12 +111,10 @@ const _abi = [
         type: "bool",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "maxAssets",
     outputs: [
@@ -137,27 +124,23 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "oracle",
     outputs: [
       {
-        internalType: "contract PriceOracle",
+        internalType: "address",
         name: "",
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "pendingAdmin",
     outputs: [
@@ -167,12 +150,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "pendingComptrollerImplementation",
     outputs: [
@@ -182,12 +163,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "underWriterAdmin",
     outputs: [
@@ -197,14 +176,13 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
 ];
 
 const _bytecode =
-  "0x608060405234801561001057600080fd5b50610298806100206000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c806394b2294b1161007157806394b2294b14610146578063bb82aa5e1461014e578063dce1544914610156578063dcfbc0c714610182578063e87554461461018a578063f851a44014610192576100a9565b80632408d5f0146100ae57806326782247146100d25780634ada90af146100da5780637dc0d1d0146100f45780638e8f294b146100fc575b600080fd5b6100b661019a565b604080516001600160a01b039092168252519081900360200190f35b6100b66101a9565b6100e26101b8565b60408051918252519081900360200190f35b6100b66101be565b6101226004803603602081101561011257600080fd5b50356001600160a01b03166101cd565b60408051931515845260ff9092166020840152151582820152519081900360600190f35b6100e26101f5565b6100b66101fb565b6100b66004803603604081101561016c57600080fd5b506001600160a01b03813516906020013561020a565b6100b661023f565b6100e261024e565b6100b6610254565b6004546001600160a01b031681565b6001546001600160a01b031681565b60075481565b6005546001600160a01b031681565b600a602052600090815260409020805460029091015460ff8083169261010090048116911683565b60085481565b6002546001600160a01b031681565b6009602052816000526040600020818154811061022357fe5b6000918252602090912001546001600160a01b03169150829050565b6003546001600160a01b031681565b60065481565b6000546001600160a01b03168156fea265627a7a72315820a39165f009474f7ec412a2ef12f4e2cd1c09b22b036a40520c4cd5dcb6ba1a6a64736f6c63430005100032";
+  "0x608060405234801561001057600080fd5b506102a4806100206000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c806394b2294b1161007157806394b2294b14610172578063bb82aa5e1461017b578063dce154491461018e578063dcfbc0c7146101a1578063e8755446146101b4578063f851a440146101bd57600080fd5b80632408d5f0146100ae57806326782247146100de5780634ada90af146100f15780637dc0d1d0146101085780638e8f294b1461011b575b600080fd5b6004546100c1906001600160a01b031681565b6040516001600160a01b0390911681526020015b60405180910390f35b6001546100c1906001600160a01b031681565b6100fa60075481565b6040519081526020016100d5565b6005546100c1906001600160a01b031681565b610151610129366004610224565b600a602052600090815260409020805460029091015460ff8083169261010090048116911683565b60408051931515845260ff90921660208401521515908201526060016100d5565b6100fa60085481565b6002546100c1906001600160a01b031681565b6100c161019c366004610245565b6101d0565b6003546100c1906001600160a01b031681565b6100fa60065481565b6000546100c1906001600160a01b031681565b600960205281600052604060002081815481106101ec57600080fd5b6000918252602090912001546001600160a01b03169150829050565b80356001600160a01b038116811461021f57600080fd5b919050565b600060208284031215610235578081fd5b61023e82610208565b9392505050565b60008060408385031215610257578081fd5b61026083610208565b94602093909301359350505056fea2646970667358221220679729413cf32d9eacc8992dd72d3e77e0f9cb70ceb7916cd991fe93ce8f82ab64736f6c63430008040033";
 
 type ComptrollerV2StorageConstructorParams =
   | [signer?: Signer]

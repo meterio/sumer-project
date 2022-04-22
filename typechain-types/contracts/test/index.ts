@@ -10,3 +10,4 @@ export type { comptrollerHarnessSol };
 import type * as erc20Sol from "./ERC20.sol";
 export type { erc20Sol };
 export type { ComptrollerScenario } from "./ComptrollerScenario";
+export type { InterestRateModelHarness } from "./InterestRateModelHarness";

@@ -44,7 +44,7 @@ const _abi = [
     constant: true,
     inputs: [
       {
-        internalType: "contract CToken",
+        internalType: "address",
         name: "cToken",
         type: "address",
       },
@@ -65,7 +65,7 @@ const _abi = [
     constant: true,
     inputs: [
       {
-        internalType: "contract CToken",
+        internalType: "address",
         name: "cToken",
         type: "address",
       },
@@ -86,7 +86,7 @@ const _abi = [
     constant: false,
     inputs: [
       {
-        internalType: "contract CToken",
+        internalType: "address",
         name: "cToken",
         type: "address",
       },

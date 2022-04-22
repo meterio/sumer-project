@@ -69,3 +69,7 @@ export async function blockNumber() {
   let { result: num } = await waffle.provider.send("eth_blockNumber", []);
   return parseInt(num);
 }
+
+export function expandTo18Decimals(n: number): BigNumber {
+  return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
+}
