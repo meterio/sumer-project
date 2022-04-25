@@ -1055,7 +1055,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
           break;
         }
       }
-      require(index < vars.equalAssetsGroupNum);
+      // require(index < vars.equalAssetsGroupNum);
 
       if (CTokenInterface(asset).isCToken() == true) {
         groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(
