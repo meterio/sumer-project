@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.6.11;
 
-import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20BurnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20PausableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/drafts/EIP712Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 
 contract ERC20MintablePauseableUpgradeable is
   ERC20PausableUpgradeable,
   ERC20BurnableUpgradeable,
   EIP712Upgradeable,
-  AccessControlEnumerableUpgradeable
+  AccessControlUpgradeable
 {
   address public implementation;
   bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
@@ -42,7 +43,7 @@ contract ERC20MintablePauseableUpgradeable is
   }
 
   function removeMinter(address account) public onlyAdmin {
-    _revokeRole(MINTER_ROLE, account);
+    revokeRole(MINTER_ROLE, account);
   }
 
   function _beforeTokenTransfer(

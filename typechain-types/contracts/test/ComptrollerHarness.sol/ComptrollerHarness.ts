@@ -26,6 +26,12 @@ import type {
   OnEvent,
 } from "../../../common";
 
+export declare namespace ExponentialNoError {
+  export type ExpStruct = { mantissa: BigNumberish };
+
+  export type ExpStructOutput = [BigNumber] & { mantissa: BigNumber };
+}
+
 export interface ComptrollerHarnessInterface extends utils.Interface {
   functions: {
     "_become(address)": FunctionFragment;
@@ -69,6 +75,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     "getCompAddress()": FunctionFragment;
     "getCompMarkets()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
+    "ghlp(address,address,uint256,uint256)": FunctionFragment;
     "harnessAddCompMarkets(address[])": FunctionFragment;
     "harnessDistributeAllBorrowerComp(address,address,uint256)": FunctionFragment;
     "harnessDistributeAllSupplierComp(address,address)": FunctionFragment;
@@ -160,6 +167,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
       | "getCompAddress"
       | "getCompMarkets"
       | "getHypotheticalAccountLiquidity"
+      | "ghlp"
       | "harnessAddCompMarkets"
       | "harnessDistributeAllBorrowerComp"
       | "harnessDistributeAllSupplierComp"
@@ -349,6 +357,10 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
+    values: [string, string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ghlp",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -667,6 +679,7 @@ export interface ComptrollerHarnessInterface extends utils.Interface {
     functionFragment: "getHypotheticalAccountLiquidity",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "ghlp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "harnessAddCompMarkets",
     data: BytesLike
@@ -1336,6 +1349,20 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+    ghlp(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [ExponentialNoError.ExpStructOutput, BigNumber, BigNumber] & {
+        a: ExponentialNoError.ExpStructOutput;
+        scalar: BigNumber;
+        addend: BigNumber;
+      }
+    >;
+
     harnessAddCompMarkets(
       cTokens: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1784,6 +1811,20 @@ export interface ComptrollerHarness extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+  ghlp(
+    account: string,
+    cTokenModify: string,
+    redeemTokens: BigNumberish,
+    borrowAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [ExponentialNoError.ExpStructOutput, BigNumber, BigNumber] & {
+      a: ExponentialNoError.ExpStructOutput;
+      scalar: BigNumber;
+      addend: BigNumber;
+    }
+  >;
+
   harnessAddCompMarkets(
     cTokens: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -2230,6 +2271,20 @@ export interface ComptrollerHarness extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
+
+    ghlp(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [ExponentialNoError.ExpStructOutput, BigNumber, BigNumber] & {
+        a: ExponentialNoError.ExpStructOutput;
+        scalar: BigNumber;
+        addend: BigNumber;
+      }
+    >;
 
     harnessAddCompMarkets(
       cTokens: string[],
@@ -2852,6 +2907,14 @@ export interface ComptrollerHarness extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    ghlp(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     harnessAddCompMarkets(
       cTokens: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -3305,6 +3368,14 @@ export interface ComptrollerHarness extends BaseContract {
     getCompMarkets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getHypotheticalAccountLiquidity(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    ghlp(
       account: string,
       cTokenModify: string,
       redeemTokens: BigNumberish,

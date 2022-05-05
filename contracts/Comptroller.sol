@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 pragma experimental ABIEncoderV2;
 
 import './CTokenInterfaces.sol';
@@ -981,6 +981,84 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     return (uint256(err), liquidity, shortfall);
   }
 
+  function ghlp(
+    address account,
+    address cTokenModify,
+    uint256 redeemTokens,
+    uint256 borrowAmount
+  )
+    public
+    view
+    returns (
+      Exp memory a,
+      uint256 scalar,
+      uint256 addend
+    )
+  {
+    AccountLiquidityLocalVars memory vars; // Holds all our calculation results
+    uint256 oErr;
+
+    vars.equalAssetsGroupNum = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroupNum();
+    AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
+
+    if ((cTokenModify != address(0)) && (CTokenInterface(cTokenModify).isCToken() == false)) {
+      vars.isSuToken = true;
+    } else {
+      vars.isSuToken = false;
+    }
+
+    // For each asset the account is in
+    address[] memory assets = accountAssets[account];
+    for (uint256 i = 0; i < assets.length; i++) {
+      address asset = assets[i];
+
+      //UnderwriterAdminInterface.EqualAssets memory eqAsset = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(asset);
+
+      // Read the balances and exchange rate from the cToken
+      (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CTokenInterface(asset)
+        .getAccountSnapshot(account);
+
+      vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
+
+      // Get the normalized price of the asset
+      vars.oraclePriceMantissa = PriceOracle(oracle).getUnderlyingPrice(asset);
+
+      vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
+
+      // Pre-compute a conversion factor from tokens -> ether (normalized price value)
+      vars.tokensToDenom = mul_(vars.exchangeRate, vars.oraclePriceMantissa);
+
+      uint8 index;
+      for (index = 0; index < vars.equalAssetsGroupNum; index++) {
+        if (groupVars[index].groupId > 0) {
+          if (groupVars[index].groupId == markets[address(asset)].equalAssetGrouId) {
+            break;
+          }
+        } else {
+          groupVars[index].groupId = markets[address(asset)].equalAssetGrouId;
+          break;
+        }
+      }
+      // require(index < vars.equalAssetsGroupNum);
+
+      if (CTokenInterface(asset).isCToken() == true) {
+        return (vars.exchangeRate, vars.cTokenBalance, groupVars[index].cTokenBalanceSum);
+        // groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(
+        //   vars.tokensToDenom,
+        //   vars.cTokenBalance,
+        //   groupVars[index].cTokenBalanceSum
+        // );
+      }
+    }
+
+    // These are safe, as the underflow condition is checked first
+    // if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
+    //   return (Error.NO_ERROR, vars.sumCollateral - vars.sumBorrowPlusEffects, 0);
+    // } else {
+    //   return (Error.NO_ERROR, 0, vars.sumBorrowPlusEffects - vars.sumCollateral);
+    // }
+  }
+
   /**
      * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
      * @param cTokenModify The market to hypothetically redeem/borrow in
@@ -1027,7 +1105,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
       //UnderwriterAdminInterface.EqualAssets memory eqAsset = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(asset);
 
       // Read the balances and exchange rate from the cToken
-      (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CTokenInterface(asset).getAccountSnapshot(account);
+      (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CTokenInterface(asset)
+        .getAccountSnapshot(account);
       if (oErr != 0) {
         // semi-opaque error code, we assume NO_ERROR == 0 is invariant between upgrades
         return (Error.SNAPSHOT_ERROR, 0, 0);
@@ -1128,9 +1207,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
       vars.inGroupCTokenCollateralRate = Exp({mantissa: equalAssetsGroup.inGroupCTokenRateMantissa});
       vars.inGroupSuTokenCollateralRate = Exp({mantissa: equalAssetsGroup.inGroupSuTokenRateMantissa});
-      vars.interGroupCTokenCollateralRate = Exp({
-        mantissa: equalAssetsGroup.interGroupCTokenRateMantissa
-      });
+      vars.interGroupCTokenCollateralRate = Exp({mantissa: equalAssetsGroup.interGroupCTokenRateMantissa});
       vars.interGroupSuTokenCollateralRate = Exp({mantissa: equalAssetsGroup.interGroupSuTokenRateMantissa});
       vars.borrowCollateralRate = Exp({mantissa: expScale});
 

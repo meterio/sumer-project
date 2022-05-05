@@ -43,12 +43,14 @@ describe('Comptroller', () => {
       let result: any;
 
       // not in market yet, hypothetical borrow should have no effect
-      // result = await comptroller.getHypotheticalAccountLiquidity(user.address, cToken.address, 0, amount);
+      console.log(await cToken.balanceOfUnderlying(user.address))
+      result = await comptroller.ghlp(user.address, cToken.address, 0, amount);
+      console.log(result);
       // expect(result).to.deep.eq([BN(0), BN(0), BN(0)]);
 
-      await enterMarkets([cToken], user);
-      let cErc20Harness = await ethers.getContractAt("CErc20Harness", cToken.address) as CErc20Harness;
-      await quickMint(cErc20Harness, user, amount);
+      // await enterMarkets([cToken], user);
+      // let cErc20Harness = await ethers.getContractAt("CErc20Harness", cToken.address) as CErc20Harness;
+      // await quickMint(cErc20Harness, user, amount);
 
       // total account liquidity after supplying `amount`
       result = await comptroller.getAccountLiquidity(user.address);

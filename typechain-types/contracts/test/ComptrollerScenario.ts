@@ -26,6 +26,12 @@ import type {
   OnEvent,
 } from "../../common";
 
+export declare namespace ExponentialNoError {
+  export type ExpStruct = { mantissa: BigNumberish };
+
+  export type ExpStructOutput = [BigNumber] & { mantissa: BigNumber };
+}
+
 export interface ComptrollerScenarioInterface extends utils.Interface {
   functions: {
     "_become(address)": FunctionFragment;
@@ -70,6 +76,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     "getBlockNumber()": FunctionFragment;
     "getCompAddress()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
+    "ghlp(address,address,uint256,uint256)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isDeprecated(address)": FunctionFragment;
     "lastContributorBlock(address)": FunctionFragment;
@@ -149,6 +156,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
       | "getBlockNumber"
       | "getCompAddress"
       | "getHypotheticalAccountLiquidity"
+      | "ghlp"
       | "isComptroller"
       | "isDeprecated"
       | "lastContributorBlock"
@@ -329,6 +337,10 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
+    values: [string, string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ghlp",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -596,6 +608,7 @@ export interface ComptrollerScenarioInterface extends utils.Interface {
     functionFragment: "getHypotheticalAccountLiquidity",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "ghlp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isComptroller",
     data: BytesLike
@@ -1215,6 +1228,20 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+    ghlp(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [ExponentialNoError.ExpStructOutput, BigNumber, BigNumber] & {
+        a: ExponentialNoError.ExpStructOutput;
+        scalar: BigNumber;
+        addend: BigNumber;
+      }
+    >;
+
     isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
 
     isDeprecated(cToken: string, overrides?: CallOverrides): Promise<[boolean]>;
@@ -1593,6 +1620,20 @@ export interface ComptrollerScenario extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+  ghlp(
+    account: string,
+    cTokenModify: string,
+    redeemTokens: BigNumberish,
+    borrowAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [ExponentialNoError.ExpStructOutput, BigNumber, BigNumber] & {
+      a: ExponentialNoError.ExpStructOutput;
+      scalar: BigNumber;
+      addend: BigNumber;
+    }
+  >;
+
   isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
   isDeprecated(cToken: string, overrides?: CallOverrides): Promise<boolean>;
@@ -1969,6 +2010,20 @@ export interface ComptrollerScenario extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
+
+    ghlp(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [ExponentialNoError.ExpStructOutput, BigNumber, BigNumber] & {
+        a: ExponentialNoError.ExpStructOutput;
+        scalar: BigNumber;
+        addend: BigNumber;
+      }
+    >;
 
     isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
@@ -2518,6 +2573,14 @@ export interface ComptrollerScenario extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    ghlp(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
 
     isDeprecated(cToken: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -2901,6 +2964,14 @@ export interface ComptrollerScenario extends BaseContract {
     getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getHypotheticalAccountLiquidity(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    ghlp(
       account: string,
       cTokenModify: string,
       redeemTokens: BigNumberish,

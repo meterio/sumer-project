@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.6.11;
+pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import "./Math/Math.sol";
@@ -112,7 +112,7 @@ contract CommunalFarm is Owned, ReentrancyGuard {
         address[] memory _rewardTokens, 
         address[] memory _rewardManagers, 
         uint256[] memory _rewardRates
-    ) Owned(_owner) {
+    ) Owned(_owner) public {
         stakingToken = IERC20(_stakingToken);
 
         rewardTokens = _rewardTokens;

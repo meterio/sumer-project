@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 import "../CErc20Immutable.sol";
 import "../CErc20Delegator.sol";

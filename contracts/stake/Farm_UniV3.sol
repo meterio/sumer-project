@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.6.11;
+pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import "./Math/Math.sol";
@@ -135,7 +135,7 @@ contract Farm_UniV3 is Owned, ReentrancyGuard {
         int24 _uni_tick_lower,
         int24 _uni_tick_upper,
         int24 _uni_ideal_tick
-    ) Owned(_owner) {
+    ) Owned(_owner) public{
         rewardsToken0 = IERC20(_rewardsToken0);
         stakingTokenNFT = IUniswapV3PositionsNFT(_stakingTokenNFT);
         lp_pool = IUniswapV3Pool(_lp_pool_address); // call getPool(token0, token1, fee) on the Uniswap V3 Factory (0x1F98431c8aD98523631AE4a59f267346ea31F984) to get this otherwise

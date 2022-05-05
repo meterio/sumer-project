@@ -2,5 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as extensions from "./extensions";
+export { ERC20BurnableUpgradeable__factory } from "./ERC20BurnableUpgradeable__factory";
+export { ERC20PausableUpgradeable__factory } from "./ERC20PausableUpgradeable__factory";
 export { ERC20Upgradeable__factory } from "./ERC20Upgradeable__factory";
 export { IERC20Upgradeable__factory } from "./IERC20Upgradeable__factory";

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.11;
-import "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
+pragma solidity 0.6.11;
+import "@openzeppelin/contracts-upgradeable/introspection/IERC165Upgradeable.sol";
 
 /**
  * @dev Required interface of an ERC721 compliant contract.
