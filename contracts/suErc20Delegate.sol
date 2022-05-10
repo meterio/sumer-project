@@ -22,9 +22,9 @@ contract suErc20Delegate is suErc20, CDelegateInterface {
         data;
 
         // Shh -- we don't ever want this hook to be marked pure
-        if (false) {
-            implementation = address(0);
-        }
+        // if (false) {
+        //     implementation = address(0);
+        // }
 
         require(msg.sender == admin, "only the admin may call _becomeImplementation");
     }
@@ -34,9 +34,9 @@ contract suErc20Delegate is suErc20, CDelegateInterface {
      */
     function _resignImplementation() public {
         // Shh -- we don't ever want this hook to be marked pure
-        if (false) {
-            implementation = address(0);
-        }
+        // if (false) {
+        //     implementation = address(0);
+        // }
 
         require(msg.sender == admin, "only the admin may call _resignImplementation");
     }

@@ -29,12 +29,12 @@ contract CTokenStorage {
    * @notice Maximum borrow rate that can ever be applied (.0005% / block)
    */
 
-  uint256 internal constant borrowRateMaxMantissa = 0.0005e16;
+  uint256 internal constant BORROW_RATE_MAX_MANTISSA = 0.0005e16;
 
   /**
    * @notice Maximum fraction of interest that can be set aside for reserves
    */
-  uint256 internal constant reserveFactorMaxMantissa = 1e18;
+  uint256 internal constant RESERVE_FACTOR_MAX_MANTISSA = 1e18;
 
   /**
    * @notice Administrator for this contract

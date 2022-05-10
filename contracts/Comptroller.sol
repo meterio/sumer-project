@@ -98,13 +98,13 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   uint224 public constant compInitialIndex = 1e36;
 
   // closeFactorMantissa must be strictly greater than this value
-  uint256 internal constant closeFactorMinMantissa = 0.05e18; // 0.05
+  uint256 internal constant CLOSE_FACTOR_MIN_MANTISSA = 0.05e18; // 0.05
 
   // closeFactorMantissa must not exceed this value
-  uint256 internal constant closeFactorMaxMantissa = 0.9e18; // 0.9
+  uint256 internal constant CLOSE_FACTOR_MAX_MANTISSA = 0.9e18; // 0.9
 
   // No collateralFactorMantissa may exceed this value
-  uint256 internal constant collateralFactorMaxMantissa = 0.9e18; // 0.9
+  uint256 internal constant COLLATERAL_FACTOR_MAX_MANTISSA = 0.9e18; // 0.9
 
   /***
     constructor(address _gov) public {
@@ -237,7 +237,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
       return Error.MARKET_NOT_LISTED;
     }
 
-    if (marketToJoin.accountMembership[borrower] == true) {
+    if (marketToJoin.accountMembership[borrower]) {
       // already joined
       return Error.NO_ERROR;
     }
@@ -446,9 +446,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     mintTokens;
 
     // Shh - we don't ever want this hook to be marked pure
-    if (false) {
-      maxAssets = maxAssets;
-    }
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 
   /**
@@ -604,9 +604,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     borrowAmount;
 
     // Shh - we don't ever want this hook to be marked pure
-    if (false) {
-      maxAssets = maxAssets;
-    }
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 
   /**
@@ -662,9 +662,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     borrowerIndex;
 
     // Shh - we don't ever want this hook to be marked pure
-    if (false) {
-      maxAssets = maxAssets;
-    }
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 
   /**
@@ -739,9 +739,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     seizeTokens;
 
     // Shh - we don't ever want this hook to be marked pure
-    if (false) {
-      maxAssets = maxAssets;
-    }
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 
   /**
@@ -805,9 +805,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     seizeTokens;
 
     // Shh - we don't ever want this hook to be marked pure
-    if (false) {
-      maxAssets = maxAssets;
-    }
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 
   /**
@@ -863,9 +863,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     transferTokens;
 
     // Shh - we don't ever want this hook to be marked pure
-    if (false) {
-      maxAssets = maxAssets;
-    }
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 
   /*** Liquidity/Liquidation Calculations ***/
@@ -1041,7 +1041,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
       }
       // require(index < vars.equalAssetsGroupNum);
 
-      if (CTokenInterface(asset).isCToken() == true) {
+      if (CTokenInterface(asset).isCToken()) {
         return (vars.exchangeRate, vars.cTokenBalance, groupVars[index].cTokenBalanceSum);
         // groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(
         //   vars.tokensToDenom,
@@ -1136,7 +1136,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
       }
       // require(index < vars.equalAssetsGroupNum);
 
-      if (CTokenInterface(asset).isCToken() == true) {
+      if (CTokenInterface(asset).isCToken()) {
         groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(
           vars.tokensToDenom,
           vars.cTokenBalance,
@@ -1410,7 +1410,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         Exp memory newCollateralFactorExp = Exp({mantissa: newCollateralFactorMantissa});
 
         // Check collateral factor <= 0.9
-        Exp memory highLimit = Exp({mantissa: collateralFactorMaxMantissa});
+        Exp memory highLimit = Exp({mantissa: COLLATERAL_FACTOR_MAX_MANTISSA});
         if (lessThanExp(highLimit, newCollateralFactorExp)) {
             return fail(Error.INVALID_COLLATERAL_FACTOR, FailureInfo.SET_COLLATERAL_FACTOR_VALIDATION);
         }
@@ -1853,14 +1853,14 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     for (uint256 i = 0; i < cTokens.length; i++) {
       address cToken = cTokens[i];
       require(markets[cToken].isListed, 'market must be listed');
-      if (borrowers == true) {
+      if (borrowers) {
         Exp memory borrowIndex = Exp({mantissa: CTokenInterface(cToken).borrowIndex()});
         updateCompBorrowIndex(cToken, borrowIndex);
         for (uint256 j = 0; j < holders.length; j++) {
           distributeBorrowerComp(cToken, holders[j], borrowIndex);
         }
       }
-      if (suppliers == true) {
+      if (suppliers) {
         updateCompSupplyIndex(cToken);
         for (uint256 j = 0; j < holders.length; j++) {
           distributeSupplierComp(cToken, holders[j]);
@@ -1983,7 +1983,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     return
       markets[cToken].equalAssetGrouId == 0 &&
       //borrowGuardianPaused[cToken] == true &&
-      UnderwriterAdminInterface(underWriterAdmin)._getBorrowPaused(cToken) == true &&
+      UnderwriterAdminInterface(underWriterAdmin)._getBorrowPaused(cToken) &&
       CTokenInterface(cToken).reserveFactorMantissa() == 1e18;
   }
 

@@ -48,7 +48,7 @@ contract CErc20Harness is CErc20Immutable {
     }
 
     function getBorrowRateMaxMantissa() public pure returns (uint) {
-        return borrowRateMaxMantissa;
+        return BORROW_RATE_MAX_MANTISSA;
     }
 
     function harnessSetAccrualBlockNumber(uint _accrualblockNumber) public {
@@ -267,7 +267,7 @@ contract CErc20DelegateHarness is CErc20Delegate {
     }
 
     function getBorrowRateMaxMantissa() public pure returns (uint) {
-        return borrowRateMaxMantissa;
+        return BORROW_RATE_MAX_MANTISSA;
     }
 
     function harnessSetBlockNumber(uint newBlockNumber) public {
