@@ -1469,7 +1469,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
       return fail(Error.MARKET_ALREADY_LISTED, FailureInfo.SUPPORT_MARKET_EXISTS);
     }
 
-    CTokenInterface(cToken).isCToken(); // Sanity check to make sure its really a address
+    // CTokenInterface(cToken).isCToken(); // Sanity check to make sure its really a address
+    require(CTokenInterface(cToken).isCToken(), 'This is not a CToken contract!');
 
     // Note that isComped is not in active use anymore
     markets[cToken] = Market({isListed: true, isComped: false, equalAssetGrouId: groupId});
