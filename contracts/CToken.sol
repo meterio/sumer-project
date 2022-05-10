@@ -341,7 +341,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      */
     function exchangeRateStoredInternal() internal view returns (MathError, uint) {
 
-        if (isCToken != true) {
+        if (!isCToken) {
             return (MathError.NO_ERROR, initialExchangeRateMantissa);
         }
 
@@ -685,7 +685,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient cash */
-        if ((isCToken == true) && (getCashPrior() < vars.redeemAmount)) {
+        if (isCToken && (getCashPrior() < vars.redeemAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
         }
 
@@ -755,7 +755,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient underlying cash */
-        if ((isCToken == true) && (getCashPrior() < borrowAmount)) {
+        if (isCToken && (getCashPrior() < borrowAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.BORROW_CASH_NOT_AVAILABLE);
         }
 
