@@ -1382,6 +1382,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   function _setUnderWriterAdmin(address underWriter) external returns (address) {
     // Check caller is admin
     require(msg.sender == admin, 'only admin can set close factor');
+    require(underWriter != address(0), 'Address is Zero!');
     underWriterAdmin = underWriter;
     return underWriter;
   }

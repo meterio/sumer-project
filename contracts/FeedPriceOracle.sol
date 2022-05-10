@@ -36,6 +36,7 @@ contract FeedPriceOracle is PriceOracle {
     }
 
     function changeOwner(address owner_) public onlyOwner {
+        require(owner_ != address(0), 'Address is Zero!');
         owner = owner_;
     }
 

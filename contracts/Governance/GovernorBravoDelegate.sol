@@ -341,6 +341,7 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
         address oldPendingAdmin = pendingAdmin;
 
         // Store pendingAdmin with value newPendingAdmin
+        require(newPendingAdmin != address(0), 'Address is Zero!');
         pendingAdmin = newPendingAdmin;
 
         // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)

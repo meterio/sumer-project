@@ -37,6 +37,7 @@ contract CErc20 is CToken, CErc20Interface {
     isCEther = false;
 
     // Set underlying and sanity check it
+    require(underlying_ != address(0), 'Address is Zero!');
     underlying = underlying_;
     EIP20Interface(underlying).totalSupply();
   }
@@ -127,10 +128,10 @@ contract CErc20 is CToken, CErc20Interface {
    */
   function sweepToken(EIP20NonStandardInterface token) external {
     require(address(token) != underlying, 'CErc20::sweepToken: can not sweep underlying token');
-    uint256 underlyingBalanceBefore = underlying.balanceOf(address(this));
+    uint256 underlyingBalanceBefore = EIP20NonStandardInterface(underlying).balanceOf(address(this));
     uint256 balance = token.balanceOf(address(this));
     token.transfer(admin, balance);
-    uint256 underlyingBalanceAfter = underlying.balanceOf(address(this));
+    uint256 underlyingBalanceAfter = EIP20NonStandardInterface(underlying).balanceOf(address(this));
     require(underlyingBalanceBefore == underlyingBalanceAfter, 'underlyingBalance error');
   }
 

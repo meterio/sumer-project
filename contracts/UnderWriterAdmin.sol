@@ -19,6 +19,7 @@ contract PriceOracle {
    */
   function getUnderlyingPrice(CToken cToken) external view returns (uint256);
 }
+
 contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter {
   /// @notice Emitted when an action is paused globally
   event ActionPaused(string action, bool pauseState);
@@ -99,6 +100,7 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
     if (msg.sender != admin) {
       return fail(Error.UNAUTHORIZED, FailureInfo.SET_PAUSE_GUARDIAN_OWNER_CHECK);
     }
+    require(newPauseGuardian != address(0), 'Address is Zero!');
 
     // Save current value for inclusion in log
     address oldPauseGuardian = pauseGuardian;
@@ -188,6 +190,7 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
   function setGovTokenAddress(address _governanceToken) public {
     //require(adminOrInitializing(), "only admin can set governanceToken");
     require(msg.sender == admin, 'only admin can set');
+    require(_governanceToken != address(0), 'Address is Zero!');
     governanceToken = _governanceToken;
   }
 
@@ -224,6 +227,7 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
    */
   function _setBorrowCapGuardian(address newBorrowCapGuardian) external {
     require(msg.sender == admin, 'only admin can set borrow cap guardian');
+    require(newBorrowCapGuardian != address(0), 'Address is Zero!');
 
     // Save current value for inclusion in log
     address oldBorrowCapGuardian = borrowCapGuardian;

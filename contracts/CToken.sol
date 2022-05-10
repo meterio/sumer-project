@@ -1147,6 +1147,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         address oldPendingAdmin = pendingAdmin;
 
         // Store pendingAdmin with value newPendingAdmin
+        require(newPendingAdmin != address(0), 'Address is Zero!');
         pendingAdmin = newPendingAdmin;
 
         // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)

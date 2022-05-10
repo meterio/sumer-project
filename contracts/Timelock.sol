@@ -52,6 +52,7 @@ contract Timelock {
 
     function setPendingAdmin(address pendingAdmin_) public {
         require(msg.sender == address(this), "Timelock::setPendingAdmin: Call must come from Timelock.");
+        require(pendingAdmin_ != address(0), 'Address is Zero!');
         pendingAdmin = pendingAdmin_;
 
         emit NewPendingAdmin(pendingAdmin);
@@ -95,6 +96,7 @@ contract Timelock {
             callData = abi.encodePacked(bytes4(keccak256(bytes(signature))), data);
         }
 
+        require(target != address(0), 'Address is Zero!');
         // solium-disable-next-line security/no-call-value
         (bool success, bytes memory returnData) = target.call.value(value)(callData);
         require(success, "Timelock::executeTransaction: Transaction execution reverted.");
