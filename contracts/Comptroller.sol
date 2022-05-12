@@ -9,6 +9,7 @@ import './Unitroller.sol';
 import './ErrorReporter.sol';
 import './ExponentialNoError.sol';
 import './UnderwriterStorage.sol';
+import './stake/ERC20/Address.sol';
 
 contract PriceOracle {
   /// @notice Indicator that this is a PriceOracle contract (for inspection)
@@ -1471,7 +1472,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     }
 
     // CTokenInterface(cToken).isCToken(); // Sanity check to make sure its really a address
-    require(CTokenInterface(cToken).isCToken(), 'This is not a CToken contract!');
+    (bool success, ) = cToken.call(abi.encodeWithSignature('isCToken()'));
+    require(success && Address.isContract(cToken), 'contract error!');
 
     // Note that isComped is not in active use anymore
     markets[cToken] = Market({isListed: true, isComped: false, equalAssetGrouId: groupId});
