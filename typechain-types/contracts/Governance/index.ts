@@ -6,5 +6,6 @@ export type { governorAlphaSol };
 import type * as governorBravoInterfacesSol from "./GovernorBravoInterfaces.sol";
 export type { governorBravoInterfacesSol };
 export type { Comp } from "./Comp";
+export type { EIP712 } from "./EIP712";
 export type { GovernorBravoDelegate } from "./GovernorBravoDelegate";
 export type { GovernorBravoDelegator } from "./GovernorBravoDelegator";

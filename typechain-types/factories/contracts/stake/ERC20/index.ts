@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export { AccessControl__factory } from "./AccessControl__factory";
+export { CompERC20MintablePauseable__factory } from "./CompERC20MintablePauseable__factory";
 export { ERC20__factory } from "./ERC20__factory";
 export { ERC20Burnable__factory } from "./ERC20Burnable__factory";
 export { ERC20MintablePauseableUpgradeable__factory } from "./ERC20MintablePauseableUpgradeable__factory";

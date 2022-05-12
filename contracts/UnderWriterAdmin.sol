@@ -3,7 +3,6 @@ pragma experimental ABIEncoderV2;
 
 import './CToken.sol';
 import './ErrorReporter.sol';
-import './Governance/Comp.sol';
 import './UnderwriterStorage.sol';
 import './UnderwriterProxy.sol';
 

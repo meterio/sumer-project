@@ -4,5 +4,6 @@
 export * as governorAlphaSol from "./GovernorAlpha.sol";
 export * as governorBravoInterfacesSol from "./GovernorBravoInterfaces.sol";
 export { Comp__factory } from "./Comp__factory";
+export { EIP712__factory } from "./EIP712__factory";
 export { GovernorBravoDelegate__factory } from "./GovernorBravoDelegate__factory";
 export { GovernorBravoDelegator__factory } from "./GovernorBravoDelegator__factory";

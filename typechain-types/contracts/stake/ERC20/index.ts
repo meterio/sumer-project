@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { AccessControl } from "./AccessControl";
+export type { CompERC20MintablePauseable } from "./CompERC20MintablePauseable";
 export type { ERC20 } from "./ERC20";
 export type { ERC20Burnable } from "./ERC20Burnable";
 export type { ERC20MintablePauseableUpgradeable } from "./ERC20MintablePauseableUpgradeable";
