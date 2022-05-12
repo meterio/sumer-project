@@ -9,7 +9,6 @@ import './Unitroller.sol';
 import './ErrorReporter.sol';
 import './ExponentialNoError.sol';
 import './UnderwriterStorage.sol';
-import './stake/ERC20/Address.sol';
 
 contract PriceOracle {
   /// @notice Indicator that this is a PriceOracle contract (for inspection)
@@ -1473,7 +1472,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
     // CTokenInterface(cToken).isCToken(); // Sanity check to make sure its really a address
     (bool success, ) = cToken.call(abi.encodeWithSignature('isCToken()'));
-    require(success && Address.isContract(cToken), 'contract error!');
+    require(success && isContract(cToken), 'contract error!');
 
     // Note that isComped is not in active use anymore
     markets[cToken] = Market({isListed: true, isComped: false, equalAssetGrouId: groupId});
@@ -2013,4 +2012,34 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   //require(adminOrInitializing(), "only admin can set governanceToken");
   //governanceToken =  _governanceToken;
   //}
+  
+  /**
+     * @dev Returns true if `account` is a contract.
+     *
+     * [IMPORTANT]
+     * ====
+     * It is unsafe to assume that an address for which this function returns
+     * false is an externally-owned account (EOA) and not a contract.
+     *
+     * Among others, `isContract` will return false for the following
+     * types of addresses:
+     *
+     *  - an externally-owned account
+     *  - a contract in construction
+     *  - an address where a contract will be created
+     *  - an address where a contract lived, but was destroyed
+     * ====
+     */
+  function isContract(address account) internal view returns (bool) {
+    // This method relies on extcodesize, which returns 0 for contracts in
+    // construction, since the code is only stored at the end of the
+    // constructor execution.
+
+    uint256 size;
+    // solhint-disable-next-line no-inline-assembly
+    assembly {
+      size := extcodesize(account)
+    }
+    return size > 0;
+  }
 }
