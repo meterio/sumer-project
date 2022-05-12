@@ -1001,7 +1001,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     vars.equalAssetsGroupNum = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
 
-    if ((cTokenModify != address(0)) && (CTokenInterface(cTokenModify).isCToken() == false)) {
+    if ((cTokenModify != address(0)) && !CTokenInterface(cTokenModify).isCToken()) {
       vars.isSuToken = true;
     } else {
       vars.isSuToken = false;
@@ -1091,7 +1091,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     vars.equalAssetsGroupNum = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
 
-    if ((cTokenModify != address(0)) && (CTokenInterface(cTokenModify).isCToken() == false)) {
+    if ((cTokenModify != address(0)) && !CTokenInterface(cTokenModify).isCToken()) {
       vars.isSuToken = true;
     } else {
       vars.isSuToken = false;
@@ -2012,7 +2012,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
   //require(adminOrInitializing(), "only admin can set governanceToken");
   //governanceToken =  _governanceToken;
   //}
-  
+
   /**
      * @dev Returns true if `account` is a contract.
      *
