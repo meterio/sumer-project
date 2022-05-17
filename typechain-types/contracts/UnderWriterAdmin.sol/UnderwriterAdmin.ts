@@ -455,20 +455,26 @@ export interface UnderwriterAdminInterface extends utils.Interface {
   events: {
     "ActionPaused(string,bool)": EventFragment;
     "ActionPaused(address,string,bool)": EventFragment;
+    "EqAssetGroupAdded(uint8,string,uint256,uint256,uint256,uint256)": EventFragment;
+    "EqAssetGroupRemoved(uint8,uint8)": EventFragment;
     "Failure(uint256,uint256,uint256)": EventFragment;
     "NewBorrowCap(address,uint256)": EventFragment;
     "NewBorrowCapGuardian(address,address)": EventFragment;
     "NewPauseGuardian(address,address)": EventFragment;
+    "NewSuTokenRate(uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ActionPaused(string,bool)"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "ActionPaused(address,string,bool)"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EqAssetGroupAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EqAssetGroupRemoved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Failure"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewBorrowCap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewBorrowCapGuardian"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPauseGuardian"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewSuTokenRate"): EventFragment;
 }
 
 export interface ActionPaused_string_bool_EventObject {
@@ -495,6 +501,34 @@ export type ActionPaused_address_string_bool_Event = TypedEvent<
 
 export type ActionPaused_address_string_bool_EventFilter =
   TypedEventFilter<ActionPaused_address_string_bool_Event>;
+
+export interface EqAssetGroupAddedEventObject {
+  groupId: number;
+  groupName: string;
+  inGroupCTokenRateMantissa: BigNumber;
+  inGroupSuTokenRateMantissa: BigNumber;
+  interGroupCTokenRateMantissa: BigNumber;
+  interGroupSuTokenRateMantissa: BigNumber;
+}
+export type EqAssetGroupAddedEvent = TypedEvent<
+  [number, string, BigNumber, BigNumber, BigNumber, BigNumber],
+  EqAssetGroupAddedEventObject
+>;
+
+export type EqAssetGroupAddedEventFilter =
+  TypedEventFilter<EqAssetGroupAddedEvent>;
+
+export interface EqAssetGroupRemovedEventObject {
+  groupId: number;
+  equalAssetsGroupNum: number;
+}
+export type EqAssetGroupRemovedEvent = TypedEvent<
+  [number, number],
+  EqAssetGroupRemovedEventObject
+>;
+
+export type EqAssetGroupRemovedEventFilter =
+  TypedEventFilter<EqAssetGroupRemovedEvent>;
 
 export interface FailureEventObject {
   error: BigNumber;
@@ -542,6 +576,16 @@ export type NewPauseGuardianEvent = TypedEvent<
 
 export type NewPauseGuardianEventFilter =
   TypedEventFilter<NewPauseGuardianEvent>;
+
+export interface NewSuTokenRateEventObject {
+  suTokenRateMantissa: BigNumber;
+}
+export type NewSuTokenRateEvent = TypedEvent<
+  [BigNumber],
+  NewSuTokenRateEventObject
+>;
+
+export type NewSuTokenRateEventFilter = TypedEventFilter<NewSuTokenRateEvent>;
 
 export interface UnderwriterAdmin extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -1034,6 +1078,32 @@ export interface UnderwriterAdmin extends BaseContract {
       pauseState?: null
     ): ActionPaused_address_string_bool_EventFilter;
 
+    "EqAssetGroupAdded(uint8,string,uint256,uint256,uint256,uint256)"(
+      groupId?: BigNumberish | null,
+      groupName?: string | null,
+      inGroupCTokenRateMantissa?: null,
+      inGroupSuTokenRateMantissa?: null,
+      interGroupCTokenRateMantissa?: null,
+      interGroupSuTokenRateMantissa?: null
+    ): EqAssetGroupAddedEventFilter;
+    EqAssetGroupAdded(
+      groupId?: BigNumberish | null,
+      groupName?: string | null,
+      inGroupCTokenRateMantissa?: null,
+      inGroupSuTokenRateMantissa?: null,
+      interGroupCTokenRateMantissa?: null,
+      interGroupSuTokenRateMantissa?: null
+    ): EqAssetGroupAddedEventFilter;
+
+    "EqAssetGroupRemoved(uint8,uint8)"(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
+    ): EqAssetGroupRemovedEventFilter;
+    EqAssetGroupRemoved(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
+    ): EqAssetGroupRemovedEventFilter;
+
     "Failure(uint256,uint256,uint256)"(
       error?: null,
       info?: null,
@@ -1067,6 +1137,11 @@ export interface UnderwriterAdmin extends BaseContract {
       oldPauseGuardian?: null,
       newPauseGuardian?: null
     ): NewPauseGuardianEventFilter;
+
+    "NewSuTokenRate(uint256)"(
+      suTokenRateMantissa?: null
+    ): NewSuTokenRateEventFilter;
+    NewSuTokenRate(suTokenRateMantissa?: null): NewSuTokenRateEventFilter;
   };
 
   estimateGas: {

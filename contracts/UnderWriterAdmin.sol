@@ -35,6 +35,19 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
   /// @notice Emitted when pause guardian is changed
   event NewPauseGuardian(address oldPauseGuardian, address newPauseGuardian);
 
+  event EqAssetGroupAdded(
+    uint8 indexed groupId,
+    string indexed groupName,
+    uint256 inGroupCTokenRateMantissa,
+    uint256 inGroupSuTokenRateMantissa,
+    uint256 interGroupCTokenRateMantissa,
+    uint256 interGroupSuTokenRateMantissa
+  );
+
+  event EqAssetGroupRemoved(uint8 indexed groupId, uint8 equalAssetsGroupNum);
+
+  event NewSuTokenRate(uint256 suTokenRateMantissa);
+
   constructor(address _gov) public {
     admin = msg.sender;
     governanceToken = _gov;
@@ -68,6 +81,14 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
       interGroupSuTokenRateMantissa
     );
     equalAssetsGroupNum++;
+    emit EqAssetGroupAdded(
+      groupId,
+      groupName,
+      inGroupCTokenRateMantissa,
+      inGroupSuTokenRateMantissa,
+      interGroupCTokenRateMantissa,
+      interGroupSuTokenRateMantissa
+    );
     return uint256(Error.NO_ERROR);
   }
 
@@ -79,6 +100,7 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
 
     delete eqAssetGroup[groupId];
     equalAssetsGroupNum--;
+    emit EqAssetGroupRemoved(groupId, equalAssetsGroupNum);
     return uint256(Error.NO_ERROR);
   }
 
@@ -249,6 +271,7 @@ contract UnderwriterAdmin is UnderwriterAdminInterface, ComptrollerErrorReporter
   function _setSuTokenRateMantissa(uint256 _suTokenRateMantissa) external {
     require(msg.sender == admin, 'only admin can set suTokenRateMantissa');
     suTokenRateMantissa = _suTokenRateMantissa;
+    emit NewSuTokenRate(suTokenRateMantissa);
   }
 
   function _getSuTokenRateMantissa() external view returns (uint256) {
