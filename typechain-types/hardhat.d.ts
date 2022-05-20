@@ -313,6 +313,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GovernorBravoInterface__factory>;
     getContractFactory(
+      name: "LockLiquidity",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.LockLiquidity__factory>;
+    getContractFactory(
       name: "Maximillion",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Maximillion__factory>;
@@ -960,6 +964,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.GovernorBravoInterface>;
+    getContractAt(
+      name: "LockLiquidity",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.LockLiquidity>;
     getContractAt(
       name: "Maximillion",
       address: string,

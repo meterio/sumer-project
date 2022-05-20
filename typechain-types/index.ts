@@ -148,6 +148,8 @@ export type { ComptrollerLensInterface } from "./contracts/Lens/CompoundLens.sol
 export { ComptrollerLensInterface__factory } from "./factories/contracts/Lens/CompoundLens.sol/ComptrollerLensInterface__factory";
 export type { GovernorBravoInterface } from "./contracts/Lens/CompoundLens.sol/GovernorBravoInterface";
 export { GovernorBravoInterface__factory } from "./factories/contracts/Lens/CompoundLens.sol/GovernorBravoInterface__factory";
+export type { LockLiquidity } from "./contracts/LockLiquidity";
+export { LockLiquidity__factory } from "./factories/contracts/LockLiquidity__factory";
 export type { Maximillion } from "./contracts/Maximillion";
 export { Maximillion__factory } from "./factories/contracts/Maximillion__factory";
 export type { Reservoir } from "./contracts/Reservoir";

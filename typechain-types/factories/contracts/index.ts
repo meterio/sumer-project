@@ -31,6 +31,7 @@ export { JumpRateModel__factory } from "./JumpRateModel__factory";
 export { JumpRateModelV2__factory } from "./JumpRateModelV2__factory";
 export { LegacyInterestRateModel__factory } from "./LegacyInterestRateModel__factory";
 export { LegacyJumpRateModelV2__factory } from "./LegacyJumpRateModelV2__factory";
+export { LockLiquidity__factory } from "./LockLiquidity__factory";
 export { Maximillion__factory } from "./Maximillion__factory";
 export { PriceOracle__factory } from "./PriceOracle__factory";
 export { Reservoir__factory } from "./Reservoir__factory";
