@@ -156,29 +156,6 @@ contract ComptrollerV6Storage is ComptrollerV5Storage {
 }
 
 contract ComptrollerV7Storage is ComptrollerV6Storage {
-  /// @notice The equal assests members
-  /**
-    struct EqualAssetsMember {
-        address token;
-        uint collateralMantissa;
-    }
-    ***/
-  /// @notice allEqualAssestsGroups, some of groups have multiple member and some of groups
-  /// only 1 member. Groups should have all members in the markets
-  /// EqualAssestsGroup[] public allEqualAssestsGroups;
-  /**
-   * @notice Per-account mapping of "assets you are in", capped by maxAssets
-   */
-  //mapping(address => mapping(string => EqualAssetsGroup)) public allEqualAssetsGroups;
-  //mapping(address => mapping(string => EqualAssetsMember[])) public allEqualAssetsMembers;
-  //mapping(address => string[]) public allEqualAssetsGroupNames;
-  /***
-    /// @notice EqualAssets, contains information of groupName and rateMantissas
-    struct EqualAssets {
-        string groupName;
-        uint rateMantissas;
-    }
-***/
   /**
    * @notice eqAssetGroup, cToken -> equal assets info.
    */

@@ -43,3 +43,4 @@ junit.xml
 node_modules_tmp
 cache
 artifacts
+typechain-types

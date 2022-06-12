@@ -2,7 +2,6 @@ pragma solidity 0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "../Comptroller.sol";
-import '../CTokenInterfaces.sol';
 
 contract ComptrollerScenario is Comptroller {
     uint256 public blockNumber;

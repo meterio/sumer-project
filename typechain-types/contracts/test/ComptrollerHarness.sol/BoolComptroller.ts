@@ -28,7 +28,6 @@ export interface BoolComptrollerInterface extends utils.Interface {
     "borrowVerify(address,address,uint256)": FunctionFragment;
     "enterMarkets(address[])": FunctionFragment;
     "exitMarket(address)": FunctionFragment;
-    "isComptroller()": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,address,uint256)": FunctionFragment;
     "liquidateBorrowVerify(address,address,address,address,uint256,uint256)": FunctionFragment;
     "liquidateCalculateSeizeTokens(address,address,uint256)": FunctionFragment;
@@ -66,7 +65,6 @@ export interface BoolComptrollerInterface extends utils.Interface {
       | "borrowVerify"
       | "enterMarkets"
       | "exitMarket"
-      | "isComptroller"
       | "liquidateBorrowAllowed"
       | "liquidateBorrowVerify"
       | "liquidateCalculateSeizeTokens"
@@ -111,10 +109,6 @@ export interface BoolComptrollerInterface extends utils.Interface {
     values: [string[]]
   ): string;
   encodeFunctionData(functionFragment: "exitMarket", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "isComptroller",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "liquidateBorrowAllowed",
     values: [string, string, string, string, BigNumberish]
@@ -245,10 +239,6 @@ export interface BoolComptrollerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "isComptroller",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "liquidateBorrowAllowed",
     data: BytesLike
@@ -416,8 +406,6 @@ export interface BoolComptroller extends BaseContract {
       _cToken: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
 
     liquidateBorrowAllowed(
       _cTokenBorrowed: string,
@@ -631,8 +619,6 @@ export interface BoolComptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  isComptroller(overrides?: CallOverrides): Promise<boolean>;
-
   liquidateBorrowAllowed(
     _cTokenBorrowed: string,
     _cTokenCollateral: string,
@@ -841,8 +827,6 @@ export interface BoolComptroller extends BaseContract {
     ): Promise<BigNumber[]>;
 
     exitMarket(_cToken: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
     liquidateBorrowAllowed(
       _cTokenBorrowed: string,
@@ -1059,8 +1043,6 @@ export interface BoolComptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
-
     liquidateBorrowAllowed(
       _cTokenBorrowed: string,
       _cTokenCollateral: string,
@@ -1273,8 +1255,6 @@ export interface BoolComptroller extends BaseContract {
       _cToken: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidateBorrowAllowed(
       _cTokenBorrowed: string,

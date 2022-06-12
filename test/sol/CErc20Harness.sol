@@ -4,7 +4,6 @@ import "../CErc20Immutable.sol";
 import "../CErc20Delegator.sol";
 import "../CErc20Delegate.sol";
 import "../CDaiDelegate.sol";
-import "./ComptrollerScenario.sol";
 
 contract CErc20Harness is CErc20Immutable {
     uint blockNumber = 100000;
@@ -178,10 +177,10 @@ contract CErc20Scenario is CErc20Immutable {
         totalReserves = totalReserves_;
     }
 
-    function getBlockNumber() internal view returns (uint) {
-        ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
-        return comptrollerScenario.blockNumber();
-    }
+    // function getBlockNumber() internal view returns (uint) {
+    //     ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
+    //     return comptrollerScenario.blockNumber();
+    // }
 }
 
 contract CEvil is CErc20Scenario {
@@ -385,10 +384,10 @@ contract CErc20DelegateScenario is CErc20Delegate {
         totalReserves = totalReserves_;
     }
 
-    function getBlockNumber() internal view returns (uint) {
-        ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
-        return comptrollerScenario.blockNumber();
-    }
+    // function getBlockNumber() internal view returns (uint) {
+    //     ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
+    //     return comptrollerScenario.blockNumber();
+    // }
 }
 
 contract CErc20DelegateScenarioExtra is CErc20DelegateScenario {
@@ -449,10 +448,10 @@ contract CDaiDelegateScenario is CDaiDelegate {
         totalReserves = totalReserves_;
     }
 
-    function getBlockNumber() internal view returns (uint) {
-        ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
-        return comptrollerScenario.blockNumber();
-    }
+    // function getBlockNumber() internal view returns (uint) {
+    //     ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
+    //     return comptrollerScenario.blockNumber();
+    // }
 }
 
 contract CDaiDelegateMakerHarness is PotLike, VatLike, GemLike, DaiJoinLike {

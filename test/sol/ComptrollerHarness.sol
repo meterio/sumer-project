@@ -199,7 +199,7 @@ contract ComptrollerHarness is Comptroller {
 
 contract ComptrollerBorked {
   function _become(
-    Unitroller unitroller,
+    IUnitroller unitroller,
     PriceOracle _oracle,
     uint256 _closeFactorMantissa,
     uint256 _maxAssets,
@@ -215,7 +215,7 @@ contract ComptrollerBorked {
   }
 }
 
-contract BoolComptroller is ComptrollerInterface {
+contract BoolComptroller  {
   bool allowMint = true;
   bool allowRedeem = true;
   bool allowBorrow = true;
@@ -545,6 +545,6 @@ contract EchoTypesComptroller is UnitrollerAdminStorage {
   }
 
   function becomeBrains(address payable unitroller) public {
-    Unitroller(unitroller)._acceptImplementation();
+    IUnitroller(unitroller)._acceptImplementation();
   }
 }

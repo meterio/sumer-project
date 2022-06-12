@@ -1,7 +1,6 @@
 pragma solidity 0.5.16;
 
 import "../CEther.sol";
-import "./ComptrollerScenario.sol";
 
 contract CEtherHarness is CEther {
     uint harnessExchangeRate;
@@ -187,8 +186,8 @@ contract CEtherScenario is CEther {
         // no-op
     }
 
-    function getBlockNumber() internal view returns (uint) {
-        ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
-        return comptrollerScenario.blockNumber();
-    }
+    // function getBlockNumber() internal view returns (uint) {
+    //     ComptrollerScenario comptrollerScenario = ComptrollerScenario(address(comptroller));
+    //     return comptrollerScenario.blockNumber();
+    // }
 }

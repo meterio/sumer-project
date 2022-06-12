@@ -11,7 +11,6 @@ import type {
 
 const _abi = [
   {
-    constant: true,
     inputs: [
       {
         internalType: "address",
@@ -27,22 +26,6 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: "isPriceOracle",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },

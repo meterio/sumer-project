@@ -55,6 +55,17 @@ task('accounts', 'Prints the list of accounts', async (taskArgs, bre) => {
   }
 });
 
+task('dc', 'deploy comptroller/unitroller contracts').setAction(
+  async (taskArgs, { ethers, run, network }) => {
+    await run('compile');
+    const [admin] = await ethers.getSigners();
+    let receipt: ContractTransaction;
+
+    // Deploy Comptroller
+    const comptroller = (await deployContract(ethers, 'Comptroller', network.name, admin)) as Comptroller;
+  }
+);
+
 task('deployComptroller', 'deploy comptroller/unitroller contracts').setAction(
   async (taskArgs, { ethers, run, network }) => {
     await run('compile');
@@ -627,7 +638,7 @@ export default {
     apiKey: process.env.ETHERSCAN_APIKEY,
   },
   solidity: {
-    compilers: [compileSetting('0.5.16', 200), compileSetting('0.6.11', 200), compileSetting('0.8.4', 200)],
+    compilers: [compileSetting('0.5.16', 200), compileSetting('0.6.11', 10), compileSetting('0.8.4', 200)],
   },
   paths: {
     sources: './contracts',

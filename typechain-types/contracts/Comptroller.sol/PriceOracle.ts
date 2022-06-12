@@ -22,28 +22,17 @@ import type {
 export interface PriceOracleInterface extends utils.Interface {
   functions: {
     "getUnderlyingPrice(address)": FunctionFragment;
-    "isPriceOracle()": FunctionFragment;
   };
 
-  getFunction(
-    nameOrSignatureOrTopic: "getUnderlyingPrice" | "isPriceOracle"
-  ): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "getUnderlyingPrice"): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "getUnderlyingPrice",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "isPriceOracle",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "getUnderlyingPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "isPriceOracle",
     data: BytesLike
   ): Result;
 
@@ -81,8 +70,6 @@ export interface PriceOracle extends BaseContract {
       cToken: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
-
-    isPriceOracle(overrides?: CallOverrides): Promise<[boolean]>;
   };
 
   getUnderlyingPrice(
@@ -90,15 +77,11 @@ export interface PriceOracle extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  isPriceOracle(overrides?: CallOverrides): Promise<boolean>;
-
   callStatic: {
     getUnderlyingPrice(
       cToken: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    isPriceOracle(overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {};
@@ -108,8 +91,6 @@ export interface PriceOracle extends BaseContract {
       cToken: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    isPriceOracle(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -117,7 +98,5 @@ export interface PriceOracle extends BaseContract {
       cToken: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    isPriceOracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

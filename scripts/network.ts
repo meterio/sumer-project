@@ -20,7 +20,7 @@ export const RPCS = {
   },
   rinkeby: {
     url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    accounts: [process.env.SUMER_TEST_PRIVKEY, process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY],
+    accounts: [process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY,process.env.SUMER_TEST_PRIVKEY ],
   },
   goerli: {
     url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
