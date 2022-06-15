@@ -121,34 +121,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ComptrollerErrorReporter__factory>;
     getContractFactory(
-      name: "ComptrollerV1Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV1Storage__factory>;
-    getContractFactory(
-      name: "ComptrollerV2Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV2Storage__factory>;
-    getContractFactory(
-      name: "ComptrollerV3Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV3Storage__factory>;
-    getContractFactory(
-      name: "ComptrollerV4Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV4Storage__factory>;
-    getContractFactory(
-      name: "ComptrollerV5Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV5Storage__factory>;
-    getContractFactory(
-      name: "ComptrollerV6Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV6Storage__factory>;
-    getContractFactory(
-      name: "ComptrollerV7Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerV7Storage__factory>;
-    getContractFactory(
       name: "CTokenInterface",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CTokenInterface__factory>;
@@ -164,10 +136,6 @@ declare module "hardhat/types/runtime" {
       name: "UnderwriterAdminInterface",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.UnderwriterAdminInterface__factory>;
-    getContractFactory(
-      name: "UnitrollerAdminStorage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.UnitrollerAdminStorage__factory>;
     getContractFactory(
       name: "ComptrollerErrorReporter",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -673,41 +641,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ComptrollerErrorReporter>;
     getContractAt(
-      name: "ComptrollerV1Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV1Storage>;
-    getContractAt(
-      name: "ComptrollerV2Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV2Storage>;
-    getContractAt(
-      name: "ComptrollerV3Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV3Storage>;
-    getContractAt(
-      name: "ComptrollerV4Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV4Storage>;
-    getContractAt(
-      name: "ComptrollerV5Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV5Storage>;
-    getContractAt(
-      name: "ComptrollerV6Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV6Storage>;
-    getContractAt(
-      name: "ComptrollerV7Storage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerV7Storage>;
-    getContractAt(
       name: "CTokenInterface",
       address: string,
       signer?: ethers.Signer
@@ -727,11 +660,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.UnderwriterAdminInterface>;
-    getContractAt(
-      name: "UnitrollerAdminStorage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.UnitrollerAdminStorage>;
     getContractAt(
       name: "ComptrollerErrorReporter",
       address: string,

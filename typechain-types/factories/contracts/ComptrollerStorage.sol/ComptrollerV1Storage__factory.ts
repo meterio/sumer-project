@@ -10,7 +10,6 @@ import type {
 
 const _abi = [
   {
-    constant: true,
     inputs: [
       {
         internalType: "address",
@@ -31,12 +30,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "admin",
     outputs: [
@@ -46,12 +43,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "closeFactorMantissa",
     outputs: [
@@ -61,12 +56,10 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "comptrollerImplementation",
     outputs: [
@@ -76,12 +69,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "liquidationIncentiveMantissa",
     outputs: [
@@ -91,12 +82,10 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "maxAssets",
     outputs: [
@@ -106,12 +95,10 @@ const _abi = [
         type: "uint256",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "oracle",
     outputs: [
@@ -121,12 +108,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "pendingAdmin",
     outputs: [
@@ -136,12 +121,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "pendingComptrollerImplementation",
     outputs: [
@@ -151,12 +134,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "underWriterAdmin",
     outputs: [
@@ -166,14 +147,13 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
 ];
 
 const _bytecode =
-  "0x608060405234801561001057600080fd5b5061021b806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063bb82aa5e11610066578063bb82aa5e146100f9578063dce1544914610101578063dcfbc0c71461012d578063e875544614610135578063f851a4401461013d5761009e565b80632408d5f0146100a357806326782247146100c75780634ada90af146100cf5780637dc0d1d0146100e957806394b2294b146100f1575b600080fd5b6100ab610145565b604080516001600160a01b039092168252519081900360200190f35b6100ab610154565b6100d7610163565b60408051918252519081900360200190f35b6100ab610169565b6100d7610178565b6100ab61017e565b6100ab6004803603604081101561011757600080fd5b506001600160a01b03813516906020013561018d565b6100ab6101c2565b6100d76101d1565b6100ab6101d7565b6004546001600160a01b031681565b6001546001600160a01b031681565b60075481565b6005546001600160a01b031681565b60085481565b6002546001600160a01b031681565b600960205281600052604060002081815481106101a657fe5b6000918252602090912001546001600160a01b03169150829050565b6003546001600160a01b031681565b60065481565b6000546001600160a01b03168156fea265627a7a7231582054cb5fe7982f3fc031a7fac43f57fe57404cc0a23c60fd9004e9d4c7d0d8403264736f6c63430005100032";
+  "0x608060405234801561001057600080fd5b5061020c806100206000396000f3fe608060405234801561001057600080fd5b506004361061008e5760003560e01c80632408d5f01461009357806326782247146100b75780634ada90af146100bf5780637dc0d1d0146100d957806394b2294b146100e1578063bb82aa5e146100e9578063dce15449146100f1578063dcfbc0c71461011d578063e875544614610125578063f851a4401461012d575b600080fd5b61009b610135565b604080516001600160a01b039092168252519081900360200190f35b61009b610144565b6100c7610153565b60408051918252519081900360200190f35b61009b610159565b6100c7610168565b61009b61016e565b61009b6004803603604081101561010757600080fd5b506001600160a01b03813516906020013561017d565b61009b6101b2565b6100c76101c1565b61009b6101c7565b6004546001600160a01b031681565b6001546001600160a01b031681565b60075481565b6005546001600160a01b031681565b60085481565b6002546001600160a01b031681565b6009602052816000526040600020818154811061019657fe5b6000918252602090912001546001600160a01b03169150829050565b6003546001600160a01b031681565b60065481565b6000546001600160a01b03168156fea26469706673582212200cf70753dc3e60e5ad5bd0fdca4793d1d8ce3532cec68187369631c27456d4d464736f6c634300060b0033";
 
 type ComptrollerV1StorageConstructorParams =
   | [signer?: Signer]

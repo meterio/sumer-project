@@ -10,7 +10,6 @@ import type {
 
 const _abi = [
   {
-    constant: true,
     inputs: [],
     name: "admin",
     outputs: [
@@ -20,12 +19,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "comptrollerImplementation",
     outputs: [
@@ -35,12 +32,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "pendingAdmin",
     outputs: [
@@ -50,12 +45,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "pendingComptrollerImplementation",
     outputs: [
@@ -65,12 +58,10 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
   {
-    constant: true,
     inputs: [],
     name: "underWriterAdmin",
     outputs: [
@@ -80,14 +71,13 @@ const _abi = [
         type: "address",
       },
     ],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },
 ];
 
 const _bytecode =
-  "0x608060405234801561001057600080fd5b5061010f806100206000396000f3fe6080604052348015600f57600080fd5b506004361060505760003560e01c80632408d5f014605557806326782247146077578063bb82aa5e14607d578063dcfbc0c7146083578063f851a440146089575b600080fd5b605b608f565b604080516001600160a01b039092168252519081900360200190f35b605b609e565b605b60ad565b605b60bc565b605b60cb565b6004546001600160a01b031681565b6001546001600160a01b031681565b6002546001600160a01b031681565b6003546001600160a01b031681565b6000546001600160a01b03168156fea265627a7a72315820590b94e575009d9d761ad43b29d5e9a1ec71e463678a501923f6e65107fd421564736f6c63430005100032";
+  "0x608060405234801561001057600080fd5b50610110806100206000396000f3fe6080604052348015600f57600080fd5b506004361060505760003560e01c80632408d5f014605557806326782247146077578063bb82aa5e14607d578063dcfbc0c7146083578063f851a440146089575b600080fd5b605b608f565b604080516001600160a01b039092168252519081900360200190f35b605b609e565b605b60ad565b605b60bc565b605b60cb565b6004546001600160a01b031681565b6001546001600160a01b031681565b6002546001600160a01b031681565b6003546001600160a01b031681565b6000546001600160a01b03168156fea26469706673582212208225f5c63eff77f1a6edf97818561469cb97ba96e6ffe0c51b2cb374a52dbfb664736f6c634300060b0033";
 
 type UnitrollerAdminStorageConstructorParams =
   | [signer?: Signer]
