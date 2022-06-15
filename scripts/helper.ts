@@ -140,6 +140,29 @@ export async function deployContract(
   }
 }
 
+export async function deployContractWithOverride(
+  ethers: HardhatEthersHelpers,
+  name: string,
+  network: string,
+  signer: Signer,
+  args: Array<any> = [],
+  libraries: Libraries = {},
+  alias: string = ''
+): Promise<Contract> {
+  const signerAddr = await signer.getAddress();
+  const factory = await ethers.getContractFactory(name, {
+    signer: signer,
+    libraries: libraries,
+  });
+  const contract = await factory.deploy(...args, overrides);
+  console.log('Deploying:', alias || name);
+  console.log('  to', contract.address);
+  console.log(`  by ${signerAddr}`);
+  console.log('  in', contract.deployTransaction.hash);
+  await saveFile(network, alias || name, contract, args, libraries);
+  return contract.deployed();
+}
+
 export async function saveFile(
   network: string,
   name: string,

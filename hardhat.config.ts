@@ -1,7 +1,7 @@
 import '@typechain/hardhat';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
-import "@nomiclabs/hardhat-waffle";
+import '@nomiclabs/hardhat-waffle';
 import '@openzeppelin/hardhat-upgrades';
 import { task, types } from 'hardhat/config';
 import { Signer, utils, constants, BigNumber, ContractTransaction } from 'ethers';
@@ -16,6 +16,7 @@ import {
   MINTER_ROLE,
   deployERC20WithProxy,
   listContracts,
+  deployContractWithOverride,
 } from './scripts/helper';
 import { underlyingTokens, suTokens, priceFeeds, FeedType, groupNums, eqAssetGroups } from './scripts/tokens';
 import {
@@ -63,6 +64,48 @@ task('dc', 'deploy comptroller/unitroller contracts').setAction(
 
     // Deploy Comptroller
     const comptroller = (await deployContract(ethers, 'Comptroller', network.name, admin)) as Comptroller;
+  });
+task('upgradeComptroller', 'upgrade comptroller with existing unitroller').setAction(
+  async (taskArgs, { ethers, run, network }) => {
+    const [admin, tokenDeployer] = await ethers.getSigners();
+    const unitrollerAddr = getContract(network.name, 'Unitroller');
+    const unitroller = await ethers.getContractAt('Unitroller', unitrollerAddr, admin);
+    let receipt: ContractTransaction;
+    // Deploy Comptroller
+    const comptroller = (await deployContractWithOverride(ethers, 'Comptroller', network.name, admin)) as Comptroller;
+
+    // SetPendingImpl for Unitroller
+    const actualComptroller = await unitroller.comptrollerImplementation();
+    if (actualComptroller != comptroller.address) {
+      receipt = await unitroller._setPendingImplementation(comptroller.address);
+      console.log(await receipt.wait());
+      // Become Implementation
+      receipt = await comptroller._become(unitroller.address);
+      console.log(await receipt.wait());
+    }
+  }
+);
+
+task('upgradeUnderwriterAdmin', 'upgrade underwriterAdmin with existing underwriterProxy').setAction(
+  async (taskArgs, { ethers, run, network }) => {
+    const [admin] = await ethers.getSigners();
+    const sumerAddr = getContract(network.name, 'Sumer');
+    let receipt: ContractTransaction;
+    // Deploy UnderwriterAdmin
+    const uwProxyAddr = getContract(network.name, 'UnderwriterProxy');
+    const uwProxy = (await ethers.getContractAt('UnderwriterProxy', uwProxyAddr)) as UnderwriterProxy;
+    const uwAdmin = (await deployContractWithOverride(ethers, 'UnderwriterAdmin', network.name, admin, [
+      sumerAddr,
+    ])) as UnderwriterAdmin;
+
+    const actualUWImpl = await uwProxy.implementation();
+    if (actualUWImpl != uwAdmin.address) {
+      receipt = await uwProxy._setPendingImplementation(uwAdmin.address);
+      console.log(await receipt.wait());
+      // Become Implementation
+      receipt = await uwAdmin.become(uwProxy.address);
+      console.log(await receipt.wait());
+    }
   }
 );
 
@@ -167,7 +210,7 @@ task('deployERC20', 'deploy token (mintable/pausable/upgradable)')
   });
 
 task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
-  async ({}, { ethers, run, network, upgrades }) => {
+  async ({ }, { ethers, run, network, upgrades }) => {
     await run('compile');
     const [admin, tokenDeployer] = await ethers.getSigners();
     const adminAddr = await admin.getAddress();
@@ -196,7 +239,83 @@ task('deploySuToken', 'deploy token (mintable/pausable/upgradable)').setAction(
   }
 );
 
-task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
+task('upgradeCToken', async ({ }, { ethers, run, network }) => {
+  const [admin] = await ethers.getSigners();
+  const unitrollerAddr = getContract(network.name, 'Unitroller');
+  const unitroller = await ethers.getContractAt('Comptroller', unitrollerAddr, admin);
+
+  // Upgrade csu Tokens
+  for (const sutoken of suTokens) {
+    const csuTokenSymbol = `c${sutoken.symbol}`;
+    // Deploy suToken delegates
+    const delegate = (await deployContractWithOverride(
+      ethers,
+      'suErc20Delegate',
+      network.name,
+      admin,
+      [],
+      {},
+      `${csuTokenSymbol}Delegate`
+    )) as SuErc20Delegate;
+
+    // Update csu token delegators with new delegate address
+    const delegatorAddr = getContract(network.name, csuTokenSymbol);
+    const delegator = (await ethers.getContractAt('suErc20Delegator', delegatorAddr)) as SuErc20Delegator;
+    const receipt = await delegator._setImplementation(delegate.address, true, constants.HashZero);
+    console.log(receipt.wait());
+  }
+
+  const whitePaperRateAddr = getContract(network.name, 'WhitePaperInterestRateModel');
+
+  const underlys = underlyingTokens[network.name];
+  if (underlys && underlys.length > 0) {
+    for (const underly of underlys) {
+      const ctokenSymbol = `c${underly.symbol}`;
+      const ctokenDecimals = 18;
+
+      if (underly.native) {
+        // deploy CEther for native token
+        // FIXME: how to upgrade CEther?
+        const cether = (await deployContractWithOverride(
+          ethers,
+          'CEther',
+          network.name,
+          admin,
+          [
+            unitroller.address,
+            whitePaperRateAddr,
+            utils.parseUnits('1', underly.decimals - ctokenDecimals + MANTISSA_DECIMALS), // exchange rate
+            underly.cTokenName,
+            ctokenSymbol,
+            ctokenDecimals,
+            admin.address,
+          ],
+          {},
+          `${ctokenSymbol}`
+        )) as CEther;
+      } else {
+        // deploy new CToken delegate
+        const delegate = (await deployContractWithOverride(
+          ethers,
+          'CErc20Delegate',
+          network.name,
+          admin,
+          [],
+          {},
+          `${ctokenSymbol}Delegate`
+        )) as CErc20Delegate;
+
+        // update cTokens delegators with new delegate address
+        const delegatorAddr = getContract(network.name, ctokenSymbol);
+        const delegator = (await ethers.getContractAt('CErc20Delegator', delegatorAddr)) as CErc20Delegator;
+        const receipt = await delegator._setImplementation(delegate.address, true, constants.HashZero);
+        console.log(receipt.wait());
+      }
+    }
+  }
+});
+
+task('deployCToken', async ({ }, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin, tokenDeployer] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
@@ -331,7 +450,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
   }
 });
 
-task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, network, upgrades }) => {
+task('configOracle', 'config price oracle').setAction(async ({ }, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
   const oracleAddr = getContract(network.name, 'FeedPriceOracle');
@@ -384,7 +503,7 @@ task('configOracle', 'config price oracle').setAction(async ({}, { ethers, run, 
   }
 });
 
-task('configSuMinter', 'config minter for sutokens').setAction(async ({}, { ethers, run, network, upgrades }) => {
+task('configSuMinter', 'config minter for sutokens').setAction(async ({ }, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
 
@@ -413,7 +532,7 @@ task('configSuMinter', 'config minter for sutokens').setAction(async ({}, { ethe
   }
 });
 
-task('configGroup', 'config group').setAction(async ({}, { ethers, run, network, upgrades }) => {
+task('configGroup', 'config group').setAction(async ({ }, { ethers, run, network, upgrades }) => {
   await run('compile');
   const [admin] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
@@ -497,7 +616,7 @@ task('configCsuToken', 'config csuToken with minter roles').setAction(
   }
 );
 
-task('list', 'list deployed contracts').setAction(async ({}, { ethers, run, network, upgrades }) => {
+task('list', 'list deployed contracts').setAction(async ({ }, { ethers, run, network, upgrades }) => {
   const underlys = underlyingTokens[network.name];
   const result = listContracts(network.name);
   for (const underly of underlys.sort((a, b) => (a.symbol < b.symbol ? 1 : -1))) {
@@ -584,7 +703,7 @@ task('price', 'query price from oracle')
   });
 
 // create2 proxy contracts factory
-task('proxy', 'contracts factory').setAction(async ({}, { ethers, run, network }) => {
+task('proxy', 'contracts factory').setAction(async ({ }, { ethers, run, network }) => {
   const signers = await ethers.getSigners();
   const sinerIndex = 1;
 
@@ -596,7 +715,7 @@ task('proxy', 'contracts factory').setAction(async ({}, { ethers, run, network }
 });
 
 // create2 proxy contracts factory
-task('load', 'contracts factory').setAction(async ({}, { ethers, run, network }) => {
+task('load', 'contracts factory').setAction(async ({ }, { ethers, run, network }) => {
   const a = getContract(network.name, 'CompoundLens');
   console.log(a);
 });
@@ -604,7 +723,7 @@ task('load', 'contracts factory').setAction(async ({}, { ethers, run, network })
 const create2proxy = '0xCAE0947f783081F1d7c0850F69EcD75b574B3D91';
 
 // deploy contracts with create2 proxy contract
-task('pd', 'contracts factory').setAction(async ({}, { ethers, run, network }) => {
+task('pd', 'contracts factory').setAction(async ({ }, { ethers, run, network }) => {
   const [signer] = await ethers.getSigners();
 
   // Now deploy some ERC-20 faucet tokens
