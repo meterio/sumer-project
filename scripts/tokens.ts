@@ -183,6 +183,15 @@ export const priceFeeds: { [key: string]: PriceFeed[] } = {
       fixed: '',
     },
   ],
+  rinkeby: [
+    { ctoken: 'cUSDC', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '1000000000000000000' },
+    { ctoken: 'cUSDT', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '1000000000000000000' },
+    { ctoken: 'cWBTC', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '20000000000000000000000' },
+    { ctoken: 'cETH', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '1100000000000000000000' },
+    { ctoken: 'csuUSD', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '1000000000000000000' },
+    { ctoken: 'csuETH', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '1100000000000000000000' },
+    { ctoken: 'csuBTC', type: FeedType.Fixed, feedAddr: '', decimals: 0, fixed: '20000000000000000000000' },
+  ],
 };
 
 // IMPORTANT!!!!!!! read before you make changes
@@ -276,6 +285,40 @@ export const underlyingTokens: { [key: string]: UnderlyingConfig[] } = {
       symbol: 'BTCK',
       decimals: 18,
       address: '0x07670d43C518372af1E48c62F3b1dBab7CA29185',
+      cTokenName: 'Sumer BTCK Token',
+      native: false,
+    },
+  ],
+  rinkeby: [
+    {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 18,
+      address: '0x8872e1e6753ad47f52dea2289e1d9e27ac8c2c14',
+      cTokenName: 'Sumer USD Coin',
+      native: false,
+    },
+    {
+      name: 'Tether USD',
+      symbol: 'USDT',
+      decimals: 18,
+      address: '0xde6c65155248fc8e7a4e92001dbebe56b6330387',
+      cTokenName: 'Sumer Tether USD',
+      native: false,
+    },
+    {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
+      address: '0x0000000000000000000000000000000000000000',
+      cTokenName: 'Sumer Ether',
+      native: true,
+    },
+    {
+      name: 'WBTC Token',
+      symbol: 'WBTC',
+      decimals: 18,
+      address: '0x1ba21f81f8363872386b0b725b536491c69f6251',
       cTokenName: 'Sumer BTCK Token',
       native: false,
     },
