@@ -16,6 +16,7 @@ export * as underwriterStorageSol from "./UnderwriterStorage.sol";
 export * as stake from "./stake";
 export * as suErc20Sol from "./suErc20.sol";
 export * as suTokenInterestModelSol from "./suTokenInterestModel.sol";
+export * as test from "./test";
 export { BaseJumpRateModelV2__factory } from "./BaseJumpRateModelV2__factory";
 export { CErc20Delegate__factory } from "./CErc20Delegate__factory";
 export { CErc20Delegator__factory } from "./CErc20Delegator__factory";
