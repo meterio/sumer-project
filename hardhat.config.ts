@@ -261,7 +261,7 @@ task('upgradeCToken', async ({}, { ethers, run, network }) => {
     const delegatorAddr = getContract(network.name, csuTokenSymbol);
     const delegator = (await ethers.getContractAt('suErc20Delegator', delegatorAddr)) as SuErc20Delegator;
     const receipt = await delegator._setImplementation(delegate.address, true, constants.HashZero);
-    console.log(receipt.wait());
+    console.log(await receipt.wait());
   }
 
   const whitePaperRateAddr = getContract(network.name, 'WhitePaperInterestRateModel');
@@ -308,7 +308,7 @@ task('upgradeCToken', async ({}, { ethers, run, network }) => {
         const delegatorAddr = getContract(network.name, ctokenSymbol);
         const delegator = (await ethers.getContractAt('CErc20Delegator', delegatorAddr)) as CErc20Delegator;
         const receipt = await delegator._setImplementation(delegate.address, true, constants.HashZero);
-        console.log(receipt.wait());
+        console.log(await receipt.wait());
       }
     }
   }
