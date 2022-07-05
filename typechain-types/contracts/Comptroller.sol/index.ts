@@ -3,7 +3,6 @@
 /* eslint-disable */
 export type { CTokenInterface } from "./CTokenInterface";
 export type { Comptroller } from "./Comptroller";
-export type { ComptrollerErrorReporter } from "./ComptrollerErrorReporter";
 export type { IUnitroller } from "./IUnitroller";
 export type { PriceOracle } from "./PriceOracle";
 export type { UnderwriterAdminInterface } from "./UnderwriterAdminInterface";

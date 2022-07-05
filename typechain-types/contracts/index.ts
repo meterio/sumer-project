@@ -17,6 +17,8 @@ import type * as errorReporterSol from "./ErrorReporter.sol";
 export type { errorReporterSol };
 import type * as feedPriceOracleSol from "./FeedPriceOracle.sol";
 export type { feedPriceOracleSol };
+import type * as feedPriceOracleV2Sol from "./FeedPriceOracleV2.sol";
+export type { feedPriceOracleV2Sol };
 import type * as governance from "./Governance";
 export type { governance };
 import type * as lens from "./Lens";

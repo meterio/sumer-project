@@ -117,10 +117,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Comptroller__factory>;
     getContractFactory(
-      name: "ComptrollerErrorReporter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerErrorReporter__factory>;
-    getContractFactory(
       name: "CTokenInterface",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CTokenInterface__factory>;
@@ -244,6 +240,22 @@ declare module "hardhat/types/runtime" {
       name: "FeedPriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FeedPriceOracle__factory>;
+    getContractFactory(
+      name: "WitnetFeed",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WitnetFeed__factory>;
+    getContractFactory(
+      name: "ChainlinkFeed",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ChainlinkFeed__factory>;
+    getContractFactory(
+      name: "FeedPriceOracleV2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FeedPriceOracleV2__factory>;
+    getContractFactory(
+      name: "IStdReference",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IStdReference__factory>;
     getContractFactory(
       name: "WitnetFeed",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -636,11 +648,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Comptroller>;
     getContractAt(
-      name: "ComptrollerErrorReporter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerErrorReporter>;
-    getContractAt(
       name: "CTokenInterface",
       address: string,
       signer?: ethers.Signer
@@ -795,6 +802,26 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.FeedPriceOracle>;
+    getContractAt(
+      name: "WitnetFeed",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.WitnetFeed>;
+    getContractAt(
+      name: "ChainlinkFeed",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ChainlinkFeed>;
+    getContractAt(
+      name: "FeedPriceOracleV2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FeedPriceOracleV2>;
+    getContractAt(
+      name: "IStdReference",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IStdReference>;
     getContractAt(
       name: "WitnetFeed",
       address: string,

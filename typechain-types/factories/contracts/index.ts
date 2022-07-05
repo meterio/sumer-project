@@ -9,6 +9,7 @@ export * as comptrollerStorageSol from "./ComptrollerStorage.sol";
 export * as daiInterestRateModelV3Sol from "./DAIInterestRateModelV3.sol";
 export * as errorReporterSol from "./ErrorReporter.sol";
 export * as feedPriceOracleSol from "./FeedPriceOracle.sol";
+export * as feedPriceOracleV2Sol from "./FeedPriceOracleV2.sol";
 export * as governance from "./Governance";
 export * as lens from "./Lens";
 export * as underWriterAdminSol from "./UnderWriterAdmin.sol";
