@@ -20,7 +20,7 @@ export const RPCS = {
   },
   rinkeby: {
     url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    accounts: [process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY,process.env.SUMER_TEST_PRIVKEY ],
+    accounts: [process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY, process.env.SUMER_TEST_PRIVKEY],
   },
   goerli: {
     url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -67,21 +67,17 @@ export const RPCS = {
       mnemonic: process.env.MNEMONIC,
     },
   },
-  mtrtest: {
+  metertest: {
     url: `https://rpctest.meter.io`,
     chainId: 83,
     gasPrice: 500000000000,
-    accounts: {
-      mnemonic: process.env.MNEMONIC,
-    },
+    accounts: [process.env.SUMER_TEST_PRIVKEY, process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY],
   },
   metermain: {
     url: `https://rpc.meter.io`,
     chainId: 82,
     gasPrice: 500000000000,
-    accounts: {
-      mnemonic: process.env.MNEMONIC,
-    },
+    accounts: [process.env.SUMER_MAIN_PRIVKEY, process.env.SUMER_TOKEN_DEPLOYER_PRIVKEY],
   },
   clvtest: {
     url: `https://rpc.clover.finance`,

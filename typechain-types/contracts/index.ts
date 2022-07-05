@@ -33,6 +33,8 @@ import type * as suErc20Sol from "./suErc20.sol";
 export type { suErc20Sol };
 import type * as suTokenInterestModelSol from "./suTokenInterestModel.sol";
 export type { suTokenInterestModelSol };
+import type * as test from "./test";
+export type { test };
 export type { BaseJumpRateModelV2 } from "./BaseJumpRateModelV2";
 export type { CErc20Delegate } from "./CErc20Delegate";
 export type { CErc20Delegator } from "./CErc20Delegator";
