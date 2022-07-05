@@ -2,7 +2,7 @@
 
 // File contracts/ComptrollerInterface.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 contract ComptrollerInterface {
     /// @notice Indicator that this is a Comptroller contract (for inspection)
@@ -77,7 +77,7 @@ contract ComptrollerInterface {
 
 // File contracts/InterestRateModel.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 /**
   * @title Compound's InterestRateModel Interface
@@ -111,7 +111,7 @@ contract InterestRateModel {
 
 // File contracts/EIP20NonStandardInterface.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 /**
  * @title EIP20NonStandardInterface
@@ -208,7 +208,7 @@ interface EIP20NonStandardInterface {
 
 // File contracts/CTokenInterfaces.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 
 
@@ -237,12 +237,12 @@ contract CTokenStorage {
    * @notice Maximum borrow rate that can ever be applied (.0005% / block)
    */
 
-  uint256 internal constant borrowRateMaxMantissa = 0.0005e16;
+  uint256 internal constant BORROW_RATE_MAX_MANTISSA = 0.0005e16;
 
   /**
    * @notice Maximum fraction of interest that can be set aside for reserves
    */
-  uint256 internal constant reserveFactorMaxMantissa = 1e18;
+  uint256 internal constant RESERVE_FACTOR_MAX_MANTISSA = 1e18;
 
   /**
    * @notice Administrator for this contract
@@ -784,7 +784,7 @@ contract TokenErrorReporter {
 
 // File contracts/CarefulMath.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 /**
   * @title Careful Math
@@ -873,7 +873,7 @@ contract CarefulMath {
 
 // File contracts/ExponentialNoError.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 /**
  * @title Exponential module for storing fixed-precision decimals
@@ -1072,7 +1072,7 @@ contract ExponentialNoError {
 
 // File contracts/Exponential.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 
 /**
@@ -1257,7 +1257,7 @@ contract Exponential is CarefulMath, ExponentialNoError {
 
 // File contracts/EIP20Interface.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 /**
  * @title ERC 20 Token Standard Interface
@@ -1323,7 +1323,7 @@ interface EIP20Interface {
 
 // File contracts/CToken.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
 
 
@@ -1664,7 +1664,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      */
     function exchangeRateStoredInternal() internal view returns (MathError, uint) {
 
-        if (isCToken != true) {
+        if (!isCToken) {
             return (MathError.NO_ERROR, initialExchangeRateMantissa);
         }
 
@@ -1730,7 +1730,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
 
         /* Calculate the current borrow interest rate */
         uint borrowRateMantissa = interestRateModel.getBorrowRate(cashPrior, borrowsPrior, reservesPrior);
-        require(borrowRateMantissa <= borrowRateMaxMantissa, "borrow rate is absurdly high");
+        require(borrowRateMantissa <= BORROW_RATE_MAX_MANTISSA, "borrow rate is absurdly high");
 
         /* Calculate the number of blocks elapsed since the last accrual */
         (MathError mathErr, uint blockDelta) = subUInt(currentBlockNumber, accrualBlockNumberPrior);
@@ -2008,13 +2008,18 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient cash */
-        if ((isCToken == true) && (getCashPrior() < vars.redeemAmount)) {
+        if (isCToken && (getCashPrior() < vars.redeemAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
         }
 
         /////////////////////////
         // EFFECTS & INTERACTIONS
         // (No safe failures beyond this point)
+
+
+        /* We write previously calculated values into storage */
+        totalSupply = vars.totalSupplyNew;
+        accountTokens[redeemer] = vars.accountTokensNew;
 
         /*
          * We invoke doTransferOut for the redeemer and the redeemAmount.
@@ -2023,10 +2028,6 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
          *  doTransferOut reverts if anything goes wrong, since we can't be sure if side effects occurred.
          */
         doTransferOut(redeemer, vars.redeemAmount);
-
-        /* We write previously calculated values into storage */
-        totalSupply = vars.totalSupplyNew;
-        accountTokens[redeemer] = vars.accountTokensNew;
 
         /* We emit a Transfer event, and a Redeem event */
         emit Transfer(redeemer, address(this), vars.redeemTokens);
@@ -2078,7 +2079,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         /* Fail gracefully if protocol has insufficient underlying cash */
-        if ((isCToken == true) && (getCashPrior() < borrowAmount)) {
+        if (isCToken && (getCashPrior() < borrowAmount)) {
             return fail(Error.TOKEN_INSUFFICIENT_CASH, FailureInfo.BORROW_CASH_NOT_AVAILABLE);
         }
 
@@ -2108,6 +2109,12 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         // EFFECTS & INTERACTIONS
         // (No safe failures beyond this point)
 
+
+        /* We write the previously calculated values into storage */
+        accountBorrows[borrower].principal = vars.accountBorrowsNew;
+        accountBorrows[borrower].interestIndex = borrowIndex;
+        totalBorrows = vars.totalBorrowsNew;
+
         /*
          * We invoke doTransferOut for the borrower and the borrowAmount.
          *  Note: The cToken must handle variations between ERC-20 and ETH underlying.
@@ -2115,12 +2122,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
          *  doTransferOut reverts if anything goes wrong, since we can't be sure if side effects occurred.
          */
         doTransferOut(borrower, borrowAmount);
-
-        /* We write the previously calculated values into storage */
-        accountBorrows[borrower].principal = vars.accountBorrowsNew;
-        accountBorrows[borrower].interestIndex = borrowIndex;
-        totalBorrows = vars.totalBorrowsNew;
-
+        
         /* We emit a Borrow event */
         emit Borrow(borrower, borrowAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
 
@@ -2470,6 +2472,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         address oldPendingAdmin = pendingAdmin;
 
         // Store pendingAdmin with value newPendingAdmin
+        require(newPendingAdmin != address(0), 'Address is Zero!');
         pendingAdmin = newPendingAdmin;
 
         // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)
@@ -2561,7 +2564,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
 
         // Check newReserveFactor ≤ maxReserveFactor
-        if (newReserveFactorMantissa > reserveFactorMaxMantissa) {
+        if (newReserveFactorMantissa > RESERVE_FACTOR_MAX_MANTISSA) {
             return fail(Error.BAD_INPUT, FailureInfo.SET_RESERVE_FACTOR_BOUNDS_CHECK);
         }
 
@@ -2789,849 +2792,288 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
 }
 
 
-// File contracts/PriceOracle.sol
+// File contracts/CErc20.sol
 
-pragma solidity ^0.5.16;
+pragma solidity 0.5.16;
 
-contract PriceOracle {
-    /// @notice Indicator that this is a PriceOracle contract (for inspection)
-    bool public constant isPriceOracle = true;
-
-    /**
-      * @notice Get the underlying price of a cToken asset
-      * @param cToken The cToken to get the underlying price of
-      * @return The underlying asset price mantissa (scaled by 1e18).
-      *  Zero means the price is unavailable.
-      */
-    function getUnderlyingPrice(CToken cToken) external view returns (uint);
+interface CompLike {
+  function delegate(address delegatee) external;
 }
 
+/**
+ * @title Compound's CErc20 Contract
+ * @notice CTokens which wrap an EIP-20 underlying
+ * @author Compound
+ */
+contract CErc20 is CToken, CErc20Interface {
+  /**
+   * @notice Initialize the new money market
+   * @param underlying_ The address of the underlying asset
+   * @param comptroller_ The address of the Comptroller
+   * @param interestRateModel_ The address of the interest rate model
+   * @param initialExchangeRateMantissa_ The initial exchange rate, scaled by 1e18
+   * @param name_ ERC-20 name of this token
+   * @param symbol_ ERC-20 symbol of this token
+   * @param decimals_ ERC-20 decimal precision of this token
+   */
+  function initialize(
+    address underlying_,
+    ComptrollerInterface comptroller_,
+    InterestRateModel interestRateModel_,
+    uint256 initialExchangeRateMantissa_,
+    string memory name_,
+    string memory symbol_,
+    uint8 decimals_
+  ) public {
+    // CToken initialize does the bulk of the work
+    super.initialize(comptroller_, interestRateModel_, initialExchangeRateMantissa_, name_, symbol_, decimals_, true);
 
-// File contracts/Governance/Comp.sol
+    isCEther = false;
 
-pragma solidity ^0.5.16;
-pragma experimental ABIEncoderV2;
+    // Set underlying and sanity check it
+    require(underlying_ != address(0), 'Address is Zero!');
+    underlying = underlying_;
+    EIP20Interface(underlying).totalSupply();
+  }
 
-contract Comp {
-    /// @notice EIP-20 token name for this token
-    string public constant name = "Sumer";
+  /*** User Interface ***/
 
-    /// @notice EIP-20 token symbol for this token
-    string public constant symbol = "SUMER";
+  /**
+   * @notice Sender supplies assets into the market and receives cTokens in exchange
+   * @dev Accrues interest whether or not the operation succeeds, unless reverted
+   * @param mintAmount The amount of the underlying asset to supply
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function mint(uint256 mintAmount) external returns (uint256) {
+    (uint256 err, ) = mintInternal(mintAmount);
+    return err;
+  }
 
-    /// @notice EIP-20 token decimals for this token
-    uint8 public constant decimals = 18;
+  /**
+   * @notice Sender redeems cTokens in exchange for the underlying asset
+   * @dev Accrues interest whether or not the operation succeeds, unless reverted
+   * @param redeemTokens The number of cTokens to redeem into underlying
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function redeem(uint256 redeemTokens) external returns (uint256) {
+    return redeemInternal(redeemTokens);
+  }
 
-    /// @notice Total number of tokens in circulation
-    uint public constant totalSupply = 10000000e18; // 10 million Comp
+  /**
+   * @notice Sender redeems cTokens in exchange for a specified amount of underlying asset
+   * @dev Accrues interest whether or not the operation succeeds, unless reverted
+   * @param redeemAmount The amount of underlying to redeem
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function redeemUnderlying(uint256 redeemAmount) external returns (uint256) {
+    return redeemUnderlyingInternal(redeemAmount);
+  }
 
-    /// @notice Allowance amounts on behalf of others
-    mapping (address => mapping (address => uint96)) internal allowances;
+  /**
+   * @notice Sender borrows assets from the protocol to their own address
+   * @param borrowAmount The amount of the underlying asset to borrow
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function borrow(uint256 borrowAmount) external returns (uint256) {
+    return borrowInternal(borrowAmount);
+  }
 
-    /// @notice Official record of token balances for each account
-    mapping (address => uint96) internal balances;
+  /**
+   * @notice Sender repays their own borrow
+   * @param repayAmount The amount to repay
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function repayBorrow(uint256 repayAmount) external returns (uint256) {
+    (uint256 err, ) = repayBorrowInternal(repayAmount);
+    return err;
+  }
 
-    /// @notice A record of each accounts delegate
-    mapping (address => address) public delegates;
+  /**
+   * @notice Sender repays a borrow belonging to borrower
+   * @param borrower the account with the debt being payed off
+   * @param repayAmount The amount to repay
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function repayBorrowBehalf(address borrower, uint256 repayAmount) external returns (uint256) {
+    (uint256 err, ) = repayBorrowBehalfInternal(borrower, repayAmount);
+    return err;
+  }
 
-    /// @notice A checkpoint for marking number of votes from a given block
-    struct Checkpoint {
-        uint32 fromBlock;
-        uint96 votes;
-    }
+  /**
+   * @notice The sender liquidates the borrowers collateral.
+   *  The collateral seized is transferred to the liquidator.
+   * @param borrower The borrower of this cToken to be liquidated
+   * @param repayAmount The amount of the underlying borrowed asset to repay
+   * @param cTokenCollateral The market in which to seize collateral from the borrower
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function liquidateBorrow(
+    address borrower,
+    uint256 repayAmount,
+    CTokenInterface cTokenCollateral
+  ) external returns (uint256) {
+    (uint256 err, ) = liquidateBorrowInternal(borrower, repayAmount, cTokenCollateral);
+    return err;
+  }
 
-    /// @notice A record of votes checkpoints for each account, by index
-    mapping (address => mapping (uint32 => Checkpoint)) public checkpoints;
+  /**
+   * @notice A public function to sweep accidental ERC-20 transfers to this contract. Tokens are sent to admin (timelock)
+   * @param token The address of the ERC-20 token to sweep
+   */
+  function sweepToken(EIP20NonStandardInterface token) external {
+    require(address(token) != underlying, 'CErc20::sweepToken: can not sweep underlying token');
+    uint256 underlyingBalanceBefore = EIP20NonStandardInterface(underlying).balanceOf(address(this));
+    uint256 balance = token.balanceOf(address(this));
+    token.transfer(admin, balance);
+    uint256 underlyingBalanceAfter = EIP20NonStandardInterface(underlying).balanceOf(address(this));
+    require(underlyingBalanceBefore == underlyingBalanceAfter, 'underlyingBalance error');
+  }
 
-    /// @notice The number of checkpoints for each account
-    mapping (address => uint32) public numCheckpoints;
+  /**
+   * @notice The sender adds to reserves.
+   * @param addAmount The amount fo underlying token to add as reserves
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function _addReserves(uint256 addAmount) external returns (uint256) {
+    return _addReservesInternal(addAmount);
+  }
 
-    /// @notice The EIP-712 typehash for the contract's domain
-    bytes32 public constant DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
+  /*** Safe Token ***/
 
-    /// @notice The EIP-712 typehash for the delegation struct used by the contract
-    bytes32 public constant DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
+  /**
+   * @notice Gets balance of this contract in terms of the underlying
+   * @dev This excludes the value of the current message, if any
+   * @return The quantity of underlying tokens owned by this contract
+   */
+  function getCashPrior() internal view returns (uint256) {
+    EIP20Interface token = EIP20Interface(underlying);
+    return token.balanceOf(address(this));
+  }
 
-    /// @notice A record of states for signing / validating signatures
-    mapping (address => uint) public nonces;
+  /**
+   * @dev Similar to EIP20 transfer, except it handles a False result from `transferFrom` and reverts in that case.
+   *      This will revert due to insufficient balance or insufficient allowance.
+   *      This function returns the actual amount received,
+   *      which may be less than `amount` if there is a fee attached to the transfer.
+   *
+   *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
+   *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
+   */
+  function doTransferIn(address from, uint256 amount) internal returns (uint256) {
+    EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
+    uint256 balanceBefore = EIP20Interface(underlying).balanceOf(address(this));
+    token.transferFrom(from, address(this), amount);
 
-    /// @notice An event thats emitted when an account changes its delegate
-    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
-
-    /// @notice An event thats emitted when a delegate account's vote balance changes
-    event DelegateVotesChanged(address indexed delegate, uint previousBalance, uint newBalance);
-
-    /// @notice The standard EIP-20 transfer event
-    event Transfer(address indexed from, address indexed to, uint256 amount);
-
-    /// @notice The standard EIP-20 approval event
-    event Approval(address indexed owner, address indexed spender, uint256 amount);
-
-    /**
-     * @notice Construct a new Comp token
-     * @param account The initial account to grant all the tokens
-     */
-    constructor(address account) public {
-        balances[account] = uint96(totalSupply);
-        emit Transfer(address(0), account, totalSupply);
-    }
-
-    /**
-     * @notice Get the number of tokens `spender` is approved to spend on behalf of `account`
-     * @param account The address of the account holding the funds
-     * @param spender The address of the account spending the funds
-     * @return The number of tokens approved
-     */
-    function allowance(address account, address spender) external view returns (uint) {
-        return allowances[account][spender];
-    }
-
-    /**
-     * @notice Approve `spender` to transfer up to `amount` from `src`
-     * @dev This will overwrite the approval amount for `spender`
-     *  and is subject to issues noted [here](https://eips.ethereum.org/EIPS/eip-20#approve)
-     * @param spender The address of the account which may transfer tokens
-     * @param rawAmount The number of tokens that are approved (2^256-1 means infinite)
-     * @return Whether or not the approval succeeded
-     */
-    function approve(address spender, uint rawAmount) external returns (bool) {
-        uint96 amount;
-        if (rawAmount == uint(-1)) {
-            amount = uint96(-1);
-        } else {
-            amount = safe96(rawAmount, "Comp::approve: amount exceeds 96 bits");
-        }
-
-        allowances[msg.sender][spender] = amount;
-
-        emit Approval(msg.sender, spender, amount);
-        return true;
-    }
-
-    /**
-     * @notice Get the number of tokens held by the `account`
-     * @param account The address of the account to get the balance of
-     * @return The number of tokens held
-     */
-    function balanceOf(address account) external view returns (uint) {
-        return balances[account];
-    }
-
-    /**
-     * @notice Transfer `amount` tokens from `msg.sender` to `dst`
-     * @param dst The address of the destination account
-     * @param rawAmount The number of tokens to transfer
-     * @return Whether or not the transfer succeeded
-     */
-    function transfer(address dst, uint rawAmount) external returns (bool) {
-        uint96 amount = safe96(rawAmount, "Comp::transfer: amount exceeds 96 bits");
-        _transferTokens(msg.sender, dst, amount);
-        return true;
-    }
-
-    /**
-     * @notice Transfer `amount` tokens from `src` to `dst`
-     * @param src The address of the source account
-     * @param dst The address of the destination account
-     * @param rawAmount The number of tokens to transfer
-     * @return Whether or not the transfer succeeded
-     */
-    function transferFrom(address src, address dst, uint rawAmount) external returns (bool) {
-        address spender = msg.sender;
-        uint96 spenderAllowance = allowances[src][spender];
-        uint96 amount = safe96(rawAmount, "Comp::approve: amount exceeds 96 bits");
-
-        if (spender != src && spenderAllowance != uint96(-1)) {
-            uint96 newAllowance = sub96(spenderAllowance, amount, "Comp::transferFrom: transfer amount exceeds spender allowance");
-            allowances[src][spender] = newAllowance;
-
-            emit Approval(src, spender, newAllowance);
-        }
-
-        _transferTokens(src, dst, amount);
-        return true;
-    }
-
-    /**
-     * @notice Delegate votes from `msg.sender` to `delegatee`
-     * @param delegatee The address to delegate votes to
-     */
-    function delegate(address delegatee) public {
-        return _delegate(msg.sender, delegatee);
-    }
-
-    /**
-     * @notice Delegates votes from signatory to `delegatee`
-     * @param delegatee The address to delegate votes to
-     * @param nonce The contract state required to match the signature
-     * @param expiry The time at which to expire the signature
-     * @param v The recovery byte of the signature
-     * @param r Half of the ECDSA signature pair
-     * @param s Half of the ECDSA signature pair
-     */
-    function delegateBySig(address delegatee, uint nonce, uint expiry, uint8 v, bytes32 r, bytes32 s) public {
-        bytes32 domainSeparator = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name)), getChainId(), address(this)));
-        bytes32 structHash = keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry));
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
-        address signatory = ecrecover(digest, v, r, s);
-        require(signatory != address(0), "Comp::delegateBySig: invalid signature");
-        require(nonce == nonces[signatory]++, "Comp::delegateBySig: invalid nonce");
-        require(now <= expiry, "Comp::delegateBySig: signature expired");
-        return _delegate(signatory, delegatee);
-    }
-
-    /**
-     * @notice Gets the current votes balance for `account`
-     * @param account The address to get votes balance
-     * @return The number of current votes for `account`
-     */
-    function getCurrentVotes(address account) external view returns (uint96) {
-        uint32 nCheckpoints = numCheckpoints[account];
-        return nCheckpoints > 0 ? checkpoints[account][nCheckpoints - 1].votes : 0;
-    }
-
-    /**
-     * @notice Determine the prior number of votes for an account as of a block number
-     * @dev Block number must be a finalized block or else this function will revert to prevent misinformation.
-     * @param account The address of the account to check
-     * @param blockNumber The block number to get the vote balance at
-     * @return The number of votes the account had as of the given block
-     */
-    function getPriorVotes(address account, uint blockNumber) public view returns (uint96) {
-        require(blockNumber < block.number, "Comp::getPriorVotes: not yet determined");
-
-        uint32 nCheckpoints = numCheckpoints[account];
-        if (nCheckpoints == 0) {
-            return 0;
-        }
-
-        // First check most recent balance
-        if (checkpoints[account][nCheckpoints - 1].fromBlock <= blockNumber) {
-            return checkpoints[account][nCheckpoints - 1].votes;
-        }
-
-        // Next check implicit zero balance
-        if (checkpoints[account][0].fromBlock > blockNumber) {
-            return 0;
-        }
-
-        uint32 lower = 0;
-        uint32 upper = nCheckpoints - 1;
-        while (upper > lower) {
-            uint32 center = upper - (upper - lower) / 2; // ceil, avoiding overflow
-            Checkpoint memory cp = checkpoints[account][center];
-            if (cp.fromBlock == blockNumber) {
-                return cp.votes;
-            } else if (cp.fromBlock < blockNumber) {
-                lower = center;
-            } else {
-                upper = center - 1;
-            }
-        }
-        return checkpoints[account][lower].votes;
-    }
-
-    function _delegate(address delegator, address delegatee) internal {
-        address currentDelegate = delegates[delegator];
-        uint96 delegatorBalance = balances[delegator];
-        delegates[delegator] = delegatee;
-
-        emit DelegateChanged(delegator, currentDelegate, delegatee);
-
-        _moveDelegates(currentDelegate, delegatee, delegatorBalance);
-    }
-
-    function _transferTokens(address src, address dst, uint96 amount) internal {
-        require(src != address(0), "Comp::_transferTokens: cannot transfer from the zero address");
-        require(dst != address(0), "Comp::_transferTokens: cannot transfer to the zero address");
-
-        balances[src] = sub96(balances[src], amount, "Comp::_transferTokens: transfer amount exceeds balance");
-        balances[dst] = add96(balances[dst], amount, "Comp::_transferTokens: transfer amount overflows");
-        emit Transfer(src, dst, amount);
-
-        _moveDelegates(delegates[src], delegates[dst], amount);
-    }
-
-    function _moveDelegates(address srcRep, address dstRep, uint96 amount) internal {
-        if (srcRep != dstRep && amount > 0) {
-            if (srcRep != address(0)) {
-                uint32 srcRepNum = numCheckpoints[srcRep];
-                uint96 srcRepOld = srcRepNum > 0 ? checkpoints[srcRep][srcRepNum - 1].votes : 0;
-                uint96 srcRepNew = sub96(srcRepOld, amount, "Comp::_moveVotes: vote amount underflows");
-                _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
-            }
-
-            if (dstRep != address(0)) {
-                uint32 dstRepNum = numCheckpoints[dstRep];
-                uint96 dstRepOld = dstRepNum > 0 ? checkpoints[dstRep][dstRepNum - 1].votes : 0;
-                uint96 dstRepNew = add96(dstRepOld, amount, "Comp::_moveVotes: vote amount overflows");
-                _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
-            }
-        }
-    }
-
-    function _writeCheckpoint(address delegatee, uint32 nCheckpoints, uint96 oldVotes, uint96 newVotes) internal {
-      uint32 blockNumber = safe32(block.number, "Comp::_writeCheckpoint: block number exceeds 32 bits");
-
-      if (nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber) {
-          checkpoints[delegatee][nCheckpoints - 1].votes = newVotes;
-      } else {
-          checkpoints[delegatee][nCheckpoints] = Checkpoint(blockNumber, newVotes);
-          numCheckpoints[delegatee] = nCheckpoints + 1;
+    bool success;
+    assembly {
+      switch returndatasize()
+      case 0 {
+        // This is a non-standard ERC-20
+        success := not(0) // set success to true
       }
-
-      emit DelegateVotesChanged(delegatee, oldVotes, newVotes);
+      case 32 {
+        // This is a compliant ERC-20
+        returndatacopy(0, 0, 32)
+        success := mload(0) // Set `success = returndata` of external call
+      }
+      default {
+        // This is an excessively non-compliant ERC-20, revert.
+        revert(0, 0)
+      }
     }
+    require(success, 'TOKEN_TRANSFER_IN_FAILED');
 
-    function safe32(uint n, string memory errorMessage) internal pure returns (uint32) {
-        require(n < 2**32, errorMessage);
-        return uint32(n);
-    }
+    // Calculate the amount that was *actually* transferred
+    uint256 balanceAfter = EIP20Interface(underlying).balanceOf(address(this));
+    require(balanceAfter >= balanceBefore, 'TOKEN_TRANSFER_IN_OVERFLOW');
+    return balanceAfter - balanceBefore; // underflow already checked above, just subtract
+  }
 
-    function safe96(uint n, string memory errorMessage) internal pure returns (uint96) {
-        require(n < 2**96, errorMessage);
-        return uint96(n);
-    }
+  /**
+   * @dev Similar to EIP20 transfer, except it handles a False success from `transfer` and returns an explanatory
+   *      error code rather than reverting. If caller has not called checked protocol's balance, this may revert due to
+   *      insufficient cash held in this contract. If caller has checked protocol's balance prior to this call, and verified
+   *      it is >= amount, this should not revert in normal conditions.
+   *
+   *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
+   *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
+   */
+  function doTransferOut(address payable to, uint256 amount) internal {
+    EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
+    token.transfer(to, amount);
 
-    function add96(uint96 a, uint96 b, string memory errorMessage) internal pure returns (uint96) {
-        uint96 c = a + b;
-        require(c >= a, errorMessage);
-        return c;
+    bool success;
+    assembly {
+      switch returndatasize()
+      case 0 {
+        // This is a non-standard ERC-20
+        success := not(0) // set success to true
+      }
+      case 32 {
+        // This is a compliant ERC-20
+        returndatacopy(0, 0, 32)
+        success := mload(0) // Set `success = returndata` of external call
+      }
+      default {
+        // This is an excessively non-compliant ERC-20, revert.
+        revert(0, 0)
+      }
     }
+    require(success, 'TOKEN_TRANSFER_OUT_FAILED');
+  }
 
-    function sub96(uint96 a, uint96 b, string memory errorMessage) internal pure returns (uint96) {
-        require(b <= a, errorMessage);
-        return a - b;
-    }
-
-    function getChainId() internal pure returns (uint) {
-        uint256 chainId;
-        assembly { chainId := chainid() }
-        return chainId;
-    }
+  /**
+   * @notice Admin call to delegate the votes of the COMP-like underlying
+   * @param compLikeDelegatee The address to delegate votes to
+   * @dev CTokens whose underlying are not CompLike should revert here
+   */
+  function _delegateCompLikeTo(address compLikeDelegatee) external {
+    require(msg.sender == admin, 'only the admin may set the comp-like delegate');
+    CompLike(underlying).delegate(compLikeDelegatee);
+  }
 }
 
 
-// File contracts/UnderwriterStorage.sol
+// File contracts/CErc20Delegate.sol
 
-pragma solidity >=0.5.16;
+pragma solidity 0.5.16;
 
-pragma experimental ABIEncoderV2;
-
-contract UnderwriterProxyStorage {
-  /**
-   * @notice Administrator for this contract
-   */
-  address public admin;
-
-  /**
-   * @notice Pending administrator for this contract
-   */
-  address public pendingAdmin;
-
-  /**
-   * @notice Active brains of Unitroller
-   */
-  address public implementation;
-
-  /**
-   * @notice Pending brains of Unitroller
-   */
-  address public pendingImplementation;
-}
-
-contract UnderwriterStorage is UnderwriterProxyStorage {
-  address public admin;
-  address public governanceToken;
-
-  uint256 public suTokenRateMantissa;
-
-  /**
-   * @notice eqAssetGroup, cToken -> equal assets info.
-   */
-
-  uint8 public equalAssetsGroupNum;
-
-  /**
-   * @notice The Pause Guardian can pause certain actions as a safety mechanism.
-   *  Actions which allow users to remove their own assets cannot be paused.
-   *  Liquidation / seizing / transfer can only be paused globally, not by market.
-   */
-  address public pauseGuardian;
-  bool public _mintGuardianPaused;
-  bool public _borrowGuardianPaused;
-  bool public transferGuardianPaused;
-  bool public seizeGuardianPaused;
-  mapping(address => bool) public mintGuardianPaused;
-  mapping(address => bool) public borrowGuardianPaused;
-
-  // @notice The borrowCapGuardian can set borrowCaps to any number for any market. Lowering the borrow cap could disable borrowing on the given market.
-  address public borrowCapGuardian;
-
-  // @notice Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
-  mapping(address => uint256) public borrowCaps;
-}
-
-contract UnderwriterAdminInterface {
-  /// @notice EqualAssets, contains information of groupName and rateMantissas
-  struct EqualAssets {
-    uint8 groupId;
-    string groupName;
-    uint256 inGroupCTokenRateMantissa;
-    uint256 inGroupSuTokenRateMantissa;
-    uint256 interGroupCTokenRateMantissa;
-    uint256 interGroupSuTokenRateMantissa;
-  }
-  mapping(uint8 => EqualAssets) public eqAssetGroup;
-
-  function getEqAssetGroupNum() public view returns (uint8);
-
-  function getEqAssetGroup(uint8 groupId) public view returns (EqualAssets memory);
-
-  function _getPauseGuardian() public view returns (address);
-
-  function _getMintPaused(CToken cToken) public returns (bool);
-
-  function _getTransferPaused() public view returns (bool);
-
-  function _getBorrowPaused(CToken cToken) public view returns (bool);
-
-  function _getSeizePaused() public view returns (bool);
-
-  function getCompAddress() public view returns (address);
-
-  function _getMarketBorrowCap(CToken cToken) external view returns (uint256);
-
-  function _getBorrowCapGuardian() external view returns (address);
-
-  function _getSuTokenRateMantissa() external view returns (uint256);
-}
-
-
-// File contracts/UnderwriterProxy.sol
-
-pragma solidity ^0.5.16;
-
-
-contract UnderwriterProxy is UnderwriterProxyStorage, ComptrollerErrorReporter {
+/**
+ * @title Compound's CErc20Delegate Contract
+ * @notice CTokens which wrap an EIP-20 underlying and are delegated to
+ * @author Compound
+ */
+contract CErc20Delegate is CErc20, CDelegateInterface {
     /**
-     * @notice Emitted when pendingImplementation is changed
+     * @notice Construct an empty delegate
      */
-    event NewPendingImplementation(
-        address oldPendingImplementation,
-        address newPendingImplementation
-    );
+    constructor() public {}
 
     /**
-     * @notice Emitted when pendingImplementation is accepted, which means comptroller implementation is updated
+     * @notice Called by the delegator on a delegate to initialize it for duty
+     * @param data The encoded bytes data for any initialization
      */
-    event NewImplementation(
-        address oldImplementation,
-        address newImplementation
-    );
+    function _becomeImplementation(bytes memory data) public {
+        // Shh -- currently unused
+        data;
 
-    /**
-     * @notice Emitted when pendingAdmin is changed
-     */
-    event NewPendingAdmin(address oldPendingAdmin, address newPendingAdmin);
+        // Shh -- we don't ever want this hook to be marked pure
+        // if (false) {
+        //     implementation = address(0);
+        // }
 
-    /**
-     * @notice Emitted when pendingAdmin is accepted, which means admin is updated
-     */
-    event NewAdmin(address oldAdmin, address newAdmin);
-
-    constructor() public {
-        // Set admin to caller
-        admin = msg.sender;
-    }
-
-    /*** Admin Functions ***/
-    function _setPendingImplementation(address newPendingImplementation)
-        public
-        returns (uint256)
-    {
-        if (msg.sender != admin) {
-            return
-                fail(
-                    Error.UNAUTHORIZED,
-                    FailureInfo.SET_PENDING_IMPLEMENTATION_OWNER_CHECK
-                );
-        }
-
-        address oldPendingImplementation = pendingImplementation;
-
-        pendingImplementation = newPendingImplementation;
-
-        emit NewPendingImplementation(
-            oldPendingImplementation,
-            pendingImplementation
-        );
-
-        return uint256(Error.NO_ERROR);
+        require(msg.sender == admin, "only the admin may call _becomeImplementation");
     }
 
     /**
-     * @notice Accepts new implementation of comptroller. msg.sender must be pendingImplementation
-     * @dev Admin function for new implementation to accept it's role as implementation
-     * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+     * @notice Called by the delegator on a delegate to forfeit its responsibility
      */
-    function _acceptImplementation() public returns (uint256) {
-        // Check caller is pendingImplementation and pendingImplementation ≠ address(0)
-        if (
-            msg.sender != pendingImplementation ||
-            pendingImplementation == address(0)
-        ) {
-            return
-                fail(
-                    Error.UNAUTHORIZED,
-                    FailureInfo.ACCEPT_PENDING_IMPLEMENTATION_ADDRESS_CHECK
-                );
-        }
+    function _resignImplementation() public {
+        // Shh -- we don't ever want this hook to be marked pure
+        // if (false) {
+        //     implementation = address(0);
+        // }
 
-        // Save current values for inclusion in log
-        address oldImplementation = implementation;
-        address oldPendingImplementation = pendingImplementation;
-
-        implementation = pendingImplementation;
-
-        pendingImplementation = address(0);
-
-        emit NewImplementation(oldImplementation, implementation);
-        emit NewPendingImplementation(
-            oldPendingImplementation,
-            pendingImplementation
-        );
-
-        return uint256(Error.NO_ERROR);
+        require(msg.sender == admin, "only the admin may call _resignImplementation");
     }
-
-    /**
-     * @notice Begins transfer of admin rights. The newPendingAdmin must call `_acceptAdmin` to finalize the transfer.
-     * @dev Admin function to begin change of admin. The newPendingAdmin must call `_acceptAdmin` to finalize the transfer.
-     * @param newPendingAdmin New pending admin.
-     * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
-     */
-    function _setPendingAdmin(address newPendingAdmin)
-        public
-        returns (uint256)
-    {
-        // Check caller = admin
-        if (msg.sender != admin) {
-            return
-                fail(
-                    Error.UNAUTHORIZED,
-                    FailureInfo.SET_PENDING_ADMIN_OWNER_CHECK
-                );
-        }
-
-        // Save current value, if any, for inclusion in log
-        address oldPendingAdmin = pendingAdmin;
-
-        // Store pendingAdmin with value newPendingAdmin
-        pendingAdmin = newPendingAdmin;
-
-        // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)
-        emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin);
-
-        return uint256(Error.NO_ERROR);
-    }
-
-    /**
-     * @notice Accepts transfer of admin rights. msg.sender must be pendingAdmin
-     * @dev Admin function for pending admin to accept role and update admin
-     * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
-     */
-    function _acceptAdmin() public returns (uint256) {
-        // Check caller is pendingAdmin and pendingAdmin ≠ address(0)
-        if (msg.sender != pendingAdmin || msg.sender == address(0)) {
-            return
-                fail(
-                    Error.UNAUTHORIZED,
-                    FailureInfo.ACCEPT_ADMIN_PENDING_ADMIN_CHECK
-                );
-        }
-
-        // Save current values for inclusion in log
-        address oldAdmin = admin;
-        address oldPendingAdmin = pendingAdmin;
-
-        // Store admin with value pendingAdmin
-        admin = pendingAdmin;
-
-        // Clear the pending value
-        pendingAdmin = address(0);
-
-        emit NewAdmin(oldAdmin, admin);
-        emit NewPendingAdmin(oldPendingAdmin, pendingAdmin);
-
-        return uint256(Error.NO_ERROR);
-    }
-
-    /**
-     * @dev Delegates execution to an implementation contract.
-     * It returns to the external caller whatever the implementation returns
-     * or forwards reverts.
-     */
-    function() external payable {
-        // delegate all other functions to current implementation
-        (bool success, ) = implementation.delegatecall(msg.data);
-
-        assembly {
-            let free_mem_ptr := mload(0x40)
-            returndatacopy(free_mem_ptr, 0, returndatasize)
-
-            switch success
-            case 0 {
-                revert(free_mem_ptr, returndatasize)
-            }
-            default {
-                return(free_mem_ptr, returndatasize)
-            }
-        }
-    }
-}
-
-
-// File contracts/UnderWriterAdmin.sol
-
-pragma solidity >=0.5.16;
-pragma experimental ABIEncoderV2;
-
-
-
-
-
-
-contract UnderwriterAdmin is UnderwriterStorage, UnderwriterAdminInterface, ComptrollerErrorReporter {
-  /// @notice Emitted when an action is paused globally
-  event ActionPaused(string action, bool pauseState);
-
-  /// @notice Emitted when an action is paused on a market
-  event ActionPaused(CToken cToken, string action, bool pauseState);
-
-  /// @notice Emitted when borrow cap for a cToken is changed
-  event NewBorrowCap(CToken indexed cToken, uint256 newBorrowCap);
-
-  /// @notice Emitted when borrow cap guardian is changed
-  event NewBorrowCapGuardian(address oldBorrowCapGuardian, address newBorrowCapGuardian);
-
-  /// @notice Emitted when pause guardian is changed
-  event NewPauseGuardian(address oldPauseGuardian, address newPauseGuardian);
-
-  constructor(address _gov) public {
-    admin = msg.sender;
-    governanceToken = _gov;
-    suTokenRateMantissa = 10**18;
-  }
-
-  function _become(UnderwriterProxy proxy) public {
-    require(msg.sender == proxy.admin(), 'only unitroller admin can change brains');
-    require(proxy._acceptImplementation() == 0, 'change not authorized');
-  }
-
-  function setEqAssetGroup(
-    uint8 groupId,
-    string memory groupName,
-    uint256 inGroupCTokenRateMantissa,
-    uint256 inGroupSuTokenRateMantissa,
-    uint256 interGroupCTokenRateMantissa,
-    uint256 interGroupSuTokenRateMantissa
-  ) public returns (uint256) {
-    // Check caller is admin
-    if (msg.sender != admin) {
-      return fail(Error.UNAUTHORIZED, FailureInfo.SET_EQUAL_ASSET_GROUP_OWNER_CHECK);
-    }
-
-    eqAssetGroup[groupId] = EqualAssets(
-      groupId,
-      groupName,
-      inGroupCTokenRateMantissa,
-      inGroupSuTokenRateMantissa,
-      interGroupCTokenRateMantissa,
-      interGroupSuTokenRateMantissa
-    );
-    equalAssetsGroupNum++;
-    return uint256(Error.NO_ERROR);
-  }
-
-  function removeEqAssetGroup(uint8 groupId) public returns (uint256) {
-    // Check caller is admin
-    if (msg.sender != admin) {
-      return fail(Error.UNAUTHORIZED, FailureInfo.SET_EQUAL_ASSET_GROUP_OWNER_CHECK);
-    }
-
-    delete eqAssetGroup[groupId];
-    equalAssetsGroupNum--;
-    return uint256(Error.NO_ERROR);
-  }
-
-  function getEqAssetGroup(uint8 groupId) public view returns (EqualAssets memory) {
-    return eqAssetGroup[groupId];
-  }
-
-  function getEqAssetGroupNum() public view returns (uint8) {
-    return equalAssetsGroupNum;
-  }
-
-  /**
-   * @notice Admin function to change the Pause Guardian
-   * @param newPauseGuardian The address of the new Pause Guardian
-   * @return uint 0=success, otherwise a failure. (See enum Error for details)
-   */
-  function _setPauseGuardian(address newPauseGuardian) public returns (uint256) {
-    if (msg.sender != admin) {
-      return fail(Error.UNAUTHORIZED, FailureInfo.SET_PAUSE_GUARDIAN_OWNER_CHECK);
-    }
-
-    // Save current value for inclusion in log
-    address oldPauseGuardian = pauseGuardian;
-
-    // Store pauseGuardian with value newPauseGuardian
-    pauseGuardian = newPauseGuardian;
-
-    // Emit NewPauseGuardian(OldPauseGuardian, NewPauseGuardian)
-    emit NewPauseGuardian(oldPauseGuardian, pauseGuardian);
-
-    return uint256(Error.NO_ERROR);
-  }
-
-  function _getPauseGuardian() public view returns (address) {
-    return pauseGuardian;
-  }
-
-  function _setMintPaused(CToken cToken, bool state) public returns (bool) {
-    //require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
-    require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
-    require(msg.sender == admin || state == true, 'only admin can unpause');
-
-    mintGuardianPaused[address(cToken)] = state;
-    emit ActionPaused(cToken, 'Mint', state);
-    return state;
-  }
-
-  function _getMintPaused(CToken cToken) public returns (bool) {
-    return mintGuardianPaused[address(cToken)];
-  }
-
-  function _setBorrowPaused(CToken cToken, bool state) public returns (bool) {
-    //require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
-    require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
-    require(msg.sender == admin || state == true, 'only admin can unpause');
-
-    borrowGuardianPaused[address(cToken)] = state;
-    emit ActionPaused(cToken, 'Borrow', state);
-    return state;
-  }
-
-  function _getBorrowPaused(CToken cToken) public view returns (bool) {
-    return borrowGuardianPaused[address(cToken)];
-  }
-
-  function _setTransferPaused(bool state) public returns (bool) {
-    require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
-    require(msg.sender == admin || state == true, 'only admin can unpause');
-
-    transferGuardianPaused = state;
-    emit ActionPaused('Transfer', state);
-    return state;
-  }
-
-  function _getTransferPaused() public view returns (bool) {
-    return transferGuardianPaused;
-  }
-
-  function _setSeizePaused(bool state) public returns (bool) {
-    require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
-    require(msg.sender == admin || state == true, 'only admin can unpause');
-
-    seizeGuardianPaused = state;
-    emit ActionPaused('Seize', state);
-    return state;
-  }
-
-  function _getSeizePaused() public view returns (bool) {
-    return seizeGuardianPaused;
-  }
-
-  /**
-   * @notice Return the address of the COMP token
-   * @return The address of COMP
-   */
-  function getCompAddress() public view returns (address) {
-    /*
-        return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
-        */
-    return governanceToken;
-  }
-
-  /**
-   * @notice Return the address of the COMP token
-   * @param _governanceToken The address of COMP(governance token)
-   */
-  function setGovTokenAddress(address _governanceToken) public {
-    //require(adminOrInitializing(), "only admin can set governanceToken");
-    require(msg.sender == admin, 'only admin can set');
-    governanceToken = _governanceToken;
-  }
-
-  /**
-   * @notice Set the given borrow caps for the given cToken markets. Borrowing that brings total borrows to or above borrow cap will revert.
-   * @dev Admin or borrowCapGuardian function to set the borrow caps. A borrow cap of 0 corresponds to unlimited borrowing.
-   * @param cTokens The addresses of the markets (tokens) to change the borrow caps for
-   * @param newBorrowCaps The new borrow cap values in underlying to be set. A value of 0 corresponds to unlimited borrowing.
-   */
-  function _setMarketBorrowCaps(CToken[] calldata cTokens, uint256[] calldata newBorrowCaps) external {
-    require(
-      msg.sender == admin || msg.sender == borrowCapGuardian,
-      'only admin or borrow cap guardian can set borrow caps'
-    );
-
-    uint256 numMarkets = cTokens.length;
-    uint256 numBorrowCaps = newBorrowCaps.length;
-
-    require(numMarkets != 0 && numMarkets == numBorrowCaps, 'invalid input');
-
-    for (uint256 i = 0; i < numMarkets; i++) {
-      borrowCaps[address(cTokens[i])] = newBorrowCaps[i];
-      emit NewBorrowCap(cTokens[i], newBorrowCaps[i]);
-    }
-  }
-
-  function _getMarketBorrowCap(CToken cToken) external view returns (uint256) {
-    return borrowCaps[address(cToken)];
-  }
-
-  /**
-   * @notice Admin function to change the Borrow Cap Guardian
-   * @param newBorrowCapGuardian The address of the new Borrow Cap Guardian
-   */
-  function _setBorrowCapGuardian(address newBorrowCapGuardian) external {
-    require(msg.sender == admin, 'only admin can set borrow cap guardian');
-
-    // Save current value for inclusion in log
-    address oldBorrowCapGuardian = borrowCapGuardian;
-
-    // Store borrowCapGuardian with value newBorrowCapGuardian
-    borrowCapGuardian = newBorrowCapGuardian;
-
-    // Emit NewBorrowCapGuardian(OldBorrowCapGuardian, NewBorrowCapGuardian)
-    emit NewBorrowCapGuardian(oldBorrowCapGuardian, newBorrowCapGuardian);
-  }
-
-  function _getBorrowCapGuardian() external view returns (address) {
-    return borrowCapGuardian;
-  }
-
-  /**
-   * @notice Admin function to change the suTokenRateMantissa
-   * @param  _suTokenRateMantissa The address of the new suTokenRateMantissa
-   */
-  function _setSuTokenRateMantissa(uint256 _suTokenRateMantissa) external {
-    require(msg.sender == admin, 'only admin can set suTokenRateMantissa');
-    suTokenRateMantissa = _suTokenRateMantissa;
-  }
-
-  function _getSuTokenRateMantissa() external view returns (uint256) {
-    return suTokenRateMantissa;
-  }
 }
