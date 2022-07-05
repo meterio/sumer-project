@@ -107,7 +107,7 @@ contract FeedPriceOracleV2 {
       delete fixedPrices[cToken_];
     }
     FeedData memory feedData = FeedData({
-      source: uint8(1),
+      source: source,
       addr: addr,
       tokenDecimals: tokenDecimals,
       feedDecimals: feedDecimals,

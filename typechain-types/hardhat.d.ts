@@ -65,6 +65,26 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Pausable__factory>;
     getContractFactory(
+      name: "IBeacon",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IBeacon__factory>;
+    getContractFactory(
+      name: "ERC1967Proxy",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC1967Proxy__factory>;
+    getContractFactory(
+      name: "ERC1967Upgrade",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC1967Upgrade__factory>;
+    getContractFactory(
+      name: "Proxy",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Proxy__factory>;
+    getContractFactory(
+      name: "TransparentUpgradeableProxy",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TransparentUpgradeableProxy__factory>;
+    getContractFactory(
       name: "BaseJumpRateModelV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BaseJumpRateModelV2__factory>;
@@ -481,110 +501,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SuTokenRateModel__factory>;
     getContractFactory(
-      name: "CDaiDelegateHarness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CDaiDelegateHarness__factory>;
-    getContractFactory(
-      name: "CDaiDelegateMakerHarness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CDaiDelegateMakerHarness__factory>;
-    getContractFactory(
-      name: "CDaiDelegateScenario",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CDaiDelegateScenario__factory>;
-    getContractFactory(
-      name: "CErc20DelegateHarness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CErc20DelegateHarness__factory>;
-    getContractFactory(
-      name: "CErc20DelegateScenario",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CErc20DelegateScenario__factory>;
-    getContractFactory(
-      name: "CErc20DelegateScenarioExtra",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CErc20DelegateScenarioExtra__factory>;
-    getContractFactory(
-      name: "CErc20DelegatorScenario",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CErc20DelegatorScenario__factory>;
-    getContractFactory(
-      name: "CErc20Harness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CErc20Harness__factory>;
-    getContractFactory(
-      name: "CErc20Scenario",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CErc20Scenario__factory>;
-    getContractFactory(
-      name: "CEvil",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CEvil__factory>;
-    getContractFactory(
-      name: "CEtherHarness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CEtherHarness__factory>;
-    getContractFactory(
-      name: "CEtherScenario",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CEtherScenario__factory>;
-    getContractFactory(
-      name: "BoolComptroller",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.BoolComptroller__factory>;
-    getContractFactory(
-      name: "ComptrollerBorked",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerBorked__factory>;
-    getContractFactory(
-      name: "ComptrollerHarness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerHarness__factory>;
-    getContractFactory(
-      name: "ComptrollerKovan",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerKovan__factory>;
-    getContractFactory(
-      name: "ComptrollerRopsten",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerRopsten__factory>;
-    getContractFactory(
-      name: "EchoTypesComptroller",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.EchoTypesComptroller__factory>;
-    getContractFactory(
-      name: "ComptrollerScenario",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerScenario__factory>;
-    getContractFactory(
-      name: "ERC20",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20__factory>;
-    getContractFactory(
-      name: "ERC20Base",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20Base__factory>;
-    getContractFactory(
-      name: "ERC20Harness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20Harness__factory>;
-    getContractFactory(
-      name: "ERC20NS",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20NS__factory>;
-    getContractFactory(
-      name: "NonStandardToken",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.NonStandardToken__factory>;
-    getContractFactory(
-      name: "StandardToken",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.StandardToken__factory>;
-    getContractFactory(
-      name: "InterestRateModelHarness",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.InterestRateModelHarness__factory>;
-    getContractFactory(
       name: "Timelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Timelock__factory>;
@@ -686,6 +602,31 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Pausable>;
+    getContractAt(
+      name: "IBeacon",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IBeacon>;
+    getContractAt(
+      name: "ERC1967Proxy",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC1967Proxy>;
+    getContractAt(
+      name: "ERC1967Upgrade",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC1967Upgrade>;
+    getContractAt(
+      name: "Proxy",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Proxy>;
+    getContractAt(
+      name: "TransparentUpgradeableProxy",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TransparentUpgradeableProxy>;
     getContractAt(
       name: "BaseJumpRateModelV2",
       address: string,
@@ -1206,136 +1147,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SuTokenRateModel>;
-    getContractAt(
-      name: "CDaiDelegateHarness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CDaiDelegateHarness>;
-    getContractAt(
-      name: "CDaiDelegateMakerHarness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CDaiDelegateMakerHarness>;
-    getContractAt(
-      name: "CDaiDelegateScenario",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CDaiDelegateScenario>;
-    getContractAt(
-      name: "CErc20DelegateHarness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CErc20DelegateHarness>;
-    getContractAt(
-      name: "CErc20DelegateScenario",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CErc20DelegateScenario>;
-    getContractAt(
-      name: "CErc20DelegateScenarioExtra",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CErc20DelegateScenarioExtra>;
-    getContractAt(
-      name: "CErc20DelegatorScenario",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CErc20DelegatorScenario>;
-    getContractAt(
-      name: "CErc20Harness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CErc20Harness>;
-    getContractAt(
-      name: "CErc20Scenario",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CErc20Scenario>;
-    getContractAt(
-      name: "CEvil",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CEvil>;
-    getContractAt(
-      name: "CEtherHarness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CEtherHarness>;
-    getContractAt(
-      name: "CEtherScenario",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.CEtherScenario>;
-    getContractAt(
-      name: "BoolComptroller",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.BoolComptroller>;
-    getContractAt(
-      name: "ComptrollerBorked",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerBorked>;
-    getContractAt(
-      name: "ComptrollerHarness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerHarness>;
-    getContractAt(
-      name: "ComptrollerKovan",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerKovan>;
-    getContractAt(
-      name: "ComptrollerRopsten",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerRopsten>;
-    getContractAt(
-      name: "EchoTypesComptroller",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.EchoTypesComptroller>;
-    getContractAt(
-      name: "ComptrollerScenario",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerScenario>;
-    getContractAt(
-      name: "ERC20",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC20>;
-    getContractAt(
-      name: "ERC20Base",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC20Base>;
-    getContractAt(
-      name: "ERC20Harness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC20Harness>;
-    getContractAt(
-      name: "ERC20NS",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC20NS>;
-    getContractAt(
-      name: "NonStandardToken",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.NonStandardToken>;
-    getContractAt(
-      name: "StandardToken",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.StandardToken>;
-    getContractAt(
-      name: "InterestRateModelHarness",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.InterestRateModelHarness>;
     getContractAt(
       name: "Timelock",
       address: string,
