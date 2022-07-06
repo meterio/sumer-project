@@ -9,3 +9,4 @@ npx hardhat flatten ./contracts/CErc20Delegator.sol > ./verify/flatten/CErc20Del
 npx hardhat flatten ./contracts/CErc20Delegate.sol > ./verify/flatten/CErc20Delegate.sol
 npx hardhat flatten ./contracts/suErc20Delegator.sol > ./verify/flatten/suErc20Delegator.sol
 npx hardhat flatten ./contracts/suErc20Delegate.sol > ./verify/flatten/suErc20Delegate.sol
+npx hardhat flatten ./contracts/FeedPriceOracleV2.sol > ./verify/flatten/FeedPriceOracleV2.sol
