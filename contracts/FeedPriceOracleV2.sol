@@ -160,4 +160,13 @@ contract FeedPriceOracleV2 {
     }
     return fixedPrices[cToken_];
   }
+
+  function getUnderlyingPrices(address[] memory cTokens) public view returns (uint256[] memory) {
+    uint256 length = cTokens.length;
+    uint256[] memory results = new uint256[](length);
+    for (uint256 i; i < length; ++i) {
+      results[i] = getUnderlyingPrice(cTokens[i]);
+    }
+    return results;
+  }
 }

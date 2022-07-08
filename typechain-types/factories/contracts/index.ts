@@ -35,6 +35,7 @@ export { LegacyInterestRateModel__factory } from "./LegacyInterestRateModel__fac
 export { LegacyJumpRateModelV2__factory } from "./LegacyJumpRateModelV2__factory";
 export { LockLiquidity__factory } from "./LockLiquidity__factory";
 export { Maximillion__factory } from "./Maximillion__factory";
+export { Multicall2__factory } from "./Multicall2__factory";
 export { PriceOracle__factory } from "./PriceOracle__factory";
 export { Reservoir__factory } from "./Reservoir__factory";
 export { SimplePriceOracle__factory } from "./SimplePriceOracle__factory";

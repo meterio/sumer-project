@@ -373,6 +373,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Maximillion__factory>;
     getContractFactory(
+      name: "Multicall2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Multicall2__factory>;
+    getContractFactory(
       name: "PriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PriceOracle__factory>;
@@ -987,6 +991,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Maximillion>;
+    getContractAt(
+      name: "Multicall2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Multicall2>;
     getContractAt(
       name: "PriceOracle",
       address: string,

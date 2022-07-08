@@ -170,6 +170,8 @@ export type { LockLiquidity } from "./contracts/LockLiquidity";
 export { LockLiquidity__factory } from "./factories/contracts/LockLiquidity__factory";
 export type { Maximillion } from "./contracts/Maximillion";
 export { Maximillion__factory } from "./factories/contracts/Maximillion__factory";
+export type { Multicall2 } from "./contracts/Multicall2";
+export { Multicall2__factory } from "./factories/contracts/Multicall2__factory";
 export type { Reservoir } from "./contracts/Reservoir";
 export { Reservoir__factory } from "./factories/contracts/Reservoir__factory";
 export type { SimplePriceOracle } from "./contracts/SimplePriceOracle";

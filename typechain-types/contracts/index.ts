@@ -52,6 +52,7 @@ export type { LegacyInterestRateModel } from "./LegacyInterestRateModel";
 export type { LegacyJumpRateModelV2 } from "./LegacyJumpRateModelV2";
 export type { LockLiquidity } from "./LockLiquidity";
 export type { Maximillion } from "./Maximillion";
+export type { Multicall2 } from "./Multicall2";
 export type { PriceOracle } from "./PriceOracle";
 export type { Reservoir } from "./Reservoir";
 export type { SimplePriceOracle } from "./SimplePriceOracle";
