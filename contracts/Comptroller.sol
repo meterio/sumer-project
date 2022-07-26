@@ -18,206 +18,226 @@ import './ComptrollerErrorReporter.sol';
  *         `Exp({mantissa: 5100000000000000000})`.
  */
 contract ExponentialNoError {
-    uint constant expScale = 1e18;
-    uint constant doubleScale = 1e36;
-    uint constant halfExpScale = expScale/2;
-    uint constant mantissaOne = expScale;
+  uint256 constant expScale = 1e18;
+  uint256 constant doubleScale = 1e36;
+  uint256 constant halfExpScale = expScale / 2;
+  uint256 constant mantissaOne = expScale;
 
-    struct Exp {
-        uint mantissa;
-    }
+  struct Exp {
+    uint256 mantissa;
+  }
 
-    struct Double {
-        uint mantissa;
-    }
+  struct Double {
+    uint256 mantissa;
+  }
 
-    /**
-     * @dev Truncates the given exp to a whole number value.
-     *      For example, truncate(Exp{mantissa: 15 * expScale}) = 15
-     */
-    function truncate(Exp memory exp) pure internal returns (uint) {
-        // Note: We are not using careful math here as we're performing a division that cannot fail
-        return exp.mantissa / expScale;
-    }
+  /**
+   * @dev Truncates the given exp to a whole number value.
+   *      For example, truncate(Exp{mantissa: 15 * expScale}) = 15
+   */
+  function truncate(Exp memory exp) internal pure returns (uint256) {
+    // Note: We are not using careful math here as we're performing a division that cannot fail
+    return exp.mantissa / expScale;
+  }
 
-    /**
-     * @dev Multiply an Exp by a scalar, then truncate to return an unsigned integer.
-     */
-    function mul_ScalarTruncate(Exp memory a, uint scalar) pure internal returns (uint) {
-        Exp memory product = mul_(a, scalar);
-        return truncate(product);
-    }
+  /**
+   * @dev Multiply an Exp by a scalar, then truncate to return an unsigned integer.
+   */
+  function mul_ScalarTruncate(Exp memory a, uint256 scalar) internal pure returns (uint256) {
+    Exp memory product = mul_(a, scalar);
+    return truncate(product);
+  }
 
-    /**
-     * @dev Multiply an Exp by a scalar, truncate, then add an to an unsigned integer, returning an unsigned integer.
-     */
-    function mul_ScalarTruncateAddUInt(Exp memory a, uint scalar, uint addend) pure internal returns (uint) {
-        Exp memory product = mul_(a, scalar);
-        return add_(truncate(product), addend);
-    }
+  /**
+   * @dev Multiply an Exp by a scalar, truncate, then add an to an unsigned integer, returning an unsigned integer.
+   */
+  function mul_ScalarTruncateAddUInt(
+    Exp memory a,
+    uint256 scalar,
+    uint256 addend
+  ) internal pure returns (uint256) {
+    Exp memory product = mul_(a, scalar);
+    return add_(truncate(product), addend);
+  }
 
-    /**
-     * @dev Checks if first Exp is less than second Exp.
-     */
-    function lessThanExp(Exp memory left, Exp memory right) pure internal returns (bool) {
-        return left.mantissa < right.mantissa;
-    }
+  /**
+   * @dev Checks if first Exp is less than second Exp.
+   */
+  function lessThanExp(Exp memory left, Exp memory right) internal pure returns (bool) {
+    return left.mantissa < right.mantissa;
+  }
 
-    /**
-     * @dev Checks if left Exp <= right Exp.
-     */
-    function lessThanOrEqualExp(Exp memory left, Exp memory right) pure internal returns (bool) {
-        return left.mantissa <= right.mantissa;
-    }
+  /**
+   * @dev Checks if left Exp <= right Exp.
+   */
+  function lessThanOrEqualExp(Exp memory left, Exp memory right) internal pure returns (bool) {
+    return left.mantissa <= right.mantissa;
+  }
 
-    /**
-     * @dev Checks if left Exp > right Exp.
-     */
-    function greaterThanExp(Exp memory left, Exp memory right) pure internal returns (bool) {
-        return left.mantissa > right.mantissa;
-    }
+  /**
+   * @dev Checks if left Exp > right Exp.
+   */
+  function greaterThanExp(Exp memory left, Exp memory right) internal pure returns (bool) {
+    return left.mantissa > right.mantissa;
+  }
 
-    /**
-     * @dev returns true if Exp is exactly zero
-     */
-    function isZeroExp(Exp memory value) pure internal returns (bool) {
-        return value.mantissa == 0;
-    }
+  /**
+   * @dev returns true if Exp is exactly zero
+   */
+  function isZeroExp(Exp memory value) internal pure returns (bool) {
+    return value.mantissa == 0;
+  }
 
-    function safe224(uint n, string memory errorMessage) pure internal returns (uint224) {
-        require(n < 2**224, errorMessage);
-        return uint224(n);
-    }
+  function safe224(uint256 n, string memory errorMessage) internal pure returns (uint224) {
+    require(n < 2**224, errorMessage);
+    return uint224(n);
+  }
 
-    function safe32(uint n, string memory errorMessage) pure internal returns (uint32) {
-        require(n < 2**32, errorMessage);
-        return uint32(n);
-    }
+  function safe32(uint256 n, string memory errorMessage) internal pure returns (uint32) {
+    require(n < 2**32, errorMessage);
+    return uint32(n);
+  }
 
-    function add_(Exp memory a, Exp memory b) pure internal returns (Exp memory) {
-        return Exp({mantissa: add_(a.mantissa, b.mantissa)});
-    }
+  function add_(Exp memory a, Exp memory b) internal pure returns (Exp memory) {
+    return Exp({mantissa: add_(a.mantissa, b.mantissa)});
+  }
 
-    function add_(Double memory a, Double memory b) pure internal returns (Double memory) {
-        return Double({mantissa: add_(a.mantissa, b.mantissa)});
-    }
+  function add_(Double memory a, Double memory b) internal pure returns (Double memory) {
+    return Double({mantissa: add_(a.mantissa, b.mantissa)});
+  }
 
-    function add_(uint a, uint b) pure internal returns (uint) {
-        return add_(a, b, "addition overflow");
-    }
+  function add_(uint256 a, uint256 b) internal pure returns (uint256) {
+    return add_(a, b, 'addition overflow');
+  }
 
-    function add_(uint a, uint b, string memory errorMessage) pure internal returns (uint) {
-        uint c = a + b;
-        require(c >= a, errorMessage);
-        return c;
-    }
+  function add_(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
+    uint256 c = a + b;
+    require(c >= a, errorMessage);
+    return c;
+  }
 
-    function sub_(Exp memory a, Exp memory b) pure internal returns (Exp memory) {
-        return Exp({mantissa: sub_(a.mantissa, b.mantissa)});
-    }
+  function sub_(Exp memory a, Exp memory b) internal pure returns (Exp memory) {
+    return Exp({mantissa: sub_(a.mantissa, b.mantissa)});
+  }
 
-    function sub_(Double memory a, Double memory b) pure internal returns (Double memory) {
-        return Double({mantissa: sub_(a.mantissa, b.mantissa)});
-    }
+  function sub_(Double memory a, Double memory b) internal pure returns (Double memory) {
+    return Double({mantissa: sub_(a.mantissa, b.mantissa)});
+  }
 
-    function sub_(uint a, uint b) pure internal returns (uint) {
-        return sub_(a, b, "subtraction underflow");
-    }
+  function sub_(uint256 a, uint256 b) internal pure returns (uint256) {
+    return sub_(a, b, 'subtraction underflow');
+  }
 
-    function sub_(uint a, uint b, string memory errorMessage) pure internal returns (uint) {
-        require(b <= a, errorMessage);
-        return a - b;
-    }
+  function sub_(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
+    require(b <= a, errorMessage);
+    return a - b;
+  }
 
-    function mul_(Exp memory a, Exp memory b) pure internal returns (Exp memory) {
-        return Exp({mantissa: mul_(a.mantissa, b.mantissa) / expScale});
-    }
+  function mul_(Exp memory a, Exp memory b) internal pure returns (Exp memory) {
+    return Exp({mantissa: mul_(a.mantissa, b.mantissa) / expScale});
+  }
 
-    function mul_(Exp memory a, uint b) pure internal returns (Exp memory) {
-        return Exp({mantissa: mul_(a.mantissa, b)});
-    }
+  function mul_(Exp memory a, uint256 b) internal pure returns (Exp memory) {
+    return Exp({mantissa: mul_(a.mantissa, b)});
+  }
 
-    function mul_(uint a, Exp memory b) pure internal returns (uint) {
-        return mul_(a, b.mantissa) / expScale;
-    }
+  function mul_(uint256 a, Exp memory b) internal pure returns (uint256) {
+    return mul_(a, b.mantissa) / expScale;
+  }
 
-    function mul_(Double memory a, Double memory b) pure internal returns (Double memory) {
-        return Double({mantissa: mul_(a.mantissa, b.mantissa) / doubleScale});
-    }
+  function mul_(Double memory a, Double memory b) internal pure returns (Double memory) {
+    return Double({mantissa: mul_(a.mantissa, b.mantissa) / doubleScale});
+  }
 
-    function mul_(Double memory a, uint b) pure internal returns (Double memory) {
-        return Double({mantissa: mul_(a.mantissa, b)});
-    }
+  function mul_(Double memory a, uint256 b) internal pure returns (Double memory) {
+    return Double({mantissa: mul_(a.mantissa, b)});
+  }
 
-    function mul_(uint a, Double memory b) pure internal returns (uint) {
-        return mul_(a, b.mantissa) / doubleScale;
-    }
+  function mul_(uint256 a, Double memory b) internal pure returns (uint256) {
+    return mul_(a, b.mantissa) / doubleScale;
+  }
 
-    function mul_(uint a, uint b) pure internal returns (uint) {
-        return mul_(a, b, "multiplication overflow");
-    }
+  function mul_(uint256 a, uint256 b) internal pure returns (uint256) {
+    return mul_(a, b, 'multiplication overflow');
+  }
 
-    function mul_(uint a, uint b, string memory errorMessage) pure internal returns (uint) {
-        if (a == 0 || b == 0) {
-            return 0;
-        }
-        uint c = a * b;
-        require(c / a == b, errorMessage);
-        return c;
+  function mul_(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
+    if (a == 0 || b == 0) {
+      return 0;
     }
+    uint256 c = a * b;
+    require(c / a == b, errorMessage);
+    return c;
+  }
 
-    function div_(Exp memory a, Exp memory b) pure internal returns (Exp memory) {
-        return Exp({mantissa: div_(mul_(a.mantissa, expScale), b.mantissa)});
-    }
+  function div_(Exp memory a, Exp memory b) internal pure returns (Exp memory) {
+    return Exp({mantissa: div_(mul_(a.mantissa, expScale), b.mantissa)});
+  }
 
-    function div_(Exp memory a, uint b) pure internal returns (Exp memory) {
-        return Exp({mantissa: div_(a.mantissa, b)});
-    }
+  function div_(Exp memory a, uint256 b) internal pure returns (Exp memory) {
+    return Exp({mantissa: div_(a.mantissa, b)});
+  }
 
-    function div_(uint a, Exp memory b) pure internal returns (uint) {
-        return div_(mul_(a, expScale), b.mantissa);
-    }
+  function div_(uint256 a, Exp memory b) internal pure returns (uint256) {
+    return div_(mul_(a, expScale), b.mantissa);
+  }
 
-    function div_(Double memory a, Double memory b) pure internal returns (Double memory) {
-        return Double({mantissa: div_(mul_(a.mantissa, doubleScale), b.mantissa)});
-    }
+  function div_(Double memory a, Double memory b) internal pure returns (Double memory) {
+    return Double({mantissa: div_(mul_(a.mantissa, doubleScale), b.mantissa)});
+  }
 
-    function div_(Double memory a, uint b) pure internal returns (Double memory) {
-        return Double({mantissa: div_(a.mantissa, b)});
-    }
+  function div_(Double memory a, uint256 b) internal pure returns (Double memory) {
+    return Double({mantissa: div_(a.mantissa, b)});
+  }
 
-    function div_(uint a, Double memory b) pure internal returns (uint) {
-        return div_(mul_(a, doubleScale), b.mantissa);
-    }
+  function div_(uint256 a, Double memory b) internal pure returns (uint256) {
+    return div_(mul_(a, doubleScale), b.mantissa);
+  }
 
-    function div_(uint a, uint b) pure internal returns (uint) {
-        return div_(a, b, "divide by zero");
-    }
+  function div_(uint256 a, uint256 b) internal pure returns (uint256) {
+    return div_(a, b, 'divide by zero');
+  }
 
-    function div_(uint a, uint b, string memory errorMessage) pure internal returns (uint) {
-        require(b > 0, errorMessage);
-        return a / b;
-    }
+  function div_(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
+    require(b > 0, errorMessage);
+    return a / b;
+  }
 
-    function fraction(uint a, uint b) pure internal returns (Double memory) {
-        return Double({mantissa: div_(mul_(a, doubleScale), b)});
-    }
+  function fraction(uint256 a, uint256 b) internal pure returns (Double memory) {
+    return Double({mantissa: div_(mul_(a, doubleScale), b)});
+  }
 }
 
 // File contracts/Comptroller.sol
 
 interface CTokenInterface {
-  function comptroller() external view returns(address);
+  function comptroller() external view returns (address);
 
-  function reserveFactorMantissa() external view returns(uint256);
+  function reserveFactorMantissa() external view returns (uint256);
 
-  function borrowIndex() external view returns(uint256);
+  function borrowIndex() external view returns (uint256);
 
-  function totalBorrows() external view returns(uint256);
+  function totalBorrows() external view returns (uint256);
 
-  function totalSupply() external view returns(uint256);
+  function totalSupply() external view returns (uint256);
 
-  function isCToken() external view returns(bool);
+  function isCToken() external view returns (bool);
 
   function balanceOf(address owner) external view returns (uint256);
 
@@ -277,22 +297,22 @@ interface PriceOracle {
 }
 
 interface IUnitroller {
+  function admin() external view returns (address);
 
-  function admin() external view returns(address);
-  
   /**
    * @notice Accepts new implementation of comptroller. msg.sender must be pendingImplementation
    * @dev Admin function for new implementation to accept it's role as implementation
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
-  function _acceptImplementation() external returns (uint256) ;
+  function _acceptImplementation() external returns (uint256);
 }
+
 /**
  * @title Compound's Comptroller Contract
  * @author Compound
  */
 contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, ExponentialNoError {
-    bool public constant isComptroller = true;
+  bool public constant isComptroller = true;
   /// @notice Emitted when an admin supports a market
   event MarketListed(address cToken);
 
@@ -409,7 +429,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
    * @param cTokens The list of addresses of the cToken markets to be enabled
    * @return Success indicator for whether each corresponding market was entered
    */
-  function enterMarkets(address[] memory cTokens) public  returns (uint256[] memory) {
+  function enterMarkets(address[] memory cTokens) public returns (uint256[] memory) {
     uint256 len = cTokens.length;
 
     uint256[] memory results = new uint256[](len);
@@ -465,7 +485,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
    * @param cTokenAddress The address of the asset to be removed
    * @return Whether or not the account successfully exited the market
    */
-  function exitMarket(address cTokenAddress) external  returns (uint256) {
+  function exitMarket(address cTokenAddress) external returns (uint256) {
     address cToken = cTokenAddress;
     /* Get sender tokensHeld and amountOwed underlying from the cToken */
     (uint256 oErr, uint256 tokensHeld, uint256 amountOwed, ) = CTokenInterface(cToken).getAccountSnapshot(msg.sender);
@@ -533,7 +553,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address cToken,
     address minter,
     uint256 mintAmount
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!mintGuardianPaused[cToken], "mint is paused");
     require(!UnderwriterAdminInterface(underWriterAdmin)._getMintPaused(cToken), 'mint is paused');
@@ -590,7 +610,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address minter,
     uint256 actualMintAmount,
     uint256 mintTokens
-  ) external  {
+  ) external {
     // Shh - currently unused
     cToken;
     minter;
@@ -614,7 +634,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address cToken,
     address redeemer,
     uint256 redeemTokens
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     uint256 allowed = redeemAllowedInternal(cToken, redeemer, redeemTokens);
     if (allowed != uint256(Error.NO_ERROR)) {
       return allowed;
@@ -665,7 +685,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address redeemer,
     uint256 redeemAmount,
     uint256 redeemTokens
-  ) external  {
+  ) external {
     // Shh - currently unused
     cToken;
     redeemer;
@@ -687,7 +707,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address cToken,
     address borrower,
     uint256 borrowAmount
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!borrowGuardianPaused[cToken], "borrow is paused");
     require(!UnderwriterAdminInterface(underWriterAdmin)._getBorrowPaused(cToken), 'borrow is paused');
@@ -749,7 +769,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address cToken,
     address borrower,
     uint256 borrowAmount
-  ) external  {
+  ) external {
     // Shh - currently unused
     cToken;
     borrower;
@@ -774,7 +794,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address payer,
     address borrower,
     uint256 repayAmount
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     // Shh - currently unused
     payer;
     borrower;
@@ -805,7 +825,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address borrower,
     uint256 actualRepayAmount,
     uint256 borrowerIndex
-  ) external  {
+  ) external {
     // Shh - currently unused
     cToken;
     payer;
@@ -833,7 +853,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address liquidator,
     address borrower,
     uint256 repayAmount
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     // Shh - currently unused
     liquidator;
 
@@ -881,7 +901,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address borrower,
     uint256 actualRepayAmount,
     uint256 seizeTokens
-  ) external  {
+  ) external {
     // Shh - currently unused
     cTokenBorrowed;
     cTokenCollateral;
@@ -910,7 +930,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address liquidator,
     address borrower,
     uint256 seizeTokens
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!seizeGuardianPaused, "seize is paused");
     require(!UnderwriterAdminInterface(underWriterAdmin)._getSeizePaused(), 'seize is paused');
@@ -948,7 +968,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address liquidator,
     address borrower,
     uint256 seizeTokens
-  ) external  {
+  ) external {
     // Shh - currently unused
     cTokenCollateral;
     cTokenBorrowed;
@@ -975,7 +995,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address src,
     address dst,
     uint256 transferTokens
-  ) external  returns (uint256) {
+  ) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!transferGuardianPaused, "transfer is paused");
     require(!UnderwriterAdminInterface(underWriterAdmin)._getTransferPaused(), 'transfer is paused');
@@ -1007,7 +1027,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address src,
     address dst,
     uint256 transferTokens
-  ) external  {
+  ) external {
     // Shh - currently unused
     cToken;
     src;
@@ -1040,10 +1060,10 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     Exp exchangeRate;
     Exp oraclePrice;
     Exp tokensToDenom;
-    Exp inGroupCTokenCollateralRate;
-    Exp interGroupCTokenCollateralRate;
-    Exp inGroupSuTokenCollateralRate;
-    Exp interGroupSuTokenCollateralRate;
+    Exp intraCRate;
+    Exp interCRate;
+    Exp intraSuRate;
+    Exp interSuRate;
     Exp suTokenCollateralRate;
     Exp borrowCollateralRate;
     bool isSuToken;
@@ -1275,7 +1295,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
       vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
 
       // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-      vars.tokensToDenom = mul_(vars.exchangeRate, vars.oraclePriceMantissa);
+      vars.tokensToDenom = div_(mul_(vars.exchangeRate, vars.oraclePriceMantissa), expScale);
 
       uint8 index;
       for (index = 0; index < vars.equalAssetsGroupNum; index++) {
@@ -1297,7 +1317,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
           groupVars[index].cTokenBalanceSum
         );
         groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(
-          mul_(vars.oraclePrice, expScale),
+          vars.oraclePrice,
           vars.borrowBalance,
           groupVars[index].cTokenBorrowSum
         );
@@ -1309,7 +1329,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
             groupVars[index].cTokenBorrowSum
           );
           groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(
-            mul_(vars.oraclePrice, expScale),
+            vars.oraclePrice,
             borrowAmount,
             groupVars[index].cTokenBorrowSum
           );
@@ -1333,7 +1353,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
             groupVars[index].suTokenBorrowSum
           );
           groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(
-            mul_(vars.oraclePrice, expScale),
+            vars.oraclePrice,
             borrowAmount,
             groupVars[index].suTokenBorrowSum
           );
@@ -1341,33 +1361,80 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
       }
     }
 
-    // Now loop all groups
     for (uint8 i = 0; i < vars.equalAssetsGroupNum; i++) {
       if (groupVars[i].groupId == 0) {
         continue;
       }
-
-      // pre-process group information
-      if (groupVars[i].cTokenBalanceSum >= groupVars[i].suTokenBorrowSum) {
-        groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum - groupVars[i].suTokenBorrowSum;
-        groupVars[i].suTokenBorrowSum = 0;
-      } else {
-        groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum - groupVars[i].cTokenBalanceSum;
-        groupVars[i].cTokenBalanceSum = 0;
-      }
-
       UnderwriterAdminInterface.EqualAssets memory equalAssetsGroup = UnderwriterAdminInterface(underWriterAdmin)
         .getEqAssetGroup(groupVars[i].groupId);
 
-      vars.inGroupCTokenCollateralRate = Exp({mantissa: equalAssetsGroup.inGroupCTokenRateMantissa});
-      vars.inGroupSuTokenCollateralRate = Exp({mantissa: equalAssetsGroup.inGroupSuTokenRateMantissa});
-      vars.interGroupCTokenCollateralRate = Exp({mantissa: equalAssetsGroup.interGroupCTokenRateMantissa});
-      vars.interGroupSuTokenCollateralRate = Exp({mantissa: equalAssetsGroup.interGroupSuTokenRateMantissa});
+      vars.intraCRate = Exp({mantissa: equalAssetsGroup.inGroupCTokenRateMantissa});
+      vars.intraSuRate = Exp({mantissa: equalAssetsGroup.inGroupSuTokenRateMantissa});
+      vars.interCRate = Exp({mantissa: equalAssetsGroup.interGroupCTokenRateMantissa});
+      vars.interSuRate = Exp({mantissa: equalAssetsGroup.interGroupSuTokenRateMantissa});
       vars.borrowCollateralRate = Exp({mantissa: expScale});
 
       vars.suTokenCollateralRate = Exp({
         mantissa: UnderwriterAdminInterface(underWriterAdmin)._getSuTokenRateMantissa()
       });
+
+      // absorb sutoken loan with ctoken collateral
+      if (groupVars[i].suTokenBorrowSum > 0) {
+        uint256 collateralizedLoan = div_(mul_(groupVars[i].cTokenBalanceSum, vars.suTokenCollateralRate), expScale);
+        if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
+          // collateral could cover the loan
+          uint256 usedCollateral = div_(groupVars[i].suTokenBorrowSum, vars.suTokenCollateralRate);
+          groupVars[i].cTokenBalanceSum = sub_(groupVars[i].cTokenBalanceSum, usedCollateral);
+          groupVars[i].suTokenBorrowSum = 0;
+        } else {
+          // collateral could not cover the loan
+          groupVars[i].cTokenBalanceSum = 0;
+          groupVars[i].suTokenBorrowSum = sub_(groupVars[i].suTokenBorrowSum, collateralizedLoan);
+        }
+      }
+
+      // absorb ctoken loan with ctoken collateral
+      if (groupVars[i].cTokenBorrowSum > 0) {
+        uint256 collateralizedLoan = div_(mul_(groupVars[i].cTokenBalanceSum, vars.intraCRate), expScale);
+        if (groupVars[i].cTokenBorrowSum <= collateralizedLoan) {
+          // collateral could cover the loan
+          uint256 usedCollateral = div_(groupVars[i].cTokenBorrowSum, vars.intraCRate);
+          groupVars[i].cTokenBalanceSum = sub_(groupVars[i].cTokenBalanceSum, usedCollateral);
+          groupVars[i].cTokenBorrowSum = 0;
+        } else {
+          // collateral could not cover the loan
+          groupVars[i].cTokenBalanceSum = 0;
+          groupVars[i].cTokenBorrowSum = sub_(groupVars[i].cTokenBorrowSum, collateralizedLoan);
+        }
+      }
+
+      // absorb sutoken loan with sutoken collateral
+      if (groupVars[i].suTokenBorrowSum > 0) {
+        uint256 collateralizedLoan = div_(mul_(groupVars[i].suTokenBalanceSum, vars.intraSuRate), expScale);
+        if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
+          // collateral could cover the loan
+          uint256 usedCollateral = div_(groupVars[i].suTokenBorrowSum, vars.intraSuRate);
+          groupVars[i].suTokenBalanceSum = sub_(groupVars[i].suTokenBalanceSum, usedCollateral);
+          groupVars[i].suTokenBorrowSum = 0;
+        } else {
+          // collateral could not cover the loan
+          groupVars[i].suTokenBalanceSum = 0;
+          groupVars[i].suTokenBorrowSum = sub_(groupVars[i].suTokenBorrowSum, collateralizedLoan);
+        }
+      }
+
+      // absorb ctoken loan with sutoken collateral
+      if (groupVars[i].cTokenBorrowSum > 0) {
+        uint256 collateralizedLoan = div_(mul_(groupVars[i].suTokenBalanceSum, vars.intraSuRate), expScale);
+        if (groupVars[i].cTokenBorrowSum <= collateralizedLoan) {
+          uint256 usedCollateral = div_(groupVars[i].cTokenBorrowSum, vars.intraSuRate);
+          groupVars[i].suTokenBalanceSum = sub_(groupVars[i].suTokenBalanceSum, usedCollateral);
+          groupVars[i].cTokenBorrowSum = 0;
+        } else {
+          groupVars[i].cTokenBorrowSum = sub_(groupVars[i].cTokenBorrowSum, collateralizedLoan);
+          groupVars[i].suTokenBalanceSum = 0;
+        }
+      }
 
       if (groupVars[i].groupId == markets[address(cTokenModify)].equalAssetGrouId) {
         // assetModify is suToken
@@ -1378,18 +1445,18 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
             vars.sumCollateral
           );
           vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.inGroupSuTokenCollateralRate,
+            vars.interSuRate,
             groupVars[i].suTokenBalanceSum,
             vars.sumCollateral
           );
         } else {
           vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.inGroupCTokenCollateralRate,
+            vars.intraCRate,
             groupVars[i].cTokenBalanceSum,
             vars.sumCollateral
           );
           vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.inGroupSuTokenCollateralRate,
+            vars.intraSuRate,
             groupVars[i].suTokenBalanceSum,
             vars.sumCollateral
           );
@@ -1407,12 +1474,12 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
         );
       } else {
         vars.sumCollateral = mul_ScalarTruncateAddUInt(
-          vars.interGroupCTokenCollateralRate,
+          vars.interCRate,
           groupVars[i].cTokenBalanceSum,
           vars.sumCollateral
         );
         vars.sumCollateral = mul_ScalarTruncateAddUInt(
-          vars.interGroupSuTokenCollateralRate,
+          vars.interSuRate,
           groupVars[i].suTokenBalanceSum,
           vars.sumCollateral
         );
@@ -1450,7 +1517,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address cTokenBorrowed,
     address cTokenCollateral,
     uint256 actualRepayAmount
-  ) external  view returns (uint256, uint256) {
+  ) external view returns (uint256, uint256) {
     /* Read oracle prices for borrowed and collateral markets */
     uint256 priceBorrowedMantissa = PriceOracle(oracle).getUnderlyingPrice(address(cTokenBorrowed));
     uint256 priceCollateralMantissa = PriceOracle(oracle).getUnderlyingPrice(address(cTokenCollateral));
@@ -1999,22 +2066,22 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
   }
 
   /**
-     * @dev Returns true if `account` is a contract.
-     *
-     * [IMPORTANT]
-     * ====
-     * It is unsafe to assume that an address for which this function returns
-     * false is an externally-owned account (EOA) and not a contract.
-     *
-     * Among others, `isContract` will return false for the following
-     * types of addresses:
-     *
-     *  - an externally-owned account
-     *  - a contract in construction
-     *  - an address where a contract will be created
-     *  - an address where a contract lived, but was destroyed
-     * ====
-     */
+   * @dev Returns true if `account` is a contract.
+   *
+   * [IMPORTANT]
+   * ====
+   * It is unsafe to assume that an address for which this function returns
+   * false is an externally-owned account (EOA) and not a contract.
+   *
+   * Among others, `isContract` will return false for the following
+   * types of addresses:
+   *
+   *  - an externally-owned account
+   *  - a contract in construction
+   *  - an address where a contract will be created
+   *  - an address where a contract lived, but was destroyed
+   * ====
+   */
   function isContract(address account) internal view returns (bool) {
     // This method relies on extcodesize, which returns 0 for contracts in
     // construction, since the code is only stored at the end of the
