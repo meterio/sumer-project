@@ -796,8 +796,6 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     uint256 repayAmount
   ) external returns (uint256) {
     // Shh - currently unused
-    payer;
-    borrower;
     repayAmount;
 
     if (!markets[cToken].isListed) {
@@ -1153,86 +1151,6 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     return (uint256(err), liquidity, shortfall);
   }
 
-  function ghlp(
-    address account,
-    address cTokenModify,
-    uint256 redeemTokens,
-    uint256 borrowAmount
-  )
-    public
-    view
-    returns (
-      Exp memory a,
-      uint256 scalar,
-      uint256 addend
-    )
-  {
-    redeemTokens;
-    borrowAmount;
-    AccountLiquidityLocalVars memory vars; // Holds all our calculation results
-    uint256 oErr;
-
-    vars.equalAssetsGroupNum = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroupNum();
-    AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
-
-    if ((cTokenModify != address(0)) && !CTokenInterface(cTokenModify).isCToken()) {
-      vars.isSuToken = true;
-    } else {
-      vars.isSuToken = false;
-    }
-
-    // For each asset the account is in
-    address[] memory assets = accountAssets[account];
-    for (uint256 i = 0; i < assets.length; i++) {
-      address asset = assets[i];
-
-      //UnderwriterAdminInterface.EqualAssets memory eqAsset = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(asset);
-
-      // Read the balances and exchange rate from the cToken
-      (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = CTokenInterface(asset)
-        .getAccountSnapshot(account);
-
-      vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
-
-      // Get the normalized price of the asset
-      vars.oraclePriceMantissa = PriceOracle(oracle).getUnderlyingPrice(asset);
-
-      vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
-
-      // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-      vars.tokensToDenom = mul_(vars.exchangeRate, vars.oraclePriceMantissa);
-
-      uint8 index;
-      for (index = 0; index < vars.equalAssetsGroupNum; index++) {
-        if (groupVars[index].groupId > 0) {
-          if (groupVars[index].groupId == markets[address(asset)].equalAssetGrouId) {
-            break;
-          }
-        } else {
-          groupVars[index].groupId = markets[address(asset)].equalAssetGrouId;
-          break;
-        }
-      }
-      // require(index < vars.equalAssetsGroupNum);
-
-      if (CTokenInterface(asset).isCToken()) {
-        return (vars.exchangeRate, vars.cTokenBalance, groupVars[index].cTokenBalanceSum);
-        // groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(
-        //   vars.tokensToDenom,
-        //   vars.cTokenBalance,
-        //   groupVars[index].cTokenBalanceSum
-        // );
-      }
-    }
-
-    // These are safe, as the underflow condition is checked first
-    // if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
-    //   return (Error.NO_ERROR, vars.sumCollateral - vars.sumBorrowPlusEffects, 0);
-    // } else {
-    //   return (Error.NO_ERROR, 0, vars.sumBorrowPlusEffects - vars.sumCollateral);
-    // }
-  }
-
   /**
      * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
      * @param cTokenModify The market to hypothetically redeem/borrow in
@@ -1361,6 +1279,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
       }
     }
 
+    AccountGroupLocalVars memory targetGroup;
+    AccountLiquidityLocalVars memory targetVars;
     for (uint8 i = 0; i < vars.equalAssetsGroupNum; i++) {
       if (groupVars[i].groupId == 0) {
         continue;
@@ -1380,7 +1300,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
 
       // absorb sutoken loan with ctoken collateral
       if (groupVars[i].suTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = div_(mul_(groupVars[i].cTokenBalanceSum, vars.suTokenCollateralRate), expScale);
+        uint256 collateralizedLoan = mul_ScalarTruncate(vars.suTokenCollateralRate, groupVars[i].cTokenBalanceSum);
         if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
           // collateral could cover the loan
           uint256 usedCollateral = div_(groupVars[i].suTokenBorrowSum, vars.suTokenCollateralRate);
@@ -1395,7 +1315,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
 
       // absorb ctoken loan with ctoken collateral
       if (groupVars[i].cTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = div_(mul_(groupVars[i].cTokenBalanceSum, vars.intraCRate), expScale);
+        uint256 collateralizedLoan = mul_ScalarTruncate(vars.intraCRate, groupVars[i].cTokenBalanceSum);
         if (groupVars[i].cTokenBorrowSum <= collateralizedLoan) {
           // collateral could cover the loan
           uint256 usedCollateral = div_(groupVars[i].cTokenBorrowSum, vars.intraCRate);
@@ -1410,7 +1330,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
 
       // absorb sutoken loan with sutoken collateral
       if (groupVars[i].suTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = div_(mul_(groupVars[i].suTokenBalanceSum, vars.intraSuRate), expScale);
+        uint256 collateralizedLoan = mul_ScalarTruncate(vars.intraSuRate, groupVars[i].suTokenBalanceSum);
         if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
           // collateral could cover the loan
           uint256 usedCollateral = div_(groupVars[i].suTokenBorrowSum, vars.intraSuRate);
@@ -1425,7 +1345,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
 
       // absorb ctoken loan with sutoken collateral
       if (groupVars[i].cTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = div_(mul_(groupVars[i].suTokenBalanceSum, vars.intraSuRate), expScale);
+        uint256 collateralizedLoan = mul_ScalarTruncate(vars.intraSuRate, groupVars[i].suTokenBalanceSum);
         if (groupVars[i].cTokenBorrowSum <= collateralizedLoan) {
           uint256 usedCollateral = div_(groupVars[i].cTokenBorrowSum, vars.intraSuRate);
           groupVars[i].suTokenBalanceSum = sub_(groupVars[i].suTokenBalanceSum, usedCollateral);
@@ -1437,41 +1357,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
       }
 
       if (groupVars[i].groupId == markets[address(cTokenModify)].equalAssetGrouId) {
-        // assetModify is suToken
-        if (vars.isSuToken) {
-          vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.suTokenCollateralRate,
-            groupVars[i].cTokenBalanceSum,
-            vars.sumCollateral
-          );
-          vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.interSuRate,
-            groupVars[i].suTokenBalanceSum,
-            vars.sumCollateral
-          );
-        } else {
-          vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.intraCRate,
-            groupVars[i].cTokenBalanceSum,
-            vars.sumCollateral
-          );
-          vars.sumCollateral = mul_ScalarTruncateAddUInt(
-            vars.intraSuRate,
-            groupVars[i].suTokenBalanceSum,
-            vars.sumCollateral
-          );
-        }
-
-        vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-          vars.borrowCollateralRate,
-          groupVars[i].cTokenBorrowSum,
-          vars.sumBorrowPlusEffects
-        );
-        vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-          vars.borrowCollateralRate,
-          groupVars[i].suTokenBorrowSum,
-          vars.sumBorrowPlusEffects
-        );
+        targetGroup = groupVars[i];
+        targetVars = vars;
       } else {
         vars.sumCollateral = mul_ScalarTruncateAddUInt(
           vars.interCRate,
@@ -1483,21 +1370,58 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
           groupVars[i].suTokenBalanceSum,
           vars.sumCollateral
         );
-
-        vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-          vars.borrowCollateralRate,
-          groupVars[i].cTokenBorrowSum,
-          vars.sumBorrowPlusEffects
-        );
-        vars.sumBorrowPlusEffects = mul_ScalarTruncateAddUInt(
-          vars.borrowCollateralRate,
-          groupVars[i].suTokenBorrowSum,
-          vars.sumBorrowPlusEffects
-        );
       }
+
+      vars.sumBorrowPlusEffects = add_(groupVars[i].cTokenBorrowSum, groupVars[i].suTokenBorrowSum);
     }
 
     // These are safe, as the underflow condition is checked first
+    if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
+      vars.sumCollateral = vars.sumCollateral - vars.sumBorrowPlusEffects;
+      vars.sumBorrowPlusEffects = 0;
+    } else {
+      vars.sumCollateral = 0;
+      vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects - vars.sumCollateral;
+    }
+
+    if (vars.sumBorrowPlusEffects > 0) {
+      uint256 collateralizedLoan = mul_ScalarTruncate(targetVars.interCRate, targetGroup.cTokenBalanceSum);
+      if (collateralizedLoan > vars.sumBorrowPlusEffects) {
+        targetGroup.cTokenBalanceSum = sub_(
+          targetGroup.cTokenBalanceSum,
+          div_(vars.sumBorrowPlusEffects, targetVars.interCRate)
+        );
+        vars.sumBorrowPlusEffects = 0;
+      } else {
+        vars.sumBorrowPlusEffects = sub_(vars.sumBorrowPlusEffects, collateralizedLoan);
+        targetGroup.cTokenBalanceSum = 0;
+      }
+    }
+
+    if (vars.sumBorrowPlusEffects > 0) {
+      uint256 collateralizedLoan = mul_ScalarTruncate(targetVars.interSuRate, targetGroup.suTokenBalanceSum);
+      if (collateralizedLoan > vars.sumBorrowPlusEffects) {
+        targetGroup.suTokenBalanceSum = sub_(
+          targetGroup.suTokenBalanceSum,
+          div_(vars.sumBorrowPlusEffects, targetVars.interSuRate)
+        );
+        vars.sumBorrowPlusEffects = 0;
+      } else {
+        vars.sumBorrowPlusEffects = sub_(vars.sumBorrowPlusEffects, collateralizedLoan);
+        targetGroup.suTokenBalanceSum = 0;
+      }
+    }
+    if (vars.isSuToken) {
+      vars.sumCollateral = mul_ScalarTruncateAddUInt(
+        vars.suTokenCollateralRate,
+        targetGroup.cTokenBalanceSum,
+        vars.sumCollateral
+      );
+    } else {
+      vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraCRate, targetGroup.cTokenBalanceSum, vars.sumCollateral);
+    }
+    vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraSuRate, targetGroup.suTokenBalanceSum, vars.sumCollateral);
+
     if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
       return (Error.NO_ERROR, vars.sumCollateral - vars.sumBorrowPlusEffects, 0);
     } else {
