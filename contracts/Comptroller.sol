@@ -1259,7 +1259,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
           groupVars[index].suTokenBalanceSum
         );
         groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(
-          mul_(vars.oraclePrice, expScale),
+          vars.oraclePrice,
           vars.borrowBalance,
           groupVars[index].suTokenBorrowSum
         );
