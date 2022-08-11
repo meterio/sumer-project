@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@openzeppelin/hardhat-upgrades';
+require('hardhat-contract-sizer'); // could be run by npx hardhat size-contracts
 import { task, types } from 'hardhat/config';
 import { Signer, utils, constants, BigNumber, ContractTransaction } from 'ethers';
 import { compileSetting, allowVerifyChain } from './scripts/deployTool';

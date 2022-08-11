@@ -13,6 +13,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "^3.0.0",
     "bignumber.js": "9.0.0",
+    "hardhat-contract-sizer": "^2.6.1",
     "jest-diff": "^26.4.2",
     "jest-junit": "^11.1.0",
     "solium": "^1.2.5",
