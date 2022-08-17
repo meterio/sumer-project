@@ -23,6 +23,7 @@ interface PriceFeed {
 export const groupNums: { [key: string]: number } = {
   cBTCK: 1,
   csuBTC: 1,
+  cWBTC: 1,
 
   cETH: 2,
   csuETH: 2,
@@ -369,8 +370,8 @@ export const underlyingTokens: { [key: string]: UnderlyingConfig[] } = {
     {
       name: 'WBTC Token',
       symbol: 'WBTC',
-      decimals: 18,
-      address: '0x90cd3092f2104bb09ddb777805a34a3dbd951178',
+      decimals: 8,
+      address: '0xCFd9102A2675E0d898982F1fD1dd0264aAA901Da',
       cTokenName: 'Sumer BTCK Token',
       native: false,
     },
