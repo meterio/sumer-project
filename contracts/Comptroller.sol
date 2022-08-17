@@ -1065,6 +1065,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     Exp suTokenCollateralRate;
     Exp borrowCollateralRate;
     bool isSuToken;
+    uint256 tokenDepositVal;
+    uint256 tokenBorrowVal;
   }
 
   struct AccountGroupLocalVars {
@@ -1193,6 +1195,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
     address[] memory assets = accountAssets[account];
     for (uint256 i = 0; i < assets.length; i++) {
       address asset = assets[i];
+      vars.tokenDepositVal = uint256(0);
+      vars.tokenBorrowVal = uint256(0);
 
       //UnderwriterAdminInterface.EqualAssets memory eqAsset = UnderwriterAdminInterface(underWriterAdmin).getEqAssetGroup(asset);
 
@@ -1227,55 +1231,27 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
         }
       }
       // require(index < vars.equalAssetsGroupNum);
+      vars.tokenDepositVal = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.tokenDepositVal);
+      vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.tokenBorrowVal);
+      if (asset == cTokenModify) {
+        vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.tokensToDenom, redeemTokens, vars.tokenBorrowVal);
+        vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrowAmount, vars.tokenBorrowVal);
+      }
+
+      if (vars.tokenDepositVal >= vars.tokenBorrowVal) {
+        vars.tokenDepositVal = sub_(vars.tokenDepositVal, vars.tokenBorrowVal);
+        vars.tokenBorrowVal = 0;
+      } else {
+        vars.tokenBorrowVal = sub_(vars.tokenBorrowVal, vars.tokenDepositVal);
+        vars.tokenDepositVal = 0;
+      }
 
       if (CTokenInterface(asset).isCToken()) {
-        groupVars[index].cTokenBalanceSum = mul_ScalarTruncateAddUInt(
-          vars.tokensToDenom,
-          vars.cTokenBalance,
-          groupVars[index].cTokenBalanceSum
-        );
-        groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(
-          vars.oraclePrice,
-          vars.borrowBalance,
-          groupVars[index].cTokenBorrowSum
-        );
-
-        if (asset == cTokenModify) {
-          groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(
-            vars.tokensToDenom,
-            redeemTokens,
-            groupVars[index].cTokenBorrowSum
-          );
-          groupVars[index].cTokenBorrowSum = mul_ScalarTruncateAddUInt(
-            vars.oraclePrice,
-            borrowAmount,
-            groupVars[index].cTokenBorrowSum
-          );
-        }
+        groupVars[index].cTokenBalanceSum = add_(vars.tokenDepositVal, groupVars[index].cTokenBalanceSum);
+        groupVars[index].cTokenBorrowSum = add_(vars.tokenBorrowVal, groupVars[index].cTokenBorrowSum);
       } else {
-        groupVars[index].suTokenBalanceSum = mul_ScalarTruncateAddUInt(
-          vars.tokensToDenom,
-          vars.cTokenBalance,
-          groupVars[index].suTokenBalanceSum
-        );
-        groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(
-          vars.oraclePrice,
-          vars.borrowBalance,
-          groupVars[index].suTokenBorrowSum
-        );
-
-        if (asset == cTokenModify) {
-          groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(
-            vars.tokensToDenom,
-            redeemTokens,
-            groupVars[index].suTokenBorrowSum
-          );
-          groupVars[index].suTokenBorrowSum = mul_ScalarTruncateAddUInt(
-            vars.oraclePrice,
-            borrowAmount,
-            groupVars[index].suTokenBorrowSum
-          );
-        }
+        groupVars[index].suTokenBalanceSum = add_(vars.tokenDepositVal, groupVars[index].suTokenBalanceSum);
+        groupVars[index].suTokenBorrowSum = add_(vars.tokenBorrowVal, groupVars[index].suTokenBorrowSum);
       }
     }
 
@@ -1351,8 +1327,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
           groupVars[i].suTokenBalanceSum = sub_(groupVars[i].suTokenBalanceSum, usedCollateral);
           groupVars[i].cTokenBorrowSum = 0;
         } else {
-          groupVars[i].cTokenBorrowSum = sub_(groupVars[i].cTokenBorrowSum, collateralizedLoan);
           groupVars[i].suTokenBalanceSum = 0;
+          groupVars[i].cTokenBorrowSum = sub_(groupVars[i].cTokenBorrowSum, collateralizedLoan);
         }
       }
 
@@ -1372,7 +1348,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerErrorReporter, Exponent
         );
       }
 
-      vars.sumBorrowPlusEffects = add_(groupVars[i].cTokenBorrowSum, groupVars[i].suTokenBorrowSum);
+      vars.sumBorrowPlusEffects = add_(vars.sumBorrowPlusEffects, add_(groupVars[i].cTokenBorrowSum, groupVars[i].suTokenBorrowSum));
     }
 
     // These are safe, as the underflow condition is checked first
