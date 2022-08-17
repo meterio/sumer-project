@@ -3,7 +3,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@openzeppelin/hardhat-upgrades';
-require('hardhat-contract-sizer'); // could be run by npx hardhat size-contracts
+require('hardhat-contract-sizer'); // could be run by `npx hardhat size-contracts`
 import { task, types } from 'hardhat/config';
 import { Signer, utils, constants, BigNumber, ContractTransaction } from 'ethers';
 import { compileSetting, allowVerifyChain } from './scripts/deployTool';
@@ -45,6 +45,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 // import Colors = require("colors.ts");
 // Colors.enable();
+const BLOCKS_PER_YEAR_MAP: { [key: string]: number } = {
+  metertest: 13140000, // 3600*24*365 / 2.4s
+  metermain: 13140000, // 3600*24*365 / 2.4s
+  ethereum: 2102400, // 3600*24*365 / 15s
+};
 
 const MANTISSA_DECIMALS = 18;
 
@@ -316,6 +321,12 @@ task('upgradeCToken', async ({}, { ethers, run, network }) => {
 });
 
 task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
+  if (!(network.name in BLOCKS_PER_YEAR_MAP)) {
+    throw new Error(
+      `could not get blocksPerYear settings for ${network.name}, please configure it in hardhat.config.ts`
+    );
+  }
+  const blocksPerYear = BLOCKS_PER_YEAR_MAP[network.name];
   await run('compile');
   const [admin, tokenDeployer] = await ethers.getSigners();
   const unitrollerAddr = getContract(network.name, 'Unitroller');
@@ -325,7 +336,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
     'WhitePaperInterestRateModel',
     network.name,
     admin,
-    [BigNumber.from(0), BigNumber.from(0)],
+    [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
     {},
     'ZeroInterestRateModel'
   )) as InterestRateModel;
@@ -382,7 +393,7 @@ task('deployCToken', async ({}, { ethers, run, network, upgrades }) => {
     'WhitePaperInterestRateModel',
     network.name,
     admin,
-    [utils.parseUnits('0.05', MANTISSA_DECIMALS), utils.parseUnits('0.45', MANTISSA_DECIMALS)]
+    [blocksPerYear, utils.parseUnits('0.05', MANTISSA_DECIMALS), utils.parseUnits('0.45', MANTISSA_DECIMALS)]
   )) as WhitePaperInterestRateModel;
   // deploy FixedInterestRate
 
