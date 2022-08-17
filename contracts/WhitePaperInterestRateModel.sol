@@ -41,7 +41,6 @@ contract WhitePaperInterestRateModel is InterestRateModel {
     blocksPerYear = blocksPerYearOnChain;
     baseRatePerBlock = baseRatePerYear.div(blocksPerYear);
     multiplierPerBlock = multiplierPerYear.div(blocksPerYear);
-
     emit NewInterestParams(blocksPerYear, baseRatePerBlock, multiplierPerBlock);
   }
 
