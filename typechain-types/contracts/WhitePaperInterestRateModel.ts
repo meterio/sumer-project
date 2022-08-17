@@ -105,18 +105,19 @@ export interface WhitePaperInterestRateModelInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "NewInterestParams(uint256,uint256)": EventFragment;
+    "NewInterestParams(uint256,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "NewInterestParams"): EventFragment;
 }
 
 export interface NewInterestParamsEventObject {
+  blocksPerYear: BigNumber;
   baseRatePerBlock: BigNumber;
   multiplierPerBlock: BigNumber;
 }
 export type NewInterestParamsEvent = TypedEvent<
-  [BigNumber, BigNumber],
+  [BigNumber, BigNumber, BigNumber],
   NewInterestParamsEventObject
 >;
 
@@ -244,11 +245,13 @@ export interface WhitePaperInterestRateModel extends BaseContract {
   };
 
   filters: {
-    "NewInterestParams(uint256,uint256)"(
+    "NewInterestParams(uint256,uint256,uint256)"(
+      blocksPerYear?: null,
       baseRatePerBlock?: null,
       multiplierPerBlock?: null
     ): NewInterestParamsEventFilter;
     NewInterestParams(
+      blocksPerYear?: null,
       baseRatePerBlock?: null,
       multiplierPerBlock?: null
     ): NewInterestParamsEventFilter;
