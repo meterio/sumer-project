@@ -41,7 +41,6 @@ export interface ComptrollerInterface extends utils.Interface {
     "admin()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
-    "borrowVerify(address,address,uint256)": FunctionFragment;
     "checkMembership(address,address)": FunctionFragment;
     "claimComp(address,address[])": FunctionFragment;
     "claimComp(address[],address[],bool,bool)": FunctionFragment;
@@ -70,26 +69,21 @@ export interface ComptrollerInterface extends utils.Interface {
     "isDeprecated(address)": FunctionFragment;
     "lastContributorBlock(address)": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,address,uint256)": FunctionFragment;
-    "liquidateBorrowVerify(address,address,address,address,uint256,uint256)": FunctionFragment;
     "liquidateCalculateSeizeTokens(address,address,uint256)": FunctionFragment;
     "liquidationIncentiveMantissa()": FunctionFragment;
     "markets(address)": FunctionFragment;
     "maxAssets()": FunctionFragment;
     "maxSupply(address)": FunctionFragment;
     "mintAllowed(address,address,uint256)": FunctionFragment;
-    "mintVerify(address,address,uint256,uint256)": FunctionFragment;
     "oracle()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "pendingComptrollerImplementation()": FunctionFragment;
     "redeemAllowed(address,address,uint256)": FunctionFragment;
     "redeemVerify(address,address,uint256,uint256)": FunctionFragment;
     "repayBorrowAllowed(address,address,address,uint256)": FunctionFragment;
-    "repayBorrowVerify(address,address,address,uint256,uint256)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
-    "seizeVerify(address,address,address,address,uint256)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
-    "transferVerify(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
     "updateContributorRewards(address)": FunctionFragment;
   };
@@ -109,7 +103,6 @@ export interface ComptrollerInterface extends utils.Interface {
       | "admin"
       | "allMarkets"
       | "borrowAllowed"
-      | "borrowVerify"
       | "checkMembership"
       | "claimComp(address,address[])"
       | "claimComp(address[],address[],bool,bool)"
@@ -138,26 +131,21 @@ export interface ComptrollerInterface extends utils.Interface {
       | "isDeprecated"
       | "lastContributorBlock"
       | "liquidateBorrowAllowed"
-      | "liquidateBorrowVerify"
       | "liquidateCalculateSeizeTokens"
       | "liquidationIncentiveMantissa"
       | "markets"
       | "maxAssets"
       | "maxSupply"
       | "mintAllowed"
-      | "mintVerify"
       | "oracle"
       | "pendingAdmin"
       | "pendingComptrollerImplementation"
       | "redeemAllowed"
       | "redeemVerify"
       | "repayBorrowAllowed"
-      | "repayBorrowVerify"
       | "seizeAllowed"
-      | "seizeVerify"
       | "setMaxSupply"
       | "transferAllowed"
-      | "transferVerify"
       | "underWriterAdmin"
       | "updateContributorRewards"
   ): FunctionFragment;
@@ -206,10 +194,6 @@ export interface ComptrollerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "borrowAllowed",
-    values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "borrowVerify",
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -310,10 +294,6 @@ export interface ComptrollerInterface extends utils.Interface {
     values: [string, string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "liquidateBorrowVerify",
-    values: [string, string, string, string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
     values: [string, string, BigNumberish]
   ): string;
@@ -327,10 +307,6 @@ export interface ComptrollerInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "mintAllowed",
     values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mintVerify",
-    values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
   encodeFunctionData(
@@ -354,15 +330,7 @@ export interface ComptrollerInterface extends utils.Interface {
     values: [string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "repayBorrowVerify",
-    values: [string, string, string, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "seizeAllowed",
-    values: [string, string, string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "seizeVerify",
     values: [string, string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -371,10 +339,6 @@ export interface ComptrollerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "transferAllowed",
-    values: [string, string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferVerify",
     values: [string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -424,10 +388,6 @@ export interface ComptrollerInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "allMarkets", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "borrowAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "borrowVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -534,10 +494,6 @@ export interface ComptrollerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "liquidateBorrowVerify",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "liquidateCalculateSeizeTokens",
     data: BytesLike
   ): Result;
@@ -552,7 +508,6 @@ export interface ComptrollerInterface extends utils.Interface {
     functionFragment: "mintAllowed",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mintVerify", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingAdmin",
@@ -575,15 +530,7 @@ export interface ComptrollerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "repayBorrowVerify",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "seizeAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "seizeVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -592,10 +539,6 @@ export interface ComptrollerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -616,7 +559,6 @@ export interface ComptrollerInterface extends utils.Interface {
     "ContributorCompSpeedUpdated(address,uint256)": EventFragment;
     "DistributedBorrowerComp(address,address,uint256,uint256)": EventFragment;
     "DistributedSupplierComp(address,address,uint256,uint256)": EventFragment;
-    "Failure(uint256,uint256,uint256)": EventFragment;
     "MarketEntered(address,address)": EventFragment;
     "MarketExited(address,address)": EventFragment;
     "MarketListed(address)": EventFragment;
@@ -642,7 +584,6 @@ export interface ComptrollerInterface extends utils.Interface {
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DistributedBorrowerComp"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DistributedSupplierComp"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Failure"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketEntered"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketExited"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketListed"): EventFragment;
@@ -755,18 +696,6 @@ export type DistributedSupplierCompEvent = TypedEvent<
 
 export type DistributedSupplierCompEventFilter =
   TypedEventFilter<DistributedSupplierCompEvent>;
-
-export interface FailureEventObject {
-  error: BigNumber;
-  info: BigNumber;
-  detail: BigNumber;
-}
-export type FailureEvent = TypedEvent<
-  [BigNumber, BigNumber, BigNumber],
-  FailureEventObject
->;
-
-export type FailureEventFilter = TypedEventFilter<FailureEvent>;
 
 export interface MarketEnteredEventObject {
   cToken: string;
@@ -987,13 +916,6 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    borrowVerify(
-      cToken: string,
-      borrower: string,
-      borrowAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     checkMembership(
       account: string,
       cToken: string,
@@ -1118,16 +1040,6 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    liquidateBorrowVerify(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      seizeTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     liquidateCalculateSeizeTokens(
       cTokenBorrowed: string,
       cTokenCollateral: string,
@@ -1158,14 +1070,6 @@ export interface Comptroller extends BaseContract {
       cToken: string,
       minter: string,
       mintAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    mintVerify(
-      cToken: string,
-      minter: string,
-      actualMintAmount: BigNumberish,
-      mintTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1200,25 +1104,7 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    repayBorrowVerify(
-      cToken: string,
-      payer: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      borrowerIndex: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     seizeAllowed(
-      cTokenCollateral: string,
-      cTokenBorrowed: string,
-      liquidator: string,
-      borrower: string,
-      seizeTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    seizeVerify(
       cTokenCollateral: string,
       cTokenBorrowed: string,
       liquidator: string,
@@ -1234,14 +1120,6 @@ export interface Comptroller extends BaseContract {
     ): Promise<ContractTransaction>;
 
     transferAllowed(
-      cToken: string,
-      src: string,
-      dst: string,
-      transferTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    transferVerify(
       cToken: string,
       src: string,
       dst: string,
@@ -1318,13 +1196,6 @@ export interface Comptroller extends BaseContract {
   allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   borrowAllowed(
-    cToken: string,
-    borrower: string,
-    borrowAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  borrowVerify(
     cToken: string,
     borrower: string,
     borrowAmount: BigNumberish,
@@ -1446,16 +1317,6 @@ export interface Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  liquidateBorrowVerify(
-    cTokenBorrowed: string,
-    cTokenCollateral: string,
-    liquidator: string,
-    borrower: string,
-    actualRepayAmount: BigNumberish,
-    seizeTokens: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   liquidateCalculateSeizeTokens(
     cTokenBorrowed: string,
     cTokenCollateral: string,
@@ -1484,14 +1345,6 @@ export interface Comptroller extends BaseContract {
     cToken: string,
     minter: string,
     mintAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  mintVerify(
-    cToken: string,
-    minter: string,
-    actualMintAmount: BigNumberish,
-    mintTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1524,25 +1377,7 @@ export interface Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  repayBorrowVerify(
-    cToken: string,
-    payer: string,
-    borrower: string,
-    actualRepayAmount: BigNumberish,
-    borrowerIndex: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   seizeAllowed(
-    cTokenCollateral: string,
-    cTokenBorrowed: string,
-    liquidator: string,
-    borrower: string,
-    seizeTokens: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  seizeVerify(
     cTokenCollateral: string,
     cTokenBorrowed: string,
     liquidator: string,
@@ -1558,14 +1393,6 @@ export interface Comptroller extends BaseContract {
   ): Promise<ContractTransaction>;
 
   transferAllowed(
-    cToken: string,
-    src: string,
-    dst: string,
-    transferTokens: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  transferVerify(
     cToken: string,
     src: string,
     dst: string,
@@ -1644,13 +1471,6 @@ export interface Comptroller extends BaseContract {
       borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    borrowVerify(
-      cToken: string,
-      borrower: string,
-      borrowAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     checkMembership(
       account: string,
@@ -1773,16 +1593,6 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    liquidateBorrowVerify(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      seizeTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     liquidateCalculateSeizeTokens(
       cTokenBorrowed: string,
       cTokenCollateral: string,
@@ -1813,14 +1623,6 @@ export interface Comptroller extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    mintVerify(
-      cToken: string,
-      minter: string,
-      actualMintAmount: BigNumberish,
-      mintTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     oracle(overrides?: CallOverrides): Promise<string>;
 
@@ -1853,15 +1655,6 @@ export interface Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    repayBorrowVerify(
-      cToken: string,
-      payer: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      borrowerIndex: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     seizeAllowed(
       cTokenCollateral: string,
       cTokenBorrowed: string,
@@ -1870,15 +1663,6 @@ export interface Comptroller extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    seizeVerify(
-      cTokenCollateral: string,
-      cTokenBorrowed: string,
-      liquidator: string,
-      borrower: string,
-      seizeTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     setMaxSupply(
       cToken: string,
@@ -1893,14 +1677,6 @@ export interface Comptroller extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    transferVerify(
-      cToken: string,
-      src: string,
-      dst: string,
-      transferTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     underWriterAdmin(overrides?: CallOverrides): Promise<string>;
 
@@ -1979,13 +1755,6 @@ export interface Comptroller extends BaseContract {
       compDelta?: null,
       compSupplyIndex?: null
     ): DistributedSupplierCompEventFilter;
-
-    "Failure(uint256,uint256,uint256)"(
-      error?: null,
-      info?: null,
-      detail?: null
-    ): FailureEventFilter;
-    Failure(error?: null, info?: null, detail?: null): FailureEventFilter;
 
     "MarketEntered(address,address)"(
       cToken?: null,
@@ -2148,13 +1917,6 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    borrowVerify(
-      cToken: string,
-      borrower: string,
-      borrowAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     checkMembership(
       account: string,
       cToken: string,
@@ -2276,16 +2038,6 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    liquidateBorrowVerify(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      seizeTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     liquidateCalculateSeizeTokens(
       cTokenBorrowed: string,
       cTokenCollateral: string,
@@ -2305,14 +2057,6 @@ export interface Comptroller extends BaseContract {
       cToken: string,
       minter: string,
       mintAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    mintVerify(
-      cToken: string,
-      minter: string,
-      actualMintAmount: BigNumberish,
-      mintTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2347,25 +2091,7 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    repayBorrowVerify(
-      cToken: string,
-      payer: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      borrowerIndex: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     seizeAllowed(
-      cTokenCollateral: string,
-      cTokenBorrowed: string,
-      liquidator: string,
-      borrower: string,
-      seizeTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    seizeVerify(
       cTokenCollateral: string,
       cTokenBorrowed: string,
       liquidator: string,
@@ -2381,14 +2107,6 @@ export interface Comptroller extends BaseContract {
     ): Promise<BigNumber>;
 
     transferAllowed(
-      cToken: string,
-      src: string,
-      dst: string,
-      transferTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    transferVerify(
       cToken: string,
       src: string,
       dst: string,
@@ -2469,13 +2187,6 @@ export interface Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     borrowAllowed(
-      cToken: string,
-      borrower: string,
-      borrowAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    borrowVerify(
       cToken: string,
       borrower: string,
       borrowAmount: BigNumberish,
@@ -2619,16 +2330,6 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    liquidateBorrowVerify(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      seizeTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     liquidateCalculateSeizeTokens(
       cTokenBorrowed: string,
       cTokenCollateral: string,
@@ -2656,14 +2357,6 @@ export interface Comptroller extends BaseContract {
       cToken: string,
       minter: string,
       mintAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    mintVerify(
-      cToken: string,
-      minter: string,
-      actualMintAmount: BigNumberish,
-      mintTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2698,25 +2391,7 @@ export interface Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    repayBorrowVerify(
-      cToken: string,
-      payer: string,
-      borrower: string,
-      actualRepayAmount: BigNumberish,
-      borrowerIndex: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     seizeAllowed(
-      cTokenCollateral: string,
-      cTokenBorrowed: string,
-      liquidator: string,
-      borrower: string,
-      seizeTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    seizeVerify(
       cTokenCollateral: string,
       cTokenBorrowed: string,
       liquidator: string,
@@ -2732,14 +2407,6 @@ export interface Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     transferAllowed(
-      cToken: string,
-      src: string,
-      dst: string,
-      transferTokens: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferVerify(
       cToken: string,
       src: string,
       dst: string,

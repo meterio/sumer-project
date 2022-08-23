@@ -49,6 +49,7 @@ const BLOCKS_PER_YEAR_MAP: { [key: string]: number } = {
   metertest: 13140000, // 3600*24*365 / 2.4s
   metermain: 13140000, // 3600*24*365 / 2.4s
   ethereum: 2102400, // 3600*24*365 / 15s
+  local: 13140000,
 };
 
 const MANTISSA_DECIMALS = 18;
