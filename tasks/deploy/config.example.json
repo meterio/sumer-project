@@ -1,0 +1,112 @@
+{
+    "proxyAdmin": {
+        "address": ""
+    },
+    "sumer": {
+        "name": "Sumer Token",
+        "symbol": "SUMER",
+        "supply": "100000000",
+        "address": ""
+    },
+    "feedPriceOracle": {
+        "address": ""
+    },
+    "compoundLens": {
+        "address": ""
+    },
+    "underwriterAdmin": {
+        "implementation": "",
+        "address": ""
+    },
+    "suInterestRateModel": {
+        "blocks": "13140000",
+        "base": "0.8",
+        "mul": "0.45",
+        "address": ""
+    },
+    "cInterestRateModel": {
+        "blocks": "13140000",
+        "base": "0.05",
+        "mul": "0.45",
+        "address": ""
+    },
+    "comptroller": {
+        "closeFactorMantissa": "0.5",
+        "liquidationIncentiveMantissa": "1.1",
+        "implementation": "",
+        "address": ""
+    },
+    "cTokens": [
+        {
+            "cTokenName": "Sumer USD Coin",
+            "cTokenSymbol": "sdrUSDC",
+            "decimals": 18,
+            "native": false,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        },
+        {
+            "cTokenName": "Sumer Tether USD",
+            "cTokenSymbol": "sdrUSDT",
+            "decimals": 18,
+            "native": false,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        },
+        {
+            "cTokenName": "Sumer Ether",
+            "cTokenSymbol": "sdrETH",
+            "decimals": 18,
+            "native": false,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        },
+        {
+            "cTokenName": "Sumer BTCK Token",
+            "cTokenSymbol": "sdrBTC",
+            "decimals": 18,
+            "native": false,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        },
+        {
+            "cTokenName": "Sumer Binance USD",
+            "cTokenSymbol": "sdrBUSD",
+            "decimals": 18,
+            "native": false,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        }
+    ],
+    "suTokens": [
+        {
+            "name": "suUSD",
+            "symbol": "suUSD",
+            "decimals": 18,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        },
+        {
+            "name": "suETH",
+            "symbol": "suETH",
+            "decimals": 18,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        },
+        {
+            "name": "suBTC",
+            "symbol": "suBTC",
+            "decimals": 18,
+            "underly": "",
+            "implementation": "",
+            "address": ""
+        }
+    ]
+}

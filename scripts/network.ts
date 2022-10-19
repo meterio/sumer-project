@@ -255,6 +255,14 @@ export const RPCS = {
       mnemonic: process.env.MNEMONIC,
     },
   },
+  moonbeam: {
+    url: `https://rpc.api.moonbeam.network`,
+    chainId: 1284,
+    gasPrice: 1000000000,
+    accounts: {
+      mnemonic: process.env.MNEMONIC,
+    },
+  },
   tkmtest1: {
     url: `http://43.247.184.48:32021`,
     chianId: 60001,

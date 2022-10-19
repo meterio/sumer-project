@@ -1,0 +1,112 @@
+{
+    "proxyAdmin": {
+        "address": "0x2f698A387A2Fde7A97a35F0FFa26e19fc1b0B5A4"
+    },
+    "sumer": {
+        "name": "Sumer Token",
+        "symbol": "SUMER",
+        "supply": "",
+        "address": "0xf67c5f20b95b7604ebb65a53e50ebd38300da8ee"
+    },
+    "feedPriceOracle": {
+        "address": "0x38A5496Cadb3eD1e55f1a1D30A96169769560704"
+    },
+    "compoundLens": {
+        "address": "0xf70B13C1d40193084333f82Bb897309fB0Fe7563"
+    },
+    "underwriterAdmin": {
+        "implementation": "0xA9F7eb46028c853F08A6cFb43a218c8cF1627c49",
+        "address": "0x772bfC3285191A07de0b5c78a446c803A13dE821"
+    },
+    "suInterestRateModel": {
+        "blocks": "13140000",
+        "base": "0.8",
+        "mul": "0.45",
+        "address": "0x297eb4b11598e0C5552b5F77d851EfA474d45267"
+    },
+    "cInterestRateModel": {
+        "blocks": "13140000",
+        "base": "0.05",
+        "mul": "0.45",
+        "address": "0xBAc17D1847Ee402885c1596a81152C67656bB520"
+    },
+    "comptroller": {
+        "closeFactorMantissa": "0.5",
+        "liquidationIncentiveMantissa": "1.1",
+        "implementation": "0x1839B845A149425C92765fC36ce89934AcD01498",
+        "address": "0x16242Ff0B8a49C2838e454A59F6814c9c71a2f61"
+    },
+    "cTokens": [
+        {
+            "cTokenName": "Sumer USD Coin",
+            "cTokenSymbol": "sdrUSDC",
+            "decimals": 18,
+            "native": false,
+            "underly": "0x8ae4c669f147737085a23d578c1da94d3e39879f",
+            "implementation": "0xE94498241D1ACE6fA1008a451A6927d254685EeE",
+            "address": "0xeDB636F35ac4DA434706422eAfb4673e91E05B9E"
+        },
+        {
+            "cTokenName": "Sumer Tether USD",
+            "cTokenSymbol": "sdrUSDT",
+            "decimals": 18,
+            "native": false,
+            "underly": "0xda5f90e416a22f6f65ed586a859c8666ce6ce1d1",
+            "implementation": "0xb3675701627a7E4eBA1759bd833c76826E0C786a",
+            "address": "0xb8Abd603B1eb2c6a19c3fCf0e6500a4E92371136"
+        },
+        {
+            "cTokenName": "Sumer Ether",
+            "cTokenSymbol": "sdrETH",
+            "decimals": 18,
+            "native": false,
+            "underly": "0xe8876830e7cc85dae8ce31b0802313caf856886f",
+            "implementation": "0x59C40A92a9b3F8E48F542f8f6c4E652793823485",
+            "address": "0x8C834dde22C34199E80C47f2714edebBE15E9B32"
+        },
+        {
+            "cTokenName": "Sumer BTCK Token",
+            "cTokenSymbol": "sdrBTC",
+            "decimals": 18,
+            "native": false,
+            "underly": "0xCFd9102A2675E0d898982F1fD1dd0264aAA901Da",
+            "implementation": "0x46e60F979686F246259Bdf6AFcD03fAE1bd796BB",
+            "address": "0x42C4c012a89d314b556d673aef52894F9B315025"
+        },
+        {
+            "cTokenName": "Sumer Binance USD",
+            "cTokenSymbol": "sdrBUSD",
+            "decimals": 18,
+            "native": false,
+            "underly": "0x660a3a1141632c9dcad8a5a3350f7ddd720bc15c",
+            "implementation": "0x364d0b2d872760F21c0Bf29384FEa387E868da55",
+            "address": "0xFEC8c595c9F7857BAD16B94EaB94B1eBBd94F3F2"
+        }
+    ],
+    "suTokens": [
+        {
+            "name": "suUSD",
+            "symbol": "suUSD",
+            "decimals": 18,
+            "underly": "0xfa2eE619Ac36820F2E0c3Dd09188bE55daB31e22",
+            "implementation": "0xdcA4e0d1D90e0376745AB968B0AB1540d269aC8C",
+            "address": "0x9Ada3B11a38a3A20ba968025002E3C209B326D76"
+        },
+        {
+            "name": "suETH",
+            "symbol": "suETH",
+            "decimals": 18,
+            "underly": "0xbcfa1f81F2bd4117c86dd3Fd48c0EA22c55eD667",
+            "implementation": "0x7349ddaf2549eDB33d84F3c8eee63C3366e039f4",
+            "address": "0x190b2581de8E130af100F43067Cb87fe7993ac4C"
+        },
+        {
+            "name": "suBTC",
+            "symbol": "suBTC",
+            "decimals": 18,
+            "underly": "0x6361D8919084d3EF6705Bb1c69928E74cd9bC04f",
+            "implementation": "0xD89f3e13745D0EEc089004e3c74fBD8F3DBb5129",
+            "address": "0x67f3f3B55E6b5AAA8f9931019aF11E22969aD100"
+        }
+    ]
+}

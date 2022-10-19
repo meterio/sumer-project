@@ -12,8 +12,6 @@ import {
 } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { HardhatEthersHelpers } from '@nomiclabs/hardhat-ethers/types';
-import { HardhatUpgrades } from '@openzeppelin/hardhat-upgrades';
-import { Libraries } from 'hardhat/types';
 import * as pathLib from 'path';
 import * as fs from 'fs';
 
@@ -77,90 +75,6 @@ export function getContractJson(network: string, name: string) {
   } else {
     return '';
   }
-}
-export async function deployERC20WithProxy(
-  ethers: HardhatEthersHelpers,
-  upgrades: HardhatUpgrades,
-  network: string,
-  name: string,
-  symbol: string,
-  adminAddr: string,
-  signer: Signer
-) {
-  const address = getContract(network, symbol);
-  if (address === constants.AddressZero) {
-    const tokenFactory = await ethers.getContractFactory('ERC20MintablePauseableUpgradeable', signer);
-    const signerAddr = await signer.getAddress();
-    const args = [name, symbol, adminAddr];
-
-    const token = await upgrades.deployProxy(tokenFactory, args, {
-      initializer: 'initialize',
-    });
-    await token.deployed();
-    console.log('Deploying:', `ERC20MintablePauseableUpgradeable for ${name} (${symbol})`);
-    console.log('  to', token.address);
-    console.log(`  owned by ${adminAddr}`);
-    console.log(`  by ${signerAddr}`);
-    console.log('  in', token.deployTransaction.hash);
-    await saveFile(network, symbol, token, args, {});
-  } else {
-    console.log('Contract:', symbol);
-    console.log('  on', address);
-    return await ethers.getContractAt('ERC20MintablePauseableUpgradeable', address, signer);
-  }
-}
-
-export async function deployContract(
-  ethers: HardhatEthersHelpers,
-  name: string,
-  network: string,
-  signer: Signer,
-  args: Array<any> = [],
-  libraries: Libraries = {},
-  alias: string = ''
-): Promise<Contract> {
-  const address = getContract(network, alias || name);
-  if (address == constants.AddressZero || network == 'hardhat') {
-    const signerAddr = await signer.getAddress();
-    const factory = await ethers.getContractFactory(name, {
-      signer: signer,
-      libraries: libraries,
-    });
-    const contract = await factory.deploy(...args, overrides);
-    console.log('Deploying:', alias || name);
-    console.log('  to', contract.address);
-    console.log(`  by ${signerAddr}`);
-    console.log('  in', contract.deployTransaction.hash);
-    await saveFile(network, alias || name, contract, args, libraries);
-    return contract.deployed();
-  } else {
-    console.log('Contract:', alias || name);
-    console.log('  on', address);
-    return await ethers.getContractAt(name, address, signer);
-  }
-}
-
-export async function deployContractWithOverride(
-  ethers: HardhatEthersHelpers,
-  name: string,
-  network: string,
-  signer: Signer,
-  args: Array<any> = [],
-  libraries: Libraries = {},
-  alias: string = ''
-): Promise<Contract> {
-  const signerAddr = await signer.getAddress();
-  const factory = await ethers.getContractFactory(name, {
-    signer: signer,
-    libraries: libraries,
-  });
-  const contract = await factory.deploy(...args, overrides);
-  console.log('Deploying:', alias || name);
-  console.log('  to', contract.address);
-  console.log(`  by ${signerAddr}`);
-  console.log('  in', contract.deployTransaction.hash);
-  await saveFile(network, alias || name, contract, args, libraries);
-  return contract.deployed();
 }
 
 export async function saveFile(
