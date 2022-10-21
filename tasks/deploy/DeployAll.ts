@@ -217,8 +217,8 @@ task("all", "deploy contract")
                             let receipt = await oracle.setBandFeed(
                                 cToken.address,
                                 cToken.oracle.feed,
-                                cToken.oracle.tokenDecimals,
-                                cToken.oracle.feedDecimals,
+                                18,
+                                18,
                                 cToken.oracle.name
                             )
                             log.info("setBandFeed:", cToken.cTokenSymbol, receipt.hash);
@@ -290,8 +290,8 @@ task("all", "deploy contract")
                             let receipt = await oracle.setBandFeed(
                                 suToken.address,
                                 suToken.oracle.feed,
-                                suToken.oracle.tokenDecimals,
-                                suToken.oracle.feedDecimals,
+                                18,
+                                18,
                                 suToken.oracle.name
                             )
                             log.info("setBandFeed:", suToken.symbol, receipt.hash);
