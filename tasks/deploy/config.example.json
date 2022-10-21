@@ -36,77 +36,167 @@
         "implementation": "",
         "address": ""
     },
-    "cTokens": [
+    "cTokens": {
+        "implementation": "",
+        "tokens": [
+            {
+                "cTokenName": "Sumer USD Coin",
+                "cTokenSymbol": "sdrUSDC",
+                "decimals": 18,
+                "native": false,
+                "underly": "0x8ae4c669f147737085a23d578c1da94d3e39879f",
+                "address": "",
+                "groupId": 3,
+                "oracle": {
+                    "type": 2,
+                    "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
+                    "tokenDecimals": 18,
+                    "feedDecimals": 18,
+                    "name": "USDC"
+                }
+            },
+            {
+                "cTokenName": "Sumer Tether USD",
+                "cTokenSymbol": "sdrUSDT",
+                "decimals": 18,
+                "native": false,
+                "underly": "0xda5f90e416a22f6f65ed586a859c8666ce6ce1d1",
+                "address": "",
+                "groupId": 3,
+                "oracle": {
+                    "type": 2,
+                    "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
+                    "tokenDecimals": 18,
+                    "feedDecimals": 18,
+                    "name": "USDT"
+                }
+            },
+            {
+                "cTokenName": "Sumer Ether",
+                "cTokenSymbol": "sdrETH",
+                "decimals": 18,
+                "native": true,
+                "implementation": "",
+                "address": "",
+                "groupId": 2,
+                "oracle": {
+                    "type": 2,
+                    "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
+                    "tokenDecimals": 18,
+                    "feedDecimals": 18,
+                    "name": "ETH"
+                }
+            },
+            {
+                "cTokenName": "Sumer BTCK Token",
+                "cTokenSymbol": "sdrBTC",
+                "decimals": 18,
+                "native": false,
+                "underly": "0xCFd9102A2675E0d898982F1fD1dd0264aAA901Da",
+                "address": "",
+                "groupId": 1,
+                "oracle": {
+                    "type": 2,
+                    "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
+                    "tokenDecimals": 18,
+                    "feedDecimals": 18,
+                    "name": "BTC"
+                }
+            },
+            {
+                "cTokenName": "Sumer Binance USD",
+                "cTokenSymbol": "sdrBUSD",
+                "decimals": 18,
+                "native": false,
+                "underly": "0x660a3a1141632c9dcad8a5a3350f7ddd720bc15c",
+                "address": "",
+                "groupId": 3,
+                "oracle": {
+                    "type": 1,
+                    "price": "100000000000000000"
+                }
+            }
+        ]
+    },
+    "suTokens": {
+        "implementation": "",
+        "tokens": [
+            {
+                "name": "suUSD",
+                "symbol": "suUSD",
+                "decimals": 18,
+                "underly": "",
+                "address": "",
+                "groupId": 3,
+                "oracle": {
+                    "type": 1,
+                    "price": "100000000000000000"
+                }
+            },
+            {
+                "name": "suETH",
+                "symbol": "suETH",
+                "decimals": 18,
+                "underly": "",
+                "address": "",
+                "groupId": 2,
+                "oracle": {
+                    "type": 2,
+                    "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
+                    "tokenDecimals": 18,
+                    "feedDecimals": 18,
+                    "name": "ETH"
+                }
+            },
+            {
+                "name": "suBTC",
+                "symbol": "suBTC",
+                "decimals": 18,
+                "underly": "",
+                "address": "",
+                "groupId": 1,
+                "oracle": {
+                    "type": 2,
+                    "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
+                    "tokenDecimals": 18,
+                    "feedDecimals": 18,
+                    "name": "BTC"
+                }
+            }
+        ]
+    },
+    "eqAssetGroups": [
         {
-            "cTokenName": "Sumer USD Coin",
-            "cTokenSymbol": "sdrUSDC",
-            "decimals": 18,
-            "native": false,
-            "underly": "",
-            "implementation": "",
-            "address": ""
+            "id": 1,
+            "name": "Bitcoin",
+            "inGroupCTokenRateMantissa": "900000000000000000",
+            "inGroupSuTokenRateMantissa": "700000000000000000",
+            "interGroupCTokenRateMantissa": "800000000000000000",
+            "interGroupSuTokenRateMantissa": "600000000000000000"
         },
         {
-            "cTokenName": "Sumer Tether USD",
-            "cTokenSymbol": "sdrUSDT",
-            "decimals": 18,
-            "native": false,
-            "underly": "",
-            "implementation": "",
-            "address": ""
+            "id": 2,
+            "name": "Ether",
+            "inGroupCTokenRateMantissa": "900000000000000000",
+            "inGroupSuTokenRateMantissa": "700000000000000000",
+            "interGroupCTokenRateMantissa": "800000000000000000",
+            "interGroupSuTokenRateMantissa": "600000000000000000"
         },
         {
-            "cTokenName": "Sumer Ether",
-            "cTokenSymbol": "sdrETH",
-            "decimals": 18,
-            "native": false,
-            "underly": "",
-            "implementation": "",
-            "address": ""
+            "id": 3,
+            "name": "StableCoin",
+            "inGroupCTokenRateMantissa": "900000000000000000",
+            "inGroupSuTokenRateMantissa": "700000000000000000",
+            "interGroupCTokenRateMantissa": "800000000000000000",
+            "interGroupSuTokenRateMantissa": "600000000000000000"
         },
         {
-            "cTokenName": "Sumer BTCK Token",
-            "cTokenSymbol": "sdrBTC",
-            "decimals": 18,
-            "native": false,
-            "underly": "",
-            "implementation": "",
-            "address": ""
-        },
-        {
-            "cTokenName": "Sumer Binance USD",
-            "cTokenSymbol": "sdrBUSD",
-            "decimals": 18,
-            "native": false,
-            "underly": "",
-            "implementation": "",
-            "address": ""
-        }
-    ],
-    "suTokens": [
-        {
-            "name": "suUSD",
-            "symbol": "suUSD",
-            "decimals": 18,
-            "underly": "",
-            "implementation": "",
-            "address": ""
-        },
-        {
-            "name": "suETH",
-            "symbol": "suETH",
-            "decimals": 18,
-            "underly": "",
-            "implementation": "",
-            "address": ""
-        },
-        {
-            "name": "suBTC",
-            "symbol": "suBTC",
-            "decimals": 18,
-            "underly": "",
-            "implementation": "",
-            "address": ""
+            "id": 4,
+            "name": "KCS",
+            "inGroupCTokenRateMantissa": "900000000000000000",
+            "inGroupSuTokenRateMantissa": "700000000000000000",
+            "interGroupCTokenRateMantissa": "800000000000000000",
+            "interGroupSuTokenRateMantissa": "600000000000000000"
         }
     ]
 }

@@ -679,7 +679,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin_: string,
+      admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -866,7 +866,7 @@ export class CEther extends BaseContract {
     name_: string,
     symbol_: string,
     decimals_: BigNumberish,
-    admin_: string,
+    admin: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1045,7 +1045,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin_: string,
+      admin: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1551,7 +1551,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin_: string,
+      admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1748,7 +1748,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin_: string,
+      admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

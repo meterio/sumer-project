@@ -33,7 +33,7 @@ task('sof', 'set FeedPriceOracle with fix price')
         const wallet = new ethers.Wallet(pk, provider);
         let receipt: ContractTransaction;
 
-        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as unknown as FeedPriceOracle;
+        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as FeedPriceOracle;
         console.log("find FeedPriceOracle:", address);
         receipt = await feedPriceOracle.setFixedPrice(ctoken, price, override)
         console.log("setFixedPrice tx:", receipt.hash);

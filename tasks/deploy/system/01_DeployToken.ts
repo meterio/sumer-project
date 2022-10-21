@@ -2,6 +2,7 @@ import { task } from "hardhat/config";
 import { types } from "hardhat/config";
 import { parseUnits } from "ethers/lib/utils";
 import { log } from "../../../log_settings";
+import { ERC20MinterBurnerPauser } from "../../../typechain";
 
 /**
 npx hardhat dt \
@@ -29,7 +30,7 @@ task("dt", "deploy contract")
                 rpc: rpc,
                 pk: pk,
                 gasprice: gasprice
-            })
+            }) as ERC20MinterBurnerPauser
 
             if (Number(supply) > 0) {
                 const receipt = await contract.mint(wallet.address, parseUnits(supply))

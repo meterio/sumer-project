@@ -32,7 +32,7 @@ task('soc', 'set FeedPriceOracle with chainlink feed')
         let provider = new ethers.providers.JsonRpcProvider(rpc);
         const wallet = new ethers.Wallet(pk, provider);
 
-        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as unknown as FeedPriceOracle;
+        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as FeedPriceOracle;
         console.log("find FeedPriceOracle:", address);
         const receipt = await feedPriceOracle.setChainlinkFeed(ctoken, feed, decimal, override)
         console.log("setChainlinkFeed tx:", receipt.hash);

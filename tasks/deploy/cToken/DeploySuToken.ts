@@ -43,7 +43,7 @@ task("dst", "deploy suToken contract")
                 gasprice: gasprice
             });
             const contract = impl as SuErc20;
-            const suTokenSymbol = `c${symbol}`;
+            const suTokenSymbol = `sdr${symbol}`;
 
             const proxy = await run("p", {
                 impl: impl.address,

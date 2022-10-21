@@ -38,7 +38,7 @@ task('sob', 'set FeedPriceOracle with witnetFeed')
         const wallet = new ethers.Wallet(pk, provider);
         let receipt: ContractTransaction;
 
-        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as unknown as FeedPriceOracle;
+        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as FeedPriceOracle;
         console.log("find FeedPriceOracle:", address);
         receipt = await feedPriceOracle.setBandFeed(ctoken, feed, decimal, feeddecimal, name, override)
         console.log("setBandFeed tx:", receipt.hash);

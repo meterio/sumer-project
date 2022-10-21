@@ -30,7 +30,7 @@ task('so', 'set PriceOracle in Comptroller')
         const wallet = new ethers.Wallet(pk, provider);
         let receipt: ContractTransaction;
 
-        const comptroller = await ethers.getContractAt("Comptroller", address, wallet) as unknown as Comptroller;
+        const comptroller = await ethers.getContractAt("Comptroller", address, wallet) as Comptroller;
         console.log("find Comptroller:", address);
         receipt = await comptroller._setPriceOracle(oracle, override);
         console.log("_setPriceOracle tx:", receipt.hash);

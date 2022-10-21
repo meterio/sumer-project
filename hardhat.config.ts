@@ -10,7 +10,6 @@ import "hardhat-gas-reporter";
 import "hardhat-tracer";
 import "hardhat-etherscan-abi";
 import "solidity-coverage";
-import "hardhat-deploy";
 
 import "./tasks";
 import { compileSetting } from './scripts/deployTool';
@@ -150,34 +149,6 @@ dotenv.config();
 //   }
 // });
 
-// task('configSuMinter', 'config minter for sutokens').setAction(async ({ }, { ethers, run, network, upgrades }) => {
-//   await run('compile');
-//   const [admin] = await ethers.getSigners();
-
-//   for (const sutoken of suTokens) {
-//     const suSymbol = sutoken.symbol;
-//     const minterSymbol = sutoken.minter;
-//     const suAddr = getContract(network.name, suSymbol);
-//     if (suAddr === constants.AddressZero) {
-//       console.log(`could not get token address for ${suSymbol}`);
-//       continue;
-//     }
-//     const minterAddr = getContract(network.name, minterSymbol);
-//     if (minterAddr === constants.AddressZero) {
-//       console.log(`could not get token address for ${minterSymbol}`);
-//       continue;
-//     }
-//     const su = (await ethers.getContractAt(
-//       'ERC20MintablePauseableUpgradeable',
-//       suAddr,
-//       admin
-//     )) as ERC20MintablePauseableUpgradeable;
-
-//     const re = await su.addMinter(minterAddr);
-//     await re.wait();
-//     console.log(`add ${minterSymbol} as minter on ${suSymbol}`);
-//   }
-// });
 
 // task('configGroup', 'config group').setAction(async ({ }, { ethers, run, network, upgrades }) => {
 //   await run('compile');

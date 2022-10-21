@@ -19,6 +19,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
    * @param name_ ERC-20 name of this token
    * @param symbol_ ERC-20 symbol of this token
    * @param decimals_ ERC-20 decimal precision of this token
+   * @param admin Address of the administrator of this token
    */
   function initialize(
     address underlying_,
