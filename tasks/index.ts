@@ -11,3 +11,6 @@ import "./deploy/cToken/DeploySuToken";
 import "./deploy/DeployAll";
 import "./deploy/DeployContract";
 import "./deploy/DeployProxy";
+import "./operation/ApproveAll";
+import "./operation/Deposit";
+import "./operation/Redeem";

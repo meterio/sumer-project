@@ -277,6 +277,26 @@ contract Comptroller is Initializable, ComptrollerStorage {
   }
 
   /**
+   * @notice Validates redeem and reverts on rejection. May emit logs.
+   * @param cToken Asset being redeemed
+   * @param redeemer The address redeeming the tokens
+   * @param redeemAmount The amount of the underlying asset being redeemed
+   * @param redeemTokens The number of tokens being redeemed
+   */
+  function redeemVerify(
+    address cToken,
+    address redeemer,
+    uint256 redeemAmount,
+    uint256 redeemTokens
+  ) external {
+    // Shh - currently unused: cToken; redeemer;
+
+    // Require tokens is zero or amount is also zero
+    if (redeemTokens == 0 && redeemAmount > 0) {
+      revert('redeemTokens zero');
+    }
+  }
+  /**
    * @notice Checks if the account should be allowed to borrow the underlying asset of the given market
    * @param cToken The market to verify the borrow against
    * @param borrower The account which would borrow the asset

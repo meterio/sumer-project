@@ -44,7 +44,7 @@ task("dct", "deploy cToken contract")
                     underly,
                     comptroller,
                     irm,
-                    ethers.utils.parseUnits('1', decimals - MANTISSA_DECIMALS + MANTISSA_DECIMALS), // exchange rate
+                    ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
                     name,
                     symbol,
                     MANTISSA_DECIMALS,

@@ -1,6 +1,5 @@
 import { task } from 'hardhat/config';
 import { types } from "hardhat/config";
-import { log } from "../../../log_settings";
 
 /**
 npx hardhat do \

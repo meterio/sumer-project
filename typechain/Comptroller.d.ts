@@ -62,6 +62,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "mintAllowed(address,address,uint256)": FunctionFragment;
     "oracle()": FunctionFragment;
     "redeemAllowed(address,address,uint256)": FunctionFragment;
+    "redeemVerify(address,address,uint256,uint256)": FunctionFragment;
     "repayBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
@@ -209,6 +210,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "redeemAllowed",
     values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "redeemVerify",
+    values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "repayBorrowAllowed",
@@ -367,6 +372,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "redeemAllowed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "redeemVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -753,6 +762,14 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    redeemVerify(
+      cToken: string,
+      redeemer: string,
+      redeemAmount: BigNumberish,
+      redeemTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     repayBorrowAllowed(
       cToken: string,
       payer: string,
@@ -990,6 +1007,14 @@ export class Comptroller extends BaseContract {
   redeemAllowed(
     cToken: string,
     redeemer: string,
+    redeemTokens: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  redeemVerify(
+    cToken: string,
+    redeemer: string,
+    redeemAmount: BigNumberish,
     redeemTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1240,6 +1265,14 @@ export class Comptroller extends BaseContract {
       redeemTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    redeemVerify(
+      cToken: string,
+      redeemer: string,
+      redeemAmount: BigNumberish,
+      redeemTokens: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     repayBorrowAllowed(
       cToken: string,
@@ -1705,6 +1738,14 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    redeemVerify(
+      cToken: string,
+      redeemer: string,
+      redeemAmount: BigNumberish,
+      redeemTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     repayBorrowAllowed(
       cToken: string,
       payer: string,
@@ -1965,6 +2006,14 @@ export class Comptroller extends BaseContract {
     redeemAllowed(
       cToken: string,
       redeemer: string,
+      redeemTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    redeemVerify(
+      cToken: string,
+      redeemer: string,
+      redeemAmount: BigNumberish,
       redeemTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

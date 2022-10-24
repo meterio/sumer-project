@@ -20,9 +20,9 @@
     },
     "suInterestRateModel": {
         "blocks": "13140000",
-        "base": "0.8",
-        "mul": "0.45",
-        "address": "0xCA8eaDC44D8d2e0a040504167b3eD7645bb989a3"
+        "base": "0",
+        "mul": "0",
+        "address": "0x57059428089eE3B7f8F21B9767c838f13D9BaFc8"
     },
     "cInterestRateModel": {
         "blocks": "13140000",
@@ -33,8 +33,8 @@
     "comptroller": {
         "closeFactorMantissa": "0.5",
         "liquidationIncentiveMantissa": "1.1",
-        "implementation": "0x9867568b5b9E3115459b65ed6b5FCFC656b3D2ED",
-        "address": "0x26DE79C9082499fdc09Fcc699b9da08921B117fc"
+        "implementation": "0xbeB3fa58457Eb958FdB310143F904494bc106115",
+        "address": "0x1D5315C9f4b097A8067Bb5e7a36f1B74Eb3c934F"
     },
     "cTokens": {
         "implementation": "0xbB0679d9CF0B1b0f5143Be7A14676467d0cEB616",
@@ -45,7 +45,7 @@
                 "decimals": 6,
                 "native": false,
                 "underly": "0x2b27f5f7f2867ad9d2b7065f81e985c1bd1b7274",
-                "address": "0xeE30EF9Cc9f3e268A32A2Adb0d3960949246dC5c",
+                "address": "0xE12981Aa4dD8985d6E0F60A7615ae0758B3C7583",
                 "groupId": 3,
                 "oracle": {
                     "type": 2,
@@ -59,7 +59,7 @@
                 "decimals": 6,
                 "native": false,
                 "underly": "0x2398633bee182cad2d0388b41735fd9fb742098d",
-                "address": "0xd41E7C135A4420419B52D071aFCdFE2981BC16c4",
+                "address": "0xB4DbdA2Ec7E7b2248d673E3A4a96eb02D3adB571",
                 "groupId": 3,
                 "oracle": {
                     "type": 2,
@@ -73,7 +73,7 @@
                 "decimals": 18,
                 "native": false,
                 "underly": "0xe8876830e7cc85dae8ce31b0802313caf856886f",
-                "address": "0xC132a538A98093fbe2168e6794B6044A207AD0Fb",
+                "address": "0x63305F5F93066EFb46A76DdB2A1b1D6e52017969",
                 "groupId": 2,
                 "oracle": {
                     "type": 2,
@@ -87,7 +87,7 @@
                 "decimals": 8,
                 "native": false,
                 "underly": "0x7EB9e0Df1C6E6f1E9d3d1EdA09fcF688FE7A710c",
-                "address": "0xe02C2a6279D5495F176a0efda062b5e606B89317",
+                "address": "0x93cf587529866Fb12565f50354D90F7D0981ac51",
                 "groupId": 1,
                 "oracle": {
                     "type": 2,
@@ -101,7 +101,7 @@
                 "decimals": 18,
                 "native": false,
                 "underly": "0x660a3a1141632c9dcad8a5a3350f7ddd720bc15c",
-                "address": "0x02F8B3d651626256C624a2aE804ecF7236fd2033",
+                "address": "0xE847EeBc7ce3639BC258FA96ba955e333c761CE4",
                 "groupId": 3,
                 "oracle": {
                     "type": 1,
@@ -118,7 +118,7 @@
                 "symbol": "suUSD",
                 "decimals": 18,
                 "underly": "0x90D3fF2131e6fB52A0b2C343C695Ac2971Ebc16b",
-                "address": "0xCf0B94134FE0D56A97Bbbb8dcb43a60dE21a65c4",
+                "address": "0x92C8d4c5b2A9d6EB626cDE12257d01b159915633",
                 "groupId": 3,
                 "oracle": {
                     "type": 1,
@@ -130,7 +130,7 @@
                 "symbol": "suETH",
                 "decimals": 18,
                 "underly": "0x339ef01365c1FC4C4fDF303296b899EDA60A220b",
-                "address": "0xFFFe79B743F95E3222b41023d1B18741F6b3dD8A",
+                "address": "0x99C27df6c18aCC0c1e176B65d23CA0C9692A8442",
                 "groupId": 2,
                 "oracle": {
                     "type": 2,
@@ -143,7 +143,7 @@
                 "symbol": "suBTC",
                 "decimals": 18,
                 "underly": "0x8E09C571d2730250e5BC050a208b5a338736380d",
-                "address": "0x3b5097a8D44A515EDC223684F1488B5a250fd755",
+                "address": "0xfe297cd08366a28d5f4A542068CcF06186F74789",
                 "groupId": 1,
                 "oracle": {
                     "type": 2,

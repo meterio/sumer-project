@@ -51,7 +51,7 @@ task("dst", "deploy suToken contract")
                     underly.address,
                     comptroller,
                     irm,
-                    ethers.utils.parseUnits('1', decimals - MANTISSA_DECIMALS + MANTISSA_DECIMALS), // exchange rate
+                    ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
                     suTokenSymbol,
                     suTokenSymbol,
                     MANTISSA_DECIMALS,

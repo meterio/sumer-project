@@ -172,7 +172,7 @@ task("all", "deploy contract")
                             data = cEther.interface.encodeFunctionData("initialize", [
                                 config.comptroller.address,
                                 config.cInterestRateModel.address,
-                                ethers.utils.parseUnits('1', cToken.decimals - MANTISSA_DECIMALS + MANTISSA_DECIMALS),
+                                ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
                                 cToken.cTokenName,
                                 cToken.cTokenSymbol,
                                 cToken.decimals,
@@ -184,7 +184,7 @@ task("all", "deploy contract")
                                 cToken.underly,
                                 config.comptroller.address,
                                 config.cInterestRateModel.address,
-                                ethers.utils.parseUnits('1', cToken.decimals - MANTISSA_DECIMALS + MANTISSA_DECIMALS),
+                                ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
                                 cToken.cTokenName,
                                 cToken.cTokenSymbol,
                                 cToken.decimals,
@@ -256,7 +256,7 @@ task("all", "deploy contract")
                             config.suTokens.tokens[i].underly,
                             config.comptroller.address,
                             config.cInterestRateModel.address,
-                            ethers.utils.parseUnits('1', suToken.decimals - MANTISSA_DECIMALS + MANTISSA_DECIMALS), // exchange rate
+                            ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
                             suTokenSymbol,
                             suTokenSymbol,
                             MANTISSA_DECIMALS,
