@@ -77,4 +77,7 @@ contract suErc20 is CErc20 {
     }
     require(success, 'TOKEN_TRANSFER_OUT_FAILED');
   }
+  function changeCtoken() public onlyAdmin {
+    isCToken = !isCToken;
+  }
 }

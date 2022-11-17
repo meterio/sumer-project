@@ -37,7 +37,7 @@
         "address": "0x1D5315C9f4b097A8067Bb5e7a36f1B74Eb3c934F"
     },
     "cTokens": {
-        "implementation": "0xbB0679d9CF0B1b0f5143Be7A14676467d0cEB616",
+        "implementation": "0xf1474805c39E5E76D0C036eed65b5d6f9F207041",
         "tokens": [
             {
                 "cTokenName": "Sumer USD Coin",
@@ -105,13 +105,40 @@
                 "groupId": 3,
                 "oracle": {
                     "type": 1,
-                    "price": "100000000000000000"
+                    "price": "1000000000000000000"
                 }
+            },
+            {
+                "cTokenName": "Sumer MeterGov",
+                "cTokenSymbol": "sdrMTRG",
+                "decimals": 18,
+                "native": false,
+                "underly": "0x8a419ef4941355476cf04933e90bf3bbf2f73814",
+                "address": "0x11fDC6A3D5649A72Eb2741ACaa18759173048a9C",
+                "groupId": 4,
+                "oracle": {
+                    "type": 3,
+                    "feed": "0x3218E21240968c650C03A4657C22275951Dd9232"
+                }
+            },
+            {
+                "cTokenName": "Sumer Meter",
+                "cTokenSymbol": "sdrMTR",
+                "decimals": 18,
+                "native": true,
+                "underly": "",
+                "address": "0x1Be914Dcb39A17b262C2B284Ebda8082340F1828",
+                "groupId": 4,
+                "oracle": {
+                    "type": 3,
+                    "feed": "0xF346eEbbA5280f509BcCEa8Df9298660d99BD5D1"
+                },
+                "implementation": "0x614F328B9d7e5351Da4FCd50E0591A7120600B23"
             }
         ]
     },
     "suTokens": {
-        "implementation": "0xE5aAa584F6c0973Bad8572c4ba17bf7DA66347Ea",
+        "implementation": "0x30C665065C8cD484EA3a9e1D1c9B6F658d524269",
         "tokens": [
             {
                 "name": "suUSD",
@@ -122,7 +149,7 @@
                 "groupId": 3,
                 "oracle": {
                     "type": 1,
-                    "price": "100000000000000000"
+                    "price": "1000000000000000000"
                 }
             },
             {
@@ -180,7 +207,7 @@
         },
         {
             "id": 4,
-            "name": "KCS",
+            "name": "MTR",
             "inGroupCTokenRateMantissa": "900000000000000000",
             "inGroupSuTokenRateMantissa": "700000000000000000",
             "interGroupCTokenRateMantissa": "800000000000000000",

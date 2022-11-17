@@ -40,17 +40,22 @@ interface SuErc20Interface extends ethers.utils.Interface {
     "borrowBalanceStored(address)": FunctionFragment;
     "borrowIndex()": FunctionFragment;
     "borrowRatePerBlock()": FunctionFragment;
+    "changeCtoken()": FunctionFragment;
     "comptroller()": FunctionFragment;
     "decimals()": FunctionFragment;
     "exchangeRateCurrent()": FunctionFragment;
     "exchangeRateStored()": FunctionFragment;
+    "getAccountBorrows(address)": FunctionFragment;
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
     "initialize(address,address,address,uint256,string,string,uint8,address)": FunctionFragment;
     "interestRateModel()": FunctionFragment;
     "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
+    "isDeprecated()": FunctionFragment;
     "liquidateBorrow(address,uint256,address)": FunctionFragment;
+    "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
@@ -144,6 +149,10 @@ interface SuErc20Interface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "changeCtoken",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "comptroller",
     values?: undefined
   ): string;
@@ -155,6 +164,10 @@ interface SuErc20Interface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "exchangeRateStored",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAccountBorrows",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountSnapshot",
@@ -181,8 +194,20 @@ interface SuErc20Interface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "isDeprecated",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "liquidateBorrow",
     values: [string, BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateBorrowAllowed",
+    values: [string, string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateCalculateSeizeTokens",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -315,6 +340,10 @@ interface SuErc20Interface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "changeCtoken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "comptroller",
     data: BytesLike
   ): Result;
@@ -325,6 +354,10 @@ interface SuErc20Interface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "exchangeRateStored",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAccountBorrows",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -340,7 +373,19 @@ interface SuErc20Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "isDeprecated",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "liquidateBorrow",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateBorrowAllowed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateCalculateSeizeTokens",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -667,6 +712,10 @@ export class SuErc20 extends BaseContract {
 
     borrowRatePerBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    changeCtoken(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     comptroller(overrides?: CallOverrides): Promise<[string]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
@@ -676,6 +725,16 @@ export class SuErc20 extends BaseContract {
     ): Promise<ContractTransaction>;
 
     exchangeRateStored(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        principal: BigNumber;
+        interestIndex: BigNumber;
+      }
+    >;
 
     getAccountSnapshot(
       account: string,
@@ -702,12 +761,28 @@ export class SuErc20 extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<[boolean]>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
     mint(
       mintAmount: BigNumberish,
@@ -865,6 +940,10 @@ export class SuErc20 extends BaseContract {
 
   borrowRatePerBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
+  changeCtoken(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   comptroller(overrides?: CallOverrides): Promise<string>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
@@ -874,6 +953,13 @@ export class SuErc20 extends BaseContract {
   ): Promise<ContractTransaction>;
 
   exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getAccountBorrows(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & { principal: BigNumber; interestIndex: BigNumber }
+  >;
 
   getAccountSnapshot(
     account: string,
@@ -900,12 +986,28 @@ export class SuErc20 extends BaseContract {
 
   isCToken(overrides?: CallOverrides): Promise<boolean>;
 
+  isDeprecated(overrides?: CallOverrides): Promise<boolean>;
+
   liquidateBorrow(
     borrower: string,
     repayAmount: BigNumberish,
     cTokenCollateral: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  liquidateBorrowAllowed(
+    cTokenCollateral: string,
+    liquidator: string,
+    borrower: string,
+    repayAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  liquidateCalculateSeizeTokens(
+    cTokenCollateral: string,
+    actualRepayAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber]>;
 
   mint(
     mintAmount: BigNumberish,
@@ -1059,6 +1161,8 @@ export class SuErc20 extends BaseContract {
 
     borrowRatePerBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
+    changeCtoken(overrides?: CallOverrides): Promise<void>;
+
     comptroller(overrides?: CallOverrides): Promise<string>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
@@ -1066,6 +1170,16 @@ export class SuErc20 extends BaseContract {
     exchangeRateCurrent(overrides?: CallOverrides): Promise<BigNumber>;
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        principal: BigNumber;
+        interestIndex: BigNumber;
+      }
+    >;
 
     getAccountSnapshot(
       account: string,
@@ -1092,12 +1206,28 @@ export class SuErc20 extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<boolean>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
     mint(
       mintAmount: BigNumberish,
@@ -1575,6 +1705,10 @@ export class SuErc20 extends BaseContract {
 
     borrowRatePerBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
+    changeCtoken(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     comptroller(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1584,6 +1718,11 @@ export class SuErc20 extends BaseContract {
     ): Promise<BigNumber>;
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getAccountSnapshot(
       account: string,
@@ -1610,11 +1749,27 @@ export class SuErc20 extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<BigNumber>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     mint(
@@ -1781,6 +1936,10 @@ export class SuErc20 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    changeCtoken(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     comptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1790,6 +1949,11 @@ export class SuErc20 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     exchangeRateStored(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAccountBorrows(
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1818,11 +1982,27 @@ export class SuErc20 extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     mint(

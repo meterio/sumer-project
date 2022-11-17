@@ -42,11 +42,15 @@ interface CTokenInterface extends ethers.utils.Interface {
     "decimals()": FunctionFragment;
     "exchangeRateCurrent()": FunctionFragment;
     "exchangeRateStored()": FunctionFragment;
+    "getAccountBorrows(address)": FunctionFragment;
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
     "interestRateModel()": FunctionFragment;
     "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
+    "isDeprecated()": FunctionFragment;
+    "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "protocolSeizeShareMantissa()": FunctionFragment;
@@ -139,6 +143,10 @@ interface CTokenInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getAccountBorrows",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getAccountSnapshot",
     values: [string]
   ): string;
@@ -149,6 +157,18 @@ interface CTokenInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "isDeprecated",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateBorrowAllowed",
+    values: [string, string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateCalculateSeizeTokens",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pendingAdmin",
@@ -270,6 +290,10 @@ interface CTokenInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAccountBorrows",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAccountSnapshot",
     data: BytesLike
   ): Result;
@@ -280,6 +304,18 @@ interface CTokenInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isDeprecated",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateBorrowAllowed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateCalculateSeizeTokens",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingAdmin",
@@ -589,6 +625,16 @@ export class CToken extends BaseContract {
 
     exchangeRateStored(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        principal: BigNumber;
+        interestIndex: BigNumber;
+      }
+    >;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -601,6 +647,22 @@ export class CToken extends BaseContract {
     isCEther(overrides?: CallOverrides): Promise<[boolean]>;
 
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
+
+    isDeprecated(overrides?: CallOverrides): Promise<[boolean]>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -727,6 +789,13 @@ export class CToken extends BaseContract {
 
   exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
 
+  getAccountBorrows(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & { principal: BigNumber; interestIndex: BigNumber }
+  >;
+
   getAccountSnapshot(
     account: string,
     overrides?: CallOverrides
@@ -739,6 +808,22 @@ export class CToken extends BaseContract {
   isCEther(overrides?: CallOverrides): Promise<boolean>;
 
   isCToken(overrides?: CallOverrides): Promise<boolean>;
+
+  isDeprecated(overrides?: CallOverrides): Promise<boolean>;
+
+  liquidateBorrowAllowed(
+    cTokenCollateral: string,
+    liquidator: string,
+    borrower: string,
+    repayAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  liquidateCalculateSeizeTokens(
+    cTokenCollateral: string,
+    actualRepayAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber]>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -859,6 +944,16 @@ export class CToken extends BaseContract {
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        principal: BigNumber;
+        interestIndex: BigNumber;
+      }
+    >;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -871,6 +966,22 @@ export class CToken extends BaseContract {
     isCEther(overrides?: CallOverrides): Promise<boolean>;
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
+
+    isDeprecated(overrides?: CallOverrides): Promise<boolean>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1320,6 +1431,11 @@ export class CToken extends BaseContract {
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -1332,6 +1448,22 @@ export class CToken extends BaseContract {
     isCEther(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    isDeprecated(overrides?: CallOverrides): Promise<BigNumber>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1468,6 +1600,11 @@ export class CToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -1480,6 +1617,22 @@ export class CToken extends BaseContract {
     isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isDeprecated(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

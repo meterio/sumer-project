@@ -296,6 +296,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
       revert('redeemTokens zero');
     }
   }
+
   /**
    * @notice Checks if the account should be allowed to borrow the underlying asset of the given market
    * @param cToken The market to verify the borrow against

@@ -155,7 +155,7 @@ task("all", "deploy contract")
             if (config.cTokens.tokens.length > 0) {
                 for (let i = 0; i < config.cTokens.tokens.length; i++) {
                     let cToken = config.cTokens.tokens[i];
-                    if (cToken.underly != "" && cToken.address == "") {
+                    if (cToken.address == "") {
                         let data: string;
                         let impl: string;
                         if (cToken.native) {
@@ -180,17 +180,17 @@ task("all", "deploy contract")
                             ])
                             impl = config.cTokens.tokens[i].implementation;
                         } else {
-                            data = cErc20.interface.encodeFunctionData("initialize", [
-                                cToken.underly,
-                                config.comptroller.address,
-                                config.cInterestRateModel.address,
-                                ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
-                                cToken.cTokenName,
-                                cToken.cTokenSymbol,
-                                cToken.decimals,
-                                wallet.address
-                            ])
-                            impl = config.cTokens.implementation;
+                                data = cErc20.interface.encodeFunctionData("initialize", [
+                                    cToken.underly,
+                                    config.comptroller.address,
+                                    config.cInterestRateModel.address,
+                                    ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
+                                    cToken.cTokenName,
+                                    cToken.cTokenSymbol,
+                                    cToken.decimals,
+                                    wallet.address
+                                ])
+                                impl = config.cTokens.implementation;
                         }
                         const proxy = await run("p", {
                             impl: impl,
@@ -217,11 +217,19 @@ task("all", "deploy contract")
                             let receipt = await oracle.setBandFeed(
                                 cToken.address,
                                 cToken.oracle.feed,
-                                18,
+                                cToken.decimals,
                                 18,
                                 cToken.oracle.name
                             )
                             log.info("setBandFeed:", cToken.cTokenSymbol, receipt.hash);
+                        } else if (cToken.oracle.type == 3) {
+                            let receipt = await oracle.setWitnetFeed(
+                                cToken.address,
+                                cToken.oracle.feed,
+                                cToken.decimals,
+                                6
+                            )
+                            log.info("setWitnetFeed:", cToken.cTokenSymbol, receipt.hash);
                         }
                     }
                 }
@@ -290,7 +298,7 @@ task("all", "deploy contract")
                             let receipt = await oracle.setBandFeed(
                                 suToken.address,
                                 suToken.oracle.feed,
-                                18,
+                                suToken.decimals,
                                 18,
                                 suToken.oracle.name
                             )

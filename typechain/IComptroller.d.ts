@@ -32,8 +32,6 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isListed(address)": FunctionFragment;
-    "liquidateBorrowAllowed(address,address,address,address,uint256)": FunctionFragment;
-    "liquidateCalculateSeizeTokens(address,address,uint256)": FunctionFragment;
     "liquidationIncentiveMantissa()": FunctionFragment;
     "marketGroupId(address)": FunctionFragment;
     "markets(address)": FunctionFragment;
@@ -76,14 +74,6 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "isListed", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "liquidateBorrowAllowed",
-    values: [string, string, string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "liquidateCalculateSeizeTokens",
-    values: [string, string, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "liquidationIncentiveMantissa",
     values?: undefined
@@ -158,14 +148,6 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isListed", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidateBorrowAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidateCalculateSeizeTokens",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "liquidationIncentiveMantissa",
     data: BytesLike
@@ -300,22 +282,6 @@ export class IComptroller extends BaseContract {
 
     isListed(asset: string, overrides?: CallOverrides): Promise<[boolean]>;
 
-    liquidateBorrowAllowed(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      repayAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    liquidateCalculateSeizeTokens(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      repayAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-
     liquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
@@ -424,22 +390,6 @@ export class IComptroller extends BaseContract {
 
   isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-  liquidateBorrowAllowed(
-    cTokenBorrowed: string,
-    cTokenCollateral: string,
-    liquidator: string,
-    borrower: string,
-    repayAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  liquidateCalculateSeizeTokens(
-    cTokenBorrowed: string,
-    cTokenCollateral: string,
-    repayAmount: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
-
   liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
@@ -539,22 +489,6 @@ export class IComptroller extends BaseContract {
     isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
     isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
-
-    liquidateBorrowAllowed(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      repayAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    liquidateCalculateSeizeTokens(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      repayAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
 
     liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -664,22 +598,6 @@ export class IComptroller extends BaseContract {
     isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
 
     isListed(asset: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    liquidateBorrowAllowed(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      repayAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    liquidateCalculateSeizeTokens(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      repayAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -793,22 +711,6 @@ export class IComptroller extends BaseContract {
 
     isListed(
       asset: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    liquidateBorrowAllowed(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      liquidator: string,
-      borrower: string,
-      repayAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    liquidateCalculateSeizeTokens(
-      cTokenBorrowed: string,
-      cTokenCollateral: string,
-      repayAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

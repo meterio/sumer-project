@@ -2,6 +2,8 @@
 pragma solidity 0.7.6;
 
 import '../Comptroller/Interfaces/IComptroller.sol';
+import '../Comptroller/Interfaces/IUnderwriterAdmin.sol';
+import '../Comptroller/Interfaces/IPriceOracle.sol';
 import './Interfaces/IInterestRateModel.sol';
 import './TokenErrorReporter.sol';
 import './CTokenStorage.sol';
@@ -433,7 +435,7 @@ abstract contract CToken is CTokenStorage {
    * @dev This calculates interest accrued from the last checkpointed block
    *   up to the current block and writes new checkpoint to storage.
    */
-  function accrueInterest() public override virtual returns (uint256) {
+  function accrueInterest() public virtual override returns (uint256) {
     /* Remember the initial block number */
     uint256 currentBlockNumber = getBlockNumber();
     uint256 accrualBlockNumberPrior = accrualBlockNumber;
@@ -1067,13 +1069,7 @@ abstract contract CToken is CTokenStorage {
     address cTokenCollateral
   ) internal returns (uint256, uint256) {
     /* Fail if liquidate not allowed */
-    uint256 allowed = IComptroller(comptroller).liquidateBorrowAllowed(
-      address(this),
-      address(cTokenCollateral),
-      liquidator,
-      borrower,
-      repayAmount
-    );
+    uint256 allowed = liquidateBorrowAllowed(address(cTokenCollateral), liquidator, borrower, repayAmount);
     if (allowed != 0) {
       return (Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.LIQUIDATE_COMPTROLLER_REJECTION, allowed), 0);
     }
@@ -1114,8 +1110,7 @@ abstract contract CToken is CTokenStorage {
     // (No safe failures beyond this point)
 
     /* We calculate the number of collateral tokens that will be seized */
-    (uint256 amountSeizeError, uint256 seizeTokens) = IComptroller(comptroller).liquidateCalculateSeizeTokens(
-      address(this),
+    (uint256 amountSeizeError, uint256 seizeTokens) = liquidateCalculateSeizeTokens(
       cTokenCollateral,
       actualRepayAmount
     );
@@ -1562,5 +1557,109 @@ abstract contract CToken is CTokenStorage {
     _notEntered = false;
     _;
     _notEntered = true; // get a gas-refund post-Istanbul
+  }
+
+  /**
+   * @notice Returns true if the given cToken market has been deprecated
+   * @dev All borrows in a deprecated cToken market can be immediately liquidated
+   */
+  function isDeprecated() public view returns (bool) {
+    return
+      IComptroller(comptroller).marketGroupId(address(this)) == 0 &&
+      //borrowGuardianPaused[cToken] == true &&
+      IUnderwriterAdmin(IComptroller(comptroller).underWriterAdmin())._getBorrowPaused(address(this)) &&
+      reserveFactorMantissa == 1e18;
+  }
+
+  /**
+   * @notice Checks if the liquidation should be allowed to occur
+   * @param cTokenCollateral Asset which was used as collateral and will be seized
+   * @param liquidator The address repaying the borrow and seizing the collateral
+   * @param borrower The address of the borrower
+   * @param repayAmount The amount of underlying being repaid
+   */
+  function liquidateBorrowAllowed(
+    address cTokenCollateral,
+    address liquidator,
+    address borrower,
+    uint256 repayAmount
+  ) public view returns (uint256) {
+    // Shh - currently unused: liquidator;
+
+    require(
+      IComptroller(comptroller).isListed(address(this)) && IComptroller(comptroller).isListed(cTokenCollateral),
+      'MARKET_NOT_LISTED'
+    );
+
+    (, uint256 borrowBalance) = borrowBalanceStoredInternal(borrower);
+
+    /* allow accounts to be liquidated if the market is deprecated */
+    if (isDeprecated()) {
+      require(borrowBalance >= repayAmount, 'too much repay');
+    } else {
+      /* The borrower must have shortfall in order to be liquidatable */
+      (, , uint256 shortfall) = IComptroller(comptroller).getHypotheticalAccountLiquidity(
+        borrower,
+        address(this),
+        0,
+        0
+      );
+
+      require(shortfall > 0, 'insufficient shortfall');
+
+      /* The liquidator may not repay more than what is allowed by the closeFactor */
+      uint256 maxClose = Exp({mantissa: IComptroller(comptroller).closeFactorMantissa()}).mul_ScalarTruncate(
+        borrowBalance
+      );
+      require(repayAmount <= maxClose, 'too much repay');
+    }
+    return uint256(0);
+  }
+
+  /**
+   * @notice Calculate number of tokens of collateral asset to seize given an underlying amount
+   * @dev Used in liquidation (called in ICToken(cToken).liquidateBorrowFresh)
+   * @param cTokenCollateral The address of the collateral cToken
+   * @param actualRepayAmount The amount of cTokenBorrowed underlying to convert into cTokenCollateral tokens
+   * @return (errorCode, number of cTokenCollateral tokens to be seized in a liquidation)
+   */
+  function liquidateCalculateSeizeTokens(address cTokenCollateral, uint256 actualRepayAmount)
+    public
+    view
+    returns (uint256, uint256)
+  {
+    /* Read oracle prices for borrowed and collateral markets */
+    address oracle = IComptroller(comptroller).oracle();
+    uint256 priceBorrowedMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(address(this)));
+    uint256 priceCollateralMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenCollateral));
+    require(priceBorrowedMantissa > 0 && priceCollateralMantissa > 0, 'PRICE_ERROR');
+
+    /*
+     * Get the exchange rate and calculate the number of collateral tokens to seize:
+     *  seizeAmount = actualRepayAmount * liquidationIncentive * priceBorrowed / priceCollateral
+     *  seizeTokens = seizeAmount / exchangeRate
+     *   = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
+     */
+    uint256 exchangeRateMantissa = ICToken(cTokenCollateral).exchangeRateStored(); // Note: reverts on error
+    uint256 seizeTokens;
+    Exp memory numerator;
+    Exp memory denominator;
+    Exp memory ratio;
+
+    numerator = Exp({mantissa: IComptroller(comptroller).liquidationIncentiveMantissa()}).mul_(
+      Exp({mantissa: priceBorrowedMantissa})
+    );
+    denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
+    ratio = numerator.div_(denominator);
+
+    seizeTokens = ratio.mul_ScalarTruncate(actualRepayAmount);
+
+    return (uint256(0), seizeTokens);
+  }
+
+  function getAccountBorrows(address account) public view returns (uint256 principal, uint256 interestIndex) {
+    BorrowSnapshot memory accountBorrow = accountBorrows[account];
+    principal = accountBorrow.principal;
+    interestIndex = accountBorrow.interestIndex;
   }
 }

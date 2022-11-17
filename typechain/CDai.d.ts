@@ -46,13 +46,17 @@ interface CDaiInterface extends ethers.utils.Interface {
     "decimals()": FunctionFragment;
     "exchangeRateCurrent()": FunctionFragment;
     "exchangeRateStored()": FunctionFragment;
+    "getAccountBorrows(address)": FunctionFragment;
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
     "initialize(address,address,address,address,uint256,string,string,uint8,address)": FunctionFragment;
     "interestRateModel()": FunctionFragment;
     "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
+    "isDeprecated()": FunctionFragment;
     "liquidateBorrow(address,uint256,address)": FunctionFragment;
+    "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
@@ -169,6 +173,10 @@ interface CDaiInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getAccountBorrows",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getAccountSnapshot",
     values: [string]
   ): string;
@@ -194,8 +202,20 @@ interface CDaiInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "isDeprecated",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "liquidateBorrow",
     values: [string, BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateBorrowAllowed",
+    values: [string, string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateCalculateSeizeTokens",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -357,6 +377,10 @@ interface CDaiInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAccountBorrows",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAccountSnapshot",
     data: BytesLike
   ): Result;
@@ -369,7 +393,19 @@ interface CDaiInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "isDeprecated",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "liquidateBorrow",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateBorrowAllowed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateCalculateSeizeTokens",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -714,6 +750,16 @@ export class CDai extends BaseContract {
 
     exchangeRateStored(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        principal: BigNumber;
+        interestIndex: BigNumber;
+      }
+    >;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -752,12 +798,28 @@ export class CDai extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<[boolean]>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<[boolean]>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
     mint(
       mintAmount: BigNumberish,
@@ -935,6 +997,13 @@ export class CDai extends BaseContract {
 
   exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
 
+  getAccountBorrows(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & { principal: BigNumber; interestIndex: BigNumber }
+  >;
+
   getAccountSnapshot(
     account: string,
     overrides?: CallOverrides
@@ -973,12 +1042,28 @@ export class CDai extends BaseContract {
 
   isCToken(overrides?: CallOverrides): Promise<boolean>;
 
+  isDeprecated(overrides?: CallOverrides): Promise<boolean>;
+
   liquidateBorrow(
     borrower: string,
     repayAmount: BigNumberish,
     cTokenCollateral: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  liquidateBorrowAllowed(
+    cTokenCollateral: string,
+    liquidator: string,
+    borrower: string,
+    repayAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  liquidateCalculateSeizeTokens(
+    cTokenCollateral: string,
+    actualRepayAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber]>;
 
   mint(
     mintAmount: BigNumberish,
@@ -1148,6 +1233,16 @@ export class CDai extends BaseContract {
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        principal: BigNumber;
+        interestIndex: BigNumber;
+      }
+    >;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -1186,12 +1281,28 @@ export class CDai extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<boolean>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<boolean>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
     mint(
       mintAmount: BigNumberish,
@@ -1689,6 +1800,11 @@ export class CDai extends BaseContract {
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -1727,11 +1843,27 @@ export class CDai extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<BigNumber>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     mint(
@@ -1920,6 +2052,11 @@ export class CDai extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getAccountBorrows(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getAccountSnapshot(
       account: string,
       overrides?: CallOverrides
@@ -1958,11 +2095,27 @@ export class CDai extends BaseContract {
 
     isCToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    isDeprecated(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     liquidateBorrow(
       borrower: string,
       repayAmount: BigNumberish,
       cTokenCollateral: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    liquidateBorrowAllowed(
+      cTokenCollateral: string,
+      liquidator: string,
+      borrower: string,
+      repayAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    liquidateCalculateSeizeTokens(
+      cTokenCollateral: string,
+      actualRepayAmount: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     mint(

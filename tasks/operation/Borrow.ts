@@ -5,7 +5,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { CErc20 } from '../../typechain';
 
 /**
-npx hardhat re \
+npx hardhat br \
 --sdr <sdrToken address> \
 --amount <deposit amount> \
 --rpc http://127.0.0.1:7545 \
@@ -13,7 +13,7 @@ npx hardhat re \
 --gasprice 1000000000
  */
 
-task('re', 'redeem all underly token')
+task('br', 'deposit underly to sdrToken')
     .addParam("sdr", "sdrToken address")
     .addParam("amount", "deposit amount")
     .addParam("rpc", "rpc connect")
@@ -37,7 +37,7 @@ task('re', 'redeem all underly token')
         const underly = await cErc20.underlying(override);
         console.log(`find ${sdrSymbol} underly:`, underly);
 
-        receipt = await cErc20.redeemUnderlying(parseUnits(amount, await cErc20.decimals(override)), override);
-        console.log("cErc20.redeemUnderlying tx:", receipt.hash);
+        receipt = await cErc20.borrow(parseUnits(amount, await cErc20.decimals(override)), override);
+        console.log("cErc20.borrow tx:", receipt.hash);
 
     });

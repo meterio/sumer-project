@@ -67,14 +67,6 @@ interface IComptroller {
     uint256 repayAmount
   ) external returns (uint256);
 
-  function liquidateBorrowAllowed(
-    address cTokenBorrowed,
-    address cTokenCollateral,
-    address liquidator,
-    address borrower,
-    uint256 repayAmount
-  ) external returns (uint256);
-
   function seizeAllowed(
     address cTokenCollateral,
     address cTokenBorrowed,
@@ -91,12 +83,6 @@ interface IComptroller {
   ) external returns (uint256);
 
   /*** Liquidity/Liquidation Calculations ***/
-
-  function liquidateCalculateSeizeTokens(
-    address cTokenBorrowed,
-    address cTokenCollateral,
-    uint256 repayAmount
-  ) external view returns (uint256, uint256);
 
   function liquidationIncentiveMantissa() external view returns (uint256);
 
