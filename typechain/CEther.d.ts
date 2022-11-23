@@ -62,8 +62,6 @@ interface CEtherInterface extends ethers.utils.Interface {
     "protocolSeizeShareMantissa()": FunctionFragment;
     "redeem(uint256)": FunctionFragment;
     "redeemUnderlying(uint256)": FunctionFragment;
-    "repayBehalf(address)": FunctionFragment;
-    "repayBehalfExplicit(address)": FunctionFragment;
     "repayBorrow()": FunctionFragment;
     "repayBorrowBehalf(address)": FunctionFragment;
     "reserveFactorMantissa()": FunctionFragment;
@@ -214,11 +212,6 @@ interface CEtherInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "redeemUnderlying",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(functionFragment: "repayBehalf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "repayBehalfExplicit",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "repayBorrow",
@@ -389,14 +382,6 @@ interface CEtherInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "redeem", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "redeemUnderlying",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "repayBehalf",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "repayBehalfExplicit",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -792,16 +777,6 @@ export class CEther extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    repayBehalf(
-      borrower: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    repayBehalfExplicit(
-      borrower: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     repayBorrow(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -1012,16 +987,6 @@ export class CEther extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  repayBehalf(
-    borrower: string,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  repayBehalfExplicit(
-    borrower: string,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   repayBorrow(
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1224,13 +1189,6 @@ export class CEther extends BaseContract {
       redeemAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    repayBehalf(borrower: string, overrides?: CallOverrides): Promise<void>;
-
-    repayBehalfExplicit(
-      borrower: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     repayBorrow(overrides?: CallOverrides): Promise<void>;
 
@@ -1761,16 +1719,6 @@ export class CEther extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    repayBehalf(
-      borrower: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    repayBehalfExplicit(
-      borrower: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     repayBorrow(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1989,16 +1937,6 @@ export class CEther extends BaseContract {
     redeemUnderlying(
       redeemAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    repayBehalf(
-      borrower: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    repayBehalfExplicit(
-      borrower: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     repayBorrow(

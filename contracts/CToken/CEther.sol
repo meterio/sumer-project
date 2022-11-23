@@ -101,7 +101,12 @@ contract CEther is CToken, Initializable {
    * @param borrower the account with the debt being payed off
    */
   function repayBorrowBehalf(address borrower) external payable {
-    (uint256 err, ) = repayBorrowBehalfInternal(borrower, msg.value);
+    uint256 received = msg.value;
+    uint256 borrows = CEther(address(this)).borrowBalanceCurrent(borrower);
+    if (received > borrows) {
+      payable(msg.sender).transfer(received - borrows);
+    }
+    (uint256 err, ) = repayBorrowBehalfInternal(borrower, borrows);
     requireNoError(err, 'repayBorrowBehalf failed');
   }
 
@@ -133,31 +138,6 @@ contract CEther is CToken, Initializable {
     requireNoError(err, 'mint failed');
   }
 
-  /**
-   * @notice msg.sender sends Ether to repay an account's borrow in the cEther market
-   * @dev The provided Ether is applied towards the borrow balance, any excess is refunded
-   * @param borrower The address of the borrower account to repay on behalf of
-   */
-  function repayBehalf(address borrower) public payable {
-    repayBehalfExplicit(borrower);
-  }
-
-  /**
-   * @notice msg.sender sends Ether to repay an account's borrow in a cEther market
-   * @dev The provided Ether is applied towards the borrow balance, any excess is refunded
-   * @param borrower The address of the borrower account to repay on behalf of
-   */
-  function repayBehalfExplicit(address borrower) public payable {
-    uint256 received = msg.value;
-    uint256 borrows = CEther(address(this)).borrowBalanceCurrent(borrower);
-    if (received > borrows) {
-      CEther(address(this)).repayBorrowBehalf{value: borrows}(borrower);
-      payable(msg.sender).transfer(received - borrows);
-    } else {
-      CEther(address(this)).repayBorrowBehalf{value: received}(borrower);
-    }
-  }
-
   /*** Safe Token ***/
 
   /**
@@ -180,7 +160,7 @@ contract CEther is CToken, Initializable {
   function doTransferIn(address from, uint256 amount) internal override returns (uint256) {
     // Sanity checks
     require(msg.sender == from, 'sender mismatch');
-    require(msg.value == amount, 'value mismatch');
+    require(msg.value >= amount, 'value mismatch');
     return amount;
   }
 
