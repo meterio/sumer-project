@@ -594,7 +594,8 @@ contract Comptroller is Initializable, ComptrollerStorage {
       vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
 
       // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-      vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePriceMantissa).div_(1e18);
+      // vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePriceMantissa).div_(1e18);
+      vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePrice);
 
       uint8 index;
       for (index = 0; index < vars.equalAssetsGroupNum; ++index) {

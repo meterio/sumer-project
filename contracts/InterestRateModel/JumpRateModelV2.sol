@@ -25,10 +25,13 @@ contract JumpRateModelV2 is BaseJumpRateModelV2 {
   }
 
   constructor(
+    uint256 blocksPerYearOnChain,
     uint256 baseRatePerYear,
     uint256 multiplierPerYear,
     uint256 jumpMultiplierPerYear,
     uint256 kink_,
     address owner_
-  ) BaseJumpRateModelV2(baseRatePerYear, multiplierPerYear, jumpMultiplierPerYear, kink_, owner_) {}
+  )
+    BaseJumpRateModelV2(blocksPerYearOnChain, baseRatePerYear, multiplierPerYear, jumpMultiplierPerYear, kink_, owner_)
+  {}
 }

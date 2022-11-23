@@ -27,7 +27,7 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
   /**
    * @notice The approximate number of blocks per year that is assumed by the interest rate model
    */
-  uint256 public constant blocksPerYear = 2102400;
+  uint256 public immutable blocksPerYear;
 
   /**
    * @notice The multiplier of utilization rate that gives the slope of the interest rate
@@ -58,6 +58,7 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
    * @param owner_ The address of the owner, i.e. the Timelock contract (which has the ability to update parameters directly)
    */
   constructor(
+    uint256 blocksPerYearOnChain,
     uint256 baseRatePerYear,
     uint256 multiplierPerYear,
     uint256 jumpMultiplierPerYear,
@@ -65,8 +66,14 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
     address owner_
   ) {
     owner = owner_;
-
-    updateJumpRateModelInternal(baseRatePerYear, multiplierPerYear, jumpMultiplierPerYear, kink_);
+    blocksPerYear = blocksPerYearOnChain;
+    _updateJumpRateModelInternal(
+      blocksPerYearOnChain,
+      baseRatePerYear,
+      multiplierPerYear,
+      jumpMultiplierPerYear,
+      kink_
+    );
   }
 
   /**
@@ -84,7 +91,7 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
   ) external virtual {
     require(msg.sender == owner, 'only the owner may call this function.');
 
-    updateJumpRateModelInternal(baseRatePerYear, multiplierPerYear, jumpMultiplierPerYear, kink_);
+    _updateJumpRateModelInternal(blocksPerYear, baseRatePerYear, multiplierPerYear, jumpMultiplierPerYear, kink_);
   }
 
   /**
@@ -157,15 +164,16 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
    * @param jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
    * @param kink_ The utilization point at which the jump multiplier is applied
    */
-  function updateJumpRateModelInternal(
+  function _updateJumpRateModelInternal(
+    uint256 blocksPerYearOnChain, 
     uint256 baseRatePerYear,
     uint256 multiplierPerYear,
     uint256 jumpMultiplierPerYear,
     uint256 kink_
   ) internal {
-    baseRatePerBlock = baseRatePerYear.div(blocksPerYear);
-    multiplierPerBlock = (multiplierPerYear.mul(1e18)).div(blocksPerYear.mul(kink_));
-    jumpMultiplierPerBlock = jumpMultiplierPerYear.div(blocksPerYear);
+    baseRatePerBlock = baseRatePerYear.div(blocksPerYearOnChain);
+    multiplierPerBlock = (multiplierPerYear.mul(1e18)).div(blocksPerYearOnChain.mul(kink_));
+    jumpMultiplierPerBlock = jumpMultiplierPerYear.div(blocksPerYearOnChain);
     kink = kink_;
 
     emit NewInterestParams(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink);

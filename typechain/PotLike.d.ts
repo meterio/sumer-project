@@ -23,22 +23,28 @@ interface PotLikeInterface extends ethers.utils.Interface {
   functions: {
     "chi()": FunctionFragment;
     "drip()": FunctionFragment;
+    "dsr()": FunctionFragment;
     "exit(uint256)": FunctionFragment;
     "join(uint256)": FunctionFragment;
     "pie(address)": FunctionFragment;
+    "rho()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "chi", values?: undefined): string;
   encodeFunctionData(functionFragment: "drip", values?: undefined): string;
+  encodeFunctionData(functionFragment: "dsr", values?: undefined): string;
   encodeFunctionData(functionFragment: "exit", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "join", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "pie", values: [string]): string;
+  encodeFunctionData(functionFragment: "rho", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "chi", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "drip", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "dsr", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "exit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pie", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "rho", data: BytesLike): Result;
 
   events: {};
 }
@@ -93,6 +99,8 @@ export class PotLike extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    dsr(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     exit(
       arg0: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -104,6 +112,8 @@ export class PotLike extends BaseContract {
     ): Promise<ContractTransaction>;
 
     pie(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    rho(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   chi(overrides?: CallOverrides): Promise<BigNumber>;
@@ -111,6 +121,8 @@ export class PotLike extends BaseContract {
   drip(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  dsr(overrides?: CallOverrides): Promise<BigNumber>;
 
   exit(
     arg0: BigNumberish,
@@ -124,16 +136,22 @@ export class PotLike extends BaseContract {
 
   pie(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  rho(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     chi(overrides?: CallOverrides): Promise<BigNumber>;
 
     drip(overrides?: CallOverrides): Promise<BigNumber>;
+
+    dsr(overrides?: CallOverrides): Promise<BigNumber>;
 
     exit(arg0: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     join(arg0: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     pie(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    rho(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
@@ -144,6 +162,8 @@ export class PotLike extends BaseContract {
     drip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    dsr(overrides?: CallOverrides): Promise<BigNumber>;
 
     exit(
       arg0: BigNumberish,
@@ -156,6 +176,8 @@ export class PotLike extends BaseContract {
     ): Promise<BigNumber>;
 
     pie(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    rho(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -164,6 +186,8 @@ export class PotLike extends BaseContract {
     drip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    dsr(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     exit(
       arg0: BigNumberish,
@@ -176,5 +200,7 @@ export class PotLike extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     pie(arg0: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    rho(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

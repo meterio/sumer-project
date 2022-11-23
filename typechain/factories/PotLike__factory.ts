@@ -34,6 +34,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "dsr",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -68,6 +81,19 @@ const _abi = [
       },
     ],
     name: "pie",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "rho",
     outputs: [
       {
         internalType: "uint256",

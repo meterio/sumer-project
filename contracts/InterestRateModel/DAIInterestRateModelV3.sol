@@ -36,13 +36,14 @@ contract DAIInterestRateModelV3 is JumpRateModelV2 {
    * @param owner_ The address of the owner, i.e. the Timelock contract (which has the ability to update parameters directly)
    */
   constructor(
+    uint256 blocksPerYearOnChain,
     uint256 jumpMultiplierPerYear,
     uint256 kink_,
     address pot_,
     address jug_,
     address owner_
-  ) JumpRateModelV2(0, 0, jumpMultiplierPerYear, kink_, owner_) {
-    gapPerBlock = 4e16 / blocksPerYear;
+  ) JumpRateModelV2(blocksPerYearOnChain, 0, 0, jumpMultiplierPerYear, kink_, owner_) {
+    gapPerBlock = 4e16 / blocksPerYearOnChain;
     pot = PotLike(pot_);
     jug = JugLike(jug_);
     poke();
@@ -56,15 +57,16 @@ contract DAIInterestRateModelV3 is JumpRateModelV2 {
    * @param kink_ The utilization point at which the jump multiplier is applied
    */
   function updateJumpRateModel(
+    uint256 blocksPerYearOnChain,
     uint256 baseRatePerYear,
     uint256 gapPerYear,
     uint256 jumpMultiplierPerYear,
     uint256 kink_
-  ) external override {
+  ) external {
     require(msg.sender == owner, 'only the owner may call this function.');
     baseRatePerYear;
     gapPerBlock = gapPerYear / blocksPerYear;
-    updateJumpRateModelInternal(0, 0, jumpMultiplierPerYear, kink_);
+    _updateJumpRateModelInternal(blocksPerYearOnChain, 0, 0, jumpMultiplierPerYear, kink_);
     poke();
   }
 

@@ -243,7 +243,16 @@ export class DAIInterestRateModelV3 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    updateJumpRateModel(
+    "updateJumpRateModel(uint256,uint256,uint256,uint256)"(
+      baseRatePerYear: BigNumberish,
+      multiplierPerYear: BigNumberish,
+      jumpMultiplierPerYear: BigNumberish,
+      kink_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "updateJumpRateModel(uint256,uint256,uint256,uint256,uint256)"(
+      blocksPerYearOnChain: BigNumberish,
       baseRatePerYear: BigNumberish,
       gapPerYear: BigNumberish,
       jumpMultiplierPerYear: BigNumberish,
@@ -300,7 +309,16 @@ export class DAIInterestRateModelV3 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  updateJumpRateModel(
+  "updateJumpRateModel(uint256,uint256,uint256,uint256)"(
+    baseRatePerYear: BigNumberish,
+    multiplierPerYear: BigNumberish,
+    jumpMultiplierPerYear: BigNumberish,
+    kink_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "updateJumpRateModel(uint256,uint256,uint256,uint256,uint256)"(
+    blocksPerYearOnChain: BigNumberish,
     baseRatePerYear: BigNumberish,
     gapPerYear: BigNumberish,
     jumpMultiplierPerYear: BigNumberish,
@@ -355,7 +373,16 @@ export class DAIInterestRateModelV3 extends BaseContract {
 
     poke(overrides?: CallOverrides): Promise<void>;
 
-    updateJumpRateModel(
+    "updateJumpRateModel(uint256,uint256,uint256,uint256)"(
+      baseRatePerYear: BigNumberish,
+      multiplierPerYear: BigNumberish,
+      jumpMultiplierPerYear: BigNumberish,
+      kink_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "updateJumpRateModel(uint256,uint256,uint256,uint256,uint256)"(
+      blocksPerYearOnChain: BigNumberish,
       baseRatePerYear: BigNumberish,
       gapPerYear: BigNumberish,
       jumpMultiplierPerYear: BigNumberish,
@@ -445,7 +472,16 @@ export class DAIInterestRateModelV3 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    updateJumpRateModel(
+    "updateJumpRateModel(uint256,uint256,uint256,uint256)"(
+      baseRatePerYear: BigNumberish,
+      multiplierPerYear: BigNumberish,
+      jumpMultiplierPerYear: BigNumberish,
+      kink_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "updateJumpRateModel(uint256,uint256,uint256,uint256,uint256)"(
+      blocksPerYearOnChain: BigNumberish,
       baseRatePerYear: BigNumberish,
       gapPerYear: BigNumberish,
       jumpMultiplierPerYear: BigNumberish,
@@ -509,7 +545,16 @@ export class DAIInterestRateModelV3 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateJumpRateModel(
+    "updateJumpRateModel(uint256,uint256,uint256,uint256)"(
+      baseRatePerYear: BigNumberish,
+      multiplierPerYear: BigNumberish,
+      jumpMultiplierPerYear: BigNumberish,
+      kink_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "updateJumpRateModel(uint256,uint256,uint256,uint256,uint256)"(
+      blocksPerYearOnChain: BigNumberish,
       baseRatePerYear: BigNumberish,
       gapPerYear: BigNumberish,
       jumpMultiplierPerYear: BigNumberish,

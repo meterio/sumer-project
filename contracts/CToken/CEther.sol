@@ -31,7 +31,7 @@ contract CEther is CToken, Initializable {
     string memory symbol_,
     uint8 decimals_,
     address payable admin
-  ) public initializer{
+  ) public initializer {
     super.initialize(
       comptroller_,
       interestRateModel_,
@@ -131,6 +131,31 @@ contract CEther is CToken, Initializable {
   receive() external payable {
     (uint256 err, ) = mintInternal(msg.value);
     requireNoError(err, 'mint failed');
+  }
+
+  /**
+   * @notice msg.sender sends Ether to repay an account's borrow in the cEther market
+   * @dev The provided Ether is applied towards the borrow balance, any excess is refunded
+   * @param borrower The address of the borrower account to repay on behalf of
+   */
+  function repayBehalf(address borrower) public payable {
+    repayBehalfExplicit(borrower);
+  }
+
+  /**
+   * @notice msg.sender sends Ether to repay an account's borrow in a cEther market
+   * @dev The provided Ether is applied towards the borrow balance, any excess is refunded
+   * @param borrower The address of the borrower account to repay on behalf of
+   */
+  function repayBehalfExplicit(address borrower) public payable {
+    uint256 received = msg.value;
+    uint256 borrows = CEther(address(this)).borrowBalanceCurrent(borrower);
+    if (received > borrows) {
+      CEther(address(this)).repayBorrowBehalf{value: borrows}(borrower);
+      payable(msg.sender).transfer(received - borrows);
+    } else {
+      CEther(address(this)).repayBorrowBehalf{value: received}(borrower);
+    }
   }
 
   /*** Safe Token ***/
