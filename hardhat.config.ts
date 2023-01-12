@@ -9,7 +9,6 @@ import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
 import "hardhat-tracer";
 import "hardhat-etherscan-abi";
-import "solidity-coverage";
 
 import "./tasks";
 import { compileSetting } from './scripts/deployTool';
