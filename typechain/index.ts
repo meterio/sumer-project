@@ -56,6 +56,7 @@ export type { Proxy } from "./Proxy";
 export type { Ownable } from "./Ownable";
 export type { ProxyAdmin } from "./ProxyAdmin";
 export type { TransparentUpgradeableProxy } from "./TransparentUpgradeableProxy";
+export type { Multicall2 } from "./Multicall2";
 
 export { CompoundLens__factory } from "./factories/CompoundLens__factory";
 export { Comptroller__factory } from "./factories/Comptroller__factory";
@@ -112,3 +113,4 @@ export { Proxy__factory } from "./factories/Proxy__factory";
 export { Ownable__factory } from "./factories/Ownable__factory";
 export { ProxyAdmin__factory } from "./factories/ProxyAdmin__factory";
 export { TransparentUpgradeableProxy__factory } from "./factories/TransparentUpgradeableProxy__factory";
+export { Multicall2__factory } from "./factories/Multicall2__factory";
