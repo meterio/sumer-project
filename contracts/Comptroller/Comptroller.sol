@@ -667,8 +667,8 @@ contract Comptroller is Initializable, ComptrollerStorage {
           groupVars[i].suTokenBorrowSum = 0;
         } else {
           // collateral could not cover the loan
-          groupVars[i].cTokenBalanceSum = 0;
           groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub_(collateralizedLoan);
+          groupVars[i].cTokenBalanceSum = 0;
         }
       }
 
