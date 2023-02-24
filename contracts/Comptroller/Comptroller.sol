@@ -739,8 +739,8 @@ contract Comptroller is Initializable, ComptrollerStorage {
       vars.sumCollateral = vars.sumCollateral - vars.sumBorrowPlusEffects;
       vars.sumBorrowPlusEffects = 0;
     } else {
-      vars.sumCollateral = 0;
       vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects - vars.sumCollateral;
+      vars.sumCollateral = 0;
     }
 
     if (vars.sumBorrowPlusEffects > 0) {
