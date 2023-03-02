@@ -30,6 +30,8 @@ import "./views/AccountLimits";
 import "./views/HypotheticalAccountLiquidity";
 import "./views/OracleStats";
 import "./views/grantCompInternal";
+import "./views/AllPositions";
 import "./upgrade/UpdateCToken";
 import "./upgrade/UpdateCEther";
 import "./upgrade/UpdateSuToken";
+import "./upgrade/UpdateComptroller";
