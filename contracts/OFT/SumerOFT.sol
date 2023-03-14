@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-import './BasedOFT.sol';
+import './OFT.sol';
 import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/security/Pausable.sol';
 
 /// @title A LayerZero OmnichainFungibleToken example of BasedOFT
 /// @notice Use this contract only on the BASE CHAIN. It locks tokens on source, on outgoing send(), and unlocks tokens when receiving from other chains.
-contract SumerOFT is BasedOFT, AccessControlEnumerable, Pausable {
+contract SumerOFT is OFT, AccessControlEnumerable, Pausable {
   bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
   bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
@@ -17,7 +17,7 @@ contract SumerOFT is BasedOFT, AccessControlEnumerable, Pausable {
     string memory _symbol,
     uint256 _initialSupply,
     address _layerZeroEndpoint
-  ) BasedOFT(_name, _symbol, _layerZeroEndpoint) {
+  ) OFT(_name, _symbol, _layerZeroEndpoint) {
     _mint(_msgSender(), _initialSupply);
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
