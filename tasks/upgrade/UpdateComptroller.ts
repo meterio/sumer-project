@@ -3,7 +3,7 @@ import { types } from "hardhat/config";
 import { ProxyAdmin } from "../../typechain";
 import { log } from "../../log_settings";
 import { readFileSync, writeFileSync } from "fs";
-import { constants } from "ethers";
+import { constants, Overrides } from "ethers";
 
 /**
 npx hardhat ucct \
@@ -25,11 +25,9 @@ task("ucct", "deploy cToken contract")
             const wallet = new ethers.Wallet(pk, provider);
             let config = JSON.parse(readFileSync(json).toString());
 
-            let override = {}
+            let override:Overrides = {}
             if (gasprice > 0) {
-                override = {
-                    gasPrice: gasprice
-                }
+                override.gasPrice = gasprice
             }
             const comptrollerImpl = await run("d", {
                 name: "Comptroller",
@@ -40,6 +38,8 @@ task("ucct", "deploy cToken contract")
 
             const proxyContract = await ethers.getContractAt("ProxyAdmin", config.proxyAdmin.address, wallet) as ProxyAdmin;
             
+            let gas = await proxyContract.estimateGas.upgrade(config.comptroller.address, comptrollerImpl.address);
+            override.gasLimit = gas;
             let receipt = await proxyContract.upgrade(config.comptroller.address, comptrollerImpl.address, override);
             log.info("Comptroller.upgradeTo tx:", receipt.hash);
             config.comptroller.implementation = comptrollerImpl.address;

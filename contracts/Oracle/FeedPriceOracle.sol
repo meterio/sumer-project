@@ -49,7 +49,7 @@ contract FeedPriceOracle is PriceOracle {
     address feed_,
     uint8 tokenDecimals_
   ) public onlyOwner {
-    _setFeed(cToken_, uint8(1), feed_, tokenDecimals_, 0, '');
+    _setFeed(cToken_, uint8(1), feed_, tokenDecimals_, 8, '');
   }
 
   function setWitnetFeed(

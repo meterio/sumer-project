@@ -29,6 +29,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "_setPriceOracle(address)": FunctionFragment;
     "_setUnderWriterAdmin(address)": FunctionFragment;
     "_supportMarket(address,uint8)": FunctionFragment;
+    "_unSupportMarket(address)": FunctionFragment;
     "accountAssets(address,uint256)": FunctionFragment;
     "admin()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
@@ -46,6 +47,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "compSupplySpeeds(address)": FunctionFragment;
     "compSupplyState(address)": FunctionFragment;
     "enterMarkets(address[])": FunctionFragment;
+    "exitAccountMarket(address,address)": FunctionFragment;
     "exitMarket(address)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
     "getAllMarkets()": FunctionFragment;
@@ -102,6 +104,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "_supportMarket",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_unSupportMarket",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "accountAssets",
@@ -164,6 +170,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "enterMarkets",
     values: [string[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "exitAccountMarket",
+    values: [string, string]
   ): string;
   encodeFunctionData(functionFragment: "exitMarket", values: [string]): string;
   encodeFunctionData(
@@ -270,6 +280,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "_unSupportMarket",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "accountAssets",
     data: BytesLike
   ): Result;
@@ -326,6 +340,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "enterMarkets",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "exitAccountMarket",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
@@ -591,6 +609,11 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    _unSupportMarket(
+      cToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -681,6 +704,12 @@ export class Comptroller extends BaseContract {
 
     enterMarkets(
       cTokens: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    exitAccountMarket(
+      account: string,
+      cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -854,6 +883,11 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  _unSupportMarket(
+    cToken: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   accountAssets(
     arg0: string,
     arg1: BigNumberish,
@@ -935,6 +969,12 @@ export class Comptroller extends BaseContract {
 
   enterMarkets(
     cTokens: string[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  exitAccountMarket(
+    account: string,
+    cTokenAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1103,6 +1143,11 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    _unSupportMarket(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -1192,6 +1237,12 @@ export class Comptroller extends BaseContract {
       cTokens: string[],
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
+
+    exitAccountMarket(
+      account: string,
+      cTokenAddress: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     exitMarket(
       cTokenAddress: string,
@@ -1581,6 +1632,11 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    _unSupportMarket(
+      cToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -1671,6 +1727,12 @@ export class Comptroller extends BaseContract {
 
     enterMarkets(
       cTokens: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    exitAccountMarket(
+      account: string,
+      cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1831,6 +1893,11 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    _unSupportMarket(
+      cToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -1926,6 +1993,12 @@ export class Comptroller extends BaseContract {
 
     enterMarkets(
       cTokens: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    exitAccountMarket(
+      account: string,
+      cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

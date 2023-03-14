@@ -1,0 +1,175 @@
+{
+  "proxyAdmin": {
+    "address": "0xD80d7eb97f51C8a1feF93838820BEeD3628B6CEA"
+  },
+  "sumer": {
+    "name": "Sumer Token",
+    "symbol": "SUMER",
+    "supply": "100000000",
+    "address": "0xB28c8c2abF17243502eB28885455998e8B984B58"
+  },
+  "feedPriceOracle": {
+    "address": "0x40C3338249BD5f20B1bC63A1B946f3bC70c65c78"
+  },
+  "compoundLens": {
+    "address": "0x5f7c6C74525231B94857b55bE444483b80A8EE05"
+  },
+  "underwriterAdmin": {
+    "implementation": "0x1C6a08B8f2cc2e21d602b6107064705ABE8b2A3e",
+    "address": "0xfA2A9ad5a11ab3D08B4FC97d51610a57bA32D8a3"
+  },
+  "suInterestRateModel": {
+    "blocks": "15768000",
+    "base": "0",
+    "mul": "0",
+    "address": "0xd5EEe630b58095A4655f0FC2B2600c88E9fD0e9e"
+  },
+  "cInterestRateModel": {
+    "blocks": "15768000",
+    "base": "0.05",
+    "mul": "0.45",
+    "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141"
+  },
+  "comptroller": {
+    "closeFactorMantissa": "0.5",
+    "liquidationIncentiveMantissa": "1.1",
+    "implementation": "0x5e46b95e2a9Bf783e6c57F41071Be60849b8AE87",
+    "address": "0xacC69d0cACfB5af2c80a052bA5c53e6dc201a3Da"
+  },
+  "cTokens": {
+    "implementation": "0xD6b9f0dDB5BAa4fbF3d6727602aa883a35956320",
+    "tokens": [
+      {
+        "cTokenName": "Sumer ETH",
+        "cTokenSymbol": "sdrETH",
+        "decimals": 18,
+        "native": true,
+        "underly": "",
+        "address": "0x5a12003643C45150D1B4c23aF04cC7488EA2e8b1",
+        "groupId": 2,
+        "oracle": {
+          "type": 0,
+          "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
+        },
+        "implementation": "0xbD9f91a2726De7b62A83bA1a836021744223fE8C"
+      },
+      {
+        "cTokenName": "Sumer BTC",
+        "cTokenSymbol": "sdrBTC",
+        "decimals": 8,
+        "native": false,
+        "underly": "0x0D0267E89189D73826aeAa1556ac4428c845e68a",
+        "address": "0x83264b8C594fb980AF4cB1fda11bFE769Ec9D58f",
+        "groupId": 1,
+        "oracle": {
+          "type": 0,
+          "feed": "0xAC15714c08986DACC0379193e22382736796496f"
+        }
+      },
+      {
+        "cTokenName": "Sumer USD Coin",
+        "cTokenSymbol": "sdrUSDC",
+        "decimals": 6,
+        "native": false,
+        "underly": "0x93de053520D42B3F74281852Bd56F232A4E643DA",
+        "address": "0xae3136539b32a561bcdC3Fd5f847C6a13702956E",
+        "groupId": 3,
+        "oracle": {
+          "type": 0,
+          "feed": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0"
+        }
+      },
+      {
+        "cTokenName": "Sumer Tether USD",
+        "cTokenSymbol": "sdrUSDT",
+        "decimals": 6,
+        "native": false,
+        "underly": "0x61E2c1608B1caA59136BCB7845637858d216c3B9",
+        "address": "0x96000aAf7b531C9b1415B456819E64da8D8A2F92",
+        "groupId": 3,
+        "oracle": {
+          "type": 0,
+          "feed": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C"
+        }
+      }
+    ]
+  },
+  "suTokens": {
+    "implementation": "0xd1EdB2B521A9C1293eCAfdD724Af1875dd02d88b",
+    "tokens": [
+      {
+        "name": "suUSD",
+        "symbol": "suUSD",
+        "decimals": 18,
+        "underly": "0x2dFa59cE6025FDDFc8A44068380b71570F8f88c8",
+        "address": "0xb407883637Ef802b6D17FB65c722090933e18f26",
+        "groupId": 3,
+        "oracle": {
+          "type": 1,
+          "price": "1000000000000000000"
+        }
+      },
+      {
+        "name": "suETH",
+        "symbol": "suETH",
+        "decimals": 18,
+        "underly": "0xEe07f43d01A1cc28aEAED9baFB154aD897fCc838",
+        "address": "0xb14900CC638F84a3E4F167a2776502C7BCd42CdD",
+        "groupId": 2,
+        "oracle": {
+          "type": 0,
+          "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
+        }
+      },
+      {
+        "name": "suBTC",
+        "symbol": "suBTC",
+        "decimals": 18,
+        "underly": "0x4c86Ff87A56573ddE5786A185857bC0c580b6EF7",
+        "address": "0x6eeC5ff9736e619C376Bd866dDf5937f3efbd4cA",
+        "groupId": 1,
+        "oracle": {
+          "type": 0,
+          "feed": "0xAC15714c08986DACC0379193e22382736796496f"
+        }
+      }
+    ]
+  },
+  "eqAssetGroups": [
+    {
+      "id": 1,
+      "name": "Bitcoin",
+      "inGroupCTokenRateMantissa": "900000000000000000",
+      "inGroupSuTokenRateMantissa": "700000000000000000",
+      "interGroupCTokenRateMantissa": "800000000000000000",
+      "interGroupSuTokenRateMantissa": "600000000000000000"
+    },
+    {
+      "id": 2,
+      "name": "Ether",
+      "inGroupCTokenRateMantissa": "900000000000000000",
+      "inGroupSuTokenRateMantissa": "700000000000000000",
+      "interGroupCTokenRateMantissa": "800000000000000000",
+      "interGroupSuTokenRateMantissa": "600000000000000000"
+    },
+    {
+      "id": 3,
+      "name": "StableCoin",
+      "inGroupCTokenRateMantissa": "900000000000000000",
+      "inGroupSuTokenRateMantissa": "700000000000000000",
+      "interGroupCTokenRateMantissa": "800000000000000000",
+      "interGroupSuTokenRateMantissa": "600000000000000000"
+    },
+    {
+      "id": 4,
+      "name": "MTR",
+      "inGroupCTokenRateMantissa": "900000000000000000",
+      "inGroupSuTokenRateMantissa": "700000000000000000",
+      "interGroupCTokenRateMantissa": "800000000000000000",
+      "interGroupSuTokenRateMantissa": "600000000000000000"
+    }
+  ],
+  "multicall2": {
+    "address": "0x86FDdc06Abb5b0A0F2CBCC133880a55F80038CB8"
+  }
+}

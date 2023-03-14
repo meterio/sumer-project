@@ -21,6 +21,7 @@ task("d", "deploy contract")
 
             const provider = new ethers.providers.JsonRpcProvider(rpc);
             const wallet = new ethers.Wallet(pk, provider);
+            log.info("account:",wallet.address);
 
             log.info(`Deploying ${name}`);
             log.info("Account balance: " + ethers.utils.formatUnits(await wallet.getBalance(), 18));
@@ -30,7 +31,8 @@ task("d", "deploy contract")
 
             let _override: Overrides;
             _override = {
-                gasPrice: BigNumber.from(gasPrice)
+                gasPrice: BigNumber.from(gasPrice),
+                gasLimit:20000000
             }
 
             const contract =
