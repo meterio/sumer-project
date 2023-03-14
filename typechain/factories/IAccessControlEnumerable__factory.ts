@@ -4,7 +4,10 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { AccessControl, AccessControlInterface } from "../AccessControl";
+import type {
+  IAccessControlEnumerable,
+  IAccessControlEnumerableInterface,
+} from "../IAccessControlEnumerable";
 
 const _abi = [
   {
@@ -83,8 +86,14 @@ const _abi = [
     type: "event",
   },
   {
-    inputs: [],
-    name: "DEFAULT_ADMIN_ROLE",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+    ],
+    name: "getRoleAdmin",
     outputs: [
       {
         internalType: "bytes32",
@@ -102,13 +111,37 @@ const _abi = [
         name: "role",
         type: "bytes32",
       },
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
     ],
-    name: "getRoleAdmin",
+    name: "getRoleMember",
     outputs: [
       {
-        internalType: "bytes32",
+        internalType: "address",
         name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
         type: "bytes32",
+      },
+    ],
+    name: "getRoleMemberCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -192,36 +225,21 @@ const _abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-  {
-    inputs: [
-      {
-        internalType: "bytes4",
-        name: "interfaceId",
-        type: "bytes4",
-      },
-    ],
-    name: "supportsInterface",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
 ];
 
-export class AccessControl__factory {
+export class IAccessControlEnumerable__factory {
   static readonly abi = _abi;
-  static createInterface(): AccessControlInterface {
-    return new utils.Interface(_abi) as AccessControlInterface;
+  static createInterface(): IAccessControlEnumerableInterface {
+    return new utils.Interface(_abi) as IAccessControlEnumerableInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): AccessControl {
-    return new Contract(address, _abi, signerOrProvider) as AccessControl;
+  ): IAccessControlEnumerable {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as IAccessControlEnumerable;
   }
 }

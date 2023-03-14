@@ -19,23 +19,27 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface AccessControlInterface extends ethers.utils.Interface {
+interface IAccessControlEnumerableInterface extends ethers.utils.Interface {
   functions: {
-    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
+    "getRoleMember(bytes32,uint256)": FunctionFragment;
+    "getRoleMemberCount(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
-    "supportsInterface(bytes4)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    values?: undefined
+    functionFragment: "getRoleAdmin",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "getRoleAdmin",
+    functionFragment: "getRoleMember",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMemberCount",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
@@ -54,17 +58,17 @@ interface AccessControlInterface extends ethers.utils.Interface {
     functionFragment: "revokeRole",
     values: [BytesLike, string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [BytesLike]
-  ): string;
 
   decodeFunctionResult(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
+    functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getRoleAdmin",
+    functionFragment: "getRoleMember",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMemberCount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
@@ -74,10 +78,6 @@ interface AccessControlInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "supportsInterface",
-    data: BytesLike
-  ): Result;
 
   events: {
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
@@ -106,7 +106,7 @@ export type RoleRevokedEvent = TypedEvent<
   [string, string, string] & { role: string; account: string; sender: string }
 >;
 
-export class AccessControl extends BaseContract {
+export class IAccessControlEnumerable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -147,12 +147,21 @@ export class AccessControl extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: AccessControlInterface;
+  interface: IAccessControlEnumerableInterface;
 
   functions: {
-    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     grantRole(
       role: BytesLike,
@@ -177,16 +186,20 @@ export class AccessControl extends BaseContract {
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
   };
 
-  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
-
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  getRoleMember(
+    role: BytesLike,
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMemberCount(
+    role: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   grantRole(
     role: BytesLike,
@@ -212,15 +225,19 @@ export class AccessControl extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  supportsInterface(
-    interfaceId: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   callStatic: {
-    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     grantRole(
       role: BytesLike,
@@ -245,11 +262,6 @@ export class AccessControl extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
   };
 
   filters: {
@@ -309,9 +321,18 @@ export class AccessControl extends BaseContract {
   };
 
   estimateGas: {
-    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
-
     getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMemberCount(
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -338,20 +359,22 @@ export class AccessControl extends BaseContract {
       role: BytesLike,
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    DEFAULT_ADMIN_ROLE(
+    getRoleAdmin(
+      role: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getRoleAdmin(
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMemberCount(
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -378,11 +401,6 @@ export class AccessControl extends BaseContract {
       role: BytesLike,
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

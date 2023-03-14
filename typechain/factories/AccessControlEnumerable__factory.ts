@@ -4,7 +4,10 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { AccessControl, AccessControlInterface } from "../AccessControl";
+import type {
+  AccessControlEnumerable,
+  AccessControlEnumerableInterface,
+} from "../AccessControlEnumerable";
 
 const _abi = [
   {
@@ -122,6 +125,49 @@ const _abi = [
         type: "bytes32",
       },
       {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    name: "getRoleMember",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+    ],
+    name: "getRoleMemberCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+      {
         internalType: "address",
         name: "account",
         type: "address",
@@ -213,15 +259,19 @@ const _abi = [
   },
 ];
 
-export class AccessControl__factory {
+export class AccessControlEnumerable__factory {
   static readonly abi = _abi;
-  static createInterface(): AccessControlInterface {
-    return new utils.Interface(_abi) as AccessControlInterface;
+  static createInterface(): AccessControlEnumerableInterface {
+    return new utils.Interface(_abi) as AccessControlEnumerableInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): AccessControl {
-    return new Contract(address, _abi, signerOrProvider) as AccessControl;
+  ): AccessControlEnumerable {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as AccessControlEnumerable;
   }
 }

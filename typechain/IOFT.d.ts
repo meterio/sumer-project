@@ -12,6 +12,7 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -19,16 +20,16 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface ERC20Interface extends ethers.utils.Interface {
+interface IOFTInterface extends ethers.utils.Interface {
   functions: {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "decimals()": FunctionFragment;
-    "decreaseAllowance(address,uint256)": FunctionFragment;
-    "increaseAllowance(address,uint256)": FunctionFragment;
-    "name()": FunctionFragment;
-    "symbol()": FunctionFragment;
+    "circulatingSupply()": FunctionFragment;
+    "estimateSendFee(uint16,bytes,uint256,bool,bytes)": FunctionFragment;
+    "sendFrom(address,uint16,bytes,uint256,address,address,bytes)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
+    "token()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
@@ -43,17 +44,31 @@ interface ERC20Interface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "decreaseAllowance",
-    values: [string, BigNumberish]
+    functionFragment: "circulatingSupply",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "increaseAllowance",
-    values: [string, BigNumberish]
+    functionFragment: "estimateSendFee",
+    values: [BigNumberish, BytesLike, BigNumberish, boolean, BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "sendFrom",
+    values: [
+      string,
+      BigNumberish,
+      BytesLike,
+      BigNumberish,
+      string,
+      string,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
@@ -70,17 +85,20 @@ interface ERC20Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "decreaseAllowance",
+    functionFragment: "circulatingSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "increaseAllowance",
+    functionFragment: "estimateSendFee",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "sendFrom", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -93,10 +111,16 @@ interface ERC20Interface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
+    "ReceiveFromChain(uint16,address,uint256)": EventFragment;
+    "SendToChain(uint16,address,bytes,uint256)": EventFragment;
+    "SetUseCustomAdapterParams(bool)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReceiveFromChain"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SendToChain"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetUseCustomAdapterParams"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -108,11 +132,32 @@ export type ApprovalEvent = TypedEvent<
   }
 >;
 
+export type ReceiveFromChainEvent = TypedEvent<
+  [number, string, BigNumber] & {
+    _srcChainId: number;
+    _to: string;
+    _amount: BigNumber;
+  }
+>;
+
+export type SendToChainEvent = TypedEvent<
+  [number, string, string, BigNumber] & {
+    _dstChainId: number;
+    _from: string;
+    _toAddress: string;
+    _amount: BigNumber;
+  }
+>;
+
+export type SetUseCustomAdapterParamsEvent = TypedEvent<
+  [boolean] & { _useCustomAdapterParams: boolean }
+>;
+
 export type TransferEvent = TypedEvent<
   [string, string, BigNumber] & { from: string; to: string; value: BigNumber }
 >;
 
-export class ERC20 extends BaseContract {
+export class IOFT extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -153,7 +198,7 @@ export class ERC20 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC20Interface;
+  interface: IOFTInterface;
 
   functions: {
     allowance(
@@ -170,23 +215,36 @@ export class ERC20 extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    decimals(overrides?: CallOverrides): Promise<[number]>;
+    circulatingSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    decreaseAllowance(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    estimateSendFee(
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _useZro: boolean,
+      _adapterParams: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & { nativeFee: BigNumber; zroFee: BigNumber }
+    >;
+
+    sendFrom(
+      _from: string,
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _refundAddress: string,
+      _zroPaymentAddress: string,
+      _adapterParams: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    increaseAllowance(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-    name(overrides?: CallOverrides): Promise<[string]>;
-
-    symbol(overrides?: CallOverrides): Promise<[string]>;
+    token(overrides?: CallOverrides): Promise<[string]>;
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -218,23 +276,36 @@ export class ERC20 extends BaseContract {
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  decimals(overrides?: CallOverrides): Promise<number>;
+  circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-  decreaseAllowance(
-    spender: string,
-    subtractedValue: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
+  estimateSendFee(
+    _dstChainId: BigNumberish,
+    _toAddress: BytesLike,
+    _amount: BigNumberish,
+    _useZro: boolean,
+    _adapterParams: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & { nativeFee: BigNumber; zroFee: BigNumber }
+  >;
+
+  sendFrom(
+    _from: string,
+    _dstChainId: BigNumberish,
+    _toAddress: BytesLike,
+    _amount: BigNumberish,
+    _refundAddress: string,
+    _zroPaymentAddress: string,
+    _adapterParams: BytesLike,
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  increaseAllowance(
-    spender: string,
-    addedValue: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  supportsInterface(
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
-  name(overrides?: CallOverrides): Promise<string>;
-
-  symbol(overrides?: CallOverrides): Promise<string>;
+  token(overrides?: CallOverrides): Promise<string>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -266,23 +337,36 @@ export class ERC20 extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    decimals(overrides?: CallOverrides): Promise<number>;
+    circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-    decreaseAllowance(
-      spender: string,
-      subtractedValue: BigNumberish,
+    estimateSendFee(
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _useZro: boolean,
+      _adapterParams: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & { nativeFee: BigNumber; zroFee: BigNumber }
+    >;
+
+    sendFrom(
+      _from: string,
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _refundAddress: string,
+      _zroPaymentAddress: string,
+      _adapterParams: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    increaseAllowance(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    name(overrides?: CallOverrides): Promise<string>;
-
-    symbol(overrides?: CallOverrides): Promise<string>;
+    token(overrides?: CallOverrides): Promise<string>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -319,6 +403,62 @@ export class ERC20 extends BaseContract {
       { owner: string; spender: string; value: BigNumber }
     >;
 
+    "ReceiveFromChain(uint16,address,uint256)"(
+      _srcChainId?: BigNumberish | null,
+      _to?: string | null,
+      _amount?: null
+    ): TypedEventFilter<
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
+    >;
+
+    ReceiveFromChain(
+      _srcChainId?: BigNumberish | null,
+      _to?: string | null,
+      _amount?: null
+    ): TypedEventFilter<
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
+    >;
+
+    "SendToChain(uint16,address,bytes,uint256)"(
+      _dstChainId?: BigNumberish | null,
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
+    ): TypedEventFilter<
+      [number, string, string, BigNumber],
+      {
+        _dstChainId: number;
+        _from: string;
+        _toAddress: string;
+        _amount: BigNumber;
+      }
+    >;
+
+    SendToChain(
+      _dstChainId?: BigNumberish | null,
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
+    ): TypedEventFilter<
+      [number, string, string, BigNumber],
+      {
+        _dstChainId: number;
+        _from: string;
+        _toAddress: string;
+        _amount: BigNumber;
+      }
+    >;
+
+    "SetUseCustomAdapterParams(bool)"(
+      _useCustomAdapterParams?: null
+    ): TypedEventFilter<[boolean], { _useCustomAdapterParams: boolean }>;
+
+    SetUseCustomAdapterParams(
+      _useCustomAdapterParams?: null
+    ): TypedEventFilter<[boolean], { _useCustomAdapterParams: boolean }>;
+
     "Transfer(address,address,uint256)"(
       from?: string | null,
       to?: string | null,
@@ -353,23 +493,34 @@ export class ERC20 extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+    circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-    decreaseAllowance(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    estimateSendFee(
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _useZro: boolean,
+      _adapterParams: BytesLike,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    increaseAllowance(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    sendFrom(
+      _from: string,
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _refundAddress: string,
+      _zroPaymentAddress: string,
+      _adapterParams: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    name(overrides?: CallOverrides): Promise<BigNumber>;
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    symbol(overrides?: CallOverrides): Promise<BigNumber>;
+    token(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -405,23 +556,34 @@ export class ERC20 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    circulatingSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    decreaseAllowance(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    estimateSendFee(
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _useZro: boolean,
+      _adapterParams: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    increaseAllowance(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    sendFrom(
+      _from: string,
+      _dstChainId: BigNumberish,
+      _toAddress: BytesLike,
+      _amount: BigNumberish,
+      _refundAddress: string,
+      _zroPaymentAddress: string,
+      _adapterParams: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

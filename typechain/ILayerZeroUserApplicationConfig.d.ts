@@ -19,37 +19,50 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface PotLikeInterface extends ethers.utils.Interface {
+interface ILayerZeroUserApplicationConfigInterface
+  extends ethers.utils.Interface {
   functions: {
-    "chi()": FunctionFragment;
-    "drip()": FunctionFragment;
-    "dsr()": FunctionFragment;
-    "exit(uint256)": FunctionFragment;
-    "join(uint256)": FunctionFragment;
-    "pie(address)": FunctionFragment;
-    "rho()": FunctionFragment;
+    "forceResumeReceive(uint16,bytes)": FunctionFragment;
+    "setConfig(uint16,uint16,uint256,bytes)": FunctionFragment;
+    "setReceiveVersion(uint16)": FunctionFragment;
+    "setSendVersion(uint16)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "chi", values?: undefined): string;
-  encodeFunctionData(functionFragment: "drip", values?: undefined): string;
-  encodeFunctionData(functionFragment: "dsr", values?: undefined): string;
-  encodeFunctionData(functionFragment: "exit", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "join", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "pie", values: [string]): string;
-  encodeFunctionData(functionFragment: "rho", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "forceResumeReceive",
+    values: [BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setConfig",
+    values: [BigNumberish, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setReceiveVersion",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSendVersion",
+    values: [BigNumberish]
+  ): string;
 
-  decodeFunctionResult(functionFragment: "chi", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "drip", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "dsr", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "exit", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "pie", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "rho", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "forceResumeReceive",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "setConfig", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setReceiveVersion",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setSendVersion",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
 
-export class PotLike extends BaseContract {
+export class ILayerZeroUserApplicationConfig extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -90,117 +103,135 @@ export class PotLike extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: PotLikeInterface;
+  interface: ILayerZeroUserApplicationConfigInterface;
 
   functions: {
-    chi(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    drip(
+    forceResumeReceive(
+      _srcChainId: BigNumberish,
+      _srcAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    dsr(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    exit(
-      arg0: BigNumberish,
+    setConfig(
+      _version: BigNumberish,
+      _chainId: BigNumberish,
+      _configType: BigNumberish,
+      _config: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    join(
-      arg0: BigNumberish,
+    setReceiveVersion(
+      _version: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    pie(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    rho(overrides?: CallOverrides): Promise<[BigNumber]>;
+    setSendVersion(
+      _version: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
-  chi(overrides?: CallOverrides): Promise<BigNumber>;
-
-  drip(
+  forceResumeReceive(
+    _srcChainId: BigNumberish,
+    _srcAddress: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  dsr(overrides?: CallOverrides): Promise<BigNumber>;
-
-  exit(
-    arg0: BigNumberish,
+  setConfig(
+    _version: BigNumberish,
+    _chainId: BigNumberish,
+    _configType: BigNumberish,
+    _config: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  join(
-    arg0: BigNumberish,
+  setReceiveVersion(
+    _version: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  pie(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  rho(overrides?: CallOverrides): Promise<BigNumber>;
+  setSendVersion(
+    _version: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
-    chi(overrides?: CallOverrides): Promise<BigNumber>;
+    forceResumeReceive(
+      _srcChainId: BigNumberish,
+      _srcAddress: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    drip(overrides?: CallOverrides): Promise<BigNumber>;
+    setConfig(
+      _version: BigNumberish,
+      _chainId: BigNumberish,
+      _configType: BigNumberish,
+      _config: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    dsr(overrides?: CallOverrides): Promise<BigNumber>;
+    setReceiveVersion(
+      _version: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    exit(arg0: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    join(arg0: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    pie(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    rho(overrides?: CallOverrides): Promise<BigNumber>;
+    setSendVersion(
+      _version: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
-    chi(overrides?: CallOverrides): Promise<BigNumber>;
-
-    drip(
+    forceResumeReceive(
+      _srcChainId: BigNumberish,
+      _srcAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    dsr(overrides?: CallOverrides): Promise<BigNumber>;
-
-    exit(
-      arg0: BigNumberish,
+    setConfig(
+      _version: BigNumberish,
+      _chainId: BigNumberish,
+      _configType: BigNumberish,
+      _config: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    join(
-      arg0: BigNumberish,
+    setReceiveVersion(
+      _version: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    pie(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    rho(overrides?: CallOverrides): Promise<BigNumber>;
+    setSendVersion(
+      _version: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    chi(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    drip(
+    forceResumeReceive(
+      _srcChainId: BigNumberish,
+      _srcAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    dsr(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    exit(
-      arg0: BigNumberish,
+    setConfig(
+      _version: BigNumberish,
+      _chainId: BigNumberish,
+      _configType: BigNumberish,
+      _config: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    join(
-      arg0: BigNumberish,
+    setReceiveVersion(
+      _version: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    pie(arg0: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    rho(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    setSendVersion(
+      _version: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
   };
 }
