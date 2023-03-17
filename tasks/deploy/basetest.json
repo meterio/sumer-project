@@ -9,14 +9,14 @@
     "address": "0xB28c8c2abF17243502eB28885455998e8B984B58"
   },
   "feedPriceOracle": {
-    "address": "0x40C3338249BD5f20B1bC63A1B946f3bC70c65c78"
+    "address": "0x7E875A17FeB1B1D4eD0fF9d65420e9260CfC7AFE"
   },
   "compoundLens": {
-    "address": "0x5f7c6C74525231B94857b55bE444483b80A8EE05"
+    "address": "0xE0fb1204C26eE3D94dB8595291296f1F6FbDe181"
   },
   "underwriterAdmin": {
-    "implementation": "0x1C6a08B8f2cc2e21d602b6107064705ABE8b2A3e",
-    "address": "0xfA2A9ad5a11ab3D08B4FC97d51610a57bA32D8a3"
+    "implementation": "0x2fF01f01a50E55aB7349DD637BB2229cBBe30B89",
+    "address": "0x40DCdEE8414950569471C2Dc9e19053f451fC843"
   },
   "suInterestRateModel": {
     "blocks": "15768000",
@@ -28,13 +28,13 @@
     "blocks": "15768000",
     "base": "0.05",
     "mul": "0.45",
-    "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141"
+    "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900"
   },
   "comptroller": {
     "closeFactorMantissa": "0.5",
     "liquidationIncentiveMantissa": "1.1",
-    "implementation": "0x5e46b95e2a9Bf783e6c57F41071Be60849b8AE87",
-    "address": "0xacC69d0cACfB5af2c80a052bA5c53e6dc201a3Da"
+    "implementation": "0xf27ceFF34fFac8218bD77Df4Ed7141DF4654eAf3",
+    "address": "0xD26c4F0C4b4BD6620695468144F009DE7D88B430"
   },
   "cTokens": {
     "implementation": "0xD6b9f0dDB5BAa4fbF3d6727602aa883a35956320",
@@ -45,7 +45,7 @@
         "decimals": 18,
         "native": true,
         "underly": "",
-        "address": "0x5a12003643C45150D1B4c23aF04cC7488EA2e8b1",
+        "address": "0xe81bBDbe4Bcd784c30565123c38bED2e823F024f",
         "groupId": 2,
         "oracle": {
           "type": 0,
@@ -59,7 +59,7 @@
         "decimals": 8,
         "native": false,
         "underly": "0x0D0267E89189D73826aeAa1556ac4428c845e68a",
-        "address": "0x83264b8C594fb980AF4cB1fda11bFE769Ec9D58f",
+        "address": "0xDD140a76908ee90919F259d21b155F8544854fc6",
         "groupId": 1,
         "oracle": {
           "type": 0,
@@ -72,7 +72,7 @@
         "decimals": 6,
         "native": false,
         "underly": "0x93de053520D42B3F74281852Bd56F232A4E643DA",
-        "address": "0xae3136539b32a561bcdC3Fd5f847C6a13702956E",
+        "address": "0x385f588FF87a9a791a67a53ae8130A84d293A995",
         "groupId": 3,
         "oracle": {
           "type": 0,
@@ -85,7 +85,7 @@
         "decimals": 6,
         "native": false,
         "underly": "0x61E2c1608B1caA59136BCB7845637858d216c3B9",
-        "address": "0x96000aAf7b531C9b1415B456819E64da8D8A2F92",
+        "address": "0xCD418f06Fe3CBF594f9c81e6F74BD7ff6492Bc54",
         "groupId": 3,
         "oracle": {
           "type": 0,
@@ -96,13 +96,14 @@
   },
   "suTokens": {
     "implementation": "0xd1EdB2B521A9C1293eCAfdD724Af1875dd02d88b",
+    "underly_implementation": "0xA0EfFDb6d35786fA70F91508d989Be5955163A3c",
     "tokens": [
       {
         "name": "suUSD",
         "symbol": "suUSD",
         "decimals": 18,
-        "underly": "0x2dFa59cE6025FDDFc8A44068380b71570F8f88c8",
-        "address": "0xb407883637Ef802b6D17FB65c722090933e18f26",
+        "underly": "0x875A75e783145328880468C3e6cB791384D72e9d",
+        "address": "0xdd0A286c88D00264b782Aa00cD937C9785dc2e97",
         "groupId": 3,
         "oracle": {
           "type": 1,
@@ -113,8 +114,8 @@
         "name": "suETH",
         "symbol": "suETH",
         "decimals": 18,
-        "underly": "0xEe07f43d01A1cc28aEAED9baFB154aD897fCc838",
-        "address": "0xb14900CC638F84a3E4F167a2776502C7BCd42CdD",
+        "underly": "0xEdd794DC7b4dFE58eBFC0f568F9A01F6eeB64563",
+        "address": "0x548c4c2128E9d0B5F4d31855e46F6cE7843868E8",
         "groupId": 2,
         "oracle": {
           "type": 0,
@@ -125,8 +126,8 @@
         "name": "suBTC",
         "symbol": "suBTC",
         "decimals": 18,
-        "underly": "0x4c86Ff87A56573ddE5786A185857bC0c580b6EF7",
-        "address": "0x6eeC5ff9736e619C376Bd866dDf5937f3efbd4cA",
+        "underly": "0xd11f348AB72A02ccbb611d4590fF79Ff48a07911",
+        "address": "0x394BF3C96480ace5B8C24b1A2073cd92d69D37D2",
         "groupId": 1,
         "oracle": {
           "type": 0,
@@ -171,5 +172,9 @@
   ],
   "multicall2": {
     "address": "0x86FDdc06Abb5b0A0F2CBCC133880a55F80038CB8"
+  },
+  "lzEndpoint": {
+    "chainId": 10160,
+    "address": "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab"
   }
 }

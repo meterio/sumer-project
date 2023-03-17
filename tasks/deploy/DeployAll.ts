@@ -27,16 +27,16 @@ task('all', 'deploy contract')
     let provider = new ethers.providers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
 
-    if (config.proxyAdmin.address == '') {
-      const proxyAdmin = await run('d', {
-        name: 'ProxyAdmin',
-        rpc: rpc,
-        pk: pk,
-        gasprice: gasprice
-      });
-      config.proxyAdmin.address = proxyAdmin.address;
-      writeFileSync(json, JSON.stringify(config));
-    }
+    // if (config.proxyAdmin.address == '') {
+    //   const proxyAdmin = await run('d', {
+    //     name: 'ProxyAdmin',
+    //     rpc: rpc,
+    //     pk: pk,
+    //     gasprice: gasprice
+    //   });
+    //   config.proxyAdmin.address = proxyAdmin.address;
+    //   writeFileSync(json, JSON.stringify(config));
+    // }
     admin = config.proxyAdmin.address;
 
     if (config.sumer.address == '') {
@@ -158,6 +158,8 @@ task('all', 'deploy contract')
       writeFileSync(json, JSON.stringify(config));
     }
     const cErc20 = await ethers.getContractFactory('CErc20');
+    const suErc20 = await ethers.getContractFactory('suErc20');
+    const sumerOFT = await ethers.getContractFactory('SumerOFTUpgradeable');
     const comptroller = (await ethers.getContractAt('Comptroller', config.comptroller.address, wallet)) as Comptroller;
     const oracle = (await ethers.getContractAt(
       'FeedPriceOracle',
@@ -271,23 +273,41 @@ task('all', 'deploy contract')
       config.suTokens.implementation = suErc20Impl.address;
       writeFileSync(json, JSON.stringify(config));
     }
+    if (config.suTokens.underly_implementation == '') {
+      const suUnderLyImpl = await run('d', {
+        name: 'SumerOFTUpgradeable',
+        rpc: rpc,
+        pk: pk,
+        gasprice: gasprice
+      });
+      config.suTokens.underly_implementation = suUnderLyImpl.address;
+      writeFileSync(json, JSON.stringify(config));
+    }
     if (config.suTokens.tokens.length > 0) {
       for (let i = 0; i < config.suTokens.tokens.length; i++) {
         let suToken = config.suTokens.tokens[i];
         if (suToken.underly == '') {
-          const underly = await run('dt', {
-            name: suToken.name,
-            symbol: suToken.symbol,
+          let data = sumerOFT.interface.encodeFunctionData('initialize', [
+            suToken.name,
+            suToken.symbol,
+            0,
+            config.lzEndpoint.address
+          ]);
+          const proxy = await run('p', {
+            impl: config.suTokens.underly_implementation,
+            data: data,
+            admin: admin,
             rpc: rpc,
             pk: pk,
             gasprice: gasprice
           });
-          config.suTokens.tokens[i].underly = underly.address;
+
+          config.suTokens.tokens[i].underly = proxy.address;
           writeFileSync(json, JSON.stringify(config));
         }
         if (suToken.address == '') {
           const suTokenSymbol = `sdr${suToken.symbol}`;
-          let data = cErc20.interface.encodeFunctionData('initialize', [
+          let data = suErc20.interface.encodeFunctionData('initialize', [
             config.suTokens.tokens[i].underly,
             config.comptroller.address,
             config.cInterestRateModel.address,
@@ -308,7 +328,7 @@ task('all', 'deploy contract')
           config.suTokens.tokens[i].address = proxy.address;
           writeFileSync(json, JSON.stringify(config));
           const underly = await ethers.getContractAt(
-            'ERC20MinterBurnerPauser',
+            'SumerOFTUpgradeable',
             config.suTokens.tokens[i].underly,
             wallet
           );
@@ -322,6 +342,15 @@ task('all', 'deploy contract')
           let receipt = await comptroller._supportMarket(suToken.address, suToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', suToken.symbol, receipt.hash);
         }
+
+        const suTokenInst = await ethers.getContractAt('suErc20', config.suTokens.tokens[i].address, wallet);
+        const isCToken = await suTokenInst.isCToken();
+        if (isCToken) {
+          let gas = await suTokenInst.estimateGas.changeCtoken();
+          let receipt = await suTokenInst.changeCtoken({ gasLimit: gas });
+          log.info('changeCtoken:', isCToken, receipt.hash);
+        }
+        
         let price =
           (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(suToken.address) : BigNumber.from(0);
         if (price.eq(BigNumber.from(0))) {

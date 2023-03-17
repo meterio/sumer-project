@@ -22,25 +22,33 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface OFTCoreInterface extends ethers.utils.Interface {
   functions: {
+    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "DEFAULT_PAYLOAD_SIZE_LIMIT()": FunctionFragment;
+    "MINTER_ROLE()": FunctionFragment;
     "NO_EXTRA_GAS()": FunctionFragment;
+    "PAUSER_ROLE()": FunctionFragment;
     "PT_SEND()": FunctionFragment;
     "circulatingSupply()": FunctionFragment;
     "estimateSendFee(uint16,bytes,uint256,bool,bytes)": FunctionFragment;
     "failedMessages(uint16,bytes,uint64)": FunctionFragment;
     "forceResumeReceive(uint16,bytes)": FunctionFragment;
     "getConfig(uint16,uint16,address,uint256)": FunctionFragment;
+    "getRoleAdmin(bytes32)": FunctionFragment;
+    "getRoleMember(bytes32,uint256)": FunctionFragment;
+    "getRoleMemberCount(bytes32)": FunctionFragment;
     "getTrustedRemoteAddress(uint16)": FunctionFragment;
+    "grantRole(bytes32,address)": FunctionFragment;
+    "hasRole(bytes32,address)": FunctionFragment;
     "isTrustedRemote(uint16,bytes)": FunctionFragment;
     "lzEndpoint()": FunctionFragment;
     "lzReceive(uint16,bytes,uint64,bytes)": FunctionFragment;
     "minDstGasLookup(uint16,uint16)": FunctionFragment;
     "nonblockingLzReceive(uint16,bytes,uint64,bytes)": FunctionFragment;
-    "owner()": FunctionFragment;
     "payloadSizeLimitLookup(uint16)": FunctionFragment;
     "precrime()": FunctionFragment;
-    "renounceOwnership()": FunctionFragment;
+    "renounceRole(bytes32,address)": FunctionFragment;
     "retryMessage(uint16,bytes,uint64,bytes)": FunctionFragment;
+    "revokeRole(bytes32,address)": FunctionFragment;
     "sendFrom(address,uint16,bytes,uint256,address,address,bytes)": FunctionFragment;
     "setConfig(uint16,uint16,uint256,bytes)": FunctionFragment;
     "setMinDstGas(uint16,uint16,uint256)": FunctionFragment;
@@ -53,17 +61,28 @@ interface OFTCoreInterface extends ethers.utils.Interface {
     "setUseCustomAdapterParams(bool)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "token()": FunctionFragment;
-    "transferOwnership(address)": FunctionFragment;
     "trustedRemoteLookup(uint16)": FunctionFragment;
     "useCustomAdapterParams()": FunctionFragment;
   };
 
   encodeFunctionData(
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "DEFAULT_PAYLOAD_SIZE_LIMIT",
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "MINTER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "NO_EXTRA_GAS",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "PAUSER_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "PT_SEND", values?: undefined): string;
@@ -88,8 +107,28 @@ interface OFTCoreInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getRoleAdmin",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMember",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMemberCount",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getTrustedRemoteAddress",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "grantRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasRole",
+    values: [BytesLike, string]
   ): string;
   encodeFunctionData(
     functionFragment: "isTrustedRemote",
@@ -111,19 +150,22 @@ interface OFTCoreInterface extends ethers.utils.Interface {
     functionFragment: "nonblockingLzReceive",
     values: [BigNumberish, BytesLike, BigNumberish, BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "payloadSizeLimitLookup",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "precrime", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
+    functionFragment: "renounceRole",
+    values: [BytesLike, string]
   ): string;
   encodeFunctionData(
     functionFragment: "retryMessage",
     values: [BigNumberish, BytesLike, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revokeRole",
+    values: [BytesLike, string]
   ): string;
   encodeFunctionData(
     functionFragment: "sendFrom",
@@ -176,10 +218,6 @@ interface OFTCoreInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "trustedRemoteLookup",
     values: [BigNumberish]
   ): string;
@@ -189,11 +227,23 @@ interface OFTCoreInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "DEFAULT_PAYLOAD_SIZE_LIMIT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "MINTER_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "NO_EXTRA_GAS",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "PAUSER_ROLE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "PT_SEND", data: BytesLike): Result;
@@ -215,9 +265,23 @@ interface OFTCoreInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getConfig", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getRoleAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMember",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMemberCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getTrustedRemoteAddress",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isTrustedRemote",
     data: BytesLike
@@ -232,20 +296,20 @@ interface OFTCoreInterface extends ethers.utils.Interface {
     functionFragment: "nonblockingLzReceive",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "payloadSizeLimitLookup",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "precrime", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "renounceOwnership",
+    functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "retryMessage",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sendFrom", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setConfig", data: BytesLike): Result;
   decodeFunctionResult(
@@ -286,10 +350,6 @@ interface OFTCoreInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "trustedRemoteLookup",
     data: BytesLike
   ): Result;
@@ -300,9 +360,11 @@ interface OFTCoreInterface extends ethers.utils.Interface {
 
   events: {
     "MessageFailed(uint16,bytes,uint64,bytes,bytes)": EventFragment;
-    "OwnershipTransferred(address,address)": EventFragment;
     "ReceiveFromChain(uint16,address,uint256)": EventFragment;
     "RetryMessageSuccess(uint16,bytes,uint64,bytes32)": EventFragment;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
+    "RoleGranted(bytes32,address,address)": EventFragment;
+    "RoleRevoked(bytes32,address,address)": EventFragment;
     "SendToChain(uint16,address,bytes,uint256)": EventFragment;
     "SetMinDstGas(uint16,uint16,uint256)": EventFragment;
     "SetPrecrime(address)": EventFragment;
@@ -312,9 +374,11 @@ interface OFTCoreInterface extends ethers.utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "MessageFailed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ReceiveFromChain"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RetryMessageSuccess"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SendToChain"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMinDstGas"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetPrecrime"): EventFragment;
@@ -333,10 +397,6 @@ export type MessageFailedEvent = TypedEvent<
   }
 >;
 
-export type OwnershipTransferredEvent = TypedEvent<
-  [string, string] & { previousOwner: string; newOwner: string }
->;
-
 export type ReceiveFromChainEvent = TypedEvent<
   [number, string, BigNumber] & {
     _srcChainId: number;
@@ -352,6 +412,22 @@ export type RetryMessageSuccessEvent = TypedEvent<
     _nonce: BigNumber;
     _payloadHash: string;
   }
+>;
+
+export type RoleAdminChangedEvent = TypedEvent<
+  [string, string, string] & {
+    role: string;
+    previousAdminRole: string;
+    newAdminRole: string;
+  }
+>;
+
+export type RoleGrantedEvent = TypedEvent<
+  [string, string, string] & { role: string; account: string; sender: string }
+>;
+
+export type RoleRevokedEvent = TypedEvent<
+  [string, string, string] & { role: string; account: string; sender: string }
 >;
 
 export type SendToChainEvent = TypedEvent<
@@ -429,9 +505,15 @@ export class OFTCore extends BaseContract {
   interface: OFTCoreInterface;
 
   functions: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
     DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
     NO_EXTRA_GAS(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     PT_SEND(overrides?: CallOverrides): Promise<[number]>;
 
@@ -469,10 +551,35 @@ export class OFTCore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     getTrustedRemoteAddress(
       _remoteChainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     isTrustedRemote(
       _srcChainId: BigNumberish,
@@ -504,8 +611,6 @@ export class OFTCore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
     payloadSizeLimitLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -513,7 +618,9 @@ export class OFTCore extends BaseContract {
 
     precrime(overrides?: CallOverrides): Promise<[string]>;
 
-    renounceOwnership(
+    renounceRole(
+      role: BytesLike,
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -523,6 +630,12 @@ export class OFTCore extends BaseContract {
       _nonce: BigNumberish,
       _payload: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     sendFrom(
@@ -596,11 +709,6 @@ export class OFTCore extends BaseContract {
 
     token(overrides?: CallOverrides): Promise<[string]>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     trustedRemoteLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -609,9 +717,15 @@ export class OFTCore extends BaseContract {
     useCustomAdapterParams(overrides?: CallOverrides): Promise<[boolean]>;
   };
 
+  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
   DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
+  MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+
   NO_EXTRA_GAS(overrides?: CallOverrides): Promise<BigNumber>;
+
+  PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
 
   PT_SEND(overrides?: CallOverrides): Promise<number>;
 
@@ -649,10 +763,35 @@ export class OFTCore extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  getRoleMember(
+    role: BytesLike,
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMemberCount(
+    role: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   getTrustedRemoteAddress(
     _remoteChainId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  grantRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  hasRole(
+    role: BytesLike,
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   isTrustedRemote(
     _srcChainId: BigNumberish,
@@ -684,8 +823,6 @@ export class OFTCore extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  owner(overrides?: CallOverrides): Promise<string>;
-
   payloadSizeLimitLookup(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -693,7 +830,9 @@ export class OFTCore extends BaseContract {
 
   precrime(overrides?: CallOverrides): Promise<string>;
 
-  renounceOwnership(
+  renounceRole(
+    role: BytesLike,
+    account: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -703,6 +842,12 @@ export class OFTCore extends BaseContract {
     _nonce: BigNumberish,
     _payload: BytesLike,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   sendFrom(
@@ -776,11 +921,6 @@ export class OFTCore extends BaseContract {
 
   token(overrides?: CallOverrides): Promise<string>;
 
-  transferOwnership(
-    newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   trustedRemoteLookup(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -789,9 +929,15 @@ export class OFTCore extends BaseContract {
   useCustomAdapterParams(overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
     DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
+    MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+
     NO_EXTRA_GAS(overrides?: CallOverrides): Promise<BigNumber>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
 
     PT_SEND(overrides?: CallOverrides): Promise<number>;
 
@@ -829,10 +975,35 @@ export class OFTCore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getTrustedRemoteAddress(
       _remoteChainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     isTrustedRemote(
       _srcChainId: BigNumberish,
@@ -864,8 +1035,6 @@ export class OFTCore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    owner(overrides?: CallOverrides): Promise<string>;
-
     payloadSizeLimitLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -873,13 +1042,23 @@ export class OFTCore extends BaseContract {
 
     precrime(overrides?: CallOverrides): Promise<string>;
 
-    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     retryMessage(
       _srcChainId: BigNumberish,
       _srcAddress: BytesLike,
       _nonce: BigNumberish,
       _payload: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -951,11 +1130,6 @@ export class OFTCore extends BaseContract {
 
     token(overrides?: CallOverrides): Promise<string>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     trustedRemoteLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -997,22 +1171,6 @@ export class OFTCore extends BaseContract {
         _payload: string;
         _reason: string;
       }
-    >;
-
-    "OwnershipTransferred(address,address)"(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): TypedEventFilter<
-      [string, string],
-      { previousOwner: string; newOwner: string }
-    >;
-
-    OwnershipTransferred(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): TypedEventFilter<
-      [string, string],
-      { previousOwner: string; newOwner: string }
     >;
 
     "ReceiveFromChain(uint16,address,uint256)"(
@@ -1061,6 +1219,60 @@ export class OFTCore extends BaseContract {
         _nonce: BigNumber;
         _payloadHash: string;
       }
+    >;
+
+    "RoleAdminChanged(bytes32,bytes32,bytes32)"(
+      role?: BytesLike | null,
+      previousAdminRole?: BytesLike | null,
+      newAdminRole?: BytesLike | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; previousAdminRole: string; newAdminRole: string }
+    >;
+
+    RoleAdminChanged(
+      role?: BytesLike | null,
+      previousAdminRole?: BytesLike | null,
+      newAdminRole?: BytesLike | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; previousAdminRole: string; newAdminRole: string }
+    >;
+
+    "RoleGranted(bytes32,address,address)"(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; account: string; sender: string }
+    >;
+
+    RoleGranted(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; account: string; sender: string }
+    >;
+
+    "RoleRevoked(bytes32,address,address)"(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; account: string; sender: string }
+    >;
+
+    RoleRevoked(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; account: string; sender: string }
     >;
 
     "SendToChain(uint16,address,bytes,uint256)"(
@@ -1161,9 +1373,15 @@ export class OFTCore extends BaseContract {
   };
 
   estimateGas: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
     DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
+    MINTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
     NO_EXTRA_GAS(overrides?: CallOverrides): Promise<BigNumber>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
     PT_SEND(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1199,8 +1417,36 @@ export class OFTCore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getTrustedRemoteAddress(
       _remoteChainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1234,8 +1480,6 @@ export class OFTCore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
     payloadSizeLimitLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1243,7 +1487,9 @@ export class OFTCore extends BaseContract {
 
     precrime(overrides?: CallOverrides): Promise<BigNumber>;
 
-    renounceOwnership(
+    renounceRole(
+      role: BytesLike,
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1253,6 +1499,12 @@ export class OFTCore extends BaseContract {
       _nonce: BigNumberish,
       _payload: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     sendFrom(
@@ -1326,11 +1578,6 @@ export class OFTCore extends BaseContract {
 
     token(overrides?: CallOverrides): Promise<BigNumber>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     trustedRemoteLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1340,11 +1587,19 @@ export class OFTCore extends BaseContract {
   };
 
   populateTransaction: {
+    DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     DEFAULT_PAYLOAD_SIZE_LIMIT(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    MINTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     NO_EXTRA_GAS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PT_SEND(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1380,8 +1635,36 @@ export class OFTCore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getTrustedRemoteAddress(
       _remoteChainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1415,8 +1698,6 @@ export class OFTCore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     payloadSizeLimitLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1424,7 +1705,9 @@ export class OFTCore extends BaseContract {
 
     precrime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    renounceOwnership(
+    renounceRole(
+      role: BytesLike,
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1434,6 +1717,12 @@ export class OFTCore extends BaseContract {
       _nonce: BigNumberish,
       _payload: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     sendFrom(
@@ -1506,11 +1795,6 @@ export class OFTCore extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
 
     trustedRemoteLookup(
       arg0: BigNumberish,

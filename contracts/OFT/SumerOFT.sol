@@ -3,36 +3,32 @@
 pragma solidity ^0.8.0;
 
 import './OFT.sol';
-import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/security/Pausable.sol';
+import '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol';
 
-/// @title A LayerZero OmnichainFungibleToken example of BasedOFT
-/// @notice Use this contract only on the BASE CHAIN. It locks tokens on source, on outgoing send(), and unlocks tokens when receiving from other chains.
-contract SumerOFT is OFT, AccessControlEnumerable, Pausable {
-  bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
-  bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
+contract SumerOFT is OFT, EIP712, Pausable {
+  uint256 private _cap;
+  mapping(address => bool) private _blackList;
+  // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
+  bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+  mapping(address => uint256) public nonces;
+
+  // upgradeable
 
   constructor(
     string memory _name,
     string memory _symbol,
     uint256 _initialSupply,
     address _layerZeroEndpoint
-  ) OFT(_name, _symbol, _layerZeroEndpoint) {
+  ) OFT(_name, _symbol, _layerZeroEndpoint) EIP712(_name, 'v1.0') {
     _mint(_msgSender(), _initialSupply);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-
-    _setupRole(MINTER_ROLE, _msgSender());
-    _setupRole(PAUSER_ROLE, _msgSender());
   }
 
-  function supportsInterface(bytes4 interfaceId)
-    public
-    view
-    virtual
-    override(AccessControlEnumerable, OFT)
-    returns (bool)
-  {
-    return super.supportsInterface(interfaceId);
+  /**
+   * @dev Returns the cap on the token's total supply.
+   */
+  function cap() public view virtual returns (uint256) {
+    return _cap;
   }
 
   /**
@@ -44,8 +40,10 @@ contract SumerOFT is OFT, AccessControlEnumerable, Pausable {
    *
    * - the caller must have the `MINTER_ROLE`.
    */
-  function mint(address to, uint256 amount) public {
-    require(hasRole(MINTER_ROLE, _msgSender()), 'ERC20PresetMinterPauser: must have minter role to mint');
+  function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+    if (_cap > 0) {
+      require(totalSupply() + amount <= _cap, 'ERC20Capped: cap exceeded');
+    }
     _mint(to, amount);
   }
 
@@ -83,8 +81,7 @@ contract SumerOFT is OFT, AccessControlEnumerable, Pausable {
    *
    * - the caller must have the `PAUSER_ROLE`.
    */
-  function pause() public {
-    require(hasRole(PAUSER_ROLE, _msgSender()), 'ERC20PresetMinterPauser: must have pauser role to pause');
+  function pause() public onlyRole(PAUSER_ROLE) {
     _pause();
   }
 
@@ -97,9 +94,16 @@ contract SumerOFT is OFT, AccessControlEnumerable, Pausable {
    *
    * - the caller must have the `PAUSER_ROLE`.
    */
-  function unpause() public virtual {
-    require(hasRole(PAUSER_ROLE, _msgSender()), 'ERC20PresetMinterPauser: must have pauser role to unpause');
+  function unpause() public virtual onlyRole(PAUSER_ROLE) {
     _unpause();
+  }
+
+  function setCap(uint256 cap_) public onlyAdmin {
+    _cap = cap_;
+  }
+
+  function setBlackList(address account) public onlyAdmin {
+    _blackList[account] = !_blackList[account];
   }
 
   /**
@@ -116,7 +120,22 @@ contract SumerOFT is OFT, AccessControlEnumerable, Pausable {
     uint256 amount
   ) internal override {
     super._beforeTokenTransfer(from, to, amount);
-
+    require(!_blackList[from] && !_blackList[to], 'ERC20Pausable: account is in black list');
     require(!paused(), 'ERC20Pausable: token transfer while paused');
+  }
+
+  function permit(
+    address signer,
+    address spender,
+    uint256 value,
+    uint256 deadline,
+    bytes memory signature
+  ) external returns (bool) {
+    require(deadline >= block.timestamp, 'expired!');
+    bytes32 structHash = keccak256(abi.encode(PERMIT_TYPEHASH, signer, spender, value, nonces[signer]++, deadline));
+    bytes32 hash = _hashTypedDataV4(structHash);
+    require(ECDSA.recover(hash, signature) == signer, 'Permit: invalid signature');
+    _spendAllowance(signer, spender, value);
+    return true;
   }
 }

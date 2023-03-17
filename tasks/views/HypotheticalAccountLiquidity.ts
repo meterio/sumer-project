@@ -46,8 +46,7 @@ npx hardhat hal \
 --redeem "redeemTokens" \
 --borrow "borrowAmount" \
 --rpc http://127.0.0.1:7545 \
---pk <admin private key> \
---gasprice 1000000000
+--pk <admin private key> 
  */
 
 task('hal', 'get Hypothetical Account Liquidity')
@@ -58,13 +57,9 @@ task('hal', 'get Hypothetical Account Liquidity')
   .addOptionalParam('borrow', 'borrowAmount', 0, types.int)
   .addParam('rpc', 'rpc connect')
   .addParam('pk', 'proxy admin private key')
-  .addOptionalParam('gasprice', 'gas price', 0, types.int)
-  .setAction(async ({ account, json, ctoken, redeem, borrow, rpc, pk, gasprice }, { ethers, run, network }) => {
+  .setAction(async ({ account, json, ctoken, redeem, borrow, rpc, pk }, { ethers, run, network }) => {
     let config = JSON.parse(readFileSync(json).toString());
-    let override = { blockTag: 27457018, gasPrice: undefined };
-    if (gasprice > 0) {
-      override.gasPrice = gasprice;
-    }
+
     log.info('RPC: ', rpc);
     let provider = new ethers.providers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
@@ -76,8 +71,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       account,
       ctoken,
       redeem,
-      borrow,
-      override
+      borrow
     );
     log.info('accountLiquidity.liquidity:', accountLiquidity[1].toString());
     log.info('accountLiquidity.shortfall:', accountLiquidity[2].toString());
@@ -111,7 +105,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       config.underwriterAdmin.address,
       wallet
     )) as UnderwriterAdmin;
-    vars.equalAssetsGroupNum = await ua.getEqAssetGroupNum(override);
+    vars.equalAssetsGroupNum = await ua.getEqAssetGroupNum();
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
       groupVars.push({
         groupId: 0,
@@ -125,7 +119,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       const cToken = (await ethers.getContractAt('CErc20', ctoken, wallet)) as CErc20;
       vars.isSuToken = !(await cToken.isCToken());
     }
-    const assets = await comptroller.getAssetsIn(account, override);
+    const assets = await comptroller.getAssetsIn(account);
     const oracle = (await ethers.getContractAt(
       'FeedPriceOracle',
       config.feedPriceOracle.address,
@@ -138,20 +132,19 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.tokenBorrowVal = BigNumber.from(0);
       let assetToken = (await ethers.getContractAt('CErc20', asset, wallet)) as CErc20;
       let [err, cTokenBalance, borrowBalance, exchangeRateMantissa] = await assetToken.getAccountSnapshot(
-        account,
-        override
+        account
       );
 
       vars.cTokenBalance = cTokenBalance;
       vars.borrowBalance = borrowBalance;
       vars.exchangeRateMantissa = exchangeRateMantissa;
       vars.exchangeRate = exchangeRateMantissa;
-      vars.oraclePriceMantissa = await oracle.getUnderlyingPrice(asset, override);
+      vars.oraclePriceMantissa = await oracle.getUnderlyingPrice(asset);
       vars.oraclePrice = vars.oraclePriceMantissa;
       vars.tokensToDenom = vars.exchangeRate.mul(vars.oraclePriceMantissa).div(expScale);
       let index: number;
       for (index = 0; index < vars.equalAssetsGroupNum; index++) {
-        let marketGroupId = await comptroller.marketGroupId(asset, override);
+        let marketGroupId = await comptroller.marketGroupId(asset);
         if (groupVars[index].groupId == 0) {
           groupVars[index].groupId = marketGroupId;
           break;
@@ -222,13 +215,13 @@ task('hal', 'get Hypothetical Account Liquidity')
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      let equalAssetsGroup = await ua.getEqAssetGroup(BigNumber.from(groupVars[i].groupId), override);
+      let equalAssetsGroup = await ua.getEqAssetGroup(BigNumber.from(groupVars[i].groupId));
       vars.intraCRate = equalAssetsGroup.inGroupCTokenRateMantissa;
       vars.intraSuRate = equalAssetsGroup.inGroupSuTokenRateMantissa;
       vars.interCRate = equalAssetsGroup.interGroupCTokenRateMantissa;
       vars.interSuRate = equalAssetsGroup.interGroupSuTokenRateMantissa;
       vars.borrowCollateralRate = expScale;
-      vars.suTokenCollateralRate = await ua._getSuTokenRateMantissa(override);
+      vars.suTokenCollateralRate = await ua._getSuTokenRateMantissa();
       //   console.log(`group ${i} ${equalAssetsGroup.groupName}
       //     cTokenBalanceSum: ${groupVars[i].cTokenBalanceSum}
       //     suTokenBalanceSum: ${groupVars[i].suTokenBalanceSum}
@@ -315,10 +308,10 @@ task('hal', 'get Hypothetical Account Liquidity')
       //     suTokenBorrowSum: ${groupVars[i].suTokenBorrowSum}
       //   `);
 
-      const targetGroupId = await comptroller.marketGroupId(ctoken, override);
+      const targetGroupId = await comptroller.marketGroupId(ctoken);
       //   console.log(`target groupId: ${targetGroupId}`);
       //   console.log(`groupId: ${groupVars[i].groupId}`);
-      if (groupVars[i].groupId == (await comptroller.marketGroupId(ctoken, override))) {
+      if (groupVars[i].groupId == (await comptroller.marketGroupId(ctoken))) {
         targetGroup = groupVars[i];
         targetVars = vars;
         // console.log(`set target group: ${i} ${targetGroup.cTokenBalanceSum}, ${targetGroup.suTokenBalanceSum}`);

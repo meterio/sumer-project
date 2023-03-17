@@ -27,12 +27,14 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     "MINTER_ROLE()": FunctionFragment;
     "NO_EXTRA_GAS()": FunctionFragment;
     "PAUSER_ROLE()": FunctionFragment;
+    "PERMIT_TYPEHASH()": FunctionFragment;
     "PT_SEND()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "burn(uint256)": FunctionFragment;
     "burnFrom(address,uint256)": FunctionFragment;
+    "cap()": FunctionFragment;
     "circulatingSupply()": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
@@ -54,16 +56,18 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     "mint(address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "nonblockingLzReceive(uint16,bytes,uint64,bytes)": FunctionFragment;
-    "owner()": FunctionFragment;
+    "nonces(address)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "payloadSizeLimitLookup(uint16)": FunctionFragment;
+    "permit(address,address,uint256,uint256,bytes)": FunctionFragment;
     "precrime()": FunctionFragment;
-    "renounceOwnership()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "retryMessage(uint16,bytes,uint64,bytes)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "sendFrom(address,uint16,bytes,uint256,address,address,bytes)": FunctionFragment;
+    "setBlackList(address)": FunctionFragment;
+    "setCap(uint256)": FunctionFragment;
     "setConfig(uint16,uint16,uint256,bytes)": FunctionFragment;
     "setMinDstGas(uint16,uint16,uint256)": FunctionFragment;
     "setPayloadSizeLimit(uint16,uint256)": FunctionFragment;
@@ -79,7 +83,6 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
-    "transferOwnership(address)": FunctionFragment;
     "trustedRemoteLookup(uint16)": FunctionFragment;
     "unpause()": FunctionFragment;
     "useCustomAdapterParams()": FunctionFragment;
@@ -105,6 +108,10 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     functionFragment: "PAUSER_ROLE",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "PERMIT_TYPEHASH",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "PT_SEND", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "allowance",
@@ -120,6 +127,7 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     functionFragment: "burnFrom",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "cap", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "circulatingSupply",
     values?: undefined
@@ -198,18 +206,18 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     functionFragment: "nonblockingLzReceive",
     values: [BigNumberish, BytesLike, BigNumberish, BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "payloadSizeLimitLookup",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "precrime", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
+    functionFragment: "permit",
+    values: [string, string, BigNumberish, BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "precrime", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -233,6 +241,14 @@ interface SumerOFTInterface extends ethers.utils.Interface {
       string,
       BytesLike
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBlackList",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setCap",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setConfig",
@@ -286,10 +302,6 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "trustedRemoteLookup",
     values: [BigNumberish]
   ): string;
@@ -319,12 +331,17 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     functionFragment: "PAUSER_ROLE",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "PERMIT_TYPEHASH",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "PT_SEND", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burnFrom", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "cap", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "circulatingSupply",
     data: BytesLike
@@ -385,18 +402,15 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     functionFragment: "nonblockingLzReceive",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "payloadSizeLimitLookup",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "precrime", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -407,6 +421,11 @@ interface SumerOFTInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sendFrom", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setBlackList",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "setCap", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setConfig", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMinDstGas",
@@ -456,10 +475,6 @@ interface SumerOFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "trustedRemoteLookup",
     data: BytesLike
   ): Result;
@@ -472,7 +487,6 @@ interface SumerOFTInterface extends ethers.utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "MessageFailed(uint16,bytes,uint64,bytes,bytes)": EventFragment;
-    "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "ReceiveFromChain(uint16,address,uint256)": EventFragment;
     "RetryMessageSuccess(uint16,bytes,uint64,bytes32)": EventFragment;
@@ -491,7 +505,6 @@ interface SumerOFTInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MessageFailed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ReceiveFromChain"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RetryMessageSuccess"): EventFragment;
@@ -524,10 +537,6 @@ export type MessageFailedEvent = TypedEvent<
     _payload: string;
     _reason: string;
   }
->;
-
-export type OwnershipTransferredEvent = TypedEvent<
-  [string, string] & { previousOwner: string; newOwner: string }
 >;
 
 export type PausedEvent = TypedEvent<[string] & { account: string }>;
@@ -656,6 +665,8 @@ export class SumerOFT extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
+
     PT_SEND(overrides?: CallOverrides): Promise<[number]>;
 
     allowance(
@@ -682,6 +693,8 @@ export class SumerOFT extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    cap(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     circulatingSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -799,7 +812,7 @@ export class SumerOFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
+    nonces(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -812,11 +825,16 @@ export class SumerOFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    precrime(overrides?: CallOverrides): Promise<[string]>;
-
-    renounceOwnership(
+    permit(
+      signer: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    precrime(overrides?: CallOverrides): Promise<[string]>;
 
     renounceRole(
       role: BytesLike,
@@ -847,6 +865,16 @@ export class SumerOFT extends BaseContract {
       _zroPaymentAddress: string,
       _adapterParams: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setBlackList(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setCap(
+      cap_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setConfig(
@@ -926,11 +954,6 @@ export class SumerOFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     trustedRemoteLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -952,6 +975,8 @@ export class SumerOFT extends BaseContract {
   NO_EXTRA_GAS(overrides?: CallOverrides): Promise<BigNumber>;
 
   PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   PT_SEND(overrides?: CallOverrides): Promise<number>;
 
@@ -979,6 +1004,8 @@ export class SumerOFT extends BaseContract {
     amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  cap(overrides?: CallOverrides): Promise<BigNumber>;
 
   circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1096,7 +1123,7 @@ export class SumerOFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  owner(overrides?: CallOverrides): Promise<string>;
+  nonces(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   pause(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1109,11 +1136,16 @@ export class SumerOFT extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  precrime(overrides?: CallOverrides): Promise<string>;
-
-  renounceOwnership(
+  permit(
+    signer: string,
+    spender: string,
+    value: BigNumberish,
+    deadline: BigNumberish,
+    signature: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  precrime(overrides?: CallOverrides): Promise<string>;
 
   renounceRole(
     role: BytesLike,
@@ -1144,6 +1176,16 @@ export class SumerOFT extends BaseContract {
     _zroPaymentAddress: string,
     _adapterParams: BytesLike,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setBlackList(
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setCap(
+    cap_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setConfig(
@@ -1223,11 +1265,6 @@ export class SumerOFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  transferOwnership(
-    newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   trustedRemoteLookup(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -1249,6 +1286,8 @@ export class SumerOFT extends BaseContract {
     NO_EXTRA_GAS(overrides?: CallOverrides): Promise<BigNumber>;
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
     PT_SEND(overrides?: CallOverrides): Promise<number>;
 
@@ -1273,6 +1312,8 @@ export class SumerOFT extends BaseContract {
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    cap(overrides?: CallOverrides): Promise<BigNumber>;
 
     circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1390,7 +1431,7 @@ export class SumerOFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    owner(overrides?: CallOverrides): Promise<string>;
+    nonces(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     pause(overrides?: CallOverrides): Promise<void>;
 
@@ -1401,9 +1442,16 @@ export class SumerOFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    precrime(overrides?: CallOverrides): Promise<string>;
+    permit(
+      signer: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
-    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+    precrime(overrides?: CallOverrides): Promise<string>;
 
     renounceRole(
       role: BytesLike,
@@ -1435,6 +1483,10 @@ export class SumerOFT extends BaseContract {
       _adapterParams: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    setBlackList(account: string, overrides?: CallOverrides): Promise<void>;
+
+    setCap(cap_: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     setConfig(
       _version: BigNumberish,
@@ -1510,11 +1562,6 @@ export class SumerOFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     trustedRemoteLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1576,22 +1623,6 @@ export class SumerOFT extends BaseContract {
         _payload: string;
         _reason: string;
       }
-    >;
-
-    "OwnershipTransferred(address,address)"(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): TypedEventFilter<
-      [string, string],
-      { previousOwner: string; newOwner: string }
-    >;
-
-    OwnershipTransferred(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): TypedEventFilter<
-      [string, string],
-      { previousOwner: string; newOwner: string }
     >;
 
     "Paused(address)"(
@@ -1834,6 +1865,8 @@ export class SumerOFT extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
+
     PT_SEND(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
@@ -1860,6 +1893,8 @@ export class SumerOFT extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    cap(overrides?: CallOverrides): Promise<BigNumber>;
 
     circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1978,7 +2013,7 @@ export class SumerOFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
+    nonces(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1991,11 +2026,16 @@ export class SumerOFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    precrime(overrides?: CallOverrides): Promise<BigNumber>;
-
-    renounceOwnership(
+    permit(
+      signer: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    precrime(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
       role: BytesLike,
@@ -2026,6 +2066,16 @@ export class SumerOFT extends BaseContract {
       _zroPaymentAddress: string,
       _adapterParams: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setBlackList(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setCap(
+      cap_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setConfig(
@@ -2105,11 +2155,6 @@ export class SumerOFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     trustedRemoteLookup(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -2136,6 +2181,8 @@ export class SumerOFT extends BaseContract {
     NO_EXTRA_GAS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PT_SEND(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2166,6 +2213,8 @@ export class SumerOFT extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    cap(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     circulatingSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2284,7 +2333,10 @@ export class SumerOFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    nonces(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2297,11 +2349,16 @@ export class SumerOFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    precrime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    renounceOwnership(
+    permit(
+      signer: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    precrime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: BytesLike,
@@ -2332,6 +2389,16 @@ export class SumerOFT extends BaseContract {
       _zroPaymentAddress: string,
       _adapterParams: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setBlackList(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setCap(
+      cap_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setConfig(
@@ -2408,11 +2475,6 @@ export class SumerOFT extends BaseContract {
       from: string,
       to: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferOwnership(
-      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

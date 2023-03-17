@@ -35,3 +35,4 @@ import "./upgrade/UpdateCToken";
 import "./upgrade/UpdateCEther";
 import "./upgrade/UpdateSuToken";
 import "./upgrade/UpdateComptroller";
+import "./deploy/cToken/DeploySuTokenOFT";

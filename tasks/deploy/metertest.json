@@ -9,14 +9,14 @@
     "address": "0xf67c5f20b95b7604ebb65a53e50ebd38300da8ee"
   },
   "feedPriceOracle": {
-    "address": "0xe749D097727b124F59Fa5162BABAEbEB0f79E73B"
+    "address": "0xa22Aeb26E5d701876ca15e9d42DD62218DB5945f"
   },
   "compoundLens": {
-    "address": "0xa632E642d585B1b59fCA8d72dd422EFf9F06C791"
+    "address": "0x134D6B876a1A4248af3aDb0345c196d557CbB46D"
   },
   "underwriterAdmin": {
-    "implementation": "0x71ebd659Ac1998e255F0B3e1DDCe0c2C23cB77f0",
-    "address": "0xE1bBAeEe4630D3d4320c005D30EbDd1c67dF2Ca4"
+    "implementation": "0x755841432F9AE4Cf5d523A970da819B8A0da993d",
+    "address": "0x62502EE641fA3Ff4181220d78E92e98727ceA0a0"
   },
   "suInterestRateModel": {
     "blocks": "13140000",
@@ -33,11 +33,11 @@
   "comptroller": {
     "closeFactorMantissa": "0.5",
     "liquidationIncentiveMantissa": "1.1",
-    "implementation": "0x7CF5134114e2a3CceC5c5D9AFe24A6195f6350Fa",
-    "address": "0x1D5315C9f4b097A8067Bb5e7a36f1B74Eb3c934F"
+    "implementation": "0x7F581Ec902D03990D597eb4a2C2AaaaF7E086Dce",
+    "address": "0x43DC0b902E1478EEE3846cE064C81A2f2f393e09"
   },
   "cTokens": {
-    "implementation": "0xcD3748090d32959B94644EBb8F0FbCbE7Fc3486a",
+    "implementation": "0x4480619950F74b22b13572279706B76825303b6A",
     "tokens": [
       {
         "cTokenName": "Sumer USD Coin",
@@ -45,7 +45,7 @@
         "decimals": 6,
         "native": false,
         "underly": "0x2b27f5f7f2867ad9d2b7065f81e985c1bd1b7274",
-        "address": "0xE12981Aa4dD8985d6E0F60A7615ae0758B3C7583",
+        "address": "0xcE7Bc76A7B0075e120D6F76Fb706Bf8B09DA16C2",
         "groupId": 3,
         "oracle": {
           "type": 2,
@@ -59,7 +59,7 @@
         "decimals": 6,
         "native": false,
         "underly": "0x2398633bee182cad2d0388b41735fd9fb742098d",
-        "address": "0xB4DbdA2Ec7E7b2248d673E3A4a96eb02D3adB571",
+        "address": "0x66860B7271436943c8BbD3B9290C69Cd8c04AdF1",
         "groupId": 3,
         "oracle": {
           "type": 2,
@@ -73,7 +73,7 @@
         "decimals": 18,
         "native": false,
         "underly": "0xe8876830e7cc85dae8ce31b0802313caf856886f",
-        "address": "0x63305F5F93066EFb46A76DdB2A1b1D6e52017969",
+        "address": "0x282824688A435A56473801EE8fb435F339b9F9B7",
         "groupId": 2,
         "oracle": {
           "type": 2,
@@ -87,7 +87,7 @@
         "decimals": 8,
         "native": false,
         "underly": "0x7EB9e0Df1C6E6f1E9d3d1EdA09fcF688FE7A710c",
-        "address": "0x93cf587529866Fb12565f50354D90F7D0981ac51",
+        "address": "0x6a1CaB79D12A444b93cFFe80C7cA6E5Ee986DcAE",
         "groupId": 1,
         "oracle": {
           "type": 2,
@@ -101,7 +101,7 @@
         "decimals": 18,
         "native": false,
         "underly": "0x660a3a1141632c9dcad8a5a3350f7ddd720bc15c",
-        "address": "0xE847EeBc7ce3639BC258FA96ba955e333c761CE4",
+        "address": "0x443062b9caC64764f7532d21fd7D0019d9219b39",
         "groupId": 3,
         "oracle": {
           "type": 1,
@@ -114,7 +114,7 @@
         "decimals": 18,
         "native": false,
         "underly": "0x8a419ef4941355476cf04933e90bf3bbf2f73814",
-        "address": "0x11fDC6A3D5649A72Eb2741ACaa18759173048a9C",
+        "address": "0xab46E0F3f3a3c118fC7623049Ddf0C875B47fc74",
         "groupId": 4,
         "oracle": {
           "type": 3,
@@ -127,7 +127,7 @@
         "decimals": 18,
         "native": true,
         "underly": "",
-        "address": "0x1Be914Dcb39A17b262C2B284Ebda8082340F1828",
+        "address": "0xBa774C1BBE546394AaDbf794964448078eF38d07",
         "groupId": 4,
         "oracle": {
           "type": 3,
@@ -138,14 +138,15 @@
     ]
   },
   "suTokens": {
-    "implementation": "0x5B153F894F0BF2f88cD6692E09a4c58e6003a7E6",
+    "implementation": "0x1027e30941B22C0445718f01007038AF29c3858c",
+    "underly_implementation": "0x8bd0ce7e6C0979d5e3F5A0111c63566F712fEc80",
     "tokens": [
       {
         "name": "suUSD",
         "symbol": "suUSD",
         "decimals": 18,
-        "underly": "0x90D3fF2131e6fB52A0b2C343C695Ac2971Ebc16b",
-        "address": "0x92C8d4c5b2A9d6EB626cDE12257d01b159915633",
+        "underly": "0x8EaFB5185044E9864CBAfFaA328B534eB93d7EE8",
+        "address": "0x7FCC530542fAA7206632226a744138fE589aa8F5",
         "groupId": 3,
         "oracle": {
           "type": 1,
@@ -156,8 +157,8 @@
         "name": "suETH",
         "symbol": "suETH",
         "decimals": 18,
-        "underly": "0x339ef01365c1FC4C4fDF303296b899EDA60A220b",
-        "address": "0x99C27df6c18aCC0c1e176B65d23CA0C9692A8442",
+        "underly": "0x21351bde0B42b4Cba5c04Fc92917b8c3254b1E88",
+        "address": "0xe516404e5e51bFFf269549666c19d2AE8C0f76F7",
         "groupId": 2,
         "oracle": {
           "type": 2,
@@ -169,8 +170,8 @@
         "name": "suBTC",
         "symbol": "suBTC",
         "decimals": 18,
-        "underly": "0x8E09C571d2730250e5BC050a208b5a338736380d",
-        "address": "0xfe297cd08366a28d5f4A542068CcF06186F74789",
+        "underly": "0x20B00Df0c1120D2227f87180286E63EDa30f5c4c",
+        "address": "0x5b1Cac7De2434CB46cbB8934F21D4327C113dF9E",
         "groupId": 1,
         "oracle": {
           "type": 2,
@@ -216,5 +217,9 @@
   ],
   "multicall2": {
     "address": "0x649e0ce6fc6191d67ea81ba94b105e28d1815d95"
+  },
+  "lzEndpoint": {
+    "chainId": 10156,
+    "address": "0x3De2f3D1Ac59F18159ebCB422322Cb209BA96aAD"
   }
 }
