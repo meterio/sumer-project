@@ -53,7 +53,7 @@
         },
         "implementation": "0xbD9f91a2726De7b62A83bA1a836021744223fE8C",
         "interestRateModel": {
-          "address": ""
+          "address": "0x7254b2e250d0d539103B1563ac0958c5910ca239"
         }
       },
       {
@@ -67,6 +67,9 @@
         "oracle": {
           "type": 0,
           "feed": "0xAC15714c08986DACC0379193e22382736796496f"
+        },
+        "interestRateModel": {
+          "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900"
         }
       },
       {
@@ -80,6 +83,9 @@
         "oracle": {
           "type": 0,
           "feed": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0"
+        },
+        "interestRateModel": {
+          "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141"
         }
       },
       {
@@ -93,6 +99,9 @@
         "oracle": {
           "type": 0,
           "feed": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C"
+        },
+        "interestRateModel": {
+          "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141"
         }
       }
     ]

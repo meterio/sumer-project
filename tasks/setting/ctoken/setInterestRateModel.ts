@@ -32,7 +32,8 @@ task('sir', 'set Reserve Factor')
       let cTokenJson = config.cTokens.tokens[i];
       let cToken = (await ethers.getContractAt('CToken', cTokenJson.address, wallet)) as CToken;
       let interestRateModelAddress = cTokenJson.interestRateModel.address;
-      let receipt = await cToken._setInterestRateModel(interestRateModelAddress);
+      let gas = await cToken.estimateGas._setInterestRateModel(interestRateModelAddress);
+      let receipt = await cToken._setInterestRateModel(interestRateModelAddress, { gasLimit: gas });
       console.log('cToken:', await cToken.symbol());
       console.log('interestRateModelAddress:', interestRateModelAddress);
       console.log('_setInterestRateModel tx:', receipt.hash);
