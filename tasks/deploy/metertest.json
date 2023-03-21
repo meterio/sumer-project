@@ -51,6 +51,9 @@
           "type": 2,
           "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
           "name": "USDC"
+        },
+        "interestRateModel": {
+          "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc"
         }
       },
       {
@@ -65,6 +68,9 @@
           "type": 2,
           "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
           "name": "USDT"
+        },
+        "interestRateModel": {
+          "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc"
         }
       },
       {
@@ -79,6 +85,9 @@
           "type": 2,
           "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
           "name": "ETH"
+        },
+        "interestRateModel": {
+          "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b"
         }
       },
       {
@@ -93,6 +102,9 @@
           "type": 2,
           "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
           "name": "BTC"
+        },
+        "interestRateModel": {
+          "address": "0x8fe57d06e674f37e435aac29c4143392ce4ad585"
         }
       },
       {
@@ -106,6 +118,9 @@
         "oracle": {
           "type": 1,
           "price": "1000000000000000000"
+        },
+        "interestRateModel": {
+          "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc"
         }
       },
       {
@@ -119,6 +134,9 @@
         "oracle": {
           "type": 3,
           "feed": "0x3218E21240968c650C03A4657C22275951Dd9232"
+        },
+        "interestRateModel": {
+          "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b"
         }
       },
       {
@@ -133,7 +151,10 @@
           "type": 3,
           "feed": "0xF346eEbbA5280f509BcCEa8Df9298660d99BD5D1"
         },
-        "implementation": "0x55Ee6A89B7f47977A68f90101c9Ffd2D9f7258ee"
+        "implementation": "0x55Ee6A89B7f47977A68f90101c9Ffd2D9f7258ee",
+        "interestRateModel": {
+          "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b"
+        }
       }
     ]
   },

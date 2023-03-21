@@ -51,7 +51,10 @@
           "type": 0,
           "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
         },
-        "implementation": "0xbD9f91a2726De7b62A83bA1a836021744223fE8C"
+        "implementation": "0xbD9f91a2726De7b62A83bA1a836021744223fE8C",
+        "interestRateModel": {
+          "address": ""
+        }
       },
       {
         "cTokenName": "Sumer BTC",
