@@ -27,16 +27,16 @@ task('all', 'deploy contract')
     let provider = new ethers.providers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
 
-    // if (config.proxyAdmin.address == '') {
-    //   const proxyAdmin = await run('d', {
-    //     name: 'ProxyAdmin',
-    //     rpc: rpc,
-    //     pk: pk,
-    //     gasprice: gasprice
-    //   });
-    //   config.proxyAdmin.address = proxyAdmin.address;
-    //   writeFileSync(json, JSON.stringify(config));
-    // }
+    if (config.proxyAdmin.address == '') {
+      const proxyAdmin = await run('d', {
+        name: 'ProxyAdmin',
+        rpc: rpc,
+        pk: pk,
+        gasprice: gasprice
+      });
+      config.proxyAdmin.address = proxyAdmin.address;
+      writeFileSync(json, JSON.stringify(config));
+    }
     admin = config.proxyAdmin.address;
 
     if (config.sumer.address == '') {
