@@ -29,6 +29,8 @@ contract CompoundLens {
     address underlyingAssetAddress;
     uint256 cTokenDecimals;
     uint256 underlyingDecimals;
+    bool isCToken;
+    bool isCEther;
   }
 
   function cTokenMetadata(ICToken cToken) public returns (CTokenMetadata memory) {
@@ -61,7 +63,9 @@ contract CompoundLens {
         collateralFactorMantissa: collateralFactorMantissa,
         underlyingAssetAddress: underlyingAssetAddress,
         cTokenDecimals: cToken.decimals(),
-        underlyingDecimals: underlyingDecimals
+        underlyingDecimals: underlyingDecimals,
+        isCToken: cToken.isCToken(),
+        isCEther: cToken.isCEther()
       });
   }
 
