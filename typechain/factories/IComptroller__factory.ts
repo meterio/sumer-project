@@ -14,6 +14,25 @@ const _abi = [
         name: "cToken",
         type: "address",
       },
+    ],
+    name: "_getMarketBorrowCap",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
       {
         internalType: "address",
         name: "borrower",

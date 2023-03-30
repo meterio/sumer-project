@@ -21,6 +21,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IComptrollerInterface extends ethers.utils.Interface {
   functions: {
+    "_getMarketBorrowCap(address)": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
     "claimComp(address)": FunctionFragment;
     "closeFactorMantissa()": FunctionFragment;
@@ -45,6 +46,10 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     "underWriterAdmin()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "_getMarketBorrowCap",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "borrowAllowed",
     values: [string, string, BigNumberish]
@@ -113,6 +118,10 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "_getMarketBorrowCap",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "borrowAllowed",
     data: BytesLike
@@ -234,6 +243,11 @@ export class IComptroller extends BaseContract {
   interface: IComptrollerInterface;
 
   functions: {
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -345,6 +359,11 @@ export class IComptroller extends BaseContract {
     underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
 
+  _getMarketBorrowCap(
+    cToken: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   borrowAllowed(
     cToken: string,
     borrower: string,
@@ -451,6 +470,11 @@ export class IComptroller extends BaseContract {
   underWriterAdmin(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -554,6 +578,11 @@ export class IComptroller extends BaseContract {
   filters: {};
 
   estimateGas: {
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -658,6 +687,11 @@ export class IComptroller extends BaseContract {
   };
 
   populateTransaction: {
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,

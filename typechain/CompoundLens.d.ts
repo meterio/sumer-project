@@ -639,8 +639,19 @@ export class CompoundLens extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        string,
+        boolean,
+        boolean,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
         cToken: string;
+        isCToken: boolean;
+        isCEther: boolean;
         balanceOf: BigNumber;
         borrowBalanceCurrent: BigNumber;
         balanceOfUnderlying: BigNumber;
@@ -654,8 +665,19 @@ export class CompoundLens extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<
-      ([string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      ([
+        string,
+        boolean,
+        boolean,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
         cToken: string;
+        isCToken: boolean;
+        isCEther: boolean;
         balanceOf: BigNumber;
         borrowBalanceCurrent: BigNumber;
         balanceOfUnderlying: BigNumber;
@@ -682,6 +704,11 @@ export class CompoundLens extends BaseContract {
         BigNumber,
         string,
         BigNumber,
+        BigNumber,
+        boolean,
+        boolean,
+        BigNumber,
+        BigNumber,
         BigNumber
       ] & {
         cToken: string;
@@ -698,6 +725,11 @@ export class CompoundLens extends BaseContract {
         underlyingAssetAddress: string;
         cTokenDecimals: BigNumber;
         underlyingDecimals: BigNumber;
+        isCToken: boolean;
+        isCEther: boolean;
+        borrowCap: BigNumber;
+        depositCap: BigNumber;
+        liquidationIncentive: BigNumber;
       }
     >;
 
@@ -719,6 +751,11 @@ export class CompoundLens extends BaseContract {
         BigNumber,
         string,
         BigNumber,
+        BigNumber,
+        boolean,
+        boolean,
+        BigNumber,
+        BigNumber,
         BigNumber
       ] & {
         cToken: string;
@@ -735,6 +772,11 @@ export class CompoundLens extends BaseContract {
         underlyingAssetAddress: string;
         cTokenDecimals: BigNumber;
         underlyingDecimals: BigNumber;
+        isCToken: boolean;
+        isCEther: boolean;
+        borrowCap: BigNumber;
+        depositCap: BigNumber;
+        liquidationIncentive: BigNumber;
       })[]
     >;
 
