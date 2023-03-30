@@ -9,6 +9,7 @@ import './Interfaces/IComptroller.sol';
 import './Interfaces/IGovernorBravo.sol';
 import './Interfaces/IUnderwriterAdmin.sol';
 import '../Exponential/ExponentialNoError.sol';
+import './ComptrollerStorage.sol';
 
 contract CompoundLens {
   using ExponentialNoError for uint256;
@@ -31,6 +32,10 @@ contract CompoundLens {
     uint256 underlyingDecimals;
     bool isCToken;
     bool isCEther;
+
+    uint256 borrowCap;
+    uint256 depositCap;
+    uint256 liquidationIncentive;
   }
 
   function cTokenMetadata(ICToken cToken) public returns (CTokenMetadata memory) {
@@ -47,6 +52,7 @@ contract CompoundLens {
       underlyingAssetAddress = cToken.underlying();
       underlyingDecimals = ICToken(cToken.underlying()).decimals();
     }
+
 
     return
       CTokenMetadata({
@@ -65,7 +71,10 @@ contract CompoundLens {
         cTokenDecimals: cToken.decimals(),
         underlyingDecimals: underlyingDecimals,
         isCToken: cToken.isCToken(),
-        isCEther: cToken.isCEther()
+        isCEther: cToken.isCEther(),
+        borrowCap: comptroller._getMarketBorrowCap(address(cToken)),
+        depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
+        liquidationIncentive: comptroller.liquidationIncentiveMantissa()
       });
   }
 
@@ -80,6 +89,8 @@ contract CompoundLens {
 
   struct CTokenBalances {
     address cToken;
+    bool isCToken;
+    bool isCEther;
     uint256 balanceOf;
     uint256 borrowBalanceCurrent;
     uint256 balanceOfUnderlying;
@@ -106,6 +117,8 @@ contract CompoundLens {
     return
       CTokenBalances({
         cToken: address(cToken),
+        isCToken: cToken.isCToken(),
+        isCEther: cToken.isCEther(),
         balanceOf: balanceOf,
         borrowBalanceCurrent: borrowBalanceCurrent,
         balanceOfUnderlying: balanceOfUnderlying,
