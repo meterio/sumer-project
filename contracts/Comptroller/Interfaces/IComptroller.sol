@@ -103,4 +103,6 @@ interface IComptroller {
       uint256,
       uint256
     );
+    
+  function _getMarketBorrowCap(address cToken) external view returns (uint256);
 }
