@@ -29,6 +29,7 @@ interface IOFTUpgradeableInterface extends ethers.utils.Interface {
     "estimateSendFee(uint16,bytes,uint256,bool,bytes)": FunctionFragment;
     "sendFrom(address,uint16,bytes,uint256,address,address,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "token()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
@@ -67,6 +68,7 @@ interface IOFTUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
@@ -96,6 +98,7 @@ interface IOFTUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -108,14 +111,16 @@ interface IOFTUpgradeableInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
-    "ReceiveFromChain(uint16,bytes,address,uint256,uint64)": EventFragment;
-    "SendToChain(address,uint16,bytes,uint256,uint64)": EventFragment;
+    "ReceiveFromChain(uint16,address,uint256)": EventFragment;
+    "SendToChain(uint16,address,bytes,uint256)": EventFragment;
+    "SetUseCustomAdapterParams(bool)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ReceiveFromChain"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SendToChain"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetUseCustomAdapterParams"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -128,23 +133,24 @@ export type ApprovalEvent = TypedEvent<
 >;
 
 export type ReceiveFromChainEvent = TypedEvent<
-  [number, string, string, BigNumber, BigNumber] & {
+  [number, string, BigNumber] & {
     _srcChainId: number;
-    _srcAddress: string;
-    _toAddress: string;
+    _to: string;
     _amount: BigNumber;
-    _nonce: BigNumber;
   }
 >;
 
 export type SendToChainEvent = TypedEvent<
-  [string, number, string, BigNumber, BigNumber] & {
-    _sender: string;
+  [number, string, string, BigNumber] & {
     _dstChainId: number;
+    _from: string;
     _toAddress: string;
     _amount: BigNumber;
-    _nonce: BigNumber;
   }
+>;
+
+export type SetUseCustomAdapterParamsEvent = TypedEvent<
+  [boolean] & { _useCustomAdapterParams: boolean }
 >;
 
 export type TransferEvent = TypedEvent<
@@ -238,6 +244,8 @@ export class IOFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    token(overrides?: CallOverrides): Promise<[string]>;
+
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transfer(
@@ -296,6 +304,8 @@ export class IOFTUpgradeable extends BaseContract {
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  token(overrides?: CallOverrides): Promise<string>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -356,6 +366,8 @@ export class IOFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    token(overrides?: CallOverrides): Promise<string>;
+
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
@@ -391,73 +403,61 @@ export class IOFTUpgradeable extends BaseContract {
       { owner: string; spender: string; value: BigNumber }
     >;
 
-    "ReceiveFromChain(uint16,bytes,address,uint256,uint64)"(
+    "ReceiveFromChain(uint16,address,uint256)"(
       _srcChainId?: BigNumberish | null,
-      _srcAddress?: BytesLike | null,
-      _toAddress?: string | null,
-      _amount?: null,
-      _nonce?: null
+      _to?: string | null,
+      _amount?: null
     ): TypedEventFilter<
-      [number, string, string, BigNumber, BigNumber],
-      {
-        _srcChainId: number;
-        _srcAddress: string;
-        _toAddress: string;
-        _amount: BigNumber;
-        _nonce: BigNumber;
-      }
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
     >;
 
     ReceiveFromChain(
       _srcChainId?: BigNumberish | null,
-      _srcAddress?: BytesLike | null,
-      _toAddress?: string | null,
-      _amount?: null,
-      _nonce?: null
+      _to?: string | null,
+      _amount?: null
     ): TypedEventFilter<
-      [number, string, string, BigNumber, BigNumber],
-      {
-        _srcChainId: number;
-        _srcAddress: string;
-        _toAddress: string;
-        _amount: BigNumber;
-        _nonce: BigNumber;
-      }
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
     >;
 
-    "SendToChain(address,uint16,bytes,uint256,uint64)"(
-      _sender?: string | null,
+    "SendToChain(uint16,address,bytes,uint256)"(
       _dstChainId?: BigNumberish | null,
-      _toAddress?: BytesLike | null,
-      _amount?: null,
-      _nonce?: null
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
     ): TypedEventFilter<
-      [string, number, string, BigNumber, BigNumber],
+      [number, string, string, BigNumber],
       {
-        _sender: string;
         _dstChainId: number;
+        _from: string;
         _toAddress: string;
         _amount: BigNumber;
-        _nonce: BigNumber;
       }
     >;
 
     SendToChain(
-      _sender?: string | null,
       _dstChainId?: BigNumberish | null,
-      _toAddress?: BytesLike | null,
-      _amount?: null,
-      _nonce?: null
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
     ): TypedEventFilter<
-      [string, number, string, BigNumber, BigNumber],
+      [number, string, string, BigNumber],
       {
-        _sender: string;
         _dstChainId: number;
+        _from: string;
         _toAddress: string;
         _amount: BigNumber;
-        _nonce: BigNumber;
       }
     >;
+
+    "SetUseCustomAdapterParams(bool)"(
+      _useCustomAdapterParams?: null
+    ): TypedEventFilter<[boolean], { _useCustomAdapterParams: boolean }>;
+
+    SetUseCustomAdapterParams(
+      _useCustomAdapterParams?: null
+    ): TypedEventFilter<[boolean], { _useCustomAdapterParams: boolean }>;
 
     "Transfer(address,address,uint256)"(
       from?: string | null,
@@ -520,6 +520,8 @@ export class IOFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    token(overrides?: CallOverrides): Promise<BigNumber>;
+
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
@@ -580,6 +582,8 @@ export class IOFTUpgradeable extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

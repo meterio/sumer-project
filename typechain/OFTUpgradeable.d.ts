@@ -23,6 +23,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface OFTUpgradeableInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "DEFAULT_PAYLOAD_SIZE_LIMIT()": FunctionFragment;
     "FUNCTION_TYPE_SEND()": FunctionFragment;
     "MINTER_ROLE()": FunctionFragment;
     "NO_EXTRA_GAS()": FunctionFragment;
@@ -37,10 +38,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     "failedMessages(uint16,bytes,uint64)": FunctionFragment;
     "forceResumeReceive(uint16,bytes)": FunctionFragment;
     "getConfig(uint16,uint16,address,uint256)": FunctionFragment;
-    "getGasLimit(bytes)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
+    "getTrustedRemoteAddress(uint16)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
@@ -50,18 +51,22 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     "minDstGasLookup(uint16,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "nonblockingLzReceive(uint16,bytes,uint64,bytes)": FunctionFragment;
+    "precrime()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "retryMessage(uint16,bytes,uint64,bytes)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "sendFrom(address,uint16,bytes,uint256,address,address,bytes)": FunctionFragment;
     "setConfig(uint16,uint16,uint256,bytes)": FunctionFragment;
-    "setMinDstGasLookup(uint16,uint256,uint256)": FunctionFragment;
+    "setMinDstGas(uint16,uint16,uint256)": FunctionFragment;
+    "setPrecrime(address)": FunctionFragment;
     "setReceiveVersion(uint16)": FunctionFragment;
     "setSendVersion(uint16)": FunctionFragment;
     "setTrustedRemote(uint16,bytes)": FunctionFragment;
+    "setTrustedRemoteAddress(uint16,bytes)": FunctionFragment;
     "setUseCustomAdapterParams(bool)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "token()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
@@ -71,6 +76,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
 
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "DEFAULT_PAYLOAD_SIZE_LIMIT",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -124,10 +133,6 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getGasLimit",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
   ): string;
@@ -138,6 +143,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getRoleMemberCount",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTrustedRemoteAddress",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "grantRole",
@@ -172,6 +181,7 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "nonblockingLzReceive",
     values: [BigNumberish, BytesLike, BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "precrime", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -201,9 +211,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMinDstGasLookup",
+    functionFragment: "setMinDstGas",
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "setPrecrime", values: [string]): string;
   encodeFunctionData(
     functionFragment: "setReceiveVersion",
     values: [BigNumberish]
@@ -217,6 +228,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "setTrustedRemoteAddress",
+    values: [BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setUseCustomAdapterParams",
     values: [boolean]
   ): string;
@@ -225,6 +240,7 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
@@ -248,6 +264,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "DEFAULT_PAYLOAD_SIZE_LIMIT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -292,10 +312,6 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getConfig", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getGasLimit",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
@@ -305,6 +321,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getRoleMemberCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTrustedRemoteAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
@@ -328,6 +348,7 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "nonblockingLzReceive",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "precrime", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -340,7 +361,11 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "sendFrom", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setConfig", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setMinDstGasLookup",
+    functionFragment: "setMinDstGas",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPrecrime",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -356,6 +381,10 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setTrustedRemoteAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setUseCustomAdapterParams",
     data: BytesLike
   ): Result;
@@ -364,6 +393,7 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -386,13 +416,16 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
     "Approval(address,address,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "MessageFailed(uint16,bytes,uint64,bytes)": EventFragment;
-    "ReceiveFromChain(uint16,bytes,address,uint256,uint64)": EventFragment;
+    "ReceiveFromChain(uint16,address,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
-    "SendToChain(address,uint16,bytes,uint256,uint64)": EventFragment;
+    "SendToChain(uint16,address,bytes,uint256)": EventFragment;
+    "SetMinDstGas(uint16,uint16,uint256)": EventFragment;
     "SetMinDstGasLookup(uint16,uint256,uint256)": EventFragment;
+    "SetPrecrime(address)": EventFragment;
     "SetTrustedRemote(uint16,bytes)": EventFragment;
+    "SetTrustedRemoteAddress(uint16,bytes)": EventFragment;
     "SetUseCustomAdapterParams(bool)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
@@ -405,8 +438,11 @@ interface OFTUpgradeableInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SendToChain"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetMinDstGas"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMinDstGasLookup"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetPrecrime"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetTrustedRemote"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetTrustedRemoteAddress"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetUseCustomAdapterParams"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
@@ -431,12 +467,10 @@ export type MessageFailedEvent = TypedEvent<
 >;
 
 export type ReceiveFromChainEvent = TypedEvent<
-  [number, string, string, BigNumber, BigNumber] & {
+  [number, string, BigNumber] & {
     _srcChainId: number;
-    _srcAddress: string;
-    _toAddress: string;
+    _to: string;
     _amount: BigNumber;
-    _nonce: BigNumber;
   }
 >;
 
@@ -457,12 +491,19 @@ export type RoleRevokedEvent = TypedEvent<
 >;
 
 export type SendToChainEvent = TypedEvent<
-  [string, number, string, BigNumber, BigNumber] & {
-    _sender: string;
+  [number, string, string, BigNumber] & {
     _dstChainId: number;
+    _from: string;
     _toAddress: string;
     _amount: BigNumber;
-    _nonce: BigNumber;
+  }
+>;
+
+export type SetMinDstGasEvent = TypedEvent<
+  [number, number, BigNumber] & {
+    _dstChainId: number;
+    _type: number;
+    _minDstGas: BigNumber;
   }
 >;
 
@@ -474,8 +515,14 @@ export type SetMinDstGasLookupEvent = TypedEvent<
   }
 >;
 
+export type SetPrecrimeEvent = TypedEvent<[string] & { precrime: string }>;
+
 export type SetTrustedRemoteEvent = TypedEvent<
   [number, string] & { _srcChainId: number; _srcAddress: string }
+>;
+
+export type SetTrustedRemoteAddressEvent = TypedEvent<
+  [number, string] & { _remoteChainId: number; _remoteAddress: string }
 >;
 
 export type SetUseCustomAdapterParamsEvent = TypedEvent<
@@ -531,6 +578,8 @@ export class OFTUpgradeable extends BaseContract {
 
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     FUNCTION_TYPE_SEND(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -596,11 +645,6 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { gasLimit: BigNumber }>;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     getRoleMember(
@@ -613,6 +657,11 @@ export class OFTUpgradeable extends BaseContract {
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     grantRole(
       role: BytesLike,
@@ -664,6 +713,8 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    precrime(overrides?: CallOverrides): Promise<[string]>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -703,10 +754,15 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setPrecrime(
+      _precrime: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -722,7 +778,13 @@ export class OFTUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -737,6 +799,8 @@ export class OFTUpgradeable extends BaseContract {
     ): Promise<[boolean]>;
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    token(overrides?: CallOverrides): Promise<[string]>;
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -762,6 +826,8 @@ export class OFTUpgradeable extends BaseContract {
   };
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
   FUNCTION_TYPE_SEND(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -827,11 +893,6 @@ export class OFTUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getGasLimit(
-    _adapterParams: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   getRoleMember(
@@ -844,6 +905,11 @@ export class OFTUpgradeable extends BaseContract {
     role: BytesLike,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  getTrustedRemoteAddress(
+    _remoteChainId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   grantRole(
     role: BytesLike,
@@ -895,6 +961,8 @@ export class OFTUpgradeable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  precrime(overrides?: CallOverrides): Promise<string>;
+
   renounceRole(
     role: BytesLike,
     account: string,
@@ -934,10 +1002,15 @@ export class OFTUpgradeable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setMinDstGasLookup(
+  setMinDstGas(
     _dstChainId: BigNumberish,
-    _type: BigNumberish,
-    _dstGasAmount: BigNumberish,
+    _packetType: BigNumberish,
+    _minGas: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setPrecrime(
+    _precrime: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -953,7 +1026,13 @@ export class OFTUpgradeable extends BaseContract {
 
   setTrustedRemote(
     _srcChainId: BigNumberish,
-    _srcAddress: BytesLike,
+    _path: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setTrustedRemoteAddress(
+    _remoteChainId: BigNumberish,
+    _remoteAddress: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -968,6 +1047,8 @@ export class OFTUpgradeable extends BaseContract {
   ): Promise<boolean>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
+
+  token(overrides?: CallOverrides): Promise<string>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -993,6 +1074,8 @@ export class OFTUpgradeable extends BaseContract {
 
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
     FUNCTION_TYPE_SEND(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1058,11 +1141,6 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
     getRoleMember(
@@ -1075,6 +1153,11 @@ export class OFTUpgradeable extends BaseContract {
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     grantRole(
       role: BytesLike,
@@ -1126,6 +1209,8 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    precrime(overrides?: CallOverrides): Promise<string>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1165,12 +1250,14 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    setPrecrime(_precrime: string, overrides?: CallOverrides): Promise<void>;
 
     setReceiveVersion(
       _version: BigNumberish,
@@ -1184,7 +1271,13 @@ export class OFTUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1199,6 +1292,8 @@ export class OFTUpgradeable extends BaseContract {
     ): Promise<boolean>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
+
+    token(overrides?: CallOverrides): Promise<string>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1280,38 +1375,22 @@ export class OFTUpgradeable extends BaseContract {
       }
     >;
 
-    "ReceiveFromChain(uint16,bytes,address,uint256,uint64)"(
+    "ReceiveFromChain(uint16,address,uint256)"(
       _srcChainId?: BigNumberish | null,
-      _srcAddress?: BytesLike | null,
-      _toAddress?: string | null,
-      _amount?: null,
-      _nonce?: null
+      _to?: string | null,
+      _amount?: null
     ): TypedEventFilter<
-      [number, string, string, BigNumber, BigNumber],
-      {
-        _srcChainId: number;
-        _srcAddress: string;
-        _toAddress: string;
-        _amount: BigNumber;
-        _nonce: BigNumber;
-      }
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
     >;
 
     ReceiveFromChain(
       _srcChainId?: BigNumberish | null,
-      _srcAddress?: BytesLike | null,
-      _toAddress?: string | null,
-      _amount?: null,
-      _nonce?: null
+      _to?: string | null,
+      _amount?: null
     ): TypedEventFilter<
-      [number, string, string, BigNumber, BigNumber],
-      {
-        _srcChainId: number;
-        _srcAddress: string;
-        _toAddress: string;
-        _amount: BigNumber;
-        _nonce: BigNumber;
-      }
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
     >;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
@@ -1368,38 +1447,52 @@ export class OFTUpgradeable extends BaseContract {
       { role: string; account: string; sender: string }
     >;
 
-    "SendToChain(address,uint16,bytes,uint256,uint64)"(
-      _sender?: string | null,
+    "SendToChain(uint16,address,bytes,uint256)"(
       _dstChainId?: BigNumberish | null,
-      _toAddress?: BytesLike | null,
-      _amount?: null,
-      _nonce?: null
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
     ): TypedEventFilter<
-      [string, number, string, BigNumber, BigNumber],
+      [number, string, string, BigNumber],
       {
-        _sender: string;
         _dstChainId: number;
+        _from: string;
         _toAddress: string;
         _amount: BigNumber;
-        _nonce: BigNumber;
       }
     >;
 
     SendToChain(
-      _sender?: string | null,
       _dstChainId?: BigNumberish | null,
-      _toAddress?: BytesLike | null,
-      _amount?: null,
-      _nonce?: null
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
     ): TypedEventFilter<
-      [string, number, string, BigNumber, BigNumber],
+      [number, string, string, BigNumber],
       {
-        _sender: string;
         _dstChainId: number;
+        _from: string;
         _toAddress: string;
         _amount: BigNumber;
-        _nonce: BigNumber;
       }
+    >;
+
+    "SetMinDstGas(uint16,uint16,uint256)"(
+      _dstChainId?: null,
+      _type?: null,
+      _minDstGas?: null
+    ): TypedEventFilter<
+      [number, number, BigNumber],
+      { _dstChainId: number; _type: number; _minDstGas: BigNumber }
+    >;
+
+    SetMinDstGas(
+      _dstChainId?: null,
+      _type?: null,
+      _minDstGas?: null
+    ): TypedEventFilter<
+      [number, number, BigNumber],
+      { _dstChainId: number; _type: number; _minDstGas: BigNumber }
     >;
 
     "SetMinDstGasLookup(uint16,uint256,uint256)"(
@@ -1420,6 +1513,14 @@ export class OFTUpgradeable extends BaseContract {
       { _dstChainId: number; _type: BigNumber; _dstGasAmount: BigNumber }
     >;
 
+    "SetPrecrime(address)"(
+      precrime?: null
+    ): TypedEventFilter<[string], { precrime: string }>;
+
+    SetPrecrime(
+      precrime?: null
+    ): TypedEventFilter<[string], { precrime: string }>;
+
     "SetTrustedRemote(uint16,bytes)"(
       _srcChainId?: null,
       _srcAddress?: null
@@ -1434,6 +1535,22 @@ export class OFTUpgradeable extends BaseContract {
     ): TypedEventFilter<
       [number, string],
       { _srcChainId: number; _srcAddress: string }
+    >;
+
+    "SetTrustedRemoteAddress(uint16,bytes)"(
+      _remoteChainId?: null,
+      _remoteAddress?: null
+    ): TypedEventFilter<
+      [number, string],
+      { _remoteChainId: number; _remoteAddress: string }
+    >;
+
+    SetTrustedRemoteAddress(
+      _remoteChainId?: null,
+      _remoteAddress?: null
+    ): TypedEventFilter<
+      [number, string],
+      { _remoteChainId: number; _remoteAddress: string }
     >;
 
     "SetUseCustomAdapterParams(bool)"(
@@ -1465,6 +1582,8 @@ export class OFTUpgradeable extends BaseContract {
 
   estimateGas: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
     FUNCTION_TYPE_SEND(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1528,11 +1647,6 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -1546,6 +1660,11 @@ export class OFTUpgradeable extends BaseContract {
 
     getRoleMemberCount(
       role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1599,6 +1718,8 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    precrime(overrides?: CallOverrides): Promise<BigNumber>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1638,10 +1759,15 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setPrecrime(
+      _precrime: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1657,7 +1783,13 @@ export class OFTUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1672,6 +1804,8 @@ export class OFTUpgradeable extends BaseContract {
     ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    token(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1698,6 +1832,10 @@ export class OFTUpgradeable extends BaseContract {
 
   populateTransaction: {
     DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1768,11 +1906,6 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -1786,6 +1919,11 @@ export class OFTUpgradeable extends BaseContract {
 
     getRoleMemberCount(
       role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1839,6 +1977,8 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    precrime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1878,10 +2018,15 @@ export class OFTUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPrecrime(
+      _precrime: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1897,7 +2042,13 @@ export class OFTUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1912,6 +2063,8 @@ export class OFTUpgradeable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

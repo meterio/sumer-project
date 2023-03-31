@@ -21,14 +21,8 @@ const _abi = [
       },
       {
         indexed: true,
-        internalType: "bytes",
-        name: "_srcAddress",
-        type: "bytes",
-      },
-      {
-        indexed: true,
         internalType: "address",
-        name: "_toAddress",
+        name: "_to",
         type: "address",
       },
       {
@@ -36,12 +30,6 @@ const _abi = [
         internalType: "uint256",
         name: "_amount",
         type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "_nonce",
-        type: "uint64",
       },
     ],
     name: "ReceiveFromChain",
@@ -52,18 +40,18 @@ const _abi = [
     inputs: [
       {
         indexed: true,
-        internalType: "address",
-        name: "_sender",
-        type: "address",
-      },
-      {
-        indexed: true,
         internalType: "uint16",
         name: "_dstChainId",
         type: "uint16",
       },
       {
         indexed: true,
+        internalType: "address",
+        name: "_from",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "bytes",
         name: "_toAddress",
         type: "bytes",
@@ -74,14 +62,21 @@ const _abi = [
         name: "_amount",
         type: "uint256",
       },
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "_nonce",
-        type: "uint64",
-      },
     ],
     name: "SendToChain",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "_useCustomAdapterParams",
+        type: "bool",
+      },
+    ],
+    name: "SetUseCustomAdapterParams",
     type: "event",
   },
   {
@@ -198,6 +193,19 @@ const _abi = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "token",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",

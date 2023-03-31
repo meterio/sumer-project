@@ -21,4 +21,4 @@ baseRatePerYear 0.02
 multiplierPerYear 0.3
 -----------------------------------------------------------
 # suUSD、suETH、suBTC
-ZeroInterestRateModel:0x3df4f99ceaea8f3d4dda6e820d88471059409964
+ZeroInterestRateModel:0xd5EEe630b58095A4655f0FC2B2600c88E9fD0e9e

@@ -10,11 +10,10 @@ abstract contract OFTCore is NonblockingLzApp, IOFTCore {
   using BytesLib for bytes;
 
   uint256 public constant NO_EXTRA_GAS = 0;
-
   // packet type
   uint16 public constant PT_SEND = 0;
-
   bool public useCustomAdapterParams;
+
 
   constructor(address _lzEndpoint) NonblockingLzApp(_lzEndpoint) {}
 
@@ -84,12 +83,7 @@ abstract contract OFTCore is NonblockingLzApp, IOFTCore {
     emit SendToChain(_dstChainId, _from, _toAddress, amount);
   }
 
-  function _sendAck(
-    uint16 _srcChainId,
-    bytes memory,
-    uint64,
-    bytes memory _payload
-  ) internal virtual {
+  function _sendAck(uint16 _srcChainId, bytes memory, uint64, bytes memory _payload) internal virtual {
     (, bytes memory toAddressBytes, uint256 amount) = abi.decode(_payload, (uint16, bytes, uint256));
 
     address to = toAddressBytes.toAddress(0);
@@ -118,9 +112,5 @@ abstract contract OFTCore is NonblockingLzApp, IOFTCore {
     uint256 _amount
   ) internal virtual returns (uint256);
 
-  function _creditTo(
-    uint16 _srcChainId,
-    address _toAddress,
-    uint256 _amount
-  ) internal virtual returns (uint256);
+  function _creditTo(uint16 _srcChainId, address _toAddress, uint256 _amount) internal virtual returns (uint256);
 }

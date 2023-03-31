@@ -35,11 +35,7 @@ contract OFT is OFTCore, ERC20, IOFT {
     return _amount;
   }
 
-  function _creditTo(
-    uint16,
-    address _toAddress,
-    uint256 _amount
-  ) internal virtual override returns (uint256) {
+  function _creditTo(uint16, address _toAddress, uint256 _amount) internal virtual override returns (uint256) {
     _mint(_toAddress, _amount);
     return _amount;
   }

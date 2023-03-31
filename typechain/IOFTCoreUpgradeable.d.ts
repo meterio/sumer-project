@@ -25,6 +25,7 @@ interface IOFTCoreUpgradeableInterface extends ethers.utils.Interface {
     "estimateSendFee(uint16,bytes,uint256,bool,bytes)": FunctionFragment;
     "sendFrom(address,uint16,bytes,uint256,address,address,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "token()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -51,6 +52,7 @@ interface IOFTCoreUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "token", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "circulatingSupply",
@@ -65,34 +67,38 @@ interface IOFTCoreUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
 
   events: {
-    "ReceiveFromChain(uint16,bytes,address,uint256,uint64)": EventFragment;
-    "SendToChain(address,uint16,bytes,uint256,uint64)": EventFragment;
+    "ReceiveFromChain(uint16,address,uint256)": EventFragment;
+    "SendToChain(uint16,address,bytes,uint256)": EventFragment;
+    "SetUseCustomAdapterParams(bool)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ReceiveFromChain"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SendToChain"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetUseCustomAdapterParams"): EventFragment;
 }
 
 export type ReceiveFromChainEvent = TypedEvent<
-  [number, string, string, BigNumber, BigNumber] & {
+  [number, string, BigNumber] & {
     _srcChainId: number;
-    _srcAddress: string;
-    _toAddress: string;
+    _to: string;
     _amount: BigNumber;
-    _nonce: BigNumber;
   }
 >;
 
 export type SendToChainEvent = TypedEvent<
-  [string, number, string, BigNumber, BigNumber] & {
-    _sender: string;
+  [number, string, string, BigNumber] & {
     _dstChainId: number;
+    _from: string;
     _toAddress: string;
     _amount: BigNumber;
-    _nonce: BigNumber;
   }
+>;
+
+export type SetUseCustomAdapterParamsEvent = TypedEvent<
+  [boolean] & { _useCustomAdapterParams: boolean }
 >;
 
 export class IOFTCoreUpgradeable extends BaseContract {
@@ -167,6 +173,8 @@ export class IOFTCoreUpgradeable extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    token(overrides?: CallOverrides): Promise<[string]>;
   };
 
   circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
@@ -198,6 +206,8 @@ export class IOFTCoreUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  token(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     circulatingSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -227,76 +237,66 @@ export class IOFTCoreUpgradeable extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    token(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "ReceiveFromChain(uint16,bytes,address,uint256,uint64)"(
+    "ReceiveFromChain(uint16,address,uint256)"(
       _srcChainId?: BigNumberish | null,
-      _srcAddress?: BytesLike | null,
-      _toAddress?: string | null,
-      _amount?: null,
-      _nonce?: null
+      _to?: string | null,
+      _amount?: null
     ): TypedEventFilter<
-      [number, string, string, BigNumber, BigNumber],
-      {
-        _srcChainId: number;
-        _srcAddress: string;
-        _toAddress: string;
-        _amount: BigNumber;
-        _nonce: BigNumber;
-      }
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
     >;
 
     ReceiveFromChain(
       _srcChainId?: BigNumberish | null,
-      _srcAddress?: BytesLike | null,
-      _toAddress?: string | null,
-      _amount?: null,
-      _nonce?: null
+      _to?: string | null,
+      _amount?: null
     ): TypedEventFilter<
-      [number, string, string, BigNumber, BigNumber],
-      {
-        _srcChainId: number;
-        _srcAddress: string;
-        _toAddress: string;
-        _amount: BigNumber;
-        _nonce: BigNumber;
-      }
+      [number, string, BigNumber],
+      { _srcChainId: number; _to: string; _amount: BigNumber }
     >;
 
-    "SendToChain(address,uint16,bytes,uint256,uint64)"(
-      _sender?: string | null,
+    "SendToChain(uint16,address,bytes,uint256)"(
       _dstChainId?: BigNumberish | null,
-      _toAddress?: BytesLike | null,
-      _amount?: null,
-      _nonce?: null
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
     ): TypedEventFilter<
-      [string, number, string, BigNumber, BigNumber],
+      [number, string, string, BigNumber],
       {
-        _sender: string;
         _dstChainId: number;
+        _from: string;
         _toAddress: string;
         _amount: BigNumber;
-        _nonce: BigNumber;
       }
     >;
 
     SendToChain(
-      _sender?: string | null,
       _dstChainId?: BigNumberish | null,
-      _toAddress?: BytesLike | null,
-      _amount?: null,
-      _nonce?: null
+      _from?: string | null,
+      _toAddress?: null,
+      _amount?: null
     ): TypedEventFilter<
-      [string, number, string, BigNumber, BigNumber],
+      [number, string, string, BigNumber],
       {
-        _sender: string;
         _dstChainId: number;
+        _from: string;
         _toAddress: string;
         _amount: BigNumber;
-        _nonce: BigNumber;
       }
     >;
+
+    "SetUseCustomAdapterParams(bool)"(
+      _useCustomAdapterParams?: null
+    ): TypedEventFilter<[boolean], { _useCustomAdapterParams: boolean }>;
+
+    SetUseCustomAdapterParams(
+      _useCustomAdapterParams?: null
+    ): TypedEventFilter<[boolean], { _useCustomAdapterParams: boolean }>;
   };
 
   estimateGas: {
@@ -326,6 +326,8 @@ export class IOFTCoreUpgradeable extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    token(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -355,5 +357,7 @@ export class IOFTCoreUpgradeable extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

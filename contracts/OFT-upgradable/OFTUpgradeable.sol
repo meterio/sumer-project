@@ -25,13 +25,13 @@ contract OFTUpgradeable is Initializable, OFTCoreUpgradeable, ERC20Upgradeable, 
     address _lzEndpoint
   ) internal onlyInitializing {}
 
-  function supportsInterface(bytes4 interfaceId)
-    public
-    view
-    virtual
-    override(AccessControlEnumerableUpgradeable, IERC165Upgradeable)
-    returns (bool)
-  {
+  function token() public view virtual override returns (address) {
+    return address(this);
+  }
+
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(AccessControlEnumerableUpgradeable, IERC165Upgradeable) returns (bool) {
     return
       interfaceId == type(IOFTUpgradeable).interfaceId ||
       interfaceId == type(IERC20Upgradeable).interfaceId ||
@@ -54,12 +54,9 @@ contract OFTUpgradeable is Initializable, OFTCoreUpgradeable, ERC20Upgradeable, 
     return _amount;
   }
 
-  function _creditTo(
-    uint16,
-    address _toAddress,
-    uint256 _amount
-  ) internal virtual override {
+  function _creditTo(uint16, address _toAddress, uint256 _amount) internal virtual override returns (uint256) {
     _mint(_toAddress, _amount);
+    return _amount;
   }
 
   /**

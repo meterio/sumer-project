@@ -144,12 +144,13 @@ export default {
       chainId: 83,
       timeout: 99999,
       gasPrice: 500000000000,
-      accounts: [
-        process.env.PRIVATE_KEY_0,
-        process.env.PRIVATE_KEY_1,
-        process.env.PRIVATE_KEY_2,
-        process.env.PRIVATE_KEY_3,
-      ],
+      accounts:{mnemonic:process.env.MNEMONIC_1}
+      // accounts: [
+      //   process.env.PRIVATE_KEY_0,
+      //   process.env.PRIVATE_KEY_1,
+      //   process.env.PRIVATE_KEY_2,
+      //   process.env.PRIVATE_KEY_3,
+      // ],
     },
     metermain: {
       url: argv.meterMainRpcUrl,

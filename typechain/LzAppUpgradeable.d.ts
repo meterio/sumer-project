@@ -22,33 +22,41 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "DEFAULT_PAYLOAD_SIZE_LIMIT()": FunctionFragment;
     "MINTER_ROLE()": FunctionFragment;
     "PAUSER_ROLE()": FunctionFragment;
     "forceResumeReceive(uint16,bytes)": FunctionFragment;
     "getConfig(uint16,uint16,address,uint256)": FunctionFragment;
-    "getGasLimit(bytes)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
+    "getTrustedRemoteAddress(uint16)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "isTrustedRemote(uint16,bytes)": FunctionFragment;
     "lzEndpoint()": FunctionFragment;
     "lzReceive(uint16,bytes,uint64,bytes)": FunctionFragment;
     "minDstGasLookup(uint16,uint256)": FunctionFragment;
+    "precrime()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "setConfig(uint16,uint16,uint256,bytes)": FunctionFragment;
-    "setMinDstGasLookup(uint16,uint256,uint256)": FunctionFragment;
+    "setMinDstGas(uint16,uint16,uint256)": FunctionFragment;
+    "setPrecrime(address)": FunctionFragment;
     "setReceiveVersion(uint16)": FunctionFragment;
     "setSendVersion(uint16)": FunctionFragment;
     "setTrustedRemote(uint16,bytes)": FunctionFragment;
+    "setTrustedRemoteAddress(uint16,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "trustedRemoteLookup(uint16)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "DEFAULT_PAYLOAD_SIZE_LIMIT",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -68,10 +76,6 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getGasLimit",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
   ): string;
@@ -82,6 +86,10 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getRoleMemberCount",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTrustedRemoteAddress",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "grantRole",
@@ -107,6 +115,7 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "minDstGasLookup",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "precrime", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -120,9 +129,10 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMinDstGasLookup",
+    functionFragment: "setMinDstGas",
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "setPrecrime", values: [string]): string;
   encodeFunctionData(
     functionFragment: "setReceiveVersion",
     values: [BigNumberish]
@@ -133,6 +143,10 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setTrustedRemote",
+    values: [BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTrustedRemoteAddress",
     values: [BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
@@ -149,6 +163,10 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "DEFAULT_PAYLOAD_SIZE_LIMIT",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "MINTER_ROLE",
     data: BytesLike
   ): Result;
@@ -162,10 +180,6 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getConfig", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getGasLimit",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
@@ -175,6 +189,10 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getRoleMemberCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTrustedRemoteAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
@@ -189,6 +207,7 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "minDstGasLookup",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "precrime", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -196,7 +215,11 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setConfig", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setMinDstGasLookup",
+    functionFragment: "setMinDstGas",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPrecrime",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -209,6 +232,10 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setTrustedRemote",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTrustedRemoteAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -225,16 +252,22 @@ interface LzAppUpgradeableInterface extends ethers.utils.Interface {
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
+    "SetMinDstGas(uint16,uint16,uint256)": EventFragment;
     "SetMinDstGasLookup(uint16,uint256,uint256)": EventFragment;
+    "SetPrecrime(address)": EventFragment;
     "SetTrustedRemote(uint16,bytes)": EventFragment;
+    "SetTrustedRemoteAddress(uint16,bytes)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetMinDstGas"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMinDstGasLookup"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetPrecrime"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetTrustedRemote"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetTrustedRemoteAddress"): EventFragment;
 }
 
 export type InitializedEvent = TypedEvent<[number] & { version: number }>;
@@ -255,6 +288,14 @@ export type RoleRevokedEvent = TypedEvent<
   [string, string, string] & { role: string; account: string; sender: string }
 >;
 
+export type SetMinDstGasEvent = TypedEvent<
+  [number, number, BigNumber] & {
+    _dstChainId: number;
+    _type: number;
+    _minDstGas: BigNumber;
+  }
+>;
+
 export type SetMinDstGasLookupEvent = TypedEvent<
   [number, BigNumber, BigNumber] & {
     _dstChainId: number;
@@ -263,8 +304,14 @@ export type SetMinDstGasLookupEvent = TypedEvent<
   }
 >;
 
+export type SetPrecrimeEvent = TypedEvent<[string] & { precrime: string }>;
+
 export type SetTrustedRemoteEvent = TypedEvent<
   [number, string] & { _srcChainId: number; _srcAddress: string }
+>;
+
+export type SetTrustedRemoteAddressEvent = TypedEvent<
+  [number, string] & { _remoteChainId: number; _remoteAddress: string }
 >;
 
 export class LzAppUpgradeable extends BaseContract {
@@ -313,6 +360,8 @@ export class LzAppUpgradeable extends BaseContract {
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<[string]>;
@@ -331,11 +380,6 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { gasLimit: BigNumber }>;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     getRoleMember(
@@ -348,6 +392,11 @@ export class LzAppUpgradeable extends BaseContract {
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     grantRole(
       role: BytesLike,
@@ -383,6 +432,8 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    precrime(overrides?: CallOverrides): Promise<[string]>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -403,10 +454,15 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setPrecrime(
+      _precrime: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -422,7 +478,13 @@ export class LzAppUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -438,6 +500,8 @@ export class LzAppUpgradeable extends BaseContract {
   };
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
   MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -457,11 +521,6 @@ export class LzAppUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getGasLimit(
-    _adapterParams: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   getRoleMember(
@@ -474,6 +533,11 @@ export class LzAppUpgradeable extends BaseContract {
     role: BytesLike,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  getTrustedRemoteAddress(
+    _remoteChainId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   grantRole(
     role: BytesLike,
@@ -509,6 +573,8 @@ export class LzAppUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  precrime(overrides?: CallOverrides): Promise<string>;
+
   renounceRole(
     role: BytesLike,
     account: string,
@@ -529,10 +595,15 @@ export class LzAppUpgradeable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setMinDstGasLookup(
+  setMinDstGas(
     _dstChainId: BigNumberish,
-    _type: BigNumberish,
-    _dstGasAmount: BigNumberish,
+    _packetType: BigNumberish,
+    _minGas: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setPrecrime(
+    _precrime: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -548,7 +619,13 @@ export class LzAppUpgradeable extends BaseContract {
 
   setTrustedRemote(
     _srcChainId: BigNumberish,
-    _srcAddress: BytesLike,
+    _path: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setTrustedRemoteAddress(
+    _remoteChainId: BigNumberish,
+    _remoteAddress: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -564,6 +641,8 @@ export class LzAppUpgradeable extends BaseContract {
 
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
     MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -583,11 +662,6 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
     getRoleMember(
@@ -600,6 +674,11 @@ export class LzAppUpgradeable extends BaseContract {
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     grantRole(
       role: BytesLike,
@@ -635,6 +714,8 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    precrime(overrides?: CallOverrides): Promise<string>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -655,12 +736,14 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    setPrecrime(_precrime: string, overrides?: CallOverrides): Promise<void>;
 
     setReceiveVersion(
       _version: BigNumberish,
@@ -674,7 +757,13 @@ export class LzAppUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -752,6 +841,24 @@ export class LzAppUpgradeable extends BaseContract {
       { role: string; account: string; sender: string }
     >;
 
+    "SetMinDstGas(uint16,uint16,uint256)"(
+      _dstChainId?: null,
+      _type?: null,
+      _minDstGas?: null
+    ): TypedEventFilter<
+      [number, number, BigNumber],
+      { _dstChainId: number; _type: number; _minDstGas: BigNumber }
+    >;
+
+    SetMinDstGas(
+      _dstChainId?: null,
+      _type?: null,
+      _minDstGas?: null
+    ): TypedEventFilter<
+      [number, number, BigNumber],
+      { _dstChainId: number; _type: number; _minDstGas: BigNumber }
+    >;
+
     "SetMinDstGasLookup(uint16,uint256,uint256)"(
       _dstChainId?: null,
       _type?: null,
@@ -770,6 +877,14 @@ export class LzAppUpgradeable extends BaseContract {
       { _dstChainId: number; _type: BigNumber; _dstGasAmount: BigNumber }
     >;
 
+    "SetPrecrime(address)"(
+      precrime?: null
+    ): TypedEventFilter<[string], { precrime: string }>;
+
+    SetPrecrime(
+      precrime?: null
+    ): TypedEventFilter<[string], { precrime: string }>;
+
     "SetTrustedRemote(uint16,bytes)"(
       _srcChainId?: null,
       _srcAddress?: null
@@ -785,10 +900,28 @@ export class LzAppUpgradeable extends BaseContract {
       [number, string],
       { _srcChainId: number; _srcAddress: string }
     >;
+
+    "SetTrustedRemoteAddress(uint16,bytes)"(
+      _remoteChainId?: null,
+      _remoteAddress?: null
+    ): TypedEventFilter<
+      [number, string],
+      { _remoteChainId: number; _remoteAddress: string }
+    >;
+
+    SetTrustedRemoteAddress(
+      _remoteChainId?: null,
+      _remoteAddress?: null
+    ): TypedEventFilter<
+      [number, string],
+      { _remoteChainId: number; _remoteAddress: string }
+    >;
   };
 
   estimateGas: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
     MINTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -808,11 +941,6 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -826,6 +954,11 @@ export class LzAppUpgradeable extends BaseContract {
 
     getRoleMemberCount(
       role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -863,6 +996,8 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    precrime(overrides?: CallOverrides): Promise<BigNumber>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -883,10 +1018,15 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setPrecrime(
+      _precrime: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -902,7 +1042,13 @@ export class LzAppUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -919,6 +1065,10 @@ export class LzAppUpgradeable extends BaseContract {
 
   populateTransaction: {
     DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    DEFAULT_PAYLOAD_SIZE_LIMIT(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -940,11 +1090,6 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getGasLimit(
-      _adapterParams: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -958,6 +1103,11 @@ export class LzAppUpgradeable extends BaseContract {
 
     getRoleMemberCount(
       role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -995,6 +1145,8 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    precrime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1015,10 +1167,15 @@ export class LzAppUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setMinDstGasLookup(
+    setMinDstGas(
       _dstChainId: BigNumberish,
-      _type: BigNumberish,
-      _dstGasAmount: BigNumberish,
+      _packetType: BigNumberish,
+      _minGas: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPrecrime(
+      _precrime: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1034,7 +1191,13 @@ export class LzAppUpgradeable extends BaseContract {
 
     setTrustedRemote(
       _srcChainId: BigNumberish,
-      _srcAddress: BytesLike,
+      _path: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTrustedRemoteAddress(
+      _remoteChainId: BigNumberish,
+      _remoteAddress: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

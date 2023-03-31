@@ -65,14 +65,8 @@ const _abi = [
       },
       {
         indexed: true,
-        internalType: "bytes",
-        name: "_srcAddress",
-        type: "bytes",
-      },
-      {
-        indexed: true,
         internalType: "address",
-        name: "_toAddress",
+        name: "_to",
         type: "address",
       },
       {
@@ -80,12 +74,6 @@ const _abi = [
         internalType: "uint256",
         name: "_amount",
         type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "_nonce",
-        type: "uint64",
       },
     ],
     name: "ReceiveFromChain",
@@ -171,18 +159,18 @@ const _abi = [
     inputs: [
       {
         indexed: true,
-        internalType: "address",
-        name: "_sender",
-        type: "address",
-      },
-      {
-        indexed: true,
         internalType: "uint16",
         name: "_dstChainId",
         type: "uint16",
       },
       {
         indexed: true,
+        internalType: "address",
+        name: "_from",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "bytes",
         name: "_toAddress",
         type: "bytes",
@@ -193,14 +181,33 @@ const _abi = [
         name: "_amount",
         type: "uint256",
       },
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "_nonce",
-        type: "uint64",
-      },
     ],
     name: "SendToChain",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "_dstChainId",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "_type",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_minDstGas",
+        type: "uint256",
+      },
+    ],
+    name: "SetMinDstGas",
     type: "event",
   },
   {
@@ -233,6 +240,19 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "precrime",
+        type: "address",
+      },
+    ],
+    name: "SetPrecrime",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint16",
         name: "_srcChainId",
         type: "uint16",
@@ -245,6 +265,25 @@ const _abi = [
       },
     ],
     name: "SetTrustedRemote",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "_remoteAddress",
+        type: "bytes",
+      },
+    ],
+    name: "SetTrustedRemoteAddress",
     type: "event",
   },
   {
@@ -268,6 +307,19 @@ const _abi = [
         internalType: "bytes32",
         name: "",
         type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "DEFAULT_PAYLOAD_SIZE_LIMIT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -466,25 +518,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes",
-        name: "_adapterParams",
-        type: "bytes",
-      },
-    ],
-    name: "getGasLimit",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "gasLimit",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "role",
         type: "bytes32",
@@ -539,6 +572,25 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+    ],
+    name: "getTrustedRemoteAddress",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes",
       },
     ],
     stateMutability: "view",
@@ -704,6 +756,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "precrime",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "bytes32",
@@ -846,17 +911,30 @@ const _abi = [
         type: "uint16",
       },
       {
-        internalType: "uint256",
-        name: "_type",
-        type: "uint256",
+        internalType: "uint16",
+        name: "_packetType",
+        type: "uint16",
       },
       {
         internalType: "uint256",
-        name: "_dstGasAmount",
+        name: "_minGas",
         type: "uint256",
       },
     ],
-    name: "setMinDstGasLookup",
+    name: "setMinDstGas",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_precrime",
+        type: "address",
+      },
+    ],
+    name: "setPrecrime",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -896,11 +974,29 @@ const _abi = [
       },
       {
         internalType: "bytes",
-        name: "_srcAddress",
+        name: "_path",
         type: "bytes",
       },
     ],
     name: "setTrustedRemote",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+      {
+        internalType: "bytes",
+        name: "_remoteAddress",
+        type: "bytes",
+      },
+    ],
+    name: "setTrustedRemoteAddress",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -932,6 +1028,19 @@ const _abi = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "token",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",

@@ -108,7 +108,7 @@
   },
   "suTokens": {
     "implementation": "0xd1EdB2B521A9C1293eCAfdD724Af1875dd02d88b",
-    "underly_implementation": "0xA0EfFDb6d35786fA70F91508d989Be5955163A3c",
+    "underly_implementation": "0x5D9d509BbFE236e87990FeA86F15acE27c6aB27C",
     "tokens": [
       {
         "name": "suUSD",

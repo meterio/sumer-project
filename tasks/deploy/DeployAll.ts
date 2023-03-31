@@ -6,7 +6,7 @@ import { Comptroller, FeedPriceOracle, UnderwriterAdmin } from '../../typechain'
 import { BigNumber } from 'ethers';
 const MANTISSA_DECIMALS = 18;
 const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
-
+// 0x0000000000000000000000000000000000000000
 /**
 npx hardhat all \
 --json "config json file" \
@@ -107,10 +107,7 @@ task('all', 'deploy contract')
     }
 
     if (config.suInterestRateModel.address == '') {
-      const suInterestRateModel = await run('di', {
-        blocks: config.suInterestRateModel.blocks,
-        base: config.suInterestRateModel.base,
-        mul: config.suInterestRateModel.mul,
+      const suInterestRateModel = await run('zim', {
         rpc: rpc,
         pk: pk,
         gasprice: gasprice
@@ -305,12 +302,12 @@ task('all', 'deploy contract')
           config.suTokens.tokens[i].underly = proxy.address;
           writeFileSync(json, JSON.stringify(config));
         }
+        const suTokenSymbol = `sdr${suToken.symbol}`;
         if (suToken.address == '') {
-          const suTokenSymbol = `sdr${suToken.symbol}`;
           let data = suErc20.interface.encodeFunctionData('initialize', [
             config.suTokens.tokens[i].underly,
             config.comptroller.address,
-            config.cInterestRateModel.address,
+            config.suInterestRateModel.address,
             ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
             suTokenSymbol,
             suTokenSymbol,
@@ -327,15 +324,17 @@ task('all', 'deploy contract')
           });
           config.suTokens.tokens[i].address = proxy.address;
           writeFileSync(json, JSON.stringify(config));
-          const underly = await ethers.getContractAt(
-            'SumerOFTUpgradeable',
-            config.suTokens.tokens[i].underly,
-            wallet
-          );
-          let gas = await underly.estimateGas.grantRole(MINTER_ROLE, proxy.address);
-          const receipt = await underly.grantRole(MINTER_ROLE, proxy.address, { gasLimit: gas });
+        }
+
+        const underly = await ethers.getContractAt('SumerOFTUpgradeable', config.suTokens.tokens[i].underly, wallet);
+        suToken.address = config.suTokens.tokens[i].address;
+        const hasRole = await underly.hasRole(MINTER_ROLE, suToken.address);
+        if (!hasRole) {
+          let gas = await underly.estimateGas.grantRole(MINTER_ROLE, suToken.address);
+          const receipt = await underly.grantRole(MINTER_ROLE, suToken.address, { gasLimit: gas });
           log.info(`${suTokenSymbol} add minter tx:`, receipt.hash);
         }
+
         const market = await comptroller.markets(suToken.address);
         if (!market.isListed || market.equalAssetGrouId != suToken.groupId) {
           let gas = await comptroller.estimateGas._supportMarket(suToken.address, suToken.groupId);
@@ -350,7 +349,7 @@ task('all', 'deploy contract')
           let receipt = await suTokenInst.changeCtoken({ gasLimit: gas });
           log.info('changeCtoken:', isCToken, receipt.hash);
         }
-        
+
         let price =
           (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(suToken.address) : BigNumber.from(0);
         if (price.eq(BigNumber.from(0))) {

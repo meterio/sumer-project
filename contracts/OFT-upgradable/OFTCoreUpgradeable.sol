@@ -6,11 +6,12 @@ import './interfaces/IOFTCoreUpgradeable.sol';
 import './lzApp/NonblockingLzAppUpgradeable.sol';
 
 abstract contract OFTCoreUpgradeable is Initializable, NonblockingLzAppUpgradeable, IOFTCoreUpgradeable {
+  using BytesLib for bytes;
+
   uint256 public constant NO_EXTRA_GAS = 0;
   uint256 public constant FUNCTION_TYPE_SEND = 1;
   bool public useCustomAdapterParams;
 
-  event SetUseCustomAdapterParams(bool _useCustomAdapterParams);
 
   function __OFTCoreUpgradeable_init(address _endpoint) internal onlyInitializing {
     __OFTCoreUpgradeable_init_unchained(_endpoint);
@@ -22,26 +23,31 @@ abstract contract OFTCoreUpgradeable is Initializable, NonblockingLzAppUpgradeab
 
   function estimateSendFee(
     uint16 _dstChainId,
-    bytes memory _toAddress,
+    bytes calldata _toAddress,
     uint256 _amount,
     bool _useZro,
-    bytes memory _adapterParams
+    bytes calldata _adapterParams
   ) public view virtual override returns (uint256 nativeFee, uint256 zroFee) {
-    // mock the payload for send()
-    bytes memory payload = abi.encode(_toAddress, _amount);
+    // mock the payload for sendFrom()
+    bytes memory payload = abi.encode(0, _toAddress, _amount);
     return lzEndpoint.estimateFees(_dstChainId, address(this), payload, _useZro, _adapterParams);
   }
 
   function sendFrom(
     address _from,
     uint16 _dstChainId,
-    bytes memory _toAddress,
+    bytes calldata _toAddress,
     uint256 _amount,
     address payable _refundAddress,
     address _zroPaymentAddress,
-    bytes memory _adapterParams
+    bytes calldata _adapterParams
   ) public payable virtual override {
     _send(_from, _dstChainId, _toAddress, _amount, _refundAddress, _zroPaymentAddress, _adapterParams);
+  }
+
+  function setUseCustomAdapterParams(bool _useCustomAdapterParams) public virtual onlyAdmin {
+    useCustomAdapterParams = _useCustomAdapterParams;
+    emit SetUseCustomAdapterParams(_useCustomAdapterParams);
   }
 
   function _nonblockingLzReceive(
@@ -50,16 +56,16 @@ abstract contract OFTCoreUpgradeable is Initializable, NonblockingLzAppUpgradeab
     uint64 _nonce,
     bytes memory _payload
   ) internal virtual override {
-    // decode and load the toAddress
-    (bytes memory toAddressBytes, uint256 amount) = abi.decode(_payload, (bytes, uint256));
-    address toAddress;
+    uint16 packetType;
     assembly {
-      toAddress := mload(add(toAddressBytes, 20))
+      packetType := mload(add(_payload, 32))
     }
 
-    _creditTo(_srcChainId, toAddress, amount);
-
-    emit ReceiveFromChain(_srcChainId, _srcAddress, toAddress, amount, _nonce);
+    if (packetType == 0) {
+      _sendAck(_srcChainId, _srcAddress, _nonce, _payload);
+    } else {
+      revert('OFTCore: unknown packet type');
+    }
   }
 
   function _send(
@@ -71,23 +77,36 @@ abstract contract OFTCoreUpgradeable is Initializable, NonblockingLzAppUpgradeab
     address _zroPaymentAddress,
     bytes memory _adapterParams
   ) internal virtual {
+    _checkAdapterParams(_dstChainId, 0, _adapterParams, NO_EXTRA_GAS);
+
     uint256 amount = _debitFrom(_from, _dstChainId, _toAddress, _amount);
 
-    bytes memory payload = abi.encode(_toAddress, amount);
-    if (useCustomAdapterParams) {
-      _checkGasLimit(_dstChainId, FUNCTION_TYPE_SEND, _adapterParams, NO_EXTRA_GAS);
-    } else {
-      require(_adapterParams.length == 0, 'LzApp: _adapterParams must be empty.');
-    }
-    _lzSend(_dstChainId, payload, _refundAddress, _zroPaymentAddress, _adapterParams);
+    bytes memory lzPayload = abi.encode(0, _toAddress, amount);
+    _lzSend(_dstChainId, lzPayload, _refundAddress, _zroPaymentAddress, _adapterParams, msg.value);
 
-    uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
-    emit SendToChain(_from, _dstChainId, _toAddress, amount, nonce);
+    emit SendToChain(_dstChainId, _from, _toAddress, amount);
   }
 
-  function setUseCustomAdapterParams(bool _useCustomAdapterParams) external onlyAdmin {
-    useCustomAdapterParams = _useCustomAdapterParams;
-    emit SetUseCustomAdapterParams(_useCustomAdapterParams);
+  function _sendAck(uint16 _srcChainId, bytes memory, uint64, bytes memory _payload) internal virtual {
+    (, bytes memory toAddressBytes, uint256 amount) = abi.decode(_payload, (uint16, bytes, uint256));
+
+    address to = toAddressBytes.toAddress(0);
+
+    amount = _creditTo(_srcChainId, to, amount);
+    emit ReceiveFromChain(_srcChainId, to, amount);
+  }
+
+  function _checkAdapterParams(
+    uint16 _dstChainId,
+    uint16 _pkType,
+    bytes memory _adapterParams,
+    uint256 _extraGas
+  ) internal virtual {
+    if (useCustomAdapterParams) {
+      _checkGasLimit(_dstChainId, _pkType, _adapterParams, _extraGas);
+    } else {
+      require(_adapterParams.length == 0, 'OFTCore: _adapterParams must be empty.');
+    }
   }
 
   function _debitFrom(
@@ -97,11 +116,7 @@ abstract contract OFTCoreUpgradeable is Initializable, NonblockingLzAppUpgradeab
     uint256 _amount
   ) internal virtual returns (uint256);
 
-  function _creditTo(
-    uint16 _srcChainId,
-    address _toAddress,
-    uint256 _amount
-  ) internal virtual;
+  function _creditTo(uint16 _srcChainId, address _toAddress, uint256 _amount) internal virtual returns (uint256);
 
   /**
    * @dev This empty reserved space is put in place to allow future versions to add new

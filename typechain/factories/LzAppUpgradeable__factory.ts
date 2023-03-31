@@ -109,6 +109,31 @@ const _abi = [
       },
       {
         indexed: false,
+        internalType: "uint16",
+        name: "_type",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_minDstGas",
+        type: "uint256",
+      },
+    ],
+    name: "SetMinDstGas",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "_dstChainId",
+        type: "uint16",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
         name: "_type",
         type: "uint256",
@@ -121,6 +146,19 @@ const _abi = [
       },
     ],
     name: "SetMinDstGasLookup",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "precrime",
+        type: "address",
+      },
+    ],
+    name: "SetPrecrime",
     type: "event",
   },
   {
@@ -143,6 +181,25 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "_remoteAddress",
+        type: "bytes",
+      },
+    ],
+    name: "SetTrustedRemoteAddress",
+    type: "event",
+  },
+  {
     inputs: [],
     name: "DEFAULT_ADMIN_ROLE",
     outputs: [
@@ -150,6 +207,19 @@ const _abi = [
         internalType: "bytes32",
         name: "",
         type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "DEFAULT_PAYLOAD_SIZE_LIMIT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -236,25 +306,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes",
-        name: "_adapterParams",
-        type: "bytes",
-      },
-    ],
-    name: "getGasLimit",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "gasLimit",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "role",
         type: "bytes32",
@@ -309,6 +360,25 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+    ],
+    name: "getTrustedRemoteAddress",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes",
       },
     ],
     stateMutability: "view",
@@ -446,6 +516,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "precrime",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "bytes32",
@@ -517,17 +600,30 @@ const _abi = [
         type: "uint16",
       },
       {
-        internalType: "uint256",
-        name: "_type",
-        type: "uint256",
+        internalType: "uint16",
+        name: "_packetType",
+        type: "uint16",
       },
       {
         internalType: "uint256",
-        name: "_dstGasAmount",
+        name: "_minGas",
         type: "uint256",
       },
     ],
-    name: "setMinDstGasLookup",
+    name: "setMinDstGas",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_precrime",
+        type: "address",
+      },
+    ],
+    name: "setPrecrime",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -567,11 +663,29 @@ const _abi = [
       },
       {
         internalType: "bytes",
-        name: "_srcAddress",
+        name: "_path",
         type: "bytes",
       },
     ],
     name: "setTrustedRemote",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+      {
+        internalType: "bytes",
+        name: "_remoteAddress",
+        type: "bytes",
+      },
+    ],
+    name: "setTrustedRemoteAddress",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

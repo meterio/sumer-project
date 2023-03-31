@@ -165,11 +165,7 @@ abstract contract LzApp is OFTAccessControl, ILayerZeroReceiver, ILayerZeroUserA
     emit SetPrecrime(_precrime);
   }
 
-  function setMinDstGas(
-    uint16 _dstChainId,
-    uint16 _packetType,
-    uint256 _minGas
-  ) external onlyAdmin {
+  function setMinDstGas(uint16 _dstChainId, uint16 _packetType, uint256 _minGas) external onlyAdmin {
     require(_minGas > 0, 'LzApp: invalid minGas');
     minDstGasLookup[_dstChainId][_packetType] = _minGas;
     emit SetMinDstGas(_dstChainId, _packetType, _minGas);
