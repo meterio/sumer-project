@@ -41,6 +41,7 @@ contract CompoundLens {
   function cTokenMetadata(ICToken cToken) public returns (CTokenMetadata memory) {
     uint256 exchangeRateCurrent = cToken.exchangeRateCurrent();
     IComptroller comptroller = IComptroller(address(cToken.comptroller()));
+    IUnderwriterAdmin ua = IUnderwriterAdmin(comptroller.underWriterAdmin());
     (bool isListed, uint256 collateralFactorMantissa) = comptroller.markets(address(cToken));
     address underlyingAssetAddress;
     uint256 underlyingDecimals;
@@ -72,7 +73,7 @@ contract CompoundLens {
         underlyingDecimals: underlyingDecimals,
         isCToken: cToken.isCToken(),
         isCEther: cToken.isCEther(),
-        borrowCap: comptroller._getMarketBorrowCap(address(cToken)),
+        borrowCap: ua._getMarketBorrowCap(address(cToken)),
         depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
         liquidationIncentive: comptroller.liquidationIncentiveMantissa()
       });

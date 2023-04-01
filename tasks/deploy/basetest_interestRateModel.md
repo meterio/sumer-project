@@ -10,9 +10,9 @@ kink 0.8
 JumpRateModelV2:0x7254b2e250d0d539103B1563ac0958c5910ca239
 blocksPerYearOnChain: 15768000
 baseRatePerYear 0.02  
-multiplierPerYear 0.225 
-jumpMultiplierPerYear 49
-kink 0.8 
+multiplierPerYear 0.15 
+jumpMultiplierPerYear 3 
+kink 0.6 
 -----------------------------------------------------------
 # BTC
 WhitePaperInterestRateModel:0xac13A5e7D237099C51e11f89eD0b8c44719e1900
