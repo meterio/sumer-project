@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity 0.8.11;
 
 enum Error {
   NO_ERROR,
@@ -118,13 +118,15 @@ library TokenErrorReporter {
    **/
   event Failure(uint256 error, uint256 info, uint256 detail);
 
+  error TokenError(uint256 errorCode, uint256 infoCode, uint256 detailCode);
+
   /**
    * @dev use this when reporting a known error from the money market or a non-upgradeable collaborator
    */
   function fail(Error err, FailureInfo info) internal returns (uint256) {
-    emit Failure(uint256(err), uint256(info), 0);
-
-    return uint256(err);
+    // emit Failure(uint256(err), uint256(info), 0);
+    revert TokenError(uint256(err), uint256(info), 0);
+    // return uint256(err);
   }
 
   /**
@@ -135,8 +137,8 @@ library TokenErrorReporter {
     FailureInfo info,
     uint256 opaqueError
   ) internal returns (uint256) {
-    emit Failure(uint256(err), uint256(info), opaqueError);
-
-    return uint256(err);
+    // emit Failure(uint256(err), uint256(info), opaqueError);
+    revert TokenError(uint256(err), uint256(info), opaqueError);
+    // return uint256(err);
   }
 }

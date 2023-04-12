@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity 0.8.11;
 
 import '../Comptroller/Interfaces/IComptroller.sol';
 import '../Comptroller/Interfaces/IUnderwriterAdmin.sol';
@@ -46,7 +46,10 @@ abstract contract CToken is CTokenStorage {
     string memory symbol_,
     uint8 decimals_,
     bool isCToken_,
-    address payable _admin
+    address payable _admin,
+    uint256 intraRateMantissa_,
+    uint256 interRateMantissa_,
+    uint256 mintRateMantissa_
   ) internal {
     admin = _admin;
     require(accrualBlockNumber == 0 && borrowIndex == 0, 'market may only be initialized once');
@@ -56,6 +59,15 @@ abstract contract CToken is CTokenStorage {
     // Set initial exchange rate
     initialExchangeRateMantissa = initialExchangeRateMantissa_;
     require(initialExchangeRateMantissa > 0, 'initial exchange rate must be greater than zero.');
+
+    intraRateMantissa = intraRateMantissa_;
+    require(intraRateMantissa > 0 && intraRateMantissa < 1e18, 'rate must in [0,100]');
+
+    interRateMantissa = interRateMantissa_;
+    require(interRateMantissa > 0 && interRateMantissa < 1e18, 'rate must in [0,100]');
+
+    mintRateMantissa = mintRateMantissa_;
+    require(mintRateMantissa > 0 && mintRateMantissa < 1e18, 'rate must in [0,100]');
 
     // Set the comptroller
     // Set market's comptroller to newComptroller
@@ -109,7 +121,7 @@ abstract contract CToken is CTokenStorage {
     /* Get the allowance, infinite for the account owner */
     uint256 startingAllowance = 0;
     if (spender == src) {
-      startingAllowance = uint256(-1);
+      startingAllowance = uint256(0);
     } else {
       startingAllowance = transferAllowances[src][spender];
     }
@@ -143,7 +155,7 @@ abstract contract CToken is CTokenStorage {
     accountTokens[dst] = dstTokensNew;
 
     /* Eat some of the allowance (if necessary) */
-    if (startingAllowance != uint256(-1)) {
+    if (startingAllowance != uint256(0)) {
       transferAllowances[src][spender] = allowanceNew;
     }
 
@@ -651,7 +663,7 @@ abstract contract CToken is CTokenStorage {
       return Error(error).fail(FailureInfo.REDEEM_ACCRUE_INTEREST_FAILED);
     }
     // redeemFresh emits redeem-specific logs on errors, so we don't need to
-    return redeemFresh(msg.sender, redeemTokens, 0);
+    return redeemFresh(payable(msg.sender), redeemTokens, 0);
   }
 
   /**
@@ -667,7 +679,7 @@ abstract contract CToken is CTokenStorage {
       return Error(error).fail(FailureInfo.REDEEM_ACCRUE_INTEREST_FAILED);
     }
     // redeemFresh emits redeem-specific logs on errors, so we don't need to
-    return redeemFresh(msg.sender, 0, redeemAmount);
+    return redeemFresh(payable(msg.sender), 0, redeemAmount);
   }
 
   struct RedeemLocalVars {
@@ -805,7 +817,7 @@ abstract contract CToken is CTokenStorage {
       return Error(error).fail(FailureInfo.BORROW_ACCRUE_INTEREST_FAILED);
     }
     // borrowFresh emits borrow-specific logs on errors, so we don't need to
-    return borrowFresh(msg.sender, borrowAmount);
+    return borrowFresh(payable(msg.sender), borrowAmount);
   }
 
   struct BorrowLocalVars {
@@ -979,7 +991,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* If repayAmount == -1, repayAmount = accountBorrows */
-    if (repayAmount == uint256(-1)) {
+    if (repayAmount == uint256(0)) {
       vars.repayAmount = vars.accountBorrows;
     } else {
       vars.repayAmount = repayAmount;
@@ -1095,7 +1107,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Fail if repayAmount = -1 */
-    if (repayAmount == uint256(-1)) {
+    if (repayAmount == uint256(0)) {
       return (Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_UINT_MAX), 0);
     }
 
@@ -1293,7 +1305,7 @@ abstract contract CToken is CTokenStorage {
     admin = pendingAdmin;
 
     // Clear the pending value
-    pendingAdmin = address(0);
+    pendingAdmin = payable(0);
 
     emit NewAdmin(oldAdmin, admin);
     emit NewPendingAdmin(oldPendingAdmin, pendingAdmin);

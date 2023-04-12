@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity 0.8.11;
 import './CToken.sol';
 import './Interfaces/ICErc20.sol';
 import '../utils/Initializable.sol';
@@ -29,7 +29,10 @@ contract CErc20 is CToken, ICErc20, Initializable {
     string memory name_,
     string memory symbol_,
     uint8 decimals_,
-    address payable admin
+    address payable admin,
+    uint256 intraRateMantissa_,
+    uint256 interRateMantissa_,
+    uint256 mintRateMantissa_
   ) public initializer{
     // CToken initialize does the bulk of the work
     super.initialize(
@@ -40,7 +43,10 @@ contract CErc20 is CToken, ICErc20, Initializable {
       symbol_,
       decimals_,
       true,
-      admin
+      admin,
+      intraRateMantissa_,
+      interRateMantissa_,
+      mintRateMantissa_
     );
 
     isCEther = false;
