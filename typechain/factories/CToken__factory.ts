@@ -8,6 +8,27 @@ import type { CToken, CTokenInterface } from "../CToken";
 
 const _abi = [
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "errorCode",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "infoCode",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "detailCode",
+        type: "uint256",
+      },
+    ],
+    name: "TokenError",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -810,12 +831,38 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "interRateMantissa",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "interestRateModel",
     outputs: [
       {
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "intraRateMantissa",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -914,6 +961,19 @@ const _abi = [
         name: "",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "mintRateMantissa",
+    outputs: [
       {
         internalType: "uint256",
         name: "",

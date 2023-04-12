@@ -11,6 +11,27 @@ import type {
 
 const _abi = [
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "errorCode",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "infoCode",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "detailCode",
+        type: "uint256",
+      },
+    ],
+    name: "TokenError",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -38,7 +59,7 @@ const _abi = [
 ];
 
 const _bytecode =
-  "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220cc000937f801ec1612c7edd0724731bf076ba842f2c2b789fc6635b700cf703e64736f6c63430007060033";
+  "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212200cc59720b562385b93aa1842c7380c743a03830aebfb50a6b2b82f7bbaf2c0b764736f6c634300080b0033";
 
 export class TokenErrorReporter__factory extends ContractFactory {
   constructor(

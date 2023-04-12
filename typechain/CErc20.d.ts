@@ -47,8 +47,10 @@ interface CErc20Interface extends ethers.utils.Interface {
     "getAccountBorrows(address)": FunctionFragment;
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
-    "initialize(address,address,address,uint256,string,string,uint8,address)": FunctionFragment;
+    "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)": FunctionFragment;
+    "interRateMantissa()": FunctionFragment;
     "interestRateModel()": FunctionFragment;
+    "intraRateMantissa()": FunctionFragment;
     "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "isDeprecated()": FunctionFragment;
@@ -56,6 +58,7 @@ interface CErc20Interface extends ethers.utils.Interface {
     "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
+    "mintRateMantissa()": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "protocolSeizeShareMantissa()": FunctionFragment;
@@ -179,11 +182,22 @@ interface CErc20Interface extends ethers.utils.Interface {
       string,
       string,
       BigNumberish,
-      string
+      string,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "interRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "interestRateModel",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "intraRateMantissa",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
@@ -205,6 +219,10 @@ interface CErc20Interface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "mintRateMantissa",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pendingAdmin",
@@ -358,7 +376,15 @@ interface CErc20Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "interRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "interestRateModel",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "intraRateMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
@@ -380,6 +406,10 @@ interface CErc20Interface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "mintRateMantissa",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingAdmin",
@@ -739,10 +769,17 @@ export class CErc20 extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
+      intraRateMantissa_: BigNumberish,
+      interRateMantissa_: BigNumberish,
+      mintRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     isCEther(overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -775,6 +812,8 @@ export class CErc20 extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -960,10 +999,17 @@ export class CErc20 extends BaseContract {
     symbol_: string,
     decimals_: BigNumberish,
     admin: string,
+    intraRateMantissa_: BigNumberish,
+    interRateMantissa_: BigNumberish,
+    mintRateMantissa_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
   interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+  intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   isCEther(overrides?: CallOverrides): Promise<boolean>;
 
@@ -996,6 +1042,8 @@ export class CErc20 extends BaseContract {
     mintAmount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -1178,10 +1226,17 @@ export class CErc20 extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
+      intraRateMantissa_: BigNumberish,
+      interRateMantissa_: BigNumberish,
+      mintRateMantissa_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCEther(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1214,6 +1269,8 @@ export class CErc20 extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1717,10 +1774,17 @@ export class CErc20 extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
+      intraRateMantissa_: BigNumberish,
+      interRateMantissa_: BigNumberish,
+      mintRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCEther(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1753,6 +1817,8 @@ export class CErc20 extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1946,10 +2012,17 @@ export class CErc20 extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
+      intraRateMantissa_: BigNumberish,
+      interRateMantissa_: BigNumberish,
+      mintRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1982,6 +2055,8 @@ export class CErc20 extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

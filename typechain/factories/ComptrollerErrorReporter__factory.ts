@@ -11,6 +11,27 @@ import type {
 
 const _abi = [
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "errorCode",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "infoCode",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "detailCode",
+        type: "uint256",
+      },
+    ],
+    name: "ComptrollerError",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -38,7 +59,7 @@ const _abi = [
 ];
 
 const _bytecode =
-  "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212208dec1124bf2ba4585b180b927eec4beaff69695a48e16738412e175e42b4b38964736f6c63430007060033";
+  "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220a399b7bad6bbc15429d8355dd94bbede3b1dc49e9e83bd208b23c7011d00075164736f6c634300080b0033";
 
 export class ComptrollerErrorReporter__factory extends ContractFactory {
   constructor(
