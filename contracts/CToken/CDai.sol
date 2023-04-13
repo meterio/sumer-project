@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity 0.8.11;
 
 import './CErc20.sol';
 
@@ -38,7 +38,10 @@ contract CDai is CErc20 {
     string memory name_,
     string memory symbol_,
     uint8 decimals_,
-    address payable admin
+    address payable admin,
+    uint256 intraRateMantissa_,
+    uint256 interRateMantissa_,
+    uint256 mintRateMantissa_
   ) public {
     // Get dai and vat and sanity check the underlying
     DaiJoinLike daiJoin = DaiJoinLike(daiJoinAddress_);
@@ -54,7 +57,10 @@ contract CDai is CErc20 {
       name_,
       symbol_,
       decimals_,
-      admin
+      admin,
+      intraRateMantissa_,
+      interRateMantissa_,
+      mintRateMantissa_
     );
     // Remember the relevant addresses
     daiJoinAddress = daiJoinAddress_;
@@ -62,7 +68,7 @@ contract CDai is CErc20 {
     vatAddress = address(vat);
 
     // Approve moving our DAI into the vat through daiJoin
-    dai.approve(daiJoinAddress, uint256(-1));
+    dai.approve(daiJoinAddress, uint256(0));
 
     // Approve the pot to transfer our funds within the vat
     vat.hope(potAddress);

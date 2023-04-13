@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity 0.8.11;
 
 import './CToken.sol';
 import './Interfaces/ICErc20.sol';
@@ -30,7 +30,10 @@ contract CEther is CToken, Initializable {
     string memory name_,
     string memory symbol_,
     uint8 decimals_,
-    address payable admin
+    address payable admin,
+    uint256 intraRateMantissa_,
+    uint256 interRateMantissa_,
+    uint256 mintRateMantissa_
   ) public initializer {
     super.initialize(
       comptroller_,
@@ -40,7 +43,10 @@ contract CEther is CToken, Initializable {
       symbol_,
       decimals_,
       true,
-      admin
+      admin,
+      intraRateMantissa_,
+      interRateMantissa_,
+      mintRateMantissa_
     );
 
     isCEther = true;
@@ -102,7 +108,7 @@ contract CEther is CToken, Initializable {
    */
   function repayBorrowBehalf(address borrower) external payable {
     uint256 received = msg.value;
-    uint256 borrows = CEther(address(this)).borrowBalanceCurrent(borrower);
+    uint256 borrows = CEther(payable(this)).borrowBalanceCurrent(borrower);
     if (received > borrows) {
       payable(msg.sender).transfer(received - borrows);
     }

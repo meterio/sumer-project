@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity 0.8.11;
 
 abstract contract PriceOracle {
   /// @notice Indicator that this is a PriceOracle contract (for inspection)

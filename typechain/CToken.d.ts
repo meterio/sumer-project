@@ -45,12 +45,15 @@ interface CTokenInterface extends ethers.utils.Interface {
     "getAccountBorrows(address)": FunctionFragment;
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
+    "interRateMantissa()": FunctionFragment;
     "interestRateModel()": FunctionFragment;
+    "intraRateMantissa()": FunctionFragment;
     "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "isDeprecated()": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
+    "mintRateMantissa()": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "protocolSeizeShareMantissa()": FunctionFragment;
@@ -152,7 +155,15 @@ interface CTokenInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "getCash", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "interRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "interestRateModel",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "intraRateMantissa",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
@@ -168,6 +179,10 @@ interface CTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintRateMantissa",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -299,7 +314,15 @@ interface CTokenInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "interRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "interestRateModel",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "intraRateMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
@@ -314,6 +337,10 @@ interface CTokenInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "liquidateCalculateSeizeTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintRateMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
@@ -642,7 +669,11 @@ export class CToken extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     isCEther(overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -663,6 +694,8 @@ export class CToken extends BaseContract {
       actualRepayAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -803,7 +836,11 @@ export class CToken extends BaseContract {
 
   getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
+  interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
   interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+  intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   isCEther(overrides?: CallOverrides): Promise<boolean>;
 
@@ -824,6 +861,8 @@ export class CToken extends BaseContract {
     actualRepayAmount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
+
+  mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -961,7 +1000,11 @@ export class CToken extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     interestRateModel(overrides?: CallOverrides): Promise<string>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCEther(overrides?: CallOverrides): Promise<boolean>;
 
@@ -982,6 +1025,8 @@ export class CToken extends BaseContract {
       actualRepayAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1443,7 +1488,11 @@ export class CToken extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCEther(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1464,6 +1513,8 @@ export class CToken extends BaseContract {
       actualRepayAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1612,7 +1663,11 @@ export class CToken extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    interRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    intraRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1633,6 +1688,8 @@ export class CToken extends BaseContract {
       actualRepayAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    mintRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
