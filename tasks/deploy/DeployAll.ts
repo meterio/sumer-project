@@ -85,21 +85,23 @@ task('all', 'deploy contract')
       writeFileSync(json, JSON.stringify(config));
       let uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', proxy.address, wallet)) as UnderwriterAdmin;
       for (const group of config.eqAssetGroups) {
-        let gas = await uwAdmin.estimateGas.setEqAssetGroup(
+        let gas = await uwAdmin.estimateGas.setAssetGroup(
           group.id,
           group.name,
-          group.inGroupCTokenRateMantissa,
-          group.inGroupSuTokenRateMantissa,
-          group.interGroupCTokenRateMantissa,
-          group.interGroupSuTokenRateMantissa
+          group.intraCRateMantissa,
+          group.intraMintRateMantissa,
+          group.intraSuRateMantissa,
+          group.interCRateMantissa,
+          group.interSuRateMantissa
         );
-        let receipt = await uwAdmin.setEqAssetGroup(
+        let receipt = await uwAdmin.setAssetGroup(
           group.id,
           group.name,
-          group.inGroupCTokenRateMantissa,
-          group.inGroupSuTokenRateMantissa,
-          group.interGroupCTokenRateMantissa,
-          group.interGroupSuTokenRateMantissa,
+          group.intraCRateMantissa,
+          group.intraMintRateMantissa,
+          group.intraSuRateMantissa,
+          group.interCRateMantissa,
+          group.interSuRateMantissa,
           { gasLimit: gas }
         );
         log.info(`set eq asset group for ${group.id} ${group.name} in ${receipt.hash}`);
@@ -187,7 +189,8 @@ task('all', 'deploy contract')
               cToken.cTokenName,
               cToken.cTokenSymbol,
               cToken.decimals,
-              wallet.address
+              wallet.address,
+              cToken.discountRate
             ]);
             impl = config.cTokens.tokens[i].implementation;
           } else {
@@ -199,7 +202,8 @@ task('all', 'deploy contract')
               cToken.cTokenName,
               cToken.cTokenSymbol,
               cToken.decimals,
-              wallet.address
+              wallet.address,
+              cToken.discountRate
             ]);
             impl = config.cTokens.implementation;
           }
@@ -215,7 +219,7 @@ task('all', 'deploy contract')
           writeFileSync(json, JSON.stringify(config));
         }
         const market = await comptroller.markets(cToken.address);
-        if (!market.isListed || market.equalAssetGrouId != cToken.groupId) {
+        if (!market.isListed || market.assetGroupId != cToken.groupId) {
           let gas = await comptroller.estimateGas._supportMarket(cToken.address, cToken.groupId);
           let receipt = await comptroller._supportMarket(cToken.address, cToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', cToken.cTokenSymbol, receipt.hash);
@@ -312,7 +316,8 @@ task('all', 'deploy contract')
             suTokenSymbol,
             suTokenSymbol,
             MANTISSA_DECIMALS,
-            wallet.address
+            wallet.address,
+            config.suToken.tokens[i].discountRate
           ]);
           const proxy = await run('p', {
             impl: config.suTokens.implementation,
@@ -336,7 +341,7 @@ task('all', 'deploy contract')
         }
 
         const market = await comptroller.markets(suToken.address);
-        if (!market.isListed || market.equalAssetGrouId != suToken.groupId) {
+        if (!market.isListed || market.assetGroupId != suToken.groupId) {
           let gas = await comptroller.estimateGas._supportMarket(suToken.address, suToken.groupId);
           let receipt = await comptroller._supportMarket(suToken.address, suToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', suToken.symbol, receipt.hash);

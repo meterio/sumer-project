@@ -20,12 +20,14 @@ type AccountLiquidityLocalVars = {
   exchangeRate: BigNumber;
   oraclePrice: BigNumber;
   tokensToDenom: BigNumber;
+  discountRate: BigNumber;
   intraCRate: BigNumber;
+  intraMintRate: BigNumber;
   interCRate: BigNumber;
   intraSuRate: BigNumber;
   interSuRate: BigNumber;
-  suTokenCollateralRate: BigNumber;
-  borrowCollateralRate: BigNumber;
+  // suTokenCollateralRate: BigNumber;
+  // borrowCollateralRate: BigNumber;
   isSuToken: boolean;
   tokenDepositVal: BigNumber;
   tokenBorrowVal: BigNumber;
@@ -67,12 +69,7 @@ task('hal', 'get Hypothetical Account Liquidity')
     log.info('address: ', config.comptroller.address);
     const comptroller = (await ethers.getContractAt('Comptroller', config.comptroller.address, wallet)) as Comptroller;
     log.info('created comptroller');
-    const accountLiquidity = await comptroller.getHypotheticalAccountLiquidity(
-      account,
-      ctoken,
-      redeem,
-      borrow
-    );
+    const accountLiquidity = await comptroller.getHypotheticalAccountLiquidity(account, ctoken, redeem, borrow);
     log.info('accountLiquidity.liquidity:', accountLiquidity[1].toString());
     log.info('accountLiquidity.shortfall:', accountLiquidity[2].toString());
 
@@ -89,15 +86,17 @@ task('hal', 'get Hypothetical Account Liquidity')
       exchangeRate: BigNumber.from(0),
       oraclePrice: BigNumber.from(0),
       tokensToDenom: BigNumber.from(0),
+      discountRate: BigNumber.from(0),
       intraCRate: BigNumber.from(0),
+      intraMintRate: BigNumber.from(0),
       interCRate: BigNumber.from(0),
       intraSuRate: BigNumber.from(0),
       interSuRate: BigNumber.from(0),
-      suTokenCollateralRate: BigNumber.from(0),
-      borrowCollateralRate: BigNumber.from(0),
+      // suTokenCollateralRate: BigNumber.from(0),
+      // borrowCollateralRate: BigNumber.from(0),
       isSuToken: false,
       tokenDepositVal: BigNumber.from(0),
-      tokenBorrowVal: BigNumber.from(0),
+      tokenBorrowVal: BigNumber.from(0)
     };
     let groupVars: AccountGroupLocalVars[] = [];
     const ua = (await ethers.getContractAt(
@@ -105,14 +104,14 @@ task('hal', 'get Hypothetical Account Liquidity')
       config.underwriterAdmin.address,
       wallet
     )) as UnderwriterAdmin;
-    vars.equalAssetsGroupNum = await ua.getEqAssetGroupNum();
+    vars.equalAssetsGroupNum = await ua.getAssetGroupNum();
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
       groupVars.push({
         groupId: 0,
         cTokenBalanceSum: BigNumber.from(0),
         cTokenBorrowSum: BigNumber.from(0),
         suTokenBalanceSum: BigNumber.from(0),
-        suTokenBorrowSum: BigNumber.from(0),
+        suTokenBorrowSum: BigNumber.from(0)
       });
     }
     if (ctoken != constants.AddressZero) {
@@ -131,9 +130,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.tokenDepositVal = BigNumber.from(0);
       vars.tokenBorrowVal = BigNumber.from(0);
       let assetToken = (await ethers.getContractAt('CErc20', asset, wallet)) as CErc20;
-      let [err, cTokenBalance, borrowBalance, exchangeRateMantissa] = await assetToken.getAccountSnapshot(
-        account
-      );
+      let [err, cTokenBalance, borrowBalance, exchangeRateMantissa] = await assetToken.getAccountSnapshot(account);
 
       vars.cTokenBalance = cTokenBalance;
       vars.borrowBalance = borrowBalance;
@@ -141,7 +138,12 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.exchangeRate = exchangeRateMantissa;
       vars.oraclePriceMantissa = await oracle.getUnderlyingPrice(asset);
       vars.oraclePrice = vars.oraclePriceMantissa;
-      vars.tokensToDenom = vars.exchangeRate.mul(vars.oraclePriceMantissa).div(expScale);
+      vars.discountRate = await ctoken.getDiscountRate();
+      vars.tokensToDenom = vars.exchangeRate
+        .mul(vars.oraclePriceMantissa)
+        .div(expScale)
+        .mul(vars.discountRate)
+        .div(expScale);
       let index: number;
       for (index = 0; index < vars.equalAssetsGroupNum; index++) {
         let marketGroupId = await comptroller.marketGroupId(asset);
@@ -186,7 +188,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       cTokenBalanceSum: BigNumber.from(0),
       cTokenBorrowSum: BigNumber.from(0),
       suTokenBalanceSum: BigNumber.from(0),
-      suTokenBorrowSum: BigNumber.from(0),
+      suTokenBorrowSum: BigNumber.from(0)
     };
     let targetVars: AccountLiquidityLocalVars = {
       equalAssetsGroupNum: 0,
@@ -201,27 +203,29 @@ task('hal', 'get Hypothetical Account Liquidity')
       exchangeRate: BigNumber.from(0),
       oraclePrice: BigNumber.from(0),
       tokensToDenom: BigNumber.from(0),
+      discountRate: BigNumber.from(0),
       intraCRate: BigNumber.from(0),
+      intraMintRate: BigNumber.from(0),
       interCRate: BigNumber.from(0),
       intraSuRate: BigNumber.from(0),
       interSuRate: BigNumber.from(0),
-      suTokenCollateralRate: BigNumber.from(0),
-      borrowCollateralRate: BigNumber.from(0),
+      // suTokenCollateralRate: BigNumber.from(0),
+      // borrowCollateralRate: BigNumber.from(0),
       isSuToken: false,
       tokenDepositVal: BigNumber.from(0),
-      tokenBorrowVal: BigNumber.from(0),
+      tokenBorrowVal: BigNumber.from(0)
     };
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      let equalAssetsGroup = await ua.getEqAssetGroup(BigNumber.from(groupVars[i].groupId));
-      vars.intraCRate = equalAssetsGroup.inGroupCTokenRateMantissa;
-      vars.intraSuRate = equalAssetsGroup.inGroupSuTokenRateMantissa;
-      vars.interCRate = equalAssetsGroup.interGroupCTokenRateMantissa;
-      vars.interSuRate = equalAssetsGroup.interGroupSuTokenRateMantissa;
-      vars.borrowCollateralRate = expScale;
-      vars.suTokenCollateralRate = await ua._getSuTokenRateMantissa();
+      let equalAssetsGroup = await ua.getAssetGroup(BigNumber.from(groupVars[i].groupId));
+      vars.intraCRate = equalAssetsGroup.intraCRateMantissa;
+      vars.intraSuRate = equalAssetsGroup.intraSuRateMantissa;
+      vars.interCRate = equalAssetsGroup.interCRateMantissa;
+      vars.interSuRate = equalAssetsGroup.interSuRateMantissa;
+      vars.intraMintRate = equalAssetsGroup.intraMintRateMantissa;
+      // vars.borrowCollateralRate = expScale;
       //   console.log(`group ${i} ${equalAssetsGroup.groupName}
       //     cTokenBalanceSum: ${groupVars[i].cTokenBalanceSum}
       //     suTokenBalanceSum: ${groupVars[i].suTokenBalanceSum}
@@ -229,10 +233,10 @@ task('hal', 'get Hypothetical Account Liquidity')
       //     suTokenBorrowSum: ${groupVars[i].suTokenBorrowSum}
       //   `);
       if (groupVars[i].suTokenBorrowSum.gt(0)) {
-        let collateralizedLoan = mul_ScalarTruncate(vars.suTokenCollateralRate, groupVars[i].cTokenBalanceSum);
+        let collateralizedLoan = mul_ScalarTruncate(vars.intraMintRate, groupVars[i].cTokenBalanceSum);
         if (groupVars[i].suTokenBorrowSum.lte(collateralizedLoan)) {
           // collateral could cover the loan
-          let usedCollateral = groupVars[i].suTokenBorrowSum.mul(expScale).div(vars.suTokenCollateralRate);
+          let usedCollateral = groupVars[i].suTokenBorrowSum.mul(expScale).div(vars.intraMintRate);
           groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub(usedCollateral);
           groupVars[i].suTokenBorrowSum = BigNumber.from(0);
         } else {

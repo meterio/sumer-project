@@ -54,7 +54,8 @@
         },
         "interestRateModel": {
           "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "cTokenName": "Sumer Tether USD",
@@ -71,7 +72,8 @@
         },
         "interestRateModel": {
           "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "cTokenName": "Sumer Ether",
@@ -88,7 +90,8 @@
         },
         "interestRateModel": {
           "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "cTokenName": "Sumer BTCK Token",
@@ -105,7 +108,8 @@
         },
         "interestRateModel": {
           "address": "0x8fe57d06e674f37e435aac29c4143392ce4ad585"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "cTokenName": "Sumer Binance USD",
@@ -121,7 +125,8 @@
         },
         "interestRateModel": {
           "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "cTokenName": "Sumer MeterGov",
@@ -137,7 +142,8 @@
         },
         "interestRateModel": {
           "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "cTokenName": "Sumer Meter",
@@ -154,7 +160,8 @@
         "implementation": "0x55Ee6A89B7f47977A68f90101c9Ffd2D9f7258ee",
         "interestRateModel": {
           "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b"
-        }
+        },
+        "discountRate": 1e18
       }
     ]
   },
@@ -172,7 +179,8 @@
         "oracle": {
           "type": 1,
           "price": "1000000000000000000"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "name": "suETH",
@@ -185,7 +193,8 @@
           "type": 2,
           "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
           "name": "ETH"
-        }
+        },
+        "discountRate": 1e18
       },
       {
         "name": "suBTC",
@@ -198,7 +207,8 @@
           "type": 2,
           "feed": "0xe1bCC505f2Bdd02C9480C924856f5080834A3897",
           "name": "BTC"
-        }
+        },
+        "discountRate": 1e18
       }
     ]
   },
@@ -206,34 +216,38 @@
     {
       "id": 1,
       "name": "Bitcoin",
-      "inGroupCTokenRateMantissa": "900000000000000000",
-      "inGroupSuTokenRateMantissa": "700000000000000000",
-      "interGroupCTokenRateMantissa": "800000000000000000",
-      "interGroupSuTokenRateMantissa": "600000000000000000"
+      "intraCRateMantissa": "900000000000000000",
+      "intraMintRateMantissa": "999700000000000000",
+      "intraSuRateMantissa": "700000000000000000",
+      "interCRateMantissa": "800000000000000000",
+      "interSuRateMantissa": "600000000000000000"
     },
     {
       "id": 2,
       "name": "Ether",
-      "inGroupCTokenRateMantissa": "900000000000000000",
-      "inGroupSuTokenRateMantissa": "700000000000000000",
-      "interGroupCTokenRateMantissa": "800000000000000000",
-      "interGroupSuTokenRateMantissa": "600000000000000000"
+      "intraCRateMantissa": "900000000000000000",
+      "intraMintRateMantissa": "999700000000000000",
+      "intraSuRateMantissa": "700000000000000000",
+      "interCRateMantissa": "800000000000000000",
+      "interSuRateMantissa": "600000000000000000"
     },
     {
       "id": 3,
       "name": "StableCoin",
-      "inGroupCTokenRateMantissa": "900000000000000000",
-      "inGroupSuTokenRateMantissa": "700000000000000000",
-      "interGroupCTokenRateMantissa": "800000000000000000",
-      "interGroupSuTokenRateMantissa": "600000000000000000"
+      "intraCRateMantissa": "900000000000000000",
+      "intraMintRateMantissa": "999700000000000000",
+      "intraSuRateMantissa": "700000000000000000",
+      "interCRateMantissa": "800000000000000000",
+      "interSuRateMantissa": "600000000000000000"
     },
     {
       "id": 4,
       "name": "MTR",
-      "inGroupCTokenRateMantissa": "900000000000000000",
-      "inGroupSuTokenRateMantissa": "700000000000000000",
-      "interGroupCTokenRateMantissa": "800000000000000000",
-      "interGroupSuTokenRateMantissa": "600000000000000000"
+      "intraCRateMantissa": "900000000000000000",
+      "intraMintRateMantissa": "999700000000000000",
+      "intraSuRateMantissa": "700000000000000000",
+      "interCRateMantissa": "800000000000000000",
+      "interSuRateMantissa": "600000000000000000"
     }
   ],
   "multicall2": {
