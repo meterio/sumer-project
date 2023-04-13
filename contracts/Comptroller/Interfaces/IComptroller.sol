@@ -5,7 +5,7 @@ interface IComptroller {
   /*** Assets You Are In ***/
   function isComptroller() external view returns (bool);
 
-  function markets(address) external view returns (bool, uint256);
+  function markets(address) external view returns (bool, uint8);
 
   function oracle() external view returns (address);
 

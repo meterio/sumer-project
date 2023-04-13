@@ -15,33 +15,33 @@ interface IUnderwriterAdmin {
   /// @notice Emitted when pause guardian is changed
   event NewPauseGuardian(address oldPauseGuardian, address newPauseGuardian);
 
-  event EqAssetGroupAdded(
+  event NewAssetGroup(
     uint8 indexed groupId,
     string indexed groupName,
-    uint256 inGroupCTokenRateMantissa,
-    uint256 inGroupSuTokenRateMantissa,
-    uint256 interGroupCTokenRateMantissa,
-    uint256 interGroupSuTokenRateMantissa,
-    uint8 equalAssetsGroupNum
+    uint256 intraCRateMantissa,
+    uint256 intraMintRateMantissa,
+    uint256 intraSuRateMantissa,
+    uint256 interCRateMantissa,
+    uint256 interSuRateMantissa,
+    uint8 assetsGroupNum
   );
 
-  event EqAssetGroupRemoved(uint8 indexed groupId, uint8 equalAssetsGroupNum);
+  event RemoveAssetGroup(uint8 indexed groupId, uint8 equalAssetsGroupNum);
 
-  event NewSuTokenRate(uint256 oldSuTokenRateMantissa, uint256 newSuTokenRateMantissa);
-
-  /// @notice EqualAssets, contains information of groupName and rateMantissas
-  struct EqualAssets {
+  /// @notice AssetGroup, contains information of groupName and rateMantissas
+  struct AssetGroup {
     uint8 groupId;
     string groupName;
-    uint256 inGroupCTokenRateMantissa;
-    uint256 inGroupSuTokenRateMantissa;
-    uint256 interGroupCTokenRateMantissa;
-    uint256 interGroupSuTokenRateMantissa;
+    uint256 intraCRateMantissa;
+    uint256 intraMintRateMantissa;
+    uint256 intraSuRateMantissa;
+    uint256 interCRateMantissa;
+    uint256 interSuRateMantissa;
   }
 
-  function getEqAssetGroupNum() external view returns (uint8);
+  function getAssetGroupNum() external view returns (uint8);
 
-  function getEqAssetGroup(uint8 groupId) external view returns (EqualAssets memory);
+  function getAssetGroup(uint8 groupId) external view returns (AssetGroup memory);
 
   function _getMintPaused(address cToken) external returns (bool);
 
@@ -55,5 +55,4 @@ interface IUnderwriterAdmin {
 
   function _getMarketBorrowCap(address cToken) external view returns (uint256);
 
-  function _getSuTokenRateMantissa() external view returns (uint256);
 }

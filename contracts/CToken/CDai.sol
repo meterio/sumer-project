@@ -39,9 +39,7 @@ contract CDai is CErc20 {
     string memory symbol_,
     uint8 decimals_,
     address payable admin,
-    uint256 intraRateMantissa_,
-    uint256 interRateMantissa_,
-    uint256 mintRateMantissa_
+    uint256 discountRateMantissa_
   ) public {
     // Get dai and vat and sanity check the underlying
     DaiJoinLike daiJoin = DaiJoinLike(daiJoinAddress_);
@@ -58,9 +56,7 @@ contract CDai is CErc20 {
       symbol_,
       decimals_,
       admin,
-      intraRateMantissa_,
-      interRateMantissa_,
-      mintRateMantissa_
+      discountRateMantissa_
     );
     // Remember the relevant addresses
     daiJoinAddress = daiJoinAddress_;

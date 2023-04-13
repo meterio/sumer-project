@@ -79,7 +79,5 @@ abstract contract CTokenStorage is ICToken {
   /// @notice Share of seized collateral that is added to reserves
   uint256 public constant protocolSeizeShareMantissa = 2.8e16; //2.8%
 
-  uint256 public intraRateMantissa;
-  uint256 public interRateMantissa;
-  uint256 public mintRateMantissa;
+  uint256 public discountRateMantissa = 1e18;
 }

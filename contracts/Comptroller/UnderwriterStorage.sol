@@ -22,7 +22,7 @@ contract UnderwriterStorage {
   /**
    * @notice eqAssetGroup, groupId -> equal assets info.
    */
-  mapping(uint8 => IUnderwriterAdmin.EqualAssets) public eqAssetGroup;
+  mapping(uint8 => IUnderwriterAdmin.AssetGroup) public eqAssetGroup;
 
   /**
    * @notice The Pause Guardian can pause certain actions as a safety mechanism.

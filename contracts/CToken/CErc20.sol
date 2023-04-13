@@ -30,9 +30,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
     string memory symbol_,
     uint8 decimals_,
     address payable admin,
-    uint256 intraRateMantissa_,
-    uint256 interRateMantissa_,
-    uint256 mintRateMantissa_
+    uint256 discountRateMantissa_
   ) public initializer{
     // CToken initialize does the bulk of the work
     super.initialize(
@@ -44,9 +42,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
       decimals_,
       true,
       admin,
-      intraRateMantissa_,
-      interRateMantissa_,
-      mintRateMantissa_
+      discountRateMantissa_
     );
 
     isCEther = false;

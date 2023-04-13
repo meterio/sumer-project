@@ -87,6 +87,9 @@ interface ICToken {
    */
   event Approval(address indexed owner, address indexed spender, uint256 amount);
 
+
+  event NewDiscountRate(uint256 oldDiscountRateMantissa, uint256 newDiscountRateMantissa);
+
   /*** User Interface ***/
 
   function transfer(address dst, uint256 amount) external returns (bool);
@@ -157,4 +160,7 @@ interface ICToken {
 
   function _setInterestRateModel(address newInterestRateModel) external returns (uint256);
 
+  function getDiscountRate() external view returns (uint256);
+
+  function _setDiscountRate(uint256 discountRateMantissa) external returns (uint256);
 }

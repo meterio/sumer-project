@@ -57,4 +57,6 @@ interface ICToken {
   function delegates(address) external view returns (address);
 
   function getPriorVotes(address account, uint256 blockNumber) external view returns (uint96);
+
+  function getDiscountRate() external view returns (uint256);
 }

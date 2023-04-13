@@ -47,9 +47,7 @@ abstract contract CToken is CTokenStorage {
     uint8 decimals_,
     bool isCToken_,
     address payable _admin,
-    uint256 intraRateMantissa_,
-    uint256 interRateMantissa_,
-    uint256 mintRateMantissa_
+    uint256 discountRateMantissa_
   ) internal {
     admin = _admin;
     require(accrualBlockNumber == 0 && borrowIndex == 0, 'market may only be initialized once');
@@ -60,14 +58,8 @@ abstract contract CToken is CTokenStorage {
     initialExchangeRateMantissa = initialExchangeRateMantissa_;
     require(initialExchangeRateMantissa > 0, 'initial exchange rate must be greater than zero.');
 
-    intraRateMantissa = intraRateMantissa_;
-    require(intraRateMantissa > 0 && intraRateMantissa < 1e18, 'rate must in [0,100]');
-
-    interRateMantissa = interRateMantissa_;
-    require(interRateMantissa > 0 && interRateMantissa < 1e18, 'rate must in [0,100]');
-
-    mintRateMantissa = mintRateMantissa_;
-    require(mintRateMantissa > 0 && mintRateMantissa < 1e18, 'rate must in [0,100]');
+    discountRateMantissa = discountRateMantissa_;
+    require(discountRateMantissa > 0 && discountRateMantissa <= 1e18, 'rate must in [0,100]');
 
     // Set the comptroller
     // Set market's comptroller to newComptroller
@@ -1673,5 +1665,17 @@ abstract contract CToken is CTokenStorage {
     BorrowSnapshot memory accountBorrow = accountBorrows[account];
     principal = accountBorrow.principal;
     interestIndex = accountBorrow.interestIndex;
+  }
+
+  function getDiscountRate() public view returns (uint256){
+    return discountRateMantissa;
+  }
+
+  function _setDiscountRate(uint256 discountRateMantissa_) external returns (uint256) {
+    require(msg.sender == admin, 'UNAUTHORIZED');
+    uint256 oldDiscountRateMantissa_ = discountRateMantissa;
+    discountRateMantissa = discountRateMantissa_;
+    emit NewDiscountRate(oldDiscountRateMantissa_, discountRateMantissa_);
+    return discountRateMantissa;
   }
 }

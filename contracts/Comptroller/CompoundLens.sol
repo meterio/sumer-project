@@ -26,7 +26,7 @@ contract CompoundLens {
     uint256 totalSupply;
     uint256 totalCash;
     bool isListed;
-    uint256 collateralFactorMantissa;
+    // uint256 collateralFactorMantissa;
     address underlyingAssetAddress;
     uint256 cTokenDecimals;
     uint256 underlyingDecimals;
@@ -36,16 +36,28 @@ contract CompoundLens {
     uint256 borrowCap;
     uint256 depositCap;
     uint256 liquidationIncentive;
+
+    uint8 groupId;
+    uint256 intraRate;
+    uint256 mintRate;
+    uint256 interRate;
+
+    uint256 discountRate;
+  }
+
+  struct GroupInfo {
+    uint256 intraRate;
+    uint256 mintRate;
+    uint256 interRate;
   }
 
   function cTokenMetadata(ICToken cToken) public returns (CTokenMetadata memory) {
-    uint256 exchangeRateCurrent = cToken.exchangeRateCurrent();
     IComptroller comptroller = IComptroller(address(cToken.comptroller()));
     IUnderwriterAdmin ua = IUnderwriterAdmin(comptroller.underWriterAdmin());
-    (bool isListed, uint256 collateralFactorMantissa) = comptroller.markets(address(cToken));
+
+    // get underlying info
     address underlyingAssetAddress;
     uint256 underlyingDecimals;
-
     if (cToken.isCEther()) {
       underlyingAssetAddress = address(0);
       underlyingDecimals = 18;
@@ -54,11 +66,24 @@ contract CompoundLens {
       underlyingDecimals = ICToken(cToken.underlying()).decimals();
     }
 
+    // get group info
+    (bool isListed, uint8 assetGroupId) = comptroller.markets(address(cToken));
+    IUnderwriterAdmin.AssetGroup memory group = ua.getAssetGroup(assetGroupId);
+    GroupInfo memory gi;
+    if (cToken.isCToken()) {
+      gi.intraRate = group.intraCRateMantissa;
+      gi.interRate = group.intraCRateMantissa;
+      gi.mintRate = group.intraMintRateMantissa;
+    }else{
+      gi.intraRate = group.intraSuRateMantissa;
+      gi.interRate = group.intraSuRateMantissa;
+      gi.mintRate = group.intraSuRateMantissa;
+    }
 
     return
       CTokenMetadata({
         cToken: address(cToken),
-        exchangeRateCurrent: exchangeRateCurrent,
+        exchangeRateCurrent: cToken.exchangeRateCurrent(),
         supplyRatePerBlock: cToken.supplyRatePerBlock(),
         borrowRatePerBlock: cToken.borrowRatePerBlock(),
         reserveFactorMantissa: cToken.reserveFactorMantissa(),
@@ -67,7 +92,6 @@ contract CompoundLens {
         totalSupply: cToken.totalSupply(),
         totalCash: cToken.getCash(),
         isListed: isListed,
-        collateralFactorMantissa: collateralFactorMantissa,
         underlyingAssetAddress: underlyingAssetAddress,
         cTokenDecimals: cToken.decimals(),
         underlyingDecimals: underlyingDecimals,
@@ -75,7 +99,14 @@ contract CompoundLens {
         isCEther: cToken.isCEther(),
         borrowCap: ua._getMarketBorrowCap(address(cToken)),
         depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
-        liquidationIncentive: comptroller.liquidationIncentiveMantissa()
+        liquidationIncentive: comptroller.liquidationIncentiveMantissa(),
+
+        groupId: assetGroupId,
+        intraRate: gi.intraRate,
+        interRate: gi.interRate,
+        mintRate: gi.mintRate,
+
+        discountRate: cToken.getDiscountRate()
       });
   }
 

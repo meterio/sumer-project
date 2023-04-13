@@ -14,13 +14,14 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     suTokenRateMantissa = 10**18;
   }
 
-  function setEqAssetGroup(
+  function setAssetGroup(
     uint8 groupId,
     string memory groupName,
-    uint256 inGroupCTokenRateMantissa,
-    uint256 inGroupSuTokenRateMantissa,
-    uint256 interGroupCTokenRateMantissa,
-    uint256 interGroupSuTokenRateMantissa
+    uint256 intraCRateMantissa, // ctoken collateral rate for intra group ctoken liability
+    uint256 intraMintRateMantissa, // ctoken collateral rate for intra group sutoken liability
+    uint256 intraSuRateMantissa, // sutoken collateral rate for intra group ctoken liability
+    uint256 interCRateMantissa, // ctoken collateral rate for inter group ctoken/sutoken liability
+    uint256 interSuRateMantissa // sutoken collateral rate for inter group ctoken/sutoken liability
   ) public returns (uint256) {
     // Check caller is admin
     if (msg.sender != admin) {
@@ -31,28 +32,30 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
         );
     }
 
-    eqAssetGroup[groupId] = EqualAssets(
+    eqAssetGroup[groupId] = AssetGroup(
       groupId,
       groupName,
-      inGroupCTokenRateMantissa,
-      inGroupSuTokenRateMantissa,
-      interGroupCTokenRateMantissa,
-      interGroupSuTokenRateMantissa
+      intraCRateMantissa,
+      intraMintRateMantissa,
+      intraSuRateMantissa,
+      interCRateMantissa,
+      interSuRateMantissa
     );
     equalAssetsGroupNum++;
-    emit EqAssetGroupAdded(
+    emit NewAssetGroup(
       groupId,
       groupName,
-      inGroupCTokenRateMantissa,
-      inGroupSuTokenRateMantissa,
-      interGroupCTokenRateMantissa,
-      interGroupSuTokenRateMantissa,
+      intraCRateMantissa,
+      intraMintRateMantissa,
+      intraSuRateMantissa,
+      interCRateMantissa,
+      interSuRateMantissa,
       equalAssetsGroupNum
     );
     return uint256(ComptrollerErrorReporter.Error.NO_ERROR);
   }
 
-  function removeEqAssetGroup(uint8 groupId) public returns (uint256) {
+  function removeAssetGroup(uint8 groupId) public returns (uint256) {
     // Check caller is admin
     if (msg.sender != admin) {
       return
@@ -64,15 +67,15 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
 
     delete eqAssetGroup[groupId];
     equalAssetsGroupNum--;
-    emit EqAssetGroupRemoved(groupId, equalAssetsGroupNum);
+    emit RemoveAssetGroup(groupId, equalAssetsGroupNum);
     return uint256(ComptrollerErrorReporter.Error.NO_ERROR);
   }
 
-  function getEqAssetGroup(uint8 groupId) public view override returns (EqualAssets memory) {
+  function getAssetGroup(uint8 groupId) public view override returns (AssetGroup memory) {
     return eqAssetGroup[groupId];
   }
 
-  function getEqAssetGroupNum() public view override returns (uint8) {
+  function getAssetGroupNum() public view override returns (uint8) {
     return equalAssetsGroupNum;
   }
 
@@ -232,18 +235,4 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return borrowCapGuardian;
   }
 
-  /**
-   * @notice Admin function to change the suTokenRateMantissa
-   * @param  _suTokenRateMantissa The address of the new suTokenRateMantissa
-   */
-  function _setSuTokenRateMantissa(uint256 _suTokenRateMantissa) external {
-    require(msg.sender == admin, 'only admin can set suTokenRateMantissa');
-    uint256 oldSuTokenRateMantissa = suTokenRateMantissa;
-    suTokenRateMantissa = _suTokenRateMantissa;
-    emit NewSuTokenRate(oldSuTokenRateMantissa, suTokenRateMantissa);
-  }
-
-  function _getSuTokenRateMantissa() external view override returns (uint256) {
-    return suTokenRateMantissa;
-  }
 }

@@ -9,6 +9,7 @@ import './Interfaces/IUnderwriterAdmin.sol';
 import './Interfaces/IPriceOracle.sol';
 import '../utils/Initializable.sol';
 
+
 /**
  * @title Compound's Comptroller Contract
  * @author Compound
@@ -74,7 +75,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
   }
 
   function marketGroupId(address asset) external view returns (uint8) {
-    return markets[asset].equalAssetGrouId;
+    return markets[asset].assetGroupId;
   }
 
   /**
@@ -88,7 +89,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
     uint256[] memory results = new uint256[](len);
     for (uint256 i = 0; i < len; ++i) {
       address cToken = cTokens[i];
-      //IUnderwriterAdmin.EqualAssets memory eqAssets = IUnderwriterAdmin(underWriterAdmin).getEqAssetGroup(cToken);
+      //IUnderwriterAdmin.AssetGroup memory eqAssets = IUnderwriterAdmin(underWriterAdmin).getAssetGroup(cToken);
       //results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAssets.groupName, eqAssets.rateMantissas));
       results[i] = uint256(addToMarketInternal(cToken, msg.sender));
     }
@@ -458,11 +459,11 @@ contract Comptroller is Initializable, ComptrollerStorage {
     Exp oraclePrice;
     Exp tokensToDenom;
     Exp intraCRate;
+    Exp intraMintRate;
     Exp interCRate;
     Exp intraSuRate;
     Exp interSuRate;
-    Exp suTokenCollateralRate;
-    Exp borrowCollateralRate;
+    Exp discountRate;
     bool isSuToken;
     uint256 tokenDepositVal;
     uint256 tokenBorrowVal;
@@ -563,7 +564,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
     AccountLiquidityLocalVars memory vars; // Holds all our calculation results
     uint256 oErr;
 
-    vars.equalAssetsGroupNum = IUnderwriterAdmin(underWriterAdmin).getEqAssetGroupNum();
+    vars.equalAssetsGroupNum = IUnderwriterAdmin(underWriterAdmin).getAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
 
     if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
@@ -579,7 +580,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
       vars.tokenDepositVal = uint256(0);
       vars.tokenBorrowVal = uint256(0);
 
-      //IUnderwriterAdmin.EqualAssets memory eqAsset = IUnderwriterAdmin(underWriterAdmin).getEqAssetGroup(asset);
+      //IUnderwriterAdmin.AssetGroup memory eqAsset = IUnderwriterAdmin(underWriterAdmin).getAssetGroup(asset);
 
       // Read the balances and exchange rate from the cToken
       (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = ICToken(asset).getAccountSnapshot(
@@ -587,6 +588,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
       );
       require(oErr == 0, SNAPSHOT_ERROR);
       vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
+      vars.discountRate = Exp({mantissa: ICToken(asset).getDiscountRate()});
 
       // Get the normalized price of the asset
       vars.oraclePriceMantissa = IPriceOracle(oracle).getUnderlyingPrice(asset);
@@ -596,15 +598,16 @@ contract Comptroller is Initializable, ComptrollerStorage {
       // Pre-compute a conversion factor from tokens -> ether (normalized price value)
       // vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePriceMantissa).div_(1e18);
       vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePrice);
+      vars.tokensToDenom = vars.tokensToDenom.mul_(vars.discountRate).div_(1e18);
 
       uint8 index;
       for (index = 0; index < vars.equalAssetsGroupNum; ++index) {
         if (groupVars[index].groupId > 0) {
-          if (groupVars[index].groupId == markets[address(asset)].equalAssetGrouId) {
+          if (groupVars[index].groupId == markets[address(asset)].assetGroupId) {
             break;
           }
         } else {
-          groupVars[index].groupId = markets[address(asset)].equalAssetGrouId;
+          groupVars[index].groupId = markets[address(asset)].assetGroupId;
           break;
         }
       }
@@ -645,24 +648,22 @@ contract Comptroller is Initializable, ComptrollerStorage {
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      IUnderwriterAdmin.EqualAssets memory equalAssetsGroup = IUnderwriterAdmin(underWriterAdmin).getEqAssetGroup(
+      IUnderwriterAdmin.AssetGroup memory equalAssetsGroup = IUnderwriterAdmin(underWriterAdmin).getAssetGroup(
         groupVars[i].groupId
       );
 
-      vars.intraCRate = Exp({mantissa: equalAssetsGroup.inGroupCTokenRateMantissa});
-      vars.intraSuRate = Exp({mantissa: equalAssetsGroup.inGroupSuTokenRateMantissa});
-      vars.interCRate = Exp({mantissa: equalAssetsGroup.interGroupCTokenRateMantissa});
-      vars.interSuRate = Exp({mantissa: equalAssetsGroup.interGroupSuTokenRateMantissa});
-      vars.borrowCollateralRate = Exp({mantissa: 1e18});
-
-      vars.suTokenCollateralRate = Exp({mantissa: IUnderwriterAdmin(underWriterAdmin)._getSuTokenRateMantissa()});
+      vars.intraCRate = Exp({mantissa: equalAssetsGroup.intraCRateMantissa});
+      vars.intraMintRate = Exp({mantissa: equalAssetsGroup.intraMintRateMantissa});
+      vars.intraSuRate = Exp({mantissa: equalAssetsGroup.intraSuRateMantissa});
+      vars.interCRate = Exp({mantissa: equalAssetsGroup.interCRateMantissa});
+      vars.interSuRate = Exp({mantissa: equalAssetsGroup.interSuRateMantissa});
 
       // absorb sutoken loan with ctoken collateral
       if (groupVars[i].suTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = vars.suTokenCollateralRate.mul_ScalarTruncate(groupVars[i].cTokenBalanceSum);
+        uint256 collateralizedLoan = vars.intraMintRate.mul_ScalarTruncate(groupVars[i].cTokenBalanceSum);
         if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
           // collateral could cover the loan
-          uint256 usedCollateral = groupVars[i].suTokenBorrowSum.div_(vars.suTokenCollateralRate);
+          uint256 usedCollateral = groupVars[i].suTokenBorrowSum.div_(vars.intraMintRate);
           groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub_(usedCollateral);
           groupVars[i].suTokenBorrowSum = 0;
         } else {
@@ -715,7 +716,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
         }
       }
 
-      if (groupVars[i].groupId == markets[address(cTokenModify)].equalAssetGrouId) {
+      if (groupVars[i].groupId == markets[address(cTokenModify)].assetGroupId) {
         targetGroup = groupVars[i];
         targetVars = vars;
       } else {
@@ -769,7 +770,7 @@ contract Comptroller is Initializable, ComptrollerStorage {
       }
     }
     if (vars.isSuToken) {
-      vars.sumCollateral = vars.suTokenCollateralRate.mul_ScalarTruncateAddUInt(
+      vars.sumCollateral = vars.intraMintRate.mul_ScalarTruncateAddUInt(
         targetGroup.cTokenBalanceSum,
         vars.sumCollateral
       );
@@ -863,10 +864,10 @@ contract Comptroller is Initializable, ComptrollerStorage {
     require(success && isContract(cToken), 'contract error!');
 
     // Note that isComped is not in active use anymore
-    // markets[cToken] = Market({isListed: true, isComped: false, equalAssetGrouId: groupId});
+    // markets[cToken] = Market({isListed: true, isComped: false, assetGroupId: groupId});
     Market storage market = markets[cToken];
     market.isListed = true;
-    market.equalAssetGrouId = groupId;
+    market.assetGroupId = groupId;
 
     _addMarketInternal(cToken);
     _initializeMarket(cToken);

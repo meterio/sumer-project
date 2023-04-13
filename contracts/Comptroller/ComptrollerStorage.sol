@@ -42,7 +42,7 @@ contract ComptrollerStorage {
   /// @notice Whether or not this market receives COMP
   struct Market {
     bool isListed;
-    uint8 equalAssetGrouId;
+    uint8 assetGroupId;
     mapping(address => bool) accountMembership;
     bool isComped;
   }
