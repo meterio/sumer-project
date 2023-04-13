@@ -204,13 +204,22 @@ export class UnderwriterStorage extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
         groupId: number;
         groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
       }
     >;
 
@@ -251,13 +260,14 @@ export class UnderwriterStorage extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       groupId: number;
       groupName: string;
-      inGroupCTokenRateMantissa: BigNumber;
-      inGroupSuTokenRateMantissa: BigNumber;
-      interGroupCTokenRateMantissa: BigNumber;
-      interGroupSuTokenRateMantissa: BigNumber;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
     }
   >;
 
@@ -295,13 +305,22 @@ export class UnderwriterStorage extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
         groupId: number;
         groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
       }
     >;
 

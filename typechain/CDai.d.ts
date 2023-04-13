@@ -26,6 +26,7 @@ interface CDaiInterface extends ethers.utils.Interface {
     "_reduceReserves(uint256)": FunctionFragment;
     "_resignImplementation()": FunctionFragment;
     "_setComptroller(address)": FunctionFragment;
+    "_setDiscountRate(uint256)": FunctionFragment;
     "_setInterestRateModel(address)": FunctionFragment;
     "_setPendingAdmin(address)": FunctionFragment;
     "_setReserveFactor(uint256)": FunctionFragment;
@@ -44,15 +45,15 @@ interface CDaiInterface extends ethers.utils.Interface {
     "comptroller()": FunctionFragment;
     "daiJoinAddress()": FunctionFragment;
     "decimals()": FunctionFragment;
+    "discountRateMantissa()": FunctionFragment;
     "exchangeRateCurrent()": FunctionFragment;
     "exchangeRateStored()": FunctionFragment;
     "getAccountBorrows(address)": FunctionFragment;
     "getAccountSnapshot(address)": FunctionFragment;
     "getCash()": FunctionFragment;
-    "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)": FunctionFragment;
-    "interRateMantissa()": FunctionFragment;
+    "getDiscountRate()": FunctionFragment;
+    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256)": FunctionFragment;
     "interestRateModel()": FunctionFragment;
-    "intraRateMantissa()": FunctionFragment;
     "isCEther()": FunctionFragment;
     "isCToken()": FunctionFragment;
     "isDeprecated()": FunctionFragment;
@@ -60,7 +61,6 @@ interface CDaiInterface extends ethers.utils.Interface {
     "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
-    "mintRateMantissa()": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "potAddress()": FunctionFragment;
@@ -103,6 +103,10 @@ interface CDaiInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "_setComptroller",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setDiscountRate",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "_setInterestRateModel",
@@ -168,6 +172,10 @@ interface CDaiInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "discountRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "exchangeRateCurrent",
     values?: undefined
   ): string;
@@ -185,31 +193,26 @@ interface CDaiInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "getCash", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "getDiscountRate",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
     values: [
       string,
       string,
       string,
-      BigNumberish,
-      string,
       string,
       BigNumberish,
       string,
+      string,
       BigNumberish,
-      BigNumberish,
+      string,
       BigNumberish
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "interRateMantissa",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "interestRateModel",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "intraRateMantissa",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
@@ -231,10 +234,6 @@ interface CDaiInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
-  encodeFunctionData(
-    functionFragment: "mintRateMantissa",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pendingAdmin",
@@ -332,6 +331,10 @@ interface CDaiInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "_setDiscountRate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "_setInterestRateModel",
     data: BytesLike
   ): Result;
@@ -386,6 +389,10 @@ interface CDaiInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "discountRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "exchangeRateCurrent",
     data: BytesLike
   ): Result;
@@ -402,17 +409,13 @@ interface CDaiInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getDiscountRate",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "interRateMantissa",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "interestRateModel",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "intraRateMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
@@ -434,10 +437,6 @@ interface CDaiInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "mintRateMantissa",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingAdmin",
@@ -504,6 +503,7 @@ interface CDaiInterface extends ethers.utils.Interface {
     "Mint(address,uint256,uint256)": EventFragment;
     "NewAdmin(address,address)": EventFragment;
     "NewComptroller(address,address)": EventFragment;
+    "NewDiscountRate(uint256,uint256)": EventFragment;
     "NewMarketInterestRateModel(address,address)": EventFragment;
     "NewPendingAdmin(address,address)": EventFragment;
     "NewReserveFactor(uint256,uint256)": EventFragment;
@@ -521,6 +521,7 @@ interface CDaiInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewAdmin"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewComptroller"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewDiscountRate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewMarketInterestRateModel"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPendingAdmin"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewReserveFactor"): EventFragment;
@@ -581,6 +582,13 @@ export type NewAdminEvent = TypedEvent<
 
 export type NewComptrollerEvent = TypedEvent<
   [string, string] & { oldComptroller: string; newComptroller: string }
+>;
+
+export type NewDiscountRateEvent = TypedEvent<
+  [BigNumber, BigNumber] & {
+    oldDiscountRateMantissa: BigNumber;
+    newDiscountRateMantissa: BigNumber;
+  }
 >;
 
 export type NewMarketInterestRateModelEvent = TypedEvent<
@@ -706,6 +714,11 @@ export class CDai extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    _setDiscountRate(
+      discountRateMantissa_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     _setInterestRateModel(
       newInterestRateModel: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -773,6 +786,8 @@ export class CDai extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
+    discountRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     exchangeRateCurrent(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -796,22 +811,9 @@ export class CDai extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
-      underlying_: string,
-      comptroller_: string,
-      interestRateModel_: string,
-      initialExchangeRateMantissa_: BigNumberish,
-      name_: string,
-      symbol_: string,
-      decimals_: BigNumberish,
-      admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    getDiscountRate(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
+    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256)"(
       daiJoinAddress_: string,
       potAddress_: string,
       comptroller_: string,
@@ -821,17 +823,24 @@ export class CDai extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
+      discountRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    interRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+    "initialize(address,address,address,uint256,string,string,uint8,address,uint256)"(
+      underlying_: string,
+      comptroller_: string,
+      interestRateModel_: string,
+      initialExchangeRateMantissa_: BigNumberish,
+      name_: string,
+      symbol_: string,
+      decimals_: BigNumberish,
+      admin: string,
+      discountRateMantissa_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     interestRateModel(overrides?: CallOverrides): Promise<[string]>;
-
-    intraRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     isCEther(overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -864,8 +873,6 @@ export class CDai extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    mintRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -965,6 +972,11 @@ export class CDai extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  _setDiscountRate(
+    discountRateMantissa_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   _setInterestRateModel(
     newInterestRateModel: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1032,6 +1044,8 @@ export class CDai extends BaseContract {
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
+  discountRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
   exchangeRateCurrent(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1052,22 +1066,9 @@ export class CDai extends BaseContract {
 
   getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
-    underlying_: string,
-    comptroller_: string,
-    interestRateModel_: string,
-    initialExchangeRateMantissa_: BigNumberish,
-    name_: string,
-    symbol_: string,
-    decimals_: BigNumberish,
-    admin: string,
-    intraRateMantissa_: BigNumberish,
-    interRateMantissa_: BigNumberish,
-    mintRateMantissa_: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  getDiscountRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
+  "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256)"(
     daiJoinAddress_: string,
     potAddress_: string,
     comptroller_: string,
@@ -1077,17 +1078,24 @@ export class CDai extends BaseContract {
     symbol_: string,
     decimals_: BigNumberish,
     admin: string,
-    intraRateMantissa_: BigNumberish,
-    interRateMantissa_: BigNumberish,
-    mintRateMantissa_: BigNumberish,
+    discountRateMantissa_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+  "initialize(address,address,address,uint256,string,string,uint8,address,uint256)"(
+    underlying_: string,
+    comptroller_: string,
+    interestRateModel_: string,
+    initialExchangeRateMantissa_: BigNumberish,
+    name_: string,
+    symbol_: string,
+    decimals_: BigNumberish,
+    admin: string,
+    discountRateMantissa_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   interestRateModel(overrides?: CallOverrides): Promise<string>;
-
-  intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   isCEther(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1120,8 +1128,6 @@ export class CDai extends BaseContract {
     mintAmount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -1217,6 +1223,11 @@ export class CDai extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    _setDiscountRate(
+      discountRateMantissa_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     _setInterestRateModel(
       newInterestRateModel: string,
       overrides?: CallOverrides
@@ -1282,6 +1293,8 @@ export class CDai extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
+    discountRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     exchangeRateCurrent(overrides?: CallOverrides): Promise<BigNumber>;
 
     exchangeRateStored(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1303,22 +1316,9 @@ export class CDai extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
-      underlying_: string,
-      comptroller_: string,
-      interestRateModel_: string,
-      initialExchangeRateMantissa_: BigNumberish,
-      name_: string,
-      symbol_: string,
-      decimals_: BigNumberish,
-      admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    getDiscountRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
+    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256)"(
       daiJoinAddress_: string,
       potAddress_: string,
       comptroller_: string,
@@ -1328,17 +1328,24 @@ export class CDai extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
+      discountRateMantissa_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    "initialize(address,address,address,uint256,string,string,uint8,address,uint256)"(
+      underlying_: string,
+      comptroller_: string,
+      interestRateModel_: string,
+      initialExchangeRateMantissa_: BigNumberish,
+      name_: string,
+      symbol_: string,
+      decimals_: BigNumberish,
+      admin: string,
+      discountRateMantissa_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     interestRateModel(overrides?: CallOverrides): Promise<string>;
-
-    intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCEther(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1371,8 +1378,6 @@ export class CDai extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1607,6 +1612,22 @@ export class CDai extends BaseContract {
       { oldComptroller: string; newComptroller: string }
     >;
 
+    "NewDiscountRate(uint256,uint256)"(
+      oldDiscountRateMantissa?: null,
+      newDiscountRateMantissa?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { oldDiscountRateMantissa: BigNumber; newDiscountRateMantissa: BigNumber }
+    >;
+
+    NewDiscountRate(
+      oldDiscountRateMantissa?: null,
+      newDiscountRateMantissa?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { oldDiscountRateMantissa: BigNumber; newDiscountRateMantissa: BigNumber }
+    >;
+
     "NewMarketInterestRateModel(address,address)"(
       oldInterestRateModel?: null,
       newInterestRateModel?: null
@@ -1792,6 +1813,11 @@ export class CDai extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    _setDiscountRate(
+      discountRateMantissa_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     _setInterestRateModel(
       newInterestRateModel: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1859,6 +1885,8 @@ export class CDai extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
+    discountRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     exchangeRateCurrent(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1877,22 +1905,9 @@ export class CDai extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
-      underlying_: string,
-      comptroller_: string,
-      interestRateModel_: string,
-      initialExchangeRateMantissa_: BigNumberish,
-      name_: string,
-      symbol_: string,
-      decimals_: BigNumberish,
-      admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    getDiscountRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
+    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256)"(
       daiJoinAddress_: string,
       potAddress_: string,
       comptroller_: string,
@@ -1902,17 +1917,24 @@ export class CDai extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
+      discountRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    interRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    "initialize(address,address,address,uint256,string,string,uint8,address,uint256)"(
+      underlying_: string,
+      comptroller_: string,
+      interestRateModel_: string,
+      initialExchangeRateMantissa_: BigNumberish,
+      name_: string,
+      symbol_: string,
+      decimals_: BigNumberish,
+      admin: string,
+      discountRateMantissa_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     interestRateModel(overrides?: CallOverrides): Promise<BigNumber>;
-
-    intraRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     isCEther(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1945,8 +1967,6 @@ export class CDai extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    mintRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2047,6 +2067,11 @@ export class CDai extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    _setDiscountRate(
+      discountRateMantissa_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     _setInterestRateModel(
       newInterestRateModel: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2121,6 +2146,10 @@ export class CDai extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    discountRateMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     exchangeRateCurrent(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -2141,22 +2170,9 @@ export class CDai extends BaseContract {
 
     getCash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "initialize(address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
-      underlying_: string,
-      comptroller_: string,
-      interestRateModel_: string,
-      initialExchangeRateMantissa_: BigNumberish,
-      name_: string,
-      symbol_: string,
-      decimals_: BigNumberish,
-      admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    getDiscountRate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256,uint256,uint256)"(
+    "initialize(address,address,address,address,uint256,string,string,uint8,address,uint256)"(
       daiJoinAddress_: string,
       potAddress_: string,
       comptroller_: string,
@@ -2166,17 +2182,24 @@ export class CDai extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin: string,
-      intraRateMantissa_: BigNumberish,
-      interRateMantissa_: BigNumberish,
-      mintRateMantissa_: BigNumberish,
+      discountRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    interRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "initialize(address,address,address,uint256,string,string,uint8,address,uint256)"(
+      underlying_: string,
+      comptroller_: string,
+      interestRateModel_: string,
+      initialExchangeRateMantissa_: BigNumberish,
+      name_: string,
+      symbol_: string,
+      decimals_: BigNumberish,
+      admin: string,
+      discountRateMantissa_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     interestRateModel(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    intraRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isCEther(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2209,8 +2232,6 @@ export class CDai extends BaseContract {
       mintAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    mintRateMantissa(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

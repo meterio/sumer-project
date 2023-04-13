@@ -701,12 +701,16 @@ export class CompoundLens extends BaseContract {
         BigNumber,
         BigNumber,
         boolean,
-        BigNumber,
         string,
         BigNumber,
         BigNumber,
         boolean,
         boolean,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number,
+        BigNumber,
         BigNumber,
         BigNumber,
         BigNumber
@@ -721,7 +725,6 @@ export class CompoundLens extends BaseContract {
         totalSupply: BigNumber;
         totalCash: BigNumber;
         isListed: boolean;
-        collateralFactorMantissa: BigNumber;
         underlyingAssetAddress: string;
         cTokenDecimals: BigNumber;
         underlyingDecimals: BigNumber;
@@ -730,6 +733,11 @@ export class CompoundLens extends BaseContract {
         borrowCap: BigNumber;
         depositCap: BigNumber;
         liquidationIncentive: BigNumber;
+        groupId: number;
+        intraRate: BigNumber;
+        mintRate: BigNumber;
+        interRate: BigNumber;
+        discountRate: BigNumber;
       }
     >;
 
@@ -748,12 +756,16 @@ export class CompoundLens extends BaseContract {
         BigNumber,
         BigNumber,
         boolean,
-        BigNumber,
         string,
         BigNumber,
         BigNumber,
         boolean,
         boolean,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number,
+        BigNumber,
         BigNumber,
         BigNumber,
         BigNumber
@@ -768,7 +780,6 @@ export class CompoundLens extends BaseContract {
         totalSupply: BigNumber;
         totalCash: BigNumber;
         isListed: boolean;
-        collateralFactorMantissa: BigNumber;
         underlyingAssetAddress: string;
         cTokenDecimals: BigNumber;
         underlyingDecimals: BigNumber;
@@ -777,6 +788,11 @@ export class CompoundLens extends BaseContract {
         borrowCap: BigNumber;
         depositCap: BigNumber;
         liquidationIncentive: BigNumber;
+        groupId: number;
+        intraRate: BigNumber;
+        mintRate: BigNumber;
+        interRate: BigNumber;
+        discountRate: BigNumber;
       })[]
     >;
 

@@ -739,7 +739,7 @@ export class Comptroller extends BaseContract {
     ): Promise<
       [boolean, number, boolean] & {
         isListed: boolean;
-        equalAssetGrouId: number;
+        assetGroupId: number;
         isComped: boolean;
       }
     >;
@@ -988,7 +988,7 @@ export class Comptroller extends BaseContract {
   ): Promise<
     [boolean, number, boolean] & {
       isListed: boolean;
-      equalAssetGrouId: number;
+      assetGroupId: number;
       isComped: boolean;
     }
   >;
@@ -1243,7 +1243,7 @@ export class Comptroller extends BaseContract {
     ): Promise<
       [boolean, number, boolean] & {
         isListed: boolean;
-        equalAssetGrouId: number;
+        assetGroupId: number;
         isComped: boolean;
       }
     >;

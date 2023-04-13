@@ -53,54 +53,41 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "inGroupCTokenRateMantissa",
+        name: "intraCRateMantissa",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "inGroupSuTokenRateMantissa",
+        name: "intraMintRateMantissa",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "interGroupCTokenRateMantissa",
+        name: "intraSuRateMantissa",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "interGroupSuTokenRateMantissa",
+        name: "interCRateMantissa",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "interSuRateMantissa",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint8",
-        name: "equalAssetsGroupNum",
+        name: "assetsGroupNum",
         type: "uint8",
       },
     ],
-    name: "EqAssetGroupAdded",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint8",
-        name: "groupId",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "equalAssetsGroupNum",
-        type: "uint8",
-      },
-    ],
-    name: "EqAssetGroupRemoved",
+    name: "NewAssetGroup",
     type: "event",
   },
   {
@@ -164,19 +151,19 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "oldSuTokenRateMantissa",
-        type: "uint256",
+        indexed: true,
+        internalType: "uint8",
+        name: "groupId",
+        type: "uint8",
       },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "newSuTokenRateMantissa",
-        type: "uint256",
+        internalType: "uint8",
+        name: "equalAssetsGroupNum",
+        type: "uint8",
       },
     ],
-    name: "NewSuTokenRate",
+    name: "RemoveAssetGroup",
     type: "event",
   },
   {
@@ -251,38 +238,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "_getSuTokenRateMantissa",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "_getTransferPaused",
     outputs: [
       {
         internalType: "bool",
         name: "",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getCompAddress",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
       },
     ],
     stateMutability: "view",
@@ -296,7 +257,7 @@ const _abi = [
         type: "uint8",
       },
     ],
-    name: "getEqAssetGroup",
+    name: "getAssetGroup",
     outputs: [
       {
         components: [
@@ -312,26 +273,31 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "inGroupCTokenRateMantissa",
+            name: "intraCRateMantissa",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "inGroupSuTokenRateMantissa",
+            name: "intraMintRateMantissa",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "interGroupCTokenRateMantissa",
+            name: "intraSuRateMantissa",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "interGroupSuTokenRateMantissa",
+            name: "interCRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interSuRateMantissa",
             type: "uint256",
           },
         ],
-        internalType: "struct IUnderwriterAdmin.EqualAssets",
+        internalType: "struct IUnderwriterAdmin.AssetGroup",
         name: "",
         type: "tuple",
       },
@@ -341,12 +307,25 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "getEqAssetGroupNum",
+    name: "getAssetGroupNum",
     outputs: [
       {
         internalType: "uint8",
         name: "",
         type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getCompAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",

@@ -220,6 +220,25 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint256",
+        name: "oldDiscountRateMantissa",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newDiscountRateMantissa",
+        type: "uint256",
+      },
+    ],
+    name: "NewDiscountRate",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "oldInterestRateModel",
         type: "address",
@@ -450,6 +469,25 @@ const _abi = [
       },
     ],
     name: "_setComptroller",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "discountRateMantissa_",
+        type: "uint256",
+      },
+    ],
+    name: "_setDiscountRate",
     outputs: [
       {
         internalType: "uint256",
@@ -734,6 +772,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "discountRateMantissa",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "exchangeRateCurrent",
     outputs: [
       {
@@ -831,7 +882,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "interRateMantissa",
+    name: "getDiscountRate",
     outputs: [
       {
         internalType: "uint256",
@@ -850,19 +901,6 @@ const _abi = [
         internalType: "address",
         name: "",
         type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "intraRateMantissa",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -961,19 +999,6 @@ const _abi = [
         name: "",
         type: "uint256",
       },
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "mintRateMantissa",
-    outputs: [
       {
         internalType: "uint256",
         name: "",

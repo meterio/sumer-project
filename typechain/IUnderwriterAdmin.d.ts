@@ -25,11 +25,10 @@ interface IUnderwriterAdminInterface extends ethers.utils.Interface {
     "_getMarketBorrowCap(address)": FunctionFragment;
     "_getMintPaused(address)": FunctionFragment;
     "_getSeizePaused()": FunctionFragment;
-    "_getSuTokenRateMantissa()": FunctionFragment;
     "_getTransferPaused()": FunctionFragment;
+    "getAssetGroup(uint8)": FunctionFragment;
+    "getAssetGroupNum()": FunctionFragment;
     "getCompAddress()": FunctionFragment;
-    "getEqAssetGroup(uint8)": FunctionFragment;
-    "getEqAssetGroupNum()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -49,23 +48,19 @@ interface IUnderwriterAdminInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "_getSuTokenRateMantissa",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "_getTransferPaused",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getCompAddress",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getEqAssetGroup",
+    functionFragment: "getAssetGroup",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getEqAssetGroupNum",
+    functionFragment: "getAssetGroupNum",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCompAddress",
     values?: undefined
   ): string;
 
@@ -86,43 +81,37 @@ interface IUnderwriterAdminInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "_getSuTokenRateMantissa",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "_getTransferPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAssetGroupNum",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getCompAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getEqAssetGroup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getEqAssetGroupNum",
     data: BytesLike
   ): Result;
 
   events: {
     "ActionPaused(address,string,bool)": EventFragment;
-    "EqAssetGroupAdded(uint8,string,uint256,uint256,uint256,uint256,uint8)": EventFragment;
-    "EqAssetGroupRemoved(uint8,uint8)": EventFragment;
+    "NewAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256,uint8)": EventFragment;
     "NewBorrowCap(address,uint256)": EventFragment;
     "NewBorrowCapGuardian(address,address)": EventFragment;
     "NewPauseGuardian(address,address)": EventFragment;
-    "NewSuTokenRate(uint256,uint256)": EventFragment;
+    "RemoveAssetGroup(uint8,uint8)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ActionPaused"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "EqAssetGroupAdded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "EqAssetGroupRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewAssetGroup"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewBorrowCap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewBorrowCapGuardian"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPauseGuardian"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NewSuTokenRate"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RemoveAssetGroup"): EventFragment;
 }
 
 export type ActionPausedEvent = TypedEvent<
@@ -133,20 +122,26 @@ export type ActionPausedEvent = TypedEvent<
   }
 >;
 
-export type EqAssetGroupAddedEvent = TypedEvent<
-  [number, string, BigNumber, BigNumber, BigNumber, BigNumber, number] & {
+export type NewAssetGroupEvent = TypedEvent<
+  [
+    number,
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number
+  ] & {
     groupId: number;
     groupName: string;
-    inGroupCTokenRateMantissa: BigNumber;
-    inGroupSuTokenRateMantissa: BigNumber;
-    interGroupCTokenRateMantissa: BigNumber;
-    interGroupSuTokenRateMantissa: BigNumber;
-    equalAssetsGroupNum: number;
+    intraCRateMantissa: BigNumber;
+    intraMintRateMantissa: BigNumber;
+    intraSuRateMantissa: BigNumber;
+    interCRateMantissa: BigNumber;
+    interSuRateMantissa: BigNumber;
+    assetsGroupNum: number;
   }
->;
-
-export type EqAssetGroupRemovedEvent = TypedEvent<
-  [number, number] & { groupId: number; equalAssetsGroupNum: number }
 >;
 
 export type NewBorrowCapEvent = TypedEvent<
@@ -164,11 +159,8 @@ export type NewPauseGuardianEvent = TypedEvent<
   [string, string] & { oldPauseGuardian: string; newPauseGuardian: string }
 >;
 
-export type NewSuTokenRateEvent = TypedEvent<
-  [BigNumber, BigNumber] & {
-    oldSuTokenRateMantissa: BigNumber;
-    newSuTokenRateMantissa: BigNumber;
-  }
+export type RemoveAssetGroupEvent = TypedEvent<
+  [number, number] & { groupId: number; equalAssetsGroupNum: number }
 >;
 
 export class IUnderwriterAdmin extends BaseContract {
@@ -232,29 +224,36 @@ export class IUnderwriterAdmin extends BaseContract {
 
     _getSeizePaused(overrides?: CallOverrides): Promise<[boolean]>;
 
-    _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     _getTransferPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<[string]>;
-
-    getEqAssetGroup(
+    getAssetGroup(
       groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [
-        [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [
+          number,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
           groupId: number;
           groupName: string;
-          inGroupCTokenRateMantissa: BigNumber;
-          inGroupSuTokenRateMantissa: BigNumber;
-          interGroupCTokenRateMantissa: BigNumber;
-          interGroupSuTokenRateMantissa: BigNumber;
+          intraCRateMantissa: BigNumber;
+          intraMintRateMantissa: BigNumber;
+          intraSuRateMantissa: BigNumber;
+          interCRateMantissa: BigNumber;
+          interSuRateMantissa: BigNumber;
         }
       ]
     >;
 
-    getEqAssetGroupNum(overrides?: CallOverrides): Promise<[number]>;
+    getAssetGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<[string]>;
   };
 
   _getBorrowPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
@@ -271,27 +270,26 @@ export class IUnderwriterAdmin extends BaseContract {
 
   _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
 
-  _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
-
   _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
-  getCompAddress(overrides?: CallOverrides): Promise<string>;
-
-  getEqAssetGroup(
+  getAssetGroup(
     groupId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       groupId: number;
       groupName: string;
-      inGroupCTokenRateMantissa: BigNumber;
-      inGroupSuTokenRateMantissa: BigNumber;
-      interGroupCTokenRateMantissa: BigNumber;
-      interGroupSuTokenRateMantissa: BigNumber;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
     }
   >;
 
-  getEqAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+  getAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
+  getCompAddress(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     _getBorrowPaused(
@@ -308,27 +306,34 @@ export class IUnderwriterAdmin extends BaseContract {
 
     _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
 
-    _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
-
     _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<string>;
-
-    getEqAssetGroup(
+    getAssetGroup(
       groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
         groupId: number;
         groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
       }
     >;
 
-    getEqAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+    getAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -350,62 +355,68 @@ export class IUnderwriterAdmin extends BaseContract {
       { cToken: string; action: string; pauseState: boolean }
     >;
 
-    "EqAssetGroupAdded(uint8,string,uint256,uint256,uint256,uint256,uint8)"(
+    "NewAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256,uint8)"(
       groupId?: BigNumberish | null,
       groupName?: string | null,
-      inGroupCTokenRateMantissa?: null,
-      inGroupSuTokenRateMantissa?: null,
-      interGroupCTokenRateMantissa?: null,
-      interGroupSuTokenRateMantissa?: null,
-      equalAssetsGroupNum?: null
+      intraCRateMantissa?: null,
+      intraMintRateMantissa?: null,
+      intraSuRateMantissa?: null,
+      interCRateMantissa?: null,
+      interSuRateMantissa?: null,
+      assetsGroupNum?: null
     ): TypedEventFilter<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber, number],
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number
+      ],
       {
         groupId: number;
         groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
-        equalAssetsGroupNum: number;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+        assetsGroupNum: number;
       }
     >;
 
-    EqAssetGroupAdded(
+    NewAssetGroup(
       groupId?: BigNumberish | null,
       groupName?: string | null,
-      inGroupCTokenRateMantissa?: null,
-      inGroupSuTokenRateMantissa?: null,
-      interGroupCTokenRateMantissa?: null,
-      interGroupSuTokenRateMantissa?: null,
-      equalAssetsGroupNum?: null
+      intraCRateMantissa?: null,
+      intraMintRateMantissa?: null,
+      intraSuRateMantissa?: null,
+      interCRateMantissa?: null,
+      interSuRateMantissa?: null,
+      assetsGroupNum?: null
     ): TypedEventFilter<
-      [number, string, BigNumber, BigNumber, BigNumber, BigNumber, number],
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number
+      ],
       {
         groupId: number;
         groupName: string;
-        inGroupCTokenRateMantissa: BigNumber;
-        inGroupSuTokenRateMantissa: BigNumber;
-        interGroupCTokenRateMantissa: BigNumber;
-        interGroupSuTokenRateMantissa: BigNumber;
-        equalAssetsGroupNum: number;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+        assetsGroupNum: number;
       }
-    >;
-
-    "EqAssetGroupRemoved(uint8,uint8)"(
-      groupId?: BigNumberish | null,
-      equalAssetsGroupNum?: null
-    ): TypedEventFilter<
-      [number, number],
-      { groupId: number; equalAssetsGroupNum: number }
-    >;
-
-    EqAssetGroupRemoved(
-      groupId?: BigNumberish | null,
-      equalAssetsGroupNum?: null
-    ): TypedEventFilter<
-      [number, number],
-      { groupId: number; equalAssetsGroupNum: number }
     >;
 
     "NewBorrowCap(address,uint256)"(
@@ -456,20 +467,20 @@ export class IUnderwriterAdmin extends BaseContract {
       { oldPauseGuardian: string; newPauseGuardian: string }
     >;
 
-    "NewSuTokenRate(uint256,uint256)"(
-      oldSuTokenRateMantissa?: null,
-      newSuTokenRateMantissa?: null
+    "RemoveAssetGroup(uint8,uint8)"(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { oldSuTokenRateMantissa: BigNumber; newSuTokenRateMantissa: BigNumber }
+      [number, number],
+      { groupId: number; equalAssetsGroupNum: number }
     >;
 
-    NewSuTokenRate(
-      oldSuTokenRateMantissa?: null,
-      newSuTokenRateMantissa?: null
+    RemoveAssetGroup(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { oldSuTokenRateMantissa: BigNumber; newSuTokenRateMantissa: BigNumber }
+      [number, number],
+      { groupId: number; equalAssetsGroupNum: number }
     >;
   };
 
@@ -491,18 +502,16 @@ export class IUnderwriterAdmin extends BaseContract {
 
     _getSeizePaused(overrides?: CallOverrides): Promise<BigNumber>;
 
-    _getSuTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
-
     _getTransferPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getEqAssetGroup(
+    getAssetGroup(
       groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getEqAssetGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+    getAssetGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -523,23 +532,17 @@ export class IUnderwriterAdmin extends BaseContract {
 
     _getSeizePaused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    _getSuTokenRateMantissa(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _getTransferPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getEqAssetGroup(
+    getAssetGroup(
       groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getEqAssetGroupNum(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    getAssetGroupNum(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
