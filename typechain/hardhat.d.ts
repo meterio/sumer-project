@@ -81,10 +81,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAccessControlEnumerable__factory>;
     getContractFactory(
-      name: "Ownable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Ownable__factory>;
-    getContractFactory(
       name: "Pausable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Pausable__factory>;
@@ -108,6 +104,14 @@ declare module "hardhat/types/runtime" {
       name: "IERC165",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
+    getContractFactory(
+      name: "IPyth",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IPyth__factory>;
+    getContractFactory(
+      name: "IPythEvents",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IPythEvents__factory>;
     getContractFactory(
       name: "CompoundLens",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -405,6 +409,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PriceOracle__factory>;
     getContractFactory(
+      name: "PythOracle",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PythOracle__factory>;
+    getContractFactory(
       name: "ERC1967Proxy",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1967Proxy__factory>;
@@ -535,11 +543,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAccessControlEnumerable>;
     getContractAt(
-      name: "Ownable",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Ownable>;
-    getContractAt(
       name: "Pausable",
       address: string,
       signer?: ethers.Signer
@@ -569,6 +572,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
+    getContractAt(
+      name: "IPyth",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IPyth>;
+    getContractAt(
+      name: "IPythEvents",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IPythEvents>;
     getContractAt(
       name: "CompoundLens",
       address: string,
@@ -939,6 +952,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.PriceOracle>;
+    getContractAt(
+      name: "PythOracle",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PythOracle>;
     getContractAt(
       name: "ERC1967Proxy",
       address: string,

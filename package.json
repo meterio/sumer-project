@@ -40,6 +40,7 @@
     "@openzeppelin/contracts": "^4.8.2",
     "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "@pythnetwork/pyth-sdk-solidity": "^2.2.1",
     "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^4.0.0",
     "@types/chai": "^4.2.22",
