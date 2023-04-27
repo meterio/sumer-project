@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
+pragma solidity 0.8.19;
 
 import './InterestRateModel.sol';
-import '../utils/SafeMath.sol';
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**
  * @title Compound's JumpRateModel Contract

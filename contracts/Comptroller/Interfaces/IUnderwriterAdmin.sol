@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
-pragma abicoder v2;
+pragma solidity 0.8.19;
 
 interface IUnderwriterAdmin {
   /// @notice Emitted when an action is paused on a market

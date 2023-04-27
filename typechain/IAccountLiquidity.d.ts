@@ -18,22 +18,25 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface JugLikeInterface extends ethers.utils.Interface {
+interface IAccountLiquidityInterface extends ethers.utils.Interface {
   functions: {
-    "base()": FunctionFragment;
-    "ilks(bytes32)": FunctionFragment;
+    "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "base", values?: undefined): string;
-  encodeFunctionData(functionFragment: "ilks", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "getHypotheticalAccountLiquidity",
+    values: [string, string, BigNumberish, BigNumberish]
+  ): string;
 
-  decodeFunctionResult(functionFragment: "base", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "ilks", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getHypotheticalAccountLiquidity",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
 
-export class JugLike extends BaseContract {
+export class IAccountLiquidity extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -74,46 +77,54 @@ export class JugLike extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: JugLikeInterface;
+  interface: IAccountLiquidityInterface;
 
   functions: {
-    base(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    ilks(
-      arg0: BytesLike,
+    getHypotheticalAccountLiquidity(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber] & { duty: BigNumber; rho: BigNumber }>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
   };
 
-  base(overrides?: CallOverrides): Promise<BigNumber>;
-
-  ilks(
-    arg0: BytesLike,
+  getHypotheticalAccountLiquidity(
+    account: string,
+    cTokenModify: string,
+    redeemTokens: BigNumberish,
+    borrowAmount: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber] & { duty: BigNumber; rho: BigNumber }>;
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   callStatic: {
-    base(overrides?: CallOverrides): Promise<BigNumber>;
-
-    ilks(
-      arg0: BytesLike,
+    getHypotheticalAccountLiquidity(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber] & { duty: BigNumber; rho: BigNumber }>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
   };
 
   filters: {};
 
   estimateGas: {
-    base(overrides?: CallOverrides): Promise<BigNumber>;
-
-    ilks(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+    getHypotheticalAccountLiquidity(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    base(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    ilks(
-      arg0: BytesLike,
+    getHypotheticalAccountLiquidity(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

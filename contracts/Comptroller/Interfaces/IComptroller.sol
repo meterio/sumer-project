@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
+pragma solidity 0.8.19;
 
 interface IComptroller {
   /*** Assets You Are In ***/
   function isComptroller() external view returns (bool);
 
   function markets(address) external view returns (bool, uint8);
+
+  function getAllMarkets() external view returns (address[] memory);
 
   function oracle() external view returns (address);
 

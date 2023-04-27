@@ -11,7 +11,6 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
-  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -19,22 +18,25 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface VatLikeInterface extends ethers.utils.Interface {
+interface IBeaconInterface extends ethers.utils.Interface {
   functions: {
-    "dai(address)": FunctionFragment;
-    "hope(address)": FunctionFragment;
+    "implementation()": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "dai", values: [string]): string;
-  encodeFunctionData(functionFragment: "hope", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "implementation",
+    values?: undefined
+  ): string;
 
-  decodeFunctionResult(functionFragment: "dai", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "hope", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "implementation",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
 
-export class VatLike extends BaseContract {
+export class IBeacon extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -75,47 +77,25 @@ export class VatLike extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: VatLikeInterface;
+  interface: IBeaconInterface;
 
   functions: {
-    dai(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    hope(
-      arg0: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    implementation(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  dai(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  hope(
-    arg0: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  implementation(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    dai(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    hope(arg0: string, overrides?: CallOverrides): Promise<void>;
+    implementation(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
 
   estimateGas: {
-    dai(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    hope(
-      arg0: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    implementation(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    dai(arg0: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    hope(
-      arg0: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    implementation(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

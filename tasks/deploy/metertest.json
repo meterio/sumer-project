@@ -218,36 +218,36 @@
       "name": "Bitcoin",
       "intraCRateMantissa": "900000000000000000",
       "intraMintRateMantissa": "999700000000000000",
-      "intraSuRateMantissa": "700000000000000000",
+      "intraSuRateMantissa": "500000000000000000",
       "interCRateMantissa": "800000000000000000",
-      "interSuRateMantissa": "600000000000000000"
+      "interSuRateMantissa": "500000000000000000"
     },
     {
       "id": 2,
       "name": "Ether",
       "intraCRateMantissa": "900000000000000000",
       "intraMintRateMantissa": "999700000000000000",
-      "intraSuRateMantissa": "700000000000000000",
+      "intraSuRateMantissa": "500000000000000000",
       "interCRateMantissa": "800000000000000000",
-      "interSuRateMantissa": "600000000000000000"
+      "interSuRateMantissa": "500000000000000000"
     },
     {
       "id": 3,
       "name": "StableCoin",
       "intraCRateMantissa": "900000000000000000",
       "intraMintRateMantissa": "999700000000000000",
-      "intraSuRateMantissa": "700000000000000000",
+      "intraSuRateMantissa": "500000000000000000",
       "interCRateMantissa": "800000000000000000",
-      "interSuRateMantissa": "600000000000000000"
+      "interSuRateMantissa": "500000000000000000"
     },
     {
       "id": 4,
       "name": "MTR",
       "intraCRateMantissa": "900000000000000000",
       "intraMintRateMantissa": "999700000000000000",
-      "intraSuRateMantissa": "700000000000000000",
+      "intraSuRateMantissa": "500000000000000000",
       "interCRateMantissa": "800000000000000000",
-      "interSuRateMantissa": "600000000000000000"
+      "interSuRateMantissa": "500000000000000000"
     }
   ],
   "multicall2": {

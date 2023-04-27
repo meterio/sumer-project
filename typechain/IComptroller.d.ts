@@ -29,6 +29,7 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     "enterMarkets(address[])": FunctionFragment;
     "exitMarket(address)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
+    "getAllMarkets()": FunctionFragment;
     "getAssetsIn(address)": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
     "isComptroller()": FunctionFragment;
@@ -68,6 +69,10 @@ interface IComptrollerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getAccountLiquidity",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllMarkets",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "getAssetsIn", values: [string]): string;
   encodeFunctionData(
@@ -142,6 +147,10 @@ interface IComptrollerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getAccountLiquidity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllMarkets",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -279,6 +288,8 @@ export class IComptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+    getAllMarkets(overrides?: CallOverrides): Promise<[string[]]>;
+
     getAssetsIn(
       account: string,
       overrides?: CallOverrides
@@ -395,6 +406,8 @@ export class IComptroller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
+  getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
+
   getAssetsIn(account: string, overrides?: CallOverrides): Promise<string[]>;
 
   getHypotheticalAccountLiquidity(
@@ -496,6 +509,8 @@ export class IComptroller extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
+
+    getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
     getAssetsIn(account: string, overrides?: CallOverrides): Promise<string[]>;
 
@@ -611,6 +626,8 @@ export class IComptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getAllMarkets(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAssetsIn(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     getHypotheticalAccountLiquidity(
@@ -724,6 +741,8 @@ export class IComptroller extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getAllMarkets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAssetsIn(
       account: string,

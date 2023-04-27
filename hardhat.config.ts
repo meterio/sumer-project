@@ -175,7 +175,7 @@ export default {
     apiKey: argv.networkScanKey
   },
   solidity: {
-    compilers: [compileSetting('0.6.11', 200), compileSetting('0.7.6', 10), compileSetting('0.8.11', 200)]
+    compilers: [ compileSetting('0.8.19', 200)]
   },
   paths: {
     sources: './contracts',

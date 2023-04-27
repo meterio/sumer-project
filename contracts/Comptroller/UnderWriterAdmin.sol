@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
-pragma abicoder v2;
+pragma solidity 0.8.19;
 
 import './ComptrollerErrorReporter.sol';
 import './UnderwriterStorage.sol';
 import './Interfaces/IPriceOracle.sol';
-import '../utils/Initializable.sol';
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializable {
   function initialize(address _gov, address _admin) public initializer {

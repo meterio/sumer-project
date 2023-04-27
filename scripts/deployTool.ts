@@ -1,20 +1,20 @@
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "fs";
-import { Contract, Signer } from "ethers";
+import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs';
+import { Contract, Signer } from 'ethers';
 
 export const allowVerifyChain = [
-  "mainnet",
-  "ropsten",
-  "rinkeby",
-  "goerli",
-  "kovan",
-  "bsctest",
-  "bscmain",
-  "hecotest",
-  "hecomain",
-  "maticmain",
-  "ftmtest",
-  "ftmmain",
-  "hoomain",
+  'mainnet',
+  'ropsten',
+  'rinkeby',
+  'goerli',
+  'kovan',
+  'bsctest',
+  'bscmain',
+  'hecotest',
+  'hecomain',
+  'maticmain',
+  'ftmtest',
+  'ftmmain',
+  'hoomain'
 ];
 
 type AddressMap = { [name: string]: string };
@@ -23,26 +23,18 @@ export function compileSetting(version: string, runs: number) {
   return {
     version: version,
     settings: {
+      viaIR: true,
       optimizer: {
         enabled: true,
-        runs: runs,
+        runs: runs
       },
       outputSelection: {
-        "*": {
-          "*": [
-            "abi",
-            "evm.bytecode",
-            "evm.deployedBytecode",
-            "evm.methodIdentifiers",
-            "metadata",
-            "storageLayout"
-          ],
-          "": [
-            "ast"
-          ]
+        '*': {
+          '*': ['abi', 'evm.bytecode', 'evm.deployedBytecode', 'evm.methodIdentifiers', 'metadata', 'storageLayout'],
+          '': ['ast']
         }
       }
-    },
+    }
   };
 }
 
@@ -56,19 +48,19 @@ export async function deployContract(
 ): Promise<Contract> {
   const factory = await getContractFactory(name, {
     signer: signer,
-    libraries: libraries,
+    libraries: libraries
   });
   const contract = await factory.deploy(...args);
-  console.log("Deploying", name);
-  console.log("  to", contract.address);
-  console.log("  in", contract.deployTransaction.hash);
-  console.log("  receipt", await contract.deployTransaction.wait());
+  console.log('Deploying', name);
+  console.log('  to', contract.address);
+  console.log('  in', contract.deployTransaction.hash);
+  console.log('  receipt', await contract.deployTransaction.wait());
   await saveFile(network, name, contract, args, libraries);
   return contract.deployed();
 }
 
 export function getContract(network: string, name: string) {
-  const nameArr = name.split(":");
+  const nameArr = name.split(':');
   const contractName = nameArr.length > 1 ? nameArr[1] : nameArr[0];
   const path = `./deployments/${network}/`;
   const latest = `${contractName}.json`;
@@ -76,7 +68,7 @@ export function getContract(network: string, name: string) {
   if (existsSync(path + latest)) {
     return JSON.parse(readFileSync(path + latest).toString());
   } else {
-    return "";
+    return '';
   }
 }
 
@@ -87,7 +79,7 @@ export async function saveFile(
   args: Array<any> = [],
   libraries: Object = {}
 ) {
-  const nameArr = name.split(":");
+  const nameArr = name.split(':');
   const contractName = nameArr.length > 1 ? nameArr[1] : nameArr[0];
   const path = `./deployments/${network}/`;
   const file = `${contractName}.json`;
@@ -95,17 +87,23 @@ export async function saveFile(
   mkdirSync(path, { recursive: true });
 
   if (contractName != name) {
-    writeFileSync(path + file, JSON.stringify({
-      address: contract.address,
-      constructorArguments: args,
-      libraries: libraries,
-      contract: name
-    }));
+    writeFileSync(
+      path + file,
+      JSON.stringify({
+        address: contract.address,
+        constructorArguments: args,
+        libraries: libraries,
+        contract: name
+      })
+    );
   } else {
-    writeFileSync(path + file, JSON.stringify({
-      address: contract.address,
-      constructorArguments: args,
-      libraries: libraries
-    }));
+    writeFileSync(
+      path + file,
+      JSON.stringify({
+        address: contract.address,
+        constructorArguments: args,
+        libraries: libraries
+      })
+    );
   }
 }

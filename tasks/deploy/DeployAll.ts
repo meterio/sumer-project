@@ -2,7 +2,13 @@ import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
 import { readFileSync, writeFileSync } from 'fs';
 import { log } from '../../log_settings';
-import { Comptroller, FeedPriceOracle, UnderwriterAdmin } from '../../typechain';
+import {
+  AccountLiquidity,
+  CompLogic,
+  Comptroller,
+  PythOracle,
+  UnderwriterAdmin
+} from '../../typechain';
 import { BigNumber } from 'ethers';
 const MANTISSA_DECIMALS = 18;
 const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
@@ -53,7 +59,7 @@ task('all', 'deploy contract')
     }
 
     if (config.feedPriceOracle.address == '') {
-      const feedPriceOracle = await run('do', {
+      const feedPriceOracle = await run('dpo', {
         rpc: rpc,
         pk: pk,
         gasprice: gasprice
@@ -132,18 +138,36 @@ task('all', 'deploy contract')
     }
 
     if (config.comptroller.address == '') {
-      const { impl, proxy } = await run('dc', {
+      const {
+        compLogicImpl,
+        compLogic,
+        accountLiquidityImpl,
+        accountLiquidity,
+        comptrollerImpl,
+        comptroller
+      } = await run('dc', {
         admin: admin,
         oracle: config.feedPriceOracle.address,
         ua: config.underwriterAdmin.address,
+        comp: config.sumer.address,
         cfm: config.comptroller.closeFactorMantissa,
         lim: config.comptroller.liquidationIncentiveMantissa,
         rpc: rpc,
         pk: pk,
         gasprice: gasprice
       });
-      config.comptroller.implementation = impl.address;
-      config.comptroller.address = proxy.address;
+      const compLogicContract = (await ethers.getContractAt('CompLogic', compLogic.address, wallet)) as CompLogic;
+      let tx = await compLogicContract.setComptroller(comptroller.address);
+      await tx.wait();
+      const accountLiquidityContract = (await ethers.getContractAt(
+        'AccountLiquidity',
+        accountLiquidity.address,
+        wallet
+      )) as AccountLiquidity;
+      tx = await accountLiquidityContract.setComptroller(comptroller.address);
+      await tx.wait();
+      config.comptroller.implementation = comptrollerImpl.address;
+      config.comptroller.address = comptroller.address;
       writeFileSync(json, JSON.stringify(config));
     }
     if (config.cTokens.implementation == '') {
@@ -160,11 +184,7 @@ task('all', 'deploy contract')
     const suErc20 = await ethers.getContractFactory('suErc20');
     const sumerOFT = await ethers.getContractFactory('SumerOFTUpgradeable');
     const comptroller = (await ethers.getContractAt('Comptroller', config.comptroller.address, wallet)) as Comptroller;
-    const oracle = (await ethers.getContractAt(
-      'FeedPriceOracle',
-      config.feedPriceOracle.address,
-      wallet
-    )) as FeedPriceOracle;
+    const oracle = (await ethers.getContractAt('PythOracle', config.feedPriceOracle.address, wallet)) as PythOracle;
     if (config.cTokens.tokens.length > 0) {
       for (let i = 0; i < config.cTokens.tokens.length; i++) {
         let cToken = config.cTokens.tokens[i];
@@ -227,40 +247,24 @@ task('all', 'deploy contract')
         let price =
           (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(cToken.address) : BigNumber.from(0);
         if (price.eq(BigNumber.from(0))) {
-          if (cToken.oracle.type == 0) {
-            let gas = await oracle.estimateGas.setChainlinkFeed(cToken.address, cToken.oracle.feed, cToken.decimals);
-            let receipt = await oracle.setChainlinkFeed(cToken.address, cToken.oracle.feed, cToken.decimals, {
+          let gas = await oracle.estimateGas.setFeedId(
+            cToken.address,
+            cToken.oracle.feedId,
+            cToken.oracle.addr,
+            cToken.oracle.tokenDecimals,
+            cToken.oracle.name
+          );
+          let receipt = await oracle.setFeedId(
+            cToken.address,
+            cToken.oracle.feedId,
+            cToken.oracle.addr,
+            cToken.oracle.tokenDecimals,
+            cToken.oracle.name,
+            {
               gasLimit: gas
-            });
-            log.info('setChainlinkFeed:', cToken.cTokenSymbol, receipt.hash);
-          } else if (cToken.oracle.type == 1) {
-            let gas = await oracle.estimateGas.setFixedPrice(cToken.address, cToken.oracle.price);
-            let receipt = await oracle.setFixedPrice(cToken.address, cToken.oracle.price, { gasLimit: gas });
-            log.info('setFixedPrice:', cToken.cTokenSymbol, receipt.hash);
-          } else if (cToken.oracle.type == 2) {
-            let gas = await oracle.estimateGas.setBandFeed(
-              cToken.address,
-              cToken.oracle.feed,
-              cToken.decimals,
-              18,
-              cToken.oracle.name
-            );
-            let receipt = await oracle.setBandFeed(
-              cToken.address,
-              cToken.oracle.feed,
-              cToken.decimals,
-              18,
-              cToken.oracle.name,
-              { gasLimit: gas }
-            );
-            log.info('setBandFeed:', cToken.cTokenSymbol, receipt.hash);
-          } else if (cToken.oracle.type == 3) {
-            let gas = await oracle.estimateGas.setWitnetFeed(cToken.address, cToken.oracle.feed, cToken.decimals, 6);
-            let receipt = await oracle.setWitnetFeed(cToken.address, cToken.oracle.feed, cToken.decimals, 6, {
-              gasLimit: gas
-            });
-            log.info('setWitnetFeed:', cToken.cTokenSymbol, receipt.hash);
-          }
+            }
+          );
+          log.info('setFeedId:', cToken.cTokenSymbol, receipt.hash);
         }
       }
     }
@@ -309,7 +313,7 @@ task('all', 'deploy contract')
         const suTokenSymbol = `sdr${suToken.symbol}`;
         if (suToken.address == '') {
           let data = suErc20.interface.encodeFunctionData('initialize', [
-            config.suTokens.tokens[i].underly,
+            suToken.underly,
             config.comptroller.address,
             config.suInterestRateModel.address,
             ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
@@ -317,7 +321,7 @@ task('all', 'deploy contract')
             suTokenSymbol,
             MANTISSA_DECIMALS,
             wallet.address,
-            config.suToken.tokens[i].discountRate
+            suToken.discountRate
           ]);
           const proxy = await run('p', {
             impl: config.suTokens.implementation,
@@ -358,31 +362,29 @@ task('all', 'deploy contract')
         let price =
           (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(suToken.address) : BigNumber.from(0);
         if (price.eq(BigNumber.from(0))) {
-          if (suToken.oracle.type == 0) {
-            let gas = await oracle.estimateGas.setChainlinkFeed(suToken.address, suToken.oracle.feed, suToken.decimals);
-            let receipt = await oracle.setChainlinkFeed(suToken.address, suToken.oracle.feed, suToken.decimals, {
+          if (suToken.oracle.feedId == '1') {
+            let gas = await oracle.estimateGas.setFixedPrice(suToken.address, '1000000000000000000');
+            let receipt = await oracle.setFixedPrice(suToken.address, '1000000000000000000', {
               gasLimit: gas
             });
-            log.info('setChainlinkFeed:', suToken.symbol, receipt.hash);
-          } else if (suToken.oracle.type == 1) {
-            let gas = await oracle.estimateGas.setFixedPrice(suToken.address, suToken.oracle.price);
-            let receipt = await oracle.setFixedPrice(suToken.address, suToken.oracle.price, { gasLimit: gas });
             log.info('setFixedPrice:', suToken.symbol, receipt.hash);
-          } else if (suToken.oracle.type == 2) {
-            let gas = await oracle.estimateGas.setBandFeed(
+          } else {
+            let gas = await oracle.estimateGas.setFeedId(
               suToken.address,
-              suToken.oracle.feed,
-              suToken.decimals,
-              18,
+              suToken.oracle.feedId,
+              suToken.oracle.addr,
+              suToken.oracle.tokenDecimals,
               suToken.oracle.name
             );
-            let receipt = await oracle.setBandFeed(
+            let receipt = await oracle.setFeedId(
               suToken.address,
-              suToken.oracle.feed,
-              suToken.decimals,
-              18,
+              suToken.oracle.feedId,
+              suToken.oracle.addr,
+              suToken.oracle.tokenDecimals,
               suToken.oracle.name,
-              { gasLimit: gas }
+              {
+                gasLimit: gas
+              }
             );
             log.info('setBandFeed:', suToken.symbol, receipt.hash);
           }

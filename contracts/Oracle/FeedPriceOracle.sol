@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
-pragma abicoder v2;
+pragma solidity 0.8.19;
 import './PriceOracle.sol';
 import './Interfaces/IStdReference.sol';
 import './Interfaces/IWitnetFeed.sol';

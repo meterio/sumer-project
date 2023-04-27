@@ -477,6 +477,7 @@ interface SuErc20Interface extends ethers.utils.Interface {
     "AccrueInterest(uint256,uint256,uint256,uint256)": EventFragment;
     "Approval(address,address,uint256)": EventFragment;
     "Borrow(address,uint256,uint256,uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "LiquidateBorrow(address,address,uint256,address,uint256)": EventFragment;
     "Mint(address,uint256,uint256)": EventFragment;
     "NewAdmin(address,address)": EventFragment;
@@ -495,6 +496,7 @@ interface SuErc20Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "AccrueInterest"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Borrow"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidateBorrow"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewAdmin"): EventFragment;
@@ -535,6 +537,8 @@ export type BorrowEvent = TypedEvent<
     totalBorrows: BigNumber;
   }
 >;
+
+export type InitializedEvent = TypedEvent<[number] & { version: number }>;
 
 export type LiquidateBorrowEvent = TypedEvent<
   [string, string, BigNumber, string, BigNumber] & {
@@ -1445,6 +1449,14 @@ export class SuErc20 extends BaseContract {
         totalBorrows: BigNumber;
       }
     >;
+
+    "Initialized(uint8)"(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
+
+    Initialized(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
 
     "LiquidateBorrow(address,address,uint256,address,uint256)"(
       liquidator?: null,

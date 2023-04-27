@@ -1,6 +1,7 @@
-pragma solidity 0.6.11;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
 
-import "./ERC20PresetMinterPauser.sol";
+import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 
 /**
  * @dev {ERC20} token, including:
@@ -17,11 +18,17 @@ import "./ERC20PresetMinterPauser.sol";
  * and pauser roles to aother accounts
  */
 contract ERC20MinterBurnerPauser is ERC20PresetMinterPauser {
+    uint8 private immutable decimals_;
+
     constructor(
-        string memory name,
-        string memory symbol,
-        uint8 decimals
-    ) public ERC20PresetMinterPauser(name, symbol) {
-        _setupDecimals(decimals);
+        string memory _name,
+        string memory _symbol,
+        uint8 _decimals
+    ) ERC20PresetMinterPauser(_name, _symbol) {
+        decimals_ = _decimals;
+    }
+
+    function decimals() public view virtual override returns (uint8) {
+        return decimals_;
     }
 }

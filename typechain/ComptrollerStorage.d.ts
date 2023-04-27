@@ -21,32 +21,18 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface ComptrollerStorageInterface extends ethers.utils.Interface {
   functions: {
     "accountAssets(address,uint256)": FunctionFragment;
-    "admin()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
     "closeFactorMantissa()": FunctionFragment;
-    "compAccrued(address)": FunctionFragment;
-    "compBorrowSpeeds(address)": FunctionFragment;
-    "compBorrowState(address)": FunctionFragment;
-    "compBorrowerIndex(address,address)": FunctionFragment;
-    "compContributorSpeeds(address)": FunctionFragment;
-    "compInitialIndex()": FunctionFragment;
-    "compSupplierIndex(address,address)": FunctionFragment;
-    "compSupplySpeeds(address)": FunctionFragment;
-    "compSupplyState(address)": FunctionFragment;
     "isComptroller()": FunctionFragment;
-    "lastContributorBlock(address)": FunctionFragment;
     "liquidationIncentiveMantissa()": FunctionFragment;
     "markets(address)": FunctionFragment;
     "maxSupply(address)": FunctionFragment;
-    "oracle()": FunctionFragment;
-    "underWriterAdmin()": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "accountAssets",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "allMarkets",
     values: [BigNumberish]
@@ -55,46 +41,9 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
     functionFragment: "closeFactorMantissa",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "compAccrued", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "compBorrowSpeeds",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compBorrowState",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compBorrowerIndex",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compContributorSpeeds",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compInitialIndex",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compSupplierIndex",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compSupplySpeeds",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compSupplyState",
-    values: [string]
-  ): string;
   encodeFunctionData(
     functionFragment: "isComptroller",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "lastContributorBlock",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidationIncentiveMantissa",
@@ -102,64 +51,18 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "markets", values: [string]): string;
   encodeFunctionData(functionFragment: "maxSupply", values: [string]): string;
-  encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "underWriterAdmin",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "accountAssets",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allMarkets", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "closeFactorMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "compAccrued",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compBorrowSpeeds",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compBorrowState",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compBorrowerIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compContributorSpeeds",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compInitialIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compSupplierIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compSupplySpeeds",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compSupplyState",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "isComptroller",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "lastContributorBlock",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -168,19 +71,8 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "markets", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "maxSupply", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "underWriterAdmin",
-    data: BytesLike
-  ): Result;
 
   events: {
-    "CompBorrowSpeedUpdated(address,uint256)": EventFragment;
-    "CompGranted(address,uint256)": EventFragment;
-    "CompSupplySpeedUpdated(address,uint256)": EventFragment;
-    "ContributorCompSpeedUpdated(address,uint256)": EventFragment;
-    "DistributedBorrowerComp(address,address,uint256,uint256)": EventFragment;
-    "DistributedSupplierComp(address,address,uint256,uint256)": EventFragment;
     "MarketEntered(address,address)": EventFragment;
     "MarketExited(address,address)": EventFragment;
     "MarketListed(address)": EventFragment;
@@ -190,14 +82,6 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
     "SetMaxSupply(address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "CompBorrowSpeedUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "CompGranted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "CompSupplySpeedUpdated"): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "ContributorCompSpeedUpdated"
-  ): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "DistributedBorrowerComp"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "DistributedSupplierComp"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketEntered"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketExited"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketListed"): EventFragment;
@@ -206,40 +90,6 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "NewPriceOracle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaxSupply"): EventFragment;
 }
-
-export type CompBorrowSpeedUpdatedEvent = TypedEvent<
-  [string, BigNumber] & { cToken: string; newSpeed: BigNumber }
->;
-
-export type CompGrantedEvent = TypedEvent<
-  [string, BigNumber] & { recipient: string; amount: BigNumber }
->;
-
-export type CompSupplySpeedUpdatedEvent = TypedEvent<
-  [string, BigNumber] & { cToken: string; newSpeed: BigNumber }
->;
-
-export type ContributorCompSpeedUpdatedEvent = TypedEvent<
-  [string, BigNumber] & { contributor: string; newSpeed: BigNumber }
->;
-
-export type DistributedBorrowerCompEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber] & {
-    cToken: string;
-    borrower: string;
-    compDelta: BigNumber;
-    compBorrowIndex: BigNumber;
-  }
->;
-
-export type DistributedSupplierCompEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber] & {
-    cToken: string;
-    supplier: string;
-    compDelta: BigNumber;
-    compSupplyIndex: BigNumber;
-  }
->;
 
 export type MarketEnteredEvent = TypedEvent<
   [string, string] & { cToken: string; account: string }
@@ -323,8 +173,6 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    admin(overrides?: CallOverrides): Promise<[string]>;
-
     allMarkets(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -332,53 +180,7 @@ export class ComptrollerStorage extends BaseContract {
 
     closeFactorMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    compAccrued(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    compBorrowSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    compBorrowState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, number] & { index: BigNumber; block: number }>;
-
-    compBorrowerIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    compContributorSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    compInitialIndex(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    compSupplierIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    compSupplySpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    compSupplyState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, number] & { index: BigNumber; block: number }>;
-
     isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
-
-    lastContributorBlock(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
 
     liquidationIncentiveMantissa(
       overrides?: CallOverrides
@@ -396,10 +198,6 @@ export class ComptrollerStorage extends BaseContract {
     >;
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    oracle(overrides?: CallOverrides): Promise<[string]>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
 
   accountAssets(
@@ -408,53 +206,11 @@ export class ComptrollerStorage extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  admin(overrides?: CallOverrides): Promise<string>;
-
   allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
-  compAccrued(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  compBorrowSpeeds(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  compBorrowState(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, number] & { index: BigNumber; block: number }>;
-
-  compBorrowerIndex(
-    arg0: string,
-    arg1: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  compContributorSpeeds(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  compInitialIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
-  compSupplierIndex(
-    arg0: string,
-    arg1: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  compSupplySpeeds(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  compSupplyState(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, number] & { index: BigNumber; block: number }>;
-
   isComptroller(overrides?: CallOverrides): Promise<boolean>;
-
-  lastContributorBlock(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -471,10 +227,6 @@ export class ComptrollerStorage extends BaseContract {
 
   maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  oracle(overrides?: CallOverrides): Promise<string>;
-
-  underWriterAdmin(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     accountAssets(
       arg0: string,
@@ -482,59 +234,11 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    admin(overrides?: CallOverrides): Promise<string>;
-
     allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
-    compAccrued(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    compBorrowSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compBorrowState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, number] & { index: BigNumber; block: number }>;
-
-    compBorrowerIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compContributorSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compInitialIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
-    compSupplierIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compSupplySpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compSupplyState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, number] & { index: BigNumber; block: number }>;
-
     isComptroller(overrides?: CallOverrides): Promise<boolean>;
-
-    lastContributorBlock(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -550,137 +254,9 @@ export class ComptrollerStorage extends BaseContract {
     >;
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    oracle(overrides?: CallOverrides): Promise<string>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "CompBorrowSpeedUpdated(address,uint256)"(
-      cToken?: string | null,
-      newSpeed?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { cToken: string; newSpeed: BigNumber }
-    >;
-
-    CompBorrowSpeedUpdated(
-      cToken?: string | null,
-      newSpeed?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { cToken: string; newSpeed: BigNumber }
-    >;
-
-    "CompGranted(address,uint256)"(
-      recipient?: null,
-      amount?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { recipient: string; amount: BigNumber }
-    >;
-
-    CompGranted(
-      recipient?: null,
-      amount?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { recipient: string; amount: BigNumber }
-    >;
-
-    "CompSupplySpeedUpdated(address,uint256)"(
-      cToken?: string | null,
-      newSpeed?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { cToken: string; newSpeed: BigNumber }
-    >;
-
-    CompSupplySpeedUpdated(
-      cToken?: string | null,
-      newSpeed?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { cToken: string; newSpeed: BigNumber }
-    >;
-
-    "ContributorCompSpeedUpdated(address,uint256)"(
-      contributor?: string | null,
-      newSpeed?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { contributor: string; newSpeed: BigNumber }
-    >;
-
-    ContributorCompSpeedUpdated(
-      contributor?: string | null,
-      newSpeed?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { contributor: string; newSpeed: BigNumber }
-    >;
-
-    "DistributedBorrowerComp(address,address,uint256,uint256)"(
-      cToken?: string | null,
-      borrower?: string | null,
-      compDelta?: null,
-      compBorrowIndex?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber, BigNumber],
-      {
-        cToken: string;
-        borrower: string;
-        compDelta: BigNumber;
-        compBorrowIndex: BigNumber;
-      }
-    >;
-
-    DistributedBorrowerComp(
-      cToken?: string | null,
-      borrower?: string | null,
-      compDelta?: null,
-      compBorrowIndex?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber, BigNumber],
-      {
-        cToken: string;
-        borrower: string;
-        compDelta: BigNumber;
-        compBorrowIndex: BigNumber;
-      }
-    >;
-
-    "DistributedSupplierComp(address,address,uint256,uint256)"(
-      cToken?: string | null,
-      supplier?: string | null,
-      compDelta?: null,
-      compSupplyIndex?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber, BigNumber],
-      {
-        cToken: string;
-        supplier: string;
-        compDelta: BigNumber;
-        compSupplyIndex: BigNumber;
-      }
-    >;
-
-    DistributedSupplierComp(
-      cToken?: string | null,
-      supplier?: string | null,
-      compDelta?: null,
-      compSupplyIndex?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber, BigNumber],
-      {
-        cToken: string;
-        supplier: string;
-        compDelta: BigNumber;
-        compSupplyIndex: BigNumber;
-      }
-    >;
-
     "MarketEntered(address,address)"(
       cToken?: null,
       account?: null
@@ -785,8 +361,6 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    admin(overrides?: CallOverrides): Promise<BigNumber>;
-
     allMarkets(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -794,63 +368,13 @@ export class ComptrollerStorage extends BaseContract {
 
     closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
-    compAccrued(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    compBorrowSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compBorrowState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compBorrowerIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compContributorSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compInitialIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
-    compSupplierIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compSupplySpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compSupplyState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
-
-    lastContributorBlock(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
     markets(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    oracle(overrides?: CallOverrides): Promise<BigNumber>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -859,8 +383,6 @@ export class ComptrollerStorage extends BaseContract {
       arg1: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     allMarkets(
       arg0: BigNumberish,
@@ -871,56 +393,7 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    compAccrued(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compBorrowSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compBorrowState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compBorrowerIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compContributorSpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compInitialIndex(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    compSupplierIndex(
-      arg0: string,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compSupplySpeeds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compSupplyState(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    lastContributorBlock(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     liquidationIncentiveMantissa(
       overrides?: CallOverrides
@@ -935,9 +408,5 @@ export class ComptrollerStorage extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    oracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

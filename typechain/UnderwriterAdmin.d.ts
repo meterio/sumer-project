@@ -335,6 +335,7 @@ interface UnderwriterAdminInterface extends ethers.utils.Interface {
 
   events: {
     "ActionPaused(address,string,bool)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "NewAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256,uint8)": EventFragment;
     "NewBorrowCap(address,uint256)": EventFragment;
     "NewBorrowCapGuardian(address,address)": EventFragment;
@@ -343,6 +344,7 @@ interface UnderwriterAdminInterface extends ethers.utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "ActionPaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewAssetGroup"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewBorrowCap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewBorrowCapGuardian"): EventFragment;
@@ -357,6 +359,8 @@ export type ActionPausedEvent = TypedEvent<
     pauseState: boolean;
   }
 >;
+
+export type InitializedEvent = TypedEvent<[number] & { version: number }>;
 
 export type NewAssetGroupEvent = TypedEvent<
   [
@@ -948,6 +952,14 @@ export class UnderwriterAdmin extends BaseContract {
       [string, string, boolean],
       { cToken: string; action: string; pauseState: boolean }
     >;
+
+    "Initialized(uint8)"(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
+
+    Initialized(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
 
     "NewAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256,uint8)"(
       groupId?: BigNumberish | null,
