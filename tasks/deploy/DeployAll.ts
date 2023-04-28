@@ -386,7 +386,7 @@ task('all', 'deploy contract')
                 gasLimit: gas
               }
             );
-            log.info('setBandFeed:', suToken.symbol, receipt.hash);
+            log.info('setFeedId:', suToken.symbol, receipt.hash);
           }
         }
       }

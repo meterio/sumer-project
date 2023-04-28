@@ -7,10 +7,10 @@
     "address": "0xf67c5f20b95b7604ebb65a53e50ebd38300da8ee"
   },
   "feedPriceOracle": { "address": "0xF1336101cE3770Fe11D836De7AAca040294fb459" },
-  "compoundLens": { "address": "0x68F2be0E975B636c8309d1D72a6394586A2EEe21" },
+  "compoundLens": { "address": "0x6Ea1E15b06FAD5FaCf28866060C03e04b307626c" },
   "underwriterAdmin": {
-    "implementation": "0xFfC2Cc39EC7a66AA01397BeDDBC515f1F97e5dE8",
-    "address": "0x81CC8B2CbC2B08e7E11EDE587aB2E3917F14e8A8"
+    "implementation": "0xaBc3C89b9904deE1489357831E112A6D1D103b46",
+    "address": "0x903c005847c1F848aCB3ef93738B4c5F523b8A37"
   },
   "suInterestRateModel": {
     "blocks": "13140000",
@@ -27,8 +27,8 @@
   "comptroller": {
     "closeFactorMantissa": "0.5",
     "liquidationIncentiveMantissa": "1.1",
-    "implementation": "0x96b0dC40a2E6B2150fC657986D14dF362bb0c9F4",
-    "address": "0xCF0bC6Cb7999bFd422E4Bf21681278bC121aE2aF"
+    "implementation": "0x7fe6BE855f1cf5b4E5F9a03Db94Ddf9A9aE9a7Fd",
+    "address": "0x5A44d4Ff399E1DeBEF9C5320b971C8C2Bde89c39"
   },
   "cTokens": {
     "implementation": "0x9f5B7D2FC1BCe99a50407364824158E16d2c4B5c",
@@ -39,7 +39,7 @@
         "decimals": 6,
         "native": false,
         "underly": "0x2b27f5f7f2867ad9d2b7065f81e985c1bd1b7274",
-        "address": "0x4481e114E39130156b49262CC9F17B03832EdDA0",
+        "address": "0x3c133fAB54FdFe8019EE0C12B2F22d4d05Be078E",
         "groupId": 3,
         "oracle": {
           "feedId": "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
@@ -56,7 +56,7 @@
         "decimals": 6,
         "native": false,
         "underly": "0x2398633bee182cad2d0388b41735fd9fb742098d",
-        "address": "0x5B516F28090cE5E9862D20d162184c80EC63b595",
+        "address": "0xFCbF2d61eCC2E1438FFCfefD10d8A669422e9294",
         "groupId": 3,
         "oracle": {
           "feedId": "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
@@ -73,7 +73,7 @@
         "decimals": 18,
         "native": false,
         "underly": "0xe8876830e7cc85dae8ce31b0802313caf856886f",
-        "address": "0x51C3aF6E2B650CbfEb102eBE14d3B6B6829b1375",
+        "address": "0x0823ec3FF41E7F93C47446760799c76B45Aab6F4",
         "groupId": 2,
         "oracle": {
           "feedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
@@ -90,7 +90,7 @@
         "decimals": 8,
         "native": false,
         "underly": "0x7EB9e0Df1C6E6f1E9d3d1EdA09fcF688FE7A710c",
-        "address": "0x064cf7023Ea1E3081A3FC29ee0e693Fb7d817f73",
+        "address": "0x75E130EDfc1Ad3Fd0c1CCA8262FE967B1107d0c7",
         "groupId": 1,
         "oracle": {
           "feedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
@@ -107,7 +107,7 @@
         "decimals": 18,
         "native": false,
         "underly": "0x660a3a1141632c9dcad8a5a3350f7ddd720bc15c",
-        "address": "0x09a955E9a556696819341246c628262Fdeed35e4",
+        "address": "0xa194804FCc520E4923dfCbB0BAACD6614d7aE851",
         "groupId": 3,
         "oracle": {
           "feedId": "0x06c532524fabd49cc142815502d785e4f34ec3bd035480efb770568d423f46c6",
@@ -129,7 +129,7 @@
         "symbol": "suUSD",
         "decimals": 18,
         "underly": "0x8EaFB5185044E9864CBAfFaA328B534eB93d7EE8",
-        "address": "0xDf3e2471a4A839E1e361F2bDC6bd9fFFf8741125",
+        "address": "0x62b24c1Af2B8909491E2b0F67402f21bb2b6698f",
         "groupId": 3,
         "oracle": { "feedId": 1, "price": "1000000000000000000" },
         "discountRate": "1000000000000000000"
@@ -139,7 +139,7 @@
         "symbol": "suETH",
         "decimals": 18,
         "underly": "0x21351bde0B42b4Cba5c04Fc92917b8c3254b1E88",
-        "address": "0x6B92ac3f912444eF99E0D845047fE4c8026455bC",
+        "address": "0x1a71e0243833b9Cc05f7C48671Ba9D1B7e4247fa",
         "groupId": 2,
         "oracle": {
           "feedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
@@ -154,7 +154,7 @@
         "symbol": "suBTC",
         "decimals": 18,
         "underly": "0x20B00Df0c1120D2227f87180286E63EDa30f5c4c",
-        "address": "0x3350d4BF6aF19c395B4FC8dD812dE478ed12C1a5",
+        "address": "0x5ed21C7541a0799b90Fc66942967B0472c6dD57e",
         "groupId": 1,
         "oracle": {
           "feedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
