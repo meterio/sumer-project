@@ -78,6 +78,7 @@ interface CEtherInterface extends ethers.utils.Interface {
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "underlying()": FunctionFragment;
+    "underlyingBalance()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -286,6 +287,10 @@ interface CEtherInterface extends ethers.utils.Interface {
     functionFragment: "underlying",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "underlyingBalance",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "_acceptAdmin",
@@ -460,6 +465,10 @@ interface CEtherInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "underlying", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "underlyingBalance",
+    data: BytesLike
+  ): Result;
 
   events: {
     "AccrueInterest(uint256,uint256,uint256,uint256)": EventFragment;
@@ -783,7 +792,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin: string,
+      admin_: string,
       discountRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -882,6 +891,8 @@ export class CEther extends BaseContract {
     ): Promise<ContractTransaction>;
 
     underlying(overrides?: CallOverrides): Promise<[string]>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   _acceptAdmin(
@@ -1003,7 +1014,7 @@ export class CEther extends BaseContract {
     name_: string,
     symbol_: string,
     decimals_: BigNumberish,
-    admin: string,
+    admin_: string,
     discountRateMantissa_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1102,6 +1113,8 @@ export class CEther extends BaseContract {
   ): Promise<ContractTransaction>;
 
   underlying(overrides?: CallOverrides): Promise<string>;
+
+  underlyingBalance(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
     _acceptAdmin(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1218,7 +1231,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin: string,
+      admin_: string,
       discountRateMantissa_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1311,6 +1324,8 @@ export class CEther extends BaseContract {
     ): Promise<boolean>;
 
     underlying(overrides?: CallOverrides): Promise<string>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
@@ -1779,7 +1794,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin: string,
+      admin_: string,
       discountRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1878,6 +1893,8 @@ export class CEther extends BaseContract {
     ): Promise<BigNumber>;
 
     underlying(overrides?: CallOverrides): Promise<BigNumber>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -2009,7 +2026,7 @@ export class CEther extends BaseContract {
       name_: string,
       symbol_: string,
       decimals_: BigNumberish,
-      admin: string,
+      admin_: string,
       discountRateMantissa_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -2114,5 +2131,7 @@ export class CEther extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     underlying(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

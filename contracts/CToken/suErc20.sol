@@ -10,6 +10,16 @@ import './CErc20.sol';
  */
 contract suErc20 is CErc20 {
   /**
+   * @notice Gets balance of this contract in terms of the underlying
+   * @dev This excludes the value of the current message, if any
+   * @return The quantity of underlying tokens owned by this contract
+   */
+  function getCashPrior() internal view virtual override returns (uint256) {
+    ICToken token = ICToken(underlying);
+    return token.balanceOf(address(this));
+  }
+
+  /**
    * @dev Similar to EIP20 transfer, except it handles a False result from `transferFrom` and reverts in that case.
    *      This will revert due to insufficient balance or insufficient allowance.
    *      This function returns the actual amount received,
@@ -77,6 +87,7 @@ contract suErc20 is CErc20 {
     }
     require(success, 'TOKEN_TRANSFER_OUT_FAILED');
   }
+
   function changeCtoken() public onlyAdmin {
     isCToken = !isCToken;
   }

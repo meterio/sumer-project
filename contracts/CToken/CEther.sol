@@ -21,7 +21,7 @@ contract CEther is CToken, Initializable {
    * @param name_ ERC-20 name of this token
    * @param symbol_ ERC-20 symbol of this token
    * @param decimals_ ERC-20 decimal precision of this token
-   * @param admin Address of the administrator of this token
+   * @param admin_ Address of the administrator of this token
    */
   function initialize(
     address comptroller_,
@@ -30,7 +30,7 @@ contract CEther is CToken, Initializable {
     string memory name_,
     string memory symbol_,
     uint8 decimals_,
-    address payable admin,
+    address payable admin_,
     uint256 discountRateMantissa_
   ) public initializer {
     super.initialize(
@@ -41,7 +41,7 @@ contract CEther is CToken, Initializable {
       symbol_,
       decimals_,
       true,
-      admin,
+      admin_,
       discountRateMantissa_
     );
 

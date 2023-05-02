@@ -68,6 +68,7 @@ interface CTokenInterface extends ethers.utils.Interface {
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "underlying()": FunctionFragment;
+    "underlyingBalance()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -234,6 +235,10 @@ interface CTokenInterface extends ethers.utils.Interface {
     functionFragment: "underlying",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "underlyingBalance",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "_acceptAdmin",
@@ -384,6 +389,10 @@ interface CTokenInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "underlying", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "underlyingBalance",
+    data: BytesLike
+  ): Result;
 
   events: {
     "AccrueInterest(uint256,uint256,uint256,uint256)": EventFragment;
@@ -752,6 +761,8 @@ export class CToken extends BaseContract {
     ): Promise<ContractTransaction>;
 
     underlying(overrides?: CallOverrides): Promise<[string]>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   _acceptAdmin(
@@ -923,6 +934,8 @@ export class CToken extends BaseContract {
 
   underlying(overrides?: CallOverrides): Promise<string>;
 
+  underlyingBalance(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     _acceptAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1087,6 +1100,8 @@ export class CToken extends BaseContract {
     ): Promise<boolean>;
 
     underlying(overrides?: CallOverrides): Promise<string>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
@@ -1596,6 +1611,8 @@ export class CToken extends BaseContract {
     ): Promise<BigNumber>;
 
     underlying(overrides?: CallOverrides): Promise<BigNumber>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1782,5 +1799,7 @@ export class CToken extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     underlying(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    underlyingBalance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

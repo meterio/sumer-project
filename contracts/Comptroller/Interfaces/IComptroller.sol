@@ -5,7 +5,7 @@ interface IComptroller {
   /*** Assets You Are In ***/
   function isComptroller() external view returns (bool);
 
-  function markets(address) external view returns (bool, uint8);
+  function markets(address) external view returns (bool, uint8, bool);
 
   function getAllMarkets() external view returns (address[] memory);
 
@@ -19,14 +19,7 @@ interface IComptroller {
 
   function closeFactorMantissa() external view returns (uint256);
 
-  function getAccountLiquidity(address)
-    external
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256
-    );
+  function getAccountLiquidity(address) external view returns (uint256, uint256, uint256);
 
   // function getAssetsIn(address) external view returns (ICToken[] memory);
   function claimComp(address) external;
@@ -37,30 +30,13 @@ interface IComptroller {
 
   /*** Policy Hooks ***/
 
-  function mintAllowed(
-    address cToken,
-    address minter,
-    uint256 mintAmount
-  ) external returns (uint256);
+  function mintAllowed(address cToken, address minter, uint256 mintAmount) external returns (uint256);
 
-  function redeemAllowed(
-    address cToken,
-    address redeemer,
-    uint256 redeemTokens
-  ) external returns (uint256);
+  function redeemAllowed(address cToken, address redeemer, uint256 redeemTokens) external returns (uint256);
 
-  function redeemVerify(
-    address cToken,
-    address redeemer,
-    uint256 redeemAmount,
-    uint256 redeemTokens
-  ) external;
+  function redeemVerify(address cToken, address redeemer, uint256 redeemAmount, uint256 redeemTokens) external;
 
-  function borrowAllowed(
-    address cToken,
-    address borrower,
-    uint256 borrowAmount
-  ) external returns (uint256);
+  function borrowAllowed(address cToken, address borrower, uint256 borrowAmount) external returns (uint256);
 
   function repayBorrowAllowed(
     address cToken,
@@ -77,12 +53,7 @@ interface IComptroller {
     uint256 seizeTokens
   ) external returns (uint256);
 
-  function transferAllowed(
-    address cToken,
-    address src,
-    address dst,
-    uint256 transferTokens
-  ) external returns (uint256);
+  function transferAllowed(address cToken, address src, address dst, uint256 transferTokens) external returns (uint256);
 
   /*** Liquidity/Liquidation Calculations ***/
 
@@ -97,14 +68,7 @@ interface IComptroller {
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  )
-    external
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256
-    );
-    
+  ) external view returns (uint256, uint256, uint256);
+
   function _getMarketBorrowCap(address cToken) external view returns (uint256);
 }

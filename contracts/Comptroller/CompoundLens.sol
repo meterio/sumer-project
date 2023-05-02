@@ -31,16 +31,13 @@ contract CompoundLens {
     uint256 underlyingDecimals;
     bool isCToken;
     bool isCEther;
-
     uint256 borrowCap;
     uint256 depositCap;
     uint256 liquidationIncentive;
-
     uint8 groupId;
     uint256 intraRate;
     uint256 mintRate;
     uint256 interRate;
-
     uint256 discountRate;
   }
 
@@ -66,14 +63,14 @@ contract CompoundLens {
     }
 
     // get group info
-    (bool isListed, uint8 assetGroupId) = comptroller.markets(address(cToken));
+    (bool isListed, uint8 assetGroupId, ) = comptroller.markets(address(cToken));
     IUnderwriterAdmin.AssetGroup memory group = ua.getAssetGroup(assetGroupId);
     GroupInfo memory gi;
     if (cToken.isCToken()) {
       gi.intraRate = group.intraCRateMantissa;
       gi.interRate = group.intraCRateMantissa;
       gi.mintRate = group.intraMintRateMantissa;
-    }else{
+    } else {
       gi.intraRate = group.intraSuRateMantissa;
       gi.interRate = group.intraSuRateMantissa;
       gi.mintRate = group.intraSuRateMantissa;
@@ -99,12 +96,10 @@ contract CompoundLens {
         borrowCap: ua._getMarketBorrowCap(address(cToken)),
         depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
         liquidationIncentive: comptroller.liquidationIncentiveMantissa(),
-
         groupId: assetGroupId,
         intraRate: gi.intraRate,
         interRate: gi.interRate,
         mintRate: gi.mintRate,
-
         discountRate: cToken.getDiscountRate()
       });
   }
@@ -158,10 +153,10 @@ contract CompoundLens {
       });
   }
 
-  function cTokenBalancesAll(ICToken[] calldata cTokens, address payable account)
-    external
-    returns (CTokenBalances[] memory)
-  {
+  function cTokenBalancesAll(
+    ICToken[] calldata cTokens,
+    address payable account
+  ) external returns (CTokenBalances[] memory) {
     uint256 cTokenCount = cTokens.length;
     CTokenBalances[] memory res = new CTokenBalances[](cTokenCount);
     for (uint256 i = 0; i < cTokenCount; i++) {
@@ -278,11 +273,7 @@ contract CompoundLens {
     bool executed;
   }
 
-  function setProposal(
-    GovProposal memory res,
-    IGovernorAlpha governor,
-    uint256 proposalId
-  ) internal view {
+  function setProposal(GovProposal memory res, IGovernorAlpha governor, uint256 proposalId) internal view {
     (
       ,
       address proposer,
@@ -305,11 +296,10 @@ contract CompoundLens {
     res.executed = executed;
   }
 
-  function getGovProposals(IGovernorAlpha governor, uint256[] calldata proposalIds)
-    external
-    view
-    returns (GovProposal[] memory)
-  {
+  function getGovProposals(
+    IGovernorAlpha governor,
+    uint256[] calldata proposalIds
+  ) external view returns (GovProposal[] memory) {
     GovProposal[] memory res = new GovProposal[](proposalIds.length);
     for (uint256 i = 0; i < proposalIds.length; i++) {
       (
@@ -355,11 +345,7 @@ contract CompoundLens {
     bool executed;
   }
 
-  function setBravoProposal(
-    GovBravoProposal memory res,
-    IGovernorBravo governor,
-    uint256 proposalId
-  ) internal view {
+  function setBravoProposal(GovBravoProposal memory res, IGovernorBravo governor, uint256 proposalId) internal view {
     IGovernorBravo.Proposal memory p = governor.proposals(proposalId);
 
     res.proposalId = proposalId;
@@ -374,11 +360,10 @@ contract CompoundLens {
     res.executed = p.executed;
   }
 
-  function getGovBravoProposals(IGovernorBravo governor, uint256[] calldata proposalIds)
-    external
-    view
-    returns (GovBravoProposal[] memory)
-  {
+  function getGovBravoProposals(
+    IGovernorBravo governor,
+    uint256[] calldata proposalIds
+  ) external view returns (GovBravoProposal[] memory) {
     GovBravoProposal[] memory res = new GovBravoProposal[](proposalIds.length);
     for (uint256 i = 0; i < proposalIds.length; i++) {
       (
@@ -475,21 +460,13 @@ contract CompoundLens {
     return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
   }
 
-  function add(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
+  function add(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
     uint256 c = a + b;
     require(c >= a, errorMessage);
     return c;
   }
 
-  function sub(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
+  function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
     require(b <= a, errorMessage);
     uint256 c = a - b;
     return c;
@@ -530,9 +507,7 @@ contract CompoundLens {
     numerator = Exp({mantissa: comptroller.liquidationIncentiveMantissa()}).mul_(
       Exp({mantissa: priceBorrowedMantissa})
     );
-    denominator = Exp({mantissa: priceCollateralMantissa}).mul_(
-      Exp({mantissa: exchangeRateMantissa})
-    );
+    denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
     ratio = numerator.div_(denominator);
 
     seizeTokens = ratio.mul_ScalarTruncate(actualRepayAmount);
@@ -585,9 +560,7 @@ contract CompoundLens {
       require(shortfall > 0, 'insufficient shortfall');
 
       /* The liquidator may not repay more than what is allowed by the closeFactor */
-      uint256 maxClose = Exp({mantissa: comptroller.closeFactorMantissa()}).mul_ScalarTruncate(
-        borrowBalance
-      );
+      uint256 maxClose = Exp({mantissa: comptroller.closeFactorMantissa()}).mul_ScalarTruncate(borrowBalance);
       require(repayAmount <= maxClose, 'too much repay');
     }
     return uint256(0);

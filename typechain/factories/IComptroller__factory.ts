@@ -327,6 +327,11 @@ const _abi = [
         name: "",
         type: "uint8",
       },
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
     ],
     stateMutability: "view",
     type: "function",

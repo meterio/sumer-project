@@ -3,7 +3,7 @@ import { types } from 'hardhat/config';
 import { log } from '../../log_settings';
 import { readFileSync } from 'fs';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { CErc20, Comptroller, FeedPriceOracle, UnderwriterAdmin } from '../../typechain';
+import { CErc20, Comptroller, FeedPriceOracle, PythOracle, UnderwriterAdmin } from '../../typechain';
 import { type } from 'os';
 import { BigNumber, constants } from 'ethers';
 
@@ -104,7 +104,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       config.underwriterAdmin.address,
       wallet
     )) as UnderwriterAdmin;
-    vars.equalAssetsGroupNum = await ua.getAssetGroupNum();
+    vars.equalAssetsGroupNum = await ua.getAssetGroupNum(); // Line 85
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
       groupVars.push({
         groupId: 0,
@@ -116,73 +116,76 @@ task('hal', 'get Hypothetical Account Liquidity')
     }
     if (ctoken != constants.AddressZero) {
       const cToken = (await ethers.getContractAt('CErc20', ctoken, wallet)) as CErc20;
-      vars.isSuToken = !(await cToken.isCToken());
+      vars.isSuToken = !(await cToken.isCToken()); // Line 89
+      vars.discountRate = await cToken.getDiscountRate(); // Line 111
     }
-    const assets = await comptroller.getAssetsIn(account);
-    const oracle = (await ethers.getContractAt(
-      'FeedPriceOracle',
-      config.feedPriceOracle.address,
-      wallet
-    )) as FeedPriceOracle;
+    const assets = await comptroller.getAssetsIn(account); // Line 95
+    const oracle = (await ethers.getContractAt('PythOracle', config.feedPriceOracle.address, wallet)) as PythOracle; // Line 114
 
     for (let i = 0; i < assets.length; i++) {
-      let asset = assets[i];
-      vars.tokenDepositVal = BigNumber.from(0);
-      vars.tokenBorrowVal = BigNumber.from(0);
+      // Line 101
+      let asset = assets[i]; // Line 102
+      vars.tokenDepositVal = BigNumber.from(0); // Line 98
+      vars.tokenBorrowVal = BigNumber.from(0); // Line 99
+      const [isListed, assetGroupId, isComped] = await comptroller.markets(asset); // Line 101
       let assetToken = (await ethers.getContractAt('CErc20', asset, wallet)) as CErc20;
-      let [err, cTokenBalance, borrowBalance, exchangeRateMantissa] = await assetToken.getAccountSnapshot(account);
+      let [err, cTokenBalance, borrowBalance, exchangeRateMantissa] = await assetToken.getAccountSnapshot(account); // Line 106
 
       vars.cTokenBalance = cTokenBalance;
       vars.borrowBalance = borrowBalance;
       vars.exchangeRateMantissa = exchangeRateMantissa;
-      vars.exchangeRate = exchangeRateMantissa;
-      vars.oraclePriceMantissa = await oracle.getUnderlyingPrice(asset);
-      vars.oraclePrice = vars.oraclePriceMantissa;
-      vars.discountRate = await ctoken.getDiscountRate();
-      vars.tokensToDenom = vars.exchangeRate
-        .mul(vars.oraclePriceMantissa)
+      vars.exchangeRate = exchangeRateMantissa; // Line 110
+      vars.oraclePriceMantissa = await oracle.getUnderlyingPrice(asset); // Line 115
+      vars.oraclePrice = vars.oraclePriceMantissa; // Line 117
+      vars.tokensToDenom = vars.exchangeRate // Line 121
+        .mul(vars.oraclePrice)
         .div(expScale)
         .mul(vars.discountRate)
-        .div(expScale);
-      let index: number;
+        .div(expScale); // Line 122
+      let index: number; // Line 124
       for (index = 0; index < vars.equalAssetsGroupNum; index++) {
-        let marketGroupId = await comptroller.marketGroupId(asset);
+        // Line 125
+        // let marketGroupId = await comptroller.marketGroupId(asset);
         if (groupVars[index].groupId == 0) {
-          groupVars[index].groupId = marketGroupId;
+          groupVars[index].groupId = assetGroupId; // Line 131
           break;
         } else {
-          if (groupVars[index].groupId == marketGroupId) {
-            break;
+          if (groupVars[index].groupId == assetGroupId) {
+            break; // Line 128
           }
         }
       }
-      vars.tokenDepositVal = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.tokenDepositVal);
-      vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.tokenBorrowVal);
+      vars.tokenDepositVal = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.tokenDepositVal); // Line 136
+      vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.tokenBorrowVal); // Line 137
 
       if (asset == ctoken) {
-        let redeemVal = truncate(vars.tokensToDenom.mul(redeem));
+        // Line 138
+        let redeemVal = truncate(vars.tokensToDenom.mul(redeem)); // Line 139
         if (redeemVal.lte(vars.tokenDepositVal)) {
-          vars.tokenDepositVal = vars.tokenDepositVal.sub(redeemVal);
-          redeemVal = BigNumber.from(0);
+          // Line 140
+          vars.tokenDepositVal = vars.tokenDepositVal.sub(redeemVal); // Line 144
+          redeemVal = BigNumber.from(0); // Line 145
         } else {
-          redeemVal = redeemVal.sub(vars.tokenDepositVal);
-          vars.tokenBorrowVal = vars.tokenBorrowVal.add(redeemVal);
-          vars.tokenDepositVal = BigNumber.from(0);
+          redeemVal = redeemVal.sub(vars.tokenDepositVal); // Line 149
+          vars.tokenBorrowVal = vars.tokenBorrowVal.add(redeemVal); // Line 150
+          vars.tokenDepositVal = BigNumber.from(0); // Line 151
         }
-        vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrow, vars.tokenBorrowVal);
+        vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrow, vars.tokenBorrowVal); // Line 154
       }
       const symbol = await assetToken.symbol();
       //   console.log(`asset ${symbol}
       //   depositVal: ${vars.tokenDepositVal}
       //   borrowVal : ${vars.tokenBorrowVal}`);
       if (await assetToken.isCToken()) {
-        groupVars[index].cTokenBalanceSum = vars.tokenDepositVal.add(groupVars[index].cTokenBalanceSum);
-        groupVars[index].cTokenBorrowSum = vars.tokenBorrowVal.add(groupVars[index].cTokenBorrowSum);
+        // Line 157
+        groupVars[index].cTokenBalanceSum = vars.tokenDepositVal.add(groupVars[index].cTokenBalanceSum); // Line 158
+        groupVars[index].cTokenBorrowSum = vars.tokenBorrowVal.add(groupVars[index].cTokenBorrowSum); // Line 159
       } else {
-        groupVars[index].suTokenBalanceSum = vars.tokenDepositVal.add(groupVars[index].suTokenBalanceSum);
-        groupVars[index].suTokenBorrowSum = vars.tokenBorrowVal.add(groupVars[index].suTokenBorrowSum);
+        groupVars[index].suTokenBalanceSum = vars.tokenDepositVal.add(groupVars[index].suTokenBalanceSum); // Line 161
+        groupVars[index].suTokenBorrowSum = vars.tokenBorrowVal.add(groupVars[index].suTokenBorrowSum); // Line 162
       }
     }
+    // Line 166
     let targetGroup: AccountGroupLocalVars = {
       groupId: 0,
       cTokenBalanceSum: BigNumber.from(0),
@@ -190,6 +193,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       suTokenBalanceSum: BigNumber.from(0),
       suTokenBorrowSum: BigNumber.from(0)
     };
+    // Line 167
     let targetVars: AccountLiquidityLocalVars = {
       equalAssetsGroupNum: 0,
       assetGroupId: 0,
@@ -215,16 +219,18 @@ task('hal', 'get Hypothetical Account Liquidity')
       tokenDepositVal: BigNumber.from(0),
       tokenBorrowVal: BigNumber.from(0)
     };
+    // Line 168
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
+      const [isListed, assetGroupId, isComped] = await comptroller.markets(ctoken); // Line 169
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      let equalAssetsGroup = await ua.getAssetGroup(BigNumber.from(groupVars[i].groupId));
-      vars.intraCRate = equalAssetsGroup.intraCRateMantissa;
-      vars.intraSuRate = equalAssetsGroup.intraSuRateMantissa;
-      vars.interCRate = equalAssetsGroup.interCRateMantissa;
-      vars.interSuRate = equalAssetsGroup.interSuRateMantissa;
-      vars.intraMintRate = equalAssetsGroup.intraMintRateMantissa;
+      let equalAssetsGroup = await ua.getAssetGroup(BigNumber.from(groupVars[i].groupId)); // Line 173
+      vars.intraCRate = equalAssetsGroup.intraCRateMantissa; // Line 177
+      vars.intraMintRate = equalAssetsGroup.intraMintRateMantissa; // Line 178
+      vars.intraSuRate = equalAssetsGroup.intraSuRateMantissa; // Line 179
+      vars.interCRate = equalAssetsGroup.interCRateMantissa; // Line 180
+      vars.interSuRate = equalAssetsGroup.interSuRateMantissa; // Line 181
       // vars.borrowCollateralRate = expScale;
       //   console.log(`group ${i} ${equalAssetsGroup.groupName}
       //     cTokenBalanceSum: ${groupVars[i].cTokenBalanceSum}
@@ -232,17 +238,19 @@ task('hal', 'get Hypothetical Account Liquidity')
       //     cTokenBorrowSum: ${groupVars[i].cTokenBorrowSum}
       //     suTokenBorrowSum: ${groupVars[i].suTokenBorrowSum}
       //   `);
+      // Line 184
       if (groupVars[i].suTokenBorrowSum.gt(0)) {
-        let collateralizedLoan = mul_ScalarTruncate(vars.intraMintRate, groupVars[i].cTokenBalanceSum);
+        let collateralizedLoan = mul_ScalarTruncate(vars.intraMintRate, groupVars[i].cTokenBalanceSum); // Line 185
+        // Line 186
         if (groupVars[i].suTokenBorrowSum.lte(collateralizedLoan)) {
           // collateral could cover the loan
-          let usedCollateral = groupVars[i].suTokenBorrowSum.mul(expScale).div(vars.intraMintRate);
-          groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub(usedCollateral);
-          groupVars[i].suTokenBorrowSum = BigNumber.from(0);
+          let usedCollateral = groupVars[i].suTokenBorrowSum.mul(expScale).div(vars.intraMintRate); // Line 188
+          groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub(usedCollateral); // Line 189
+          groupVars[i].suTokenBorrowSum = BigNumber.from(0); // Line 190
         } else {
           // collateral could not cover the loan
-          groupVars[i].cTokenBalanceSum = BigNumber.from(0);
-          groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub(collateralizedLoan);
+          groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub(collateralizedLoan); // Line 193
+          groupVars[i].cTokenBalanceSum = BigNumber.from(0); // Line 194
         }
       }
       //   console.log(`group ${i} ${equalAssetsGroup.groupName} after absorb sutoken loan with ctoken collateral
@@ -252,17 +260,19 @@ task('hal', 'get Hypothetical Account Liquidity')
       //     suTokenBorrowSum: ${groupVars[i].suTokenBorrowSum}
       //   `);
       // absorb ctoken loan with ctoken collateral
+      // Line 199
       if (groupVars[i].cTokenBorrowSum.gt(0)) {
-        let collateralizedLoan = mul_ScalarTruncate(vars.intraCRate, groupVars[i].cTokenBalanceSum);
+        let collateralizedLoan = mul_ScalarTruncate(vars.intraCRate, groupVars[i].cTokenBalanceSum); // Line 200
+        // Line 201
         if (groupVars[i].cTokenBorrowSum.lte(collateralizedLoan)) {
           // collateral could cover the loan
-          let usedCollateral = groupVars[i].cTokenBorrowSum.mul(expScale).div(vars.intraCRate);
-          groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub(usedCollateral);
-          groupVars[i].cTokenBorrowSum = BigNumber.from(0);
+          let usedCollateral = groupVars[i].cTokenBorrowSum.mul(expScale).div(vars.intraCRate); // Line 203
+          groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub(usedCollateral); // Line 204
+          groupVars[i].cTokenBorrowSum = BigNumber.from(0); // Line 205
         } else {
           // collateral could not cover the loan
-          groupVars[i].cTokenBalanceSum = BigNumber.from(0);
-          groupVars[i].cTokenBorrowSum = groupVars[i].cTokenBorrowSum.sub(collateralizedLoan);
+          groupVars[i].cTokenBalanceSum = BigNumber.from(0); // Line 208
+          groupVars[i].cTokenBorrowSum = groupVars[i].cTokenBorrowSum.sub(collateralizedLoan); // Line 209
         }
       }
       //   console.log(`group ${i} ${equalAssetsGroup.groupName} after absorb ctoken loan with ctoken collateral
@@ -273,17 +283,19 @@ task('hal', 'get Hypothetical Account Liquidity')
       //   `);
 
       // absorb sutoken loan with sutoken collateral
+      // Line 214
       if (groupVars[i].suTokenBorrowSum.gt(0)) {
-        let collateralizedLoan = mul_ScalarTruncate(vars.intraSuRate, groupVars[i].suTokenBalanceSum);
+        let collateralizedLoan = mul_ScalarTruncate(vars.intraSuRate, groupVars[i].suTokenBalanceSum); // Line 215
+        // Line 216
         if (groupVars[i].suTokenBorrowSum.lte(collateralizedLoan)) {
           // collateral could cover the loan
-          let usedCollateral = groupVars[i].suTokenBorrowSum.mul(expScale).div(vars.intraSuRate);
-          groupVars[i].suTokenBalanceSum = groupVars[i].suTokenBalanceSum.sub(usedCollateral);
-          groupVars[i].suTokenBorrowSum = BigNumber.from(0);
+          let usedCollateral = groupVars[i].suTokenBorrowSum.mul(expScale).div(vars.intraSuRate); // Line 218
+          groupVars[i].suTokenBalanceSum = groupVars[i].suTokenBalanceSum.sub(usedCollateral); // Line 219
+          groupVars[i].suTokenBorrowSum = BigNumber.from(0); // Line 220
         } else {
           // collateral could not cover the loan
-          groupVars[i].suTokenBalanceSum = BigNumber.from(0);
-          groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub(collateralizedLoan);
+          groupVars[i].suTokenBalanceSum = BigNumber.from(0); // Line 223
+          groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub(collateralizedLoan); // Line 224
         }
       }
       //   console.log(`group ${i} ${equalAssetsGroup.groupName} after absorb sutoken loan with sutoken collateral
@@ -294,15 +306,17 @@ task('hal', 'get Hypothetical Account Liquidity')
       //   `);
 
       // absorb ctoken loan with sutoken collateral
+      // Line 229
       if (groupVars[i].cTokenBorrowSum.gt(0)) {
-        let collateralizedLoan = mul_ScalarTruncate(vars.intraSuRate, groupVars[i].suTokenBalanceSum);
+        let collateralizedLoan = mul_ScalarTruncate(vars.intraSuRate, groupVars[i].suTokenBalanceSum); // Line 230
+        // Line 231
         if (groupVars[i].cTokenBorrowSum.lte(collateralizedLoan)) {
-          let usedCollateral = groupVars[i].cTokenBorrowSum.mul(expScale).div(vars.intraSuRate);
-          groupVars[i].suTokenBalanceSum = groupVars[i].suTokenBalanceSum.sub(usedCollateral);
-          groupVars[i].cTokenBorrowSum = BigNumber.from(0);
+          let usedCollateral = groupVars[i].cTokenBorrowSum.mul(expScale).div(vars.intraSuRate); // Line 232
+          groupVars[i].suTokenBalanceSum = groupVars[i].suTokenBalanceSum.sub(usedCollateral); // Line 233
+          groupVars[i].cTokenBorrowSum = BigNumber.from(0); // Line 234
         } else {
-          groupVars[i].suTokenBalanceSum = BigNumber.from(0);
-          groupVars[i].cTokenBorrowSum = groupVars[i].cTokenBorrowSum.sub(collateralizedLoan);
+          groupVars[i].suTokenBalanceSum = BigNumber.from(0); // Line 236
+          groupVars[i].cTokenBorrowSum = groupVars[i].cTokenBorrowSum.sub(collateralizedLoan); // Line 237
         }
       }
       //   console.log(`group ${i} ${equalAssetsGroup.groupName} after absorb ctoken loan with sutoken collateral
@@ -312,18 +326,20 @@ task('hal', 'get Hypothetical Account Liquidity')
       //     suTokenBorrowSum: ${groupVars[i].suTokenBorrowSum}
       //   `);
 
-      const targetGroupId = await comptroller.marketGroupId(ctoken);
+      // const targetGroupId = await comptroller.marketGroupId(ctoken);
       //   console.log(`target groupId: ${targetGroupId}`);
       //   console.log(`groupId: ${groupVars[i].groupId}`);
-      if (groupVars[i].groupId == (await comptroller.marketGroupId(ctoken))) {
-        targetGroup = groupVars[i];
-        targetVars = vars;
+      // Line 241
+      if (groupVars[i].groupId == assetGroupId) {
+        targetGroup = groupVars[i]; // Line 242
+        targetVars = vars; // Line 243
         // console.log(`set target group: ${i} ${targetGroup.cTokenBalanceSum}, ${targetGroup.suTokenBalanceSum}`);
       } else {
         // log.info("=======================");
         // log.info('interCRate:', vars.interCRate.toString());
         // log.info('cTokenBalanceSum:', groupVars[i].cTokenBalanceSum.toString());
         // log.info('sumCollateral:', vars.sumCollateral.toString());
+        // Line 245
         vars.sumCollateral = mul_ScalarTruncateAddUInt(
           vars.interCRate,
           groupVars[i].cTokenBalanceSum,
@@ -334,6 +350,7 @@ task('hal', 'get Hypothetical Account Liquidity')
         // log.info('sumCollateral:', vars.sumCollateral.toString());
         // log.info('interCRate:', vars.interCRate.toString());
         // log.info('suTokenBalanceSum:', groupVars[i].suTokenBalanceSum.toString());
+        // Line 249
         vars.sumCollateral = mul_ScalarTruncateAddUInt(
           vars.interSuRate,
           groupVars[i].suTokenBalanceSum,
@@ -342,6 +359,7 @@ task('hal', 'get Hypothetical Account Liquidity')
         // log.info('sumCollateral:', vars.sumCollateral.toString());
         // log.info('=======================');
       }
+      // Line 255
       vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.add(
         groupVars[i].cTokenBorrowSum.add(groupVars[i].suTokenBorrowSum)
       );
@@ -349,64 +367,71 @@ task('hal', 'get Hypothetical Account Liquidity')
     }
 
     // These are safe, as the underflow condition is checked first
+    // Line 261
     if (vars.sumCollateral.gt(vars.sumBorrowPlusEffects)) {
-      vars.sumCollateral = vars.sumCollateral.sub(vars.sumBorrowPlusEffects);
-      vars.sumBorrowPlusEffects = BigNumber.from(0);
+      vars.sumCollateral = vars.sumCollateral.sub(vars.sumBorrowPlusEffects); // Line 262
+      vars.sumBorrowPlusEffects = BigNumber.from(0); // Line 263
     } else {
-      vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub(vars.sumCollateral);
-      vars.sumCollateral = BigNumber.from(0);
+      vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub(vars.sumCollateral); // Line 265
+      vars.sumCollateral = BigNumber.from(0); // Line 266
     }
-    console.log(`initially
-    sumCollateral : ${vars.sumCollateral.toString()}
-    sumBorrowPlusEffects : ${vars.sumBorrowPlusEffects.toString()}`);
+    // console.log(`initially
+    // sumCollateral : ${vars.sumCollateral.toString()}
+    // sumBorrowPlusEffects : ${vars.sumBorrowPlusEffects.toString()}`);
 
-    console.log(`targetGroup.cTokenBalanceSum ${targetGroup.cTokenBalanceSum}, rate: ${targetVars.interCRate}`);
-    console.log(`targetGroup.suTokenBalanceSum ${targetGroup.suTokenBalanceSum}, rate: ${targetVars.interSuRate}`);
-
+    // console.log(`targetGroup.cTokenBalanceSum ${targetGroup.cTokenBalanceSum}, rate: ${targetVars.interCRate}`);
+    // console.log(`targetGroup.suTokenBalanceSum ${targetGroup.suTokenBalanceSum}, rate: ${targetVars.interSuRate}`);
+    // Line 269
     if (vars.sumBorrowPlusEffects.gt(0)) {
-      let collateralizedLoan = mul_ScalarTruncate(targetVars.interCRate, targetGroup.cTokenBalanceSum);
+      let collateralizedLoan = mul_ScalarTruncate(targetVars.interCRate, targetGroup.cTokenBalanceSum); // Line 270
+      // Line 271
       if (collateralizedLoan.gt(vars.sumBorrowPlusEffects)) {
+        // Line 272
         targetGroup.cTokenBalanceSum = targetGroup.cTokenBalanceSum.sub(
           vars.sumBorrowPlusEffects.mul(expScale).div(targetVars.interCRate)
         );
-        vars.sumBorrowPlusEffects = BigNumber.from(0);
+        vars.sumBorrowPlusEffects = BigNumber.from(0); // Line 275
       } else {
-        vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub(collateralizedLoan);
-        targetGroup.cTokenBalanceSum = BigNumber.from(0);
+        vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub(collateralizedLoan); // Line 277
+        targetGroup.cTokenBalanceSum = BigNumber.from(0); // Line 278
       }
     }
-    console.log(`after absort target ctoken
-    sumCollateral : ${vars.sumCollateral.toString()}
-    sumBorrowPlusEffects : ${vars.sumBorrowPlusEffects.toString()}`);
-
+    // console.log(`after absort target ctoken
+    // sumCollateral : ${vars.sumCollateral.toString()}
+    // sumBorrowPlusEffects : ${vars.sumBorrowPlusEffects.toString()}`);
+    // Line 282
     if (vars.sumBorrowPlusEffects.gt(0)) {
-      let collateralizedLoan = mul_ScalarTruncate(targetVars.interSuRate, targetGroup.suTokenBalanceSum);
+      let collateralizedLoan = mul_ScalarTruncate(targetVars.interSuRate, targetGroup.suTokenBalanceSum); // Line 283
+      // Line 284
       if (collateralizedLoan.gt(vars.sumBorrowPlusEffects)) {
+        // Line 285
         targetGroup.suTokenBalanceSum = targetGroup.suTokenBalanceSum.sub(
           vars.sumBorrowPlusEffects.mul(expScale).div(targetVars.interSuRate)
         );
+        // Line 288
         vars.sumBorrowPlusEffects = BigNumber.from(0);
       } else {
-        vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub(collateralizedLoan);
-        targetGroup.suTokenBalanceSum = BigNumber.from(0);
+        vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub(collateralizedLoan); // Line 290
+        targetGroup.suTokenBalanceSum = BigNumber.from(0); // Line 291
       }
     }
-    console.log(`after absort target sutoken
-    sumCollateral : ${vars.sumCollateral.toString()}
-    sumBorrowPlusEffects : ${vars.sumBorrowPlusEffects.toString()}`);
-
+    // console.log(`after absort target sutoken
+    // sumCollateral : ${vars.sumCollateral.toString()}
+    // sumBorrowPlusEffects : ${vars.sumBorrowPlusEffects.toString()}`);
+    // Line 294
     if (vars.isSuToken) {
+      // Line 295
       vars.sumCollateral = mul_ScalarTruncateAddUInt(
-        vars.suTokenCollateralRate,
+        vars.intraMintRate,
         targetGroup.cTokenBalanceSum,
         vars.sumCollateral
       );
     } else {
-      vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraCRate, targetGroup.cTokenBalanceSum, vars.sumCollateral);
+      vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraCRate, targetGroup.cTokenBalanceSum, vars.sumCollateral); // Line 300
     }
-    vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraSuRate, targetGroup.suTokenBalanceSum, vars.sumCollateral);
-    log.info('vars.sumCollateral:', vars.sumCollateral.toString());
-    log.info('vars.sumBorrowPlusEffects:', vars.sumBorrowPlusEffects.toString());
+    vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraSuRate, targetGroup.suTokenBalanceSum, vars.sumCollateral); // Line 302
+    // log.info('vars.sumCollateral:', vars.sumCollateral.toString());
+    // log.info('vars.sumBorrowPlusEffects:', vars.sumBorrowPlusEffects.toString());
     if (vars.sumCollateral.gt(vars.sumBorrowPlusEffects)) {
       log.info(0, vars.sumCollateral.sub(vars.sumBorrowPlusEffects).toString(), 0);
     } else {

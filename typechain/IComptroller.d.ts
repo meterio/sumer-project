@@ -316,7 +316,7 @@ export class IComptroller extends BaseContract {
     markets(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<[boolean, number]>;
+    ): Promise<[boolean, number, boolean]>;
 
     mintAllowed(
       cToken: string,
@@ -426,7 +426,10 @@ export class IComptroller extends BaseContract {
 
   marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
-  markets(arg0: string, overrides?: CallOverrides): Promise<[boolean, number]>;
+  markets(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<[boolean, number, boolean]>;
 
   mintAllowed(
     cToken: string,
@@ -533,7 +536,7 @@ export class IComptroller extends BaseContract {
     markets(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<[boolean, number]>;
+    ): Promise<[boolean, number, boolean]>;
 
     mintAllowed(
       cToken: string,

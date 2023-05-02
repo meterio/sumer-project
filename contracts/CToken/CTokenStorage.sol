@@ -80,4 +80,6 @@ abstract contract CTokenStorage is ICToken {
   uint256 public constant protocolSeizeShareMantissa = 2.8e16; //2.8%
 
   uint256 public discountRateMantissa = 1e18;
+
+  uint256 public underlyingBalance;
 }

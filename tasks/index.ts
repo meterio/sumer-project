@@ -57,3 +57,5 @@ import './upgrade/UpdateCEther';
 import './upgrade/UpdateSuToken';
 import './upgrade/UpdateComptroller';
 import './upgrade/UpdateUnderly';
+import './upgrade/UpdateAccountLiquidity';
+import './upgrade/UpdateCompLogic';
