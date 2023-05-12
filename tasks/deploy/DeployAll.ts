@@ -4,12 +4,14 @@ import { readFileSync, writeFileSync } from 'fs';
 import { log } from '../../log_settings';
 import {
   AccountLiquidity,
+  CErc20,
   CompLogic,
   Comptroller,
   PythOracle,
   UnderwriterAdmin
 } from '../../typechain';
 import { BigNumber } from 'ethers';
+import { parseUnits } from 'ethers/lib/utils';
 const MANTISSA_DECIMALS = 18;
 const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
 // 0x0000000000000000000000000000000000000000
@@ -243,6 +245,11 @@ task('all', 'deploy contract')
           let gas = await comptroller.estimateGas._supportMarket(cToken.address, cToken.groupId);
           let receipt = await comptroller._supportMarket(cToken.address, cToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', cToken.cTokenSymbol, receipt.hash);
+        }
+        const cTokenContract = await ethers.getContractAt("CErc20",config.cTokens.tokens[i].address,wallet) as CErc20;
+        if(!(await cTokenContract.reserveFactorMantissa()).eq(parseUnits("0.1")) ) {
+          let receipt = await cTokenContract._setReserveFactor(parseUnits("0.1"));
+          log.info('_setReserveFactor:', cToken.cTokenSymbol, receipt.hash);
         }
         let price =
           (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(cToken.address) : BigNumber.from(0);

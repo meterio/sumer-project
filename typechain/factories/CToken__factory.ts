@@ -557,6 +557,13 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "_syncUnderlyingBalance",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "accrualBlockNumber",
     outputs: [
       {

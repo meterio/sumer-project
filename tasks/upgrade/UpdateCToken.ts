@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
-import { ProxyAdmin } from '../../typechain';
+import { CErc20, ProxyAdmin } from '../../typechain';
 import { log } from '../../log_settings';
 import { readFileSync, writeFileSync } from 'fs';
 import { constants } from 'ethers';
@@ -28,35 +28,38 @@ task('uct', 'deploy cToken contract')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice,
+        gasPrice: gasprice
       };
     }
-    if (impl == constants.AddressZero) {
-      const cErc20Impl = await run('d', {
-        name: 'CErc20',
-        rpc: rpc,
-        pk: pk,
-        gasprice: gasprice,
-      });
-      config.cTokens.implementation = cErc20Impl.address;
-    } else {
-      config.cTokens.implementation = impl;
-    }
-    writeFileSync(json, JSON.stringify(config));
+    // if (impl == constants.AddressZero) {
+    //   const cErc20Impl = await run('d', {
+    //     name: 'CErc20',
+    //     rpc: rpc,
+    //     pk: pk,
+    //     gasprice: gasprice
+    //   });
+    //   config.cTokens.implementation = cErc20Impl.address;
+    // } else {
+    //   config.cTokens.implementation = impl;
+    // }
+    // writeFileSync(json, JSON.stringify(config));
 
     for (let i = 0; i < config.cTokens.tokens.length; i++) {
       if (!config.cTokens.tokens[i].native) {
-        const proxyContract = (await ethers.getContractAt(
-          'ProxyAdmin',
-          config.proxyAdmin.address,
-          wallet
-        )) as ProxyAdmin;
-        let receipt = await proxyContract.upgrade(
-          config.cTokens.tokens[i].address,
-          config.cTokens.implementation,
-          override
-        );
-        log.info('proxyContract.upgradeTo tx:', receipt.hash);
+        // const proxyContract = (await ethers.getContractAt(
+        //   'ProxyAdmin',
+        //   config.proxyAdmin.address,
+        //   wallet
+        // )) as ProxyAdmin;
+        // let receipt = await proxyContract.upgrade(
+        //   config.cTokens.tokens[i].address,
+        //   config.cTokens.implementation,
+        //   override
+        // );
+        // log.info('proxyContract.upgradeTo tx:', receipt.hash);
+        const cToken = (await ethers.getContractAt('CErc20', config.cTokens.tokens[i].address, wallet)) as CErc20;
+        let receipt = await cToken._syncUnderlyingBalance();
+        log.info('cToken._syncUnderlyingBalance tx:', receipt.hash);
       }
     }
   });

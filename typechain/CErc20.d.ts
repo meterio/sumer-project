@@ -29,6 +29,7 @@ interface CErc20Interface extends ethers.utils.Interface {
     "_setInterestRateModel(address)": FunctionFragment;
     "_setPendingAdmin(address)": FunctionFragment;
     "_setReserveFactor(uint256)": FunctionFragment;
+    "_syncUnderlyingBalance()": FunctionFragment;
     "accrualBlockNumber()": FunctionFragment;
     "accrueInterest()": FunctionFragment;
     "admin()": FunctionFragment;
@@ -112,6 +113,10 @@ interface CErc20Interface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "_setReserveFactor",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_syncUnderlyingBalance",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "accrualBlockNumber",
@@ -324,6 +329,10 @@ interface CErc20Interface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_setReserveFactor",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_syncUnderlyingBalance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -712,6 +721,10 @@ export class CErc20 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    _syncUnderlyingBalance(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     accrualBlockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     accrueInterest(
@@ -948,6 +961,10 @@ export class CErc20 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  _syncUnderlyingBalance(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   accrualBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
   accrueInterest(
@@ -1178,6 +1195,8 @@ export class CErc20 extends BaseContract {
       newReserveFactorMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    _syncUnderlyingBalance(overrides?: CallOverrides): Promise<void>;
 
     accrualBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1755,6 +1774,10 @@ export class CErc20 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    _syncUnderlyingBalance(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     accrualBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
     accrueInterest(
@@ -1984,6 +2007,10 @@ export class CErc20 extends BaseContract {
 
     _setReserveFactor(
       newReserveFactorMantissa: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _syncUnderlyingBalance(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

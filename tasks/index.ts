@@ -18,7 +18,6 @@ import './deploy/cToken/DeployCToken';
 import './deploy/cToken/DeploySuToken';
 import './deploy/cToken/DeploySuTokenOFT';
 
-
 import './deploy/interestRateModels/JumpRateModelV2';
 import './deploy/interestRateModels/ZeroInterestRateModel';
 import './deploy/interestRateModels/InterestRateModel';
@@ -29,12 +28,14 @@ import './operation/Borrow';
 import './operation/Redeem';
 import './operation/RedeemAll';
 import './operation/LiquidateBorrow';
+import './operation/SendFrom';
 
 import './setting/oracle/setBandFeed';
 import './setting/oracle/setChainlinkFeed';
 import './setting/oracle/setFixedPrice';
 import './setting/oracle/setWitnetFeed';
 import './setting/oracle/setPythFeed';
+import './setting/oracle/setLowPrice';
 
 import './setting/ctoken/setReserveFactor';
 import './setting/ctoken/setInterestRateModel';
@@ -51,6 +52,7 @@ import './views/HypotheticalAccountLiquidity';
 import './views/OracleStats';
 import './views/grantCompInternal';
 import './views/AllPositions';
+import './views/cTokenMetadata';
 
 import './upgrade/UpdateCToken';
 import './upgrade/UpdateCEther';

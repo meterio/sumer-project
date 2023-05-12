@@ -68,11 +68,11 @@ contract CompoundLens {
     GroupInfo memory gi;
     if (cToken.isCToken()) {
       gi.intraRate = group.intraCRateMantissa;
-      gi.interRate = group.intraCRateMantissa;
+      gi.interRate = group.interCRateMantissa;
       gi.mintRate = group.intraMintRateMantissa;
     } else {
       gi.intraRate = group.intraSuRateMantissa;
-      gi.interRate = group.intraSuRateMantissa;
+      gi.interRate = group.interSuRateMantissa;
       gi.mintRate = group.intraSuRateMantissa;
     }
 
