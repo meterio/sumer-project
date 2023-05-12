@@ -7,7 +7,7 @@
     "address": "0xf67c5f20b95b7604ebb65a53e50ebd38300da8ee"
   },
   "feedPriceOracle": { "address": "0xF1336101cE3770Fe11D836De7AAca040294fb459" },
-  "compoundLens": { "address": "0xb20829ccA0049b77B8Ea21463bD1032Fa66D37eF" },
+  "compoundLens": { "address": "0x2c3403A44B2845417ae87143887D4606207E7285" },
   "underwriterAdmin": {
     "implementation": "0xaBc3C89b9904deE1489357831E112A6D1D103b46",
     "address": "0x903c005847c1F848aCB3ef93738B4c5F523b8A37"
