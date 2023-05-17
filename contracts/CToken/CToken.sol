@@ -954,7 +954,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* If repayAmount == -1, repayAmount = accountBorrows */
-    if (repayAmount == uint256(0)) {
+    if (repayAmount == ~uint256(0)) {
       vars.repayAmount = vars.accountBorrows;
     } else {
       vars.repayAmount = repayAmount;
@@ -1070,7 +1070,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Fail if repayAmount = -1 */
-    if (repayAmount == uint256(0)) {
+    if (repayAmount == ~uint256(0)) {
       Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_UINT_MAX);
     }
 

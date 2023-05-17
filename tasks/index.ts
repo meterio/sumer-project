@@ -53,6 +53,7 @@ import './views/OracleStats';
 import './views/grantCompInternal';
 import './views/AllPositions';
 import './views/cTokenMetadata';
+import './views/Comp';
 
 import './upgrade/UpdateCToken';
 import './upgrade/UpdateCEther';

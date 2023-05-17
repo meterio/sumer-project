@@ -297,6 +297,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ZeroInterestRateModel__factory>;
     getContractFactory(
+      name: "Multicall2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Multicall2__factory>;
+    getContractFactory(
       name: "ILayerZeroEndpointUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ILayerZeroEndpointUpgradeable__factory>;
@@ -776,6 +780,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ZeroInterestRateModel>;
+    getContractAt(
+      name: "Multicall2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Multicall2>;
     getContractAt(
       name: "ILayerZeroEndpointUpgradeable",
       address: string,

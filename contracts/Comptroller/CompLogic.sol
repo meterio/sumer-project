@@ -435,4 +435,65 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
 
     emit ContributorCompSpeedUpdated(contributor, compSpeed);
   }
+
+  function calculateComp(address holder) external view returns (uint256) {
+    address[] memory cTokens = comptroller.getAllMarkets();
+    uint256 accrued = compAccrued[holder];
+    for (uint256 i = 0; i < cTokens.length; ++i) {
+      address cToken = cTokens[i];
+      Exp memory marketBorrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
+      // _updateCompBorrowIndex
+      CompMarketState memory borrowState = compBorrowState[cToken];
+      uint256 borrowSpeed = compBorrowSpeeds[cToken];
+      uint32 blockNumber = block.number.safe32('block number exceeds 32 bits');
+      uint256 borrowDeltaBlocks = uint256(blockNumber).sub_(uint256(borrowState.block));
+      if (borrowDeltaBlocks > 0 && borrowSpeed > 0) {
+        uint256 borrowAmount = ICToken(cToken).totalBorrows().div_(marketBorrowIndex);
+        uint256 _compAccrued = borrowDeltaBlocks.mul_(borrowSpeed);
+        Double memory ratio = borrowAmount > 0 ? _compAccrued.fraction(borrowAmount) : Double({mantissa: 0});
+        borrowState.index = Double({mantissa: borrowState.index}).add_(ratio).mantissa.safe224(
+          'new index exceeds 224 bits'
+        );
+        borrowState.block = blockNumber;
+      } else if (borrowDeltaBlocks > 0) {
+        borrowState.block = blockNumber;
+      }
+      // _distributeBorrowerComp
+      uint256 borrowIndex = borrowState.index;
+      uint256 borrowerIndex = compBorrowerIndex[cToken][holder];
+      if (borrowerIndex == 0 && borrowIndex >= compInitialIndex) {
+        borrowerIndex = compInitialIndex;
+      }
+      Double memory borrowDeltaIndex = Double({mantissa: borrowIndex.sub_(borrowerIndex)});
+      uint256 borrowerAmount = ICToken(cToken).borrowBalanceStored(holder).div_(marketBorrowIndex);
+      uint256 borrowerDelta = borrowerAmount.mul_(borrowDeltaIndex);
+      accrued = accrued.add_(borrowerDelta);
+      // _updateCompSupplyIndex
+      CompMarketState memory supplyState = compSupplyState[cToken];
+      uint256 supplySpeed = compSupplySpeeds[cToken];
+      uint256 supplyDeltaBlocks = uint256(blockNumber).sub_(uint256(supplyState.block));
+      if (supplyDeltaBlocks > 0 && supplySpeed > 0) {
+        uint256 supplyTokens = ICToken(cToken).totalSupply();
+        uint256 _compAccrued = supplyDeltaBlocks.mul_(supplySpeed);
+        Double memory ratio = supplyTokens > 0 ? _compAccrued.fraction(supplyTokens) : Double({mantissa: 0});
+        supplyState.index = Double({mantissa: supplyState.index}).add_(ratio).mantissa.safe224(
+          'new index exceeds 224 bits'
+        );
+        supplyState.block = blockNumber;
+      } else if (supplyDeltaBlocks > 0) {
+        supplyState.block = blockNumber;
+      }
+      // _distributeSupplierComp
+      uint256 supplyIndex = supplyState.index;
+      uint256 supplierIndex = compSupplierIndex[cToken][holder];
+      if (supplierIndex == 0 && supplyIndex >= compInitialIndex) {
+        supplierIndex = compInitialIndex;
+      }
+      Double memory supplyDeltaIndex = Double({mantissa: supplyIndex.sub_(supplierIndex)});
+      uint256 supplierTokens = ICToken(cToken).balanceOf(holder);
+      uint256 supplierDelta = supplierTokens.mul_(supplyDeltaIndex);
+      accrued = accrued.add_(supplierDelta);
+    }
+    return accrued;
+  }
 }

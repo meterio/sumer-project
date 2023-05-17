@@ -62,6 +62,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "revokeRole(bytes32,address)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
     "setAccountLiquidity(address)": FunctionFragment;
+    "setCompSpeed(address,uint256,uint256)": FunctionFragment;
     "setComptroller(address)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -213,6 +214,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setCompSpeed",
+    values: [string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setComptroller",
     values: [string]
   ): string;
@@ -359,6 +364,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setAccountLiquidity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setCompSpeed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -710,6 +719,13 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setCompSpeed(
+      cToken: string,
+      supplySpeed: BigNumberish,
+      borrowSpeed: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setComptroller(
       _compLogic: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -936,6 +952,13 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setCompSpeed(
+    cToken: string,
+    supplySpeed: BigNumberish,
+    borrowSpeed: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setComptroller(
     _compLogic: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1159,6 +1182,13 @@ export class Comptroller extends BaseContract {
 
     setAccountLiquidity(
       _accountLiquidity: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setCompSpeed(
+      cToken: string,
+      supplySpeed: BigNumberish,
+      borrowSpeed: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1546,6 +1576,13 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setCompSpeed(
+      cToken: string,
+      supplySpeed: BigNumberish,
+      borrowSpeed: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setComptroller(
       _compLogic: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1788,6 +1825,13 @@ export class Comptroller extends BaseContract {
 
     setAccountLiquidity(
       _accountLiquidity: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setCompSpeed(
+      cToken: string,
+      supplySpeed: BigNumberish,
+      borrowSpeed: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

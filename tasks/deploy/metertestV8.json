@@ -17,8 +17,8 @@
     "address": "0xc492e48c5f9EDd67aF50B9a2035c71B666F0E499"
   },
   "compLogic": {
-    "implementation": "0x644F692188DE941539b53cCC167a0f2e24928cCe",
-    "address": "0xc8ebff07337c7b68dc796f700ab2b598b91bd4b7"
+    "implementation": "0xAa427aa8386834a8Ffb807CEF0d52E5cde6eCf8D",
+    "address": "0x874da8a98798ce3ef058a5b012d49858b9dbaaf2"
   },
   "suInterestRateModel": {
     "blocks": "13140000",
@@ -35,11 +35,11 @@
   "comptroller": {
     "closeFactorMantissa": "0.5",
     "liquidationIncentiveMantissa": "1.1",
-    "implementation": "0x7fe6BE855f1cf5b4E5F9a03Db94Ddf9A9aE9a7Fd",
+    "implementation": "0x18Fd587CD53b9F3Bf9F22EC0FDE29A8b5598F032",
     "address": "0x5A44d4Ff399E1DeBEF9C5320b971C8C2Bde89c39"
   },
   "cTokens": {
-    "implementation": "0x41eB86d3FF7a5b039a2f16CFB5CA469cA130aaab",
+    "implementation": "0x0118519A9fcc7739F5967eAF4A5182D9c56530D0",
     "tokens": [
       {
         "cTokenName": "Sumer USD Coin",
@@ -56,7 +56,9 @@
           "name": "sdrUSDC"
         },
         "interestRateModel": { "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc" },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "10000000000000000",
+        "borrowSpeed": "1"
       },
       {
         "cTokenName": "Sumer Tether USD",
@@ -73,7 +75,9 @@
           "name": "sdrUSDT"
         },
         "interestRateModel": { "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc" },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "10000000000000000",
+        "borrowSpeed": "1"
       },
       {
         "cTokenName": "Sumer Ether",
@@ -90,7 +94,9 @@
           "name": "sdrETH"
         },
         "interestRateModel": { "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b" },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "10000000000000000",
+        "borrowSpeed": "1"
       },
       {
         "cTokenName": "Sumer BTCK Token",
@@ -106,8 +112,10 @@
           "tokenDecimals": 8,
           "name": "sdrBTC"
         },
-        "interestRateModel": { "address": "0x8fe57d06e674f37e435aac29c4143392ce4ad585" },
-        "discountRate": "1000000000000000000"
+        "interestRateModel": { "address": "0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b" },
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "10000000000000000",
+        "borrowSpeed": "1"
       },
       {
         "cTokenName": "Sumer Binance USD",
@@ -124,12 +132,14 @@
           "name": "sdrBUSD"
         },
         "interestRateModel": { "address": "0xFdb2aF6F99C5C103CfAB5D3d982ef7227bD62Ecc" },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "10000000000000000",
+        "borrowSpeed": "1"
       }
     ]
   },
   "suTokens": {
-    "implementation": "0x5edC5ee6aC5cbCc5E911AC76e292D31c7F13594b",
+    "implementation": "0x8af47E7211e362bddF75F52Dd13905d22C3dd265",
     "underly_implementation": "0xFDE1a2A60b0b775679c25BfB5374ec405c3E8491",
     "tokens": [
       {
@@ -140,7 +150,9 @@
         "address": "0x62b24c1Af2B8909491E2b0F67402f21bb2b6698f",
         "groupId": 3,
         "oracle": { "feedId": 1, "price": "1000000000000000000" },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "1",
+        "borrowSpeed": "10000000000000000"
       },
       {
         "name": "suETH",
@@ -155,7 +167,9 @@
           "tokenDecimals": 18,
           "name": "suETH"
         },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "1",
+        "borrowSpeed": "10000000000000000"
       },
       {
         "name": "suBTC",
@@ -170,7 +184,9 @@
           "tokenDecimals": 18,
           "name": "suBTC"
         },
-        "discountRate": "1000000000000000000"
+        "discountRate": "1000000000000000000",
+        "supplySpeed": "1",
+        "borrowSpeed": "10000000000000000"
       }
     ]
   },

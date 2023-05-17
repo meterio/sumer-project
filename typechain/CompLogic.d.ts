@@ -25,6 +25,7 @@ interface CompLogicInterface extends ethers.utils.Interface {
     "_grantComp(address,uint256)": FunctionFragment;
     "_setCompSpeeds(address[],uint256[],uint256[])": FunctionFragment;
     "_setContributorCompSpeed(address,uint256)": FunctionFragment;
+    "calculateComp(address)": FunctionFragment;
     "claimComp(address,address[])": FunctionFragment;
     "comp()": FunctionFragment;
     "compAccrued(address)": FunctionFragment;
@@ -72,6 +73,10 @@ interface CompLogicInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "_setContributorCompSpeed",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "calculateComp",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "claimComp",
@@ -199,6 +204,10 @@ interface CompLogicInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_setContributorCompSpeed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "calculateComp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "claimComp", data: BytesLike): Result;
@@ -454,6 +463,11 @@ export class CompLogic extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    calculateComp(
+      holder: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     "claimComp(address,address[])"(
       holder: string,
       cTokens: string[],
@@ -640,6 +654,8 @@ export class CompLogic extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  calculateComp(holder: string, overrides?: CallOverrides): Promise<BigNumber>;
+
   "claimComp(address,address[])"(
     holder: string,
     cTokens: string[],
@@ -819,6 +835,11 @@ export class CompLogic extends BaseContract {
       compSpeed: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    calculateComp(
+      holder: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     "claimComp(address,address[])"(
       holder: string,
@@ -1203,6 +1224,11 @@ export class CompLogic extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    calculateComp(
+      holder: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     "claimComp(address,address[])"(
       holder: string,
       cTokens: string[],
@@ -1393,6 +1419,11 @@ export class CompLogic extends BaseContract {
       contributor: string,
       compSpeed: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    calculateComp(
+      holder: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "claimComp(address,address[])"(

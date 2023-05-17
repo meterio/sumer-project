@@ -29,7 +29,6 @@ task('sf', 'approve all sdrToken contract')
     const wallet = new ethers.Wallet(pk, provider);
 
     const oft = (await ethers.getContractAt('SumerOFTUpgradeable', address, wallet)) as SumerOFTUpgradeable;
-    dst = 10169;
     const estimateSendFee = await oft.estimateSendFee(dst, wallet.address, parseUnits(amount), false, '0x');
     console.log('estimateSendFee:', estimateSendFee);
   });

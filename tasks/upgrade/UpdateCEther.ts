@@ -47,7 +47,7 @@ task('uce', 'deploy cToken contract')
         let receipt = await proxyContract.upgrade(config.cTokens.tokens[i].address, impl, override);
         log.info('proxyContract.upgradeTo tx:', receipt.hash);
         config.cTokens.tokens[i].implementation = impl;
+        writeFileSync(json, JSON.stringify(config));
       }
     }
-    writeFileSync(json, JSON.stringify(config));
   });
