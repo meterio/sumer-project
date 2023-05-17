@@ -283,8 +283,8 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @notice Claim all the comp accrued by holder in all markets
    * @param holder The address to claim COMP for
    */
-  function claimComp(address holder) public {
-    return claimComp(holder, comptroller.getAllMarkets());
+  function claimSumer(address holder) public {
+    return claimSumer(holder, comptroller.getAllMarkets());
   }
 
   /**
@@ -292,10 +292,10 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @param holder The address to claim COMP for
    * @param cTokens The list of markets to claim COMP in
    */
-  function claimComp(address holder, address[] memory cTokens) public {
+  function claimSumer(address holder, address[] memory cTokens) public {
     address[] memory holders = new address[](1);
     holders[0] = holder;
-    claimComp(holders, cTokens, true, true);
+    claimSumer(holders, cTokens, true, true);
   }
 
   /**
@@ -305,7 +305,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @param borrowers Whether or not to claim COMP earned by borrowing
    * @param suppliers Whether or not to claim COMP earned by supplying
    */
-  function claimComp(address[] memory holders, address[] memory cTokens, bool borrowers, bool suppliers) public {
+  function claimSumer(address[] memory holders, address[] memory cTokens, bool borrowers, bool suppliers) public {
     for (uint256 i = 0; i < cTokens.length; ++i) {
       address cToken = cTokens[i];
       (bool isListed, , ) = comptroller.markets(cToken);

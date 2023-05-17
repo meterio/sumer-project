@@ -2,9 +2,7 @@
 pragma solidity 0.8.19;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/utils/Math/Math.sol';
-import '@openzeppelin/contracts/utils/Math/SafeMath.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
@@ -240,7 +238,7 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
 
   // Last time the reward was applicable
   function lastTimeRewardApplicable() internal view returns (uint256) {
-    return Math.min(block.timestamp, periodFinish);
+    return min(block.timestamp, periodFinish);
   }
 
   // Amount of reward tokens per LP token
@@ -607,6 +605,10 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
     address new_manager_address
   ) external onlyTknMgrs(reward_token_address) {
     rewardManagers[reward_token_address] = new_manager_address;
+  }
+
+  function min(uint256 a, uint256 b) internal pure returns (uint256) {
+    return a < b ? a : b;
   }
 
   /* ========== EVENTS ========== */

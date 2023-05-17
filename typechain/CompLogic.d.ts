@@ -26,7 +26,7 @@ interface CompLogicInterface extends ethers.utils.Interface {
     "_setCompSpeeds(address[],uint256[],uint256[])": FunctionFragment;
     "_setContributorCompSpeed(address,uint256)": FunctionFragment;
     "calculateComp(address)": FunctionFragment;
-    "claimComp(address,address[])": FunctionFragment;
+    "claimSumer(address[],address[],bool,bool)": FunctionFragment;
     "comp()": FunctionFragment;
     "compAccrued(address)": FunctionFragment;
     "compBorrowSpeeds(address)": FunctionFragment;
@@ -79,8 +79,8 @@ interface CompLogicInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "claimComp",
-    values: [string, string[]]
+    functionFragment: "claimSumer",
+    values: [string[], string[], boolean, boolean]
   ): string;
   encodeFunctionData(functionFragment: "comp", values?: undefined): string;
   encodeFunctionData(functionFragment: "compAccrued", values: [string]): string;
@@ -210,7 +210,7 @@ interface CompLogicInterface extends ethers.utils.Interface {
     functionFragment: "calculateComp",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "claimComp", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "claimSumer", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "comp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "compAccrued",
@@ -468,13 +468,7 @@ export class CompLogic extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    "claimComp(address,address[])"(
-      holder: string,
-      cTokens: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    "claimComp(address[],address[],bool,bool)"(
+    "claimSumer(address[],address[],bool,bool)"(
       holders: string[],
       cTokens: string[],
       borrowers: boolean,
@@ -482,8 +476,14 @@ export class CompLogic extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "claimComp(address)"(
+    "claimSumer(address)"(
       holder: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "claimSumer(address,address[])"(
+      holder: string,
+      cTokens: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -656,13 +656,7 @@ export class CompLogic extends BaseContract {
 
   calculateComp(holder: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "claimComp(address,address[])"(
-    holder: string,
-    cTokens: string[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  "claimComp(address[],address[],bool,bool)"(
+  "claimSumer(address[],address[],bool,bool)"(
     holders: string[],
     cTokens: string[],
     borrowers: boolean,
@@ -670,8 +664,14 @@ export class CompLogic extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "claimComp(address)"(
+  "claimSumer(address)"(
     holder: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "claimSumer(address,address[])"(
+    holder: string,
+    cTokens: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -841,13 +841,7 @@ export class CompLogic extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "claimComp(address,address[])"(
-      holder: string,
-      cTokens: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "claimComp(address[],address[],bool,bool)"(
+    "claimSumer(address[],address[],bool,bool)"(
       holders: string[],
       cTokens: string[],
       borrowers: boolean,
@@ -855,8 +849,14 @@ export class CompLogic extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "claimComp(address)"(
+    "claimSumer(address)"(
       holder: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "claimSumer(address,address[])"(
+      holder: string,
+      cTokens: string[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1229,13 +1229,7 @@ export class CompLogic extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "claimComp(address,address[])"(
-      holder: string,
-      cTokens: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    "claimComp(address[],address[],bool,bool)"(
+    "claimSumer(address[],address[],bool,bool)"(
       holders: string[],
       cTokens: string[],
       borrowers: boolean,
@@ -1243,8 +1237,14 @@ export class CompLogic extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "claimComp(address)"(
+    "claimSumer(address)"(
       holder: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "claimSumer(address,address[])"(
+      holder: string,
+      cTokens: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1426,13 +1426,7 @@ export class CompLogic extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "claimComp(address,address[])"(
-      holder: string,
-      cTokens: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "claimComp(address[],address[],bool,bool)"(
+    "claimSumer(address[],address[],bool,bool)"(
       holders: string[],
       cTokens: string[],
       borrowers: boolean,
@@ -1440,8 +1434,14 @@ export class CompLogic extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "claimComp(address)"(
+    "claimSumer(address)"(
       holder: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "claimSumer(address,address[])"(
+      holder: string,
+      cTokens: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
