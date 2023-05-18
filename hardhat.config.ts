@@ -1,15 +1,12 @@
 import { config as dotEnvConfig } from 'dotenv';
-import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-ethers';
-import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-solhint';
-import '@typechain/hardhat';
 import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
 import 'hardhat-tracer';
 import 'hardhat-etherscan-abi';
 import 'hardhat-contract-sizer';
+import '@nomicfoundation/hardhat-toolbox';
 
 import './tasks';
 import { compileSetting } from './scripts/deployTool';
@@ -58,6 +55,7 @@ const argv = require('yargs/yargs')()
       type: 'string',
       default: 'https://goerli.base.org'
     },
+    goerliRpcUrl: { type: 'string', default: 'https://rpc.ankr.com/eth_goerli	' },
     networkScanKey: {
       type: 'string',
       default: ''
@@ -169,13 +167,19 @@ export default {
       url: argv.ganacheRpc,
       chainId: 1337,
       accounts: [process.env.PRIVATE_KEY_0, '0x34cd0e9ec7a0ec36a37db424f720de58223f9cd52e0175c7a972a6a864eb86a5']
+    },
+    goerli: {
+      url: argv.goerliRpcUrl,
+      chainId: 5,
+      accounts: [process.env.PRIVATE_KEY_0]
     }
   },
   etherscan: {
-    apiKey: argv.networkScanKey
+    apiKey: 'X59J8IFYDYMKXCZCWX7X5GI1J5ZTR1IBIW',
+    customChains: []
   },
   solidity: {
-    compilers: [ compileSetting('0.8.19', 200)]
+    compilers: [compileSetting('0.8.19', 200)]
   },
   paths: {
     sources: './contracts',
