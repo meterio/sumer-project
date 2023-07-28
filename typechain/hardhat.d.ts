@@ -432,6 +432,34 @@ declare module "hardhat/types/runtime" {
       name: "CommunalFarm",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CommunalFarm__factory>;
+    getContractFactory(
+      name: "FraxGaugeController",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FraxGaugeController__factory>;
+    getContractFactory(
+      name: "VotingEscrow",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.VotingEscrow__factory>;
+    getContractFactory(
+      name: "FraxGaugeFXSRewardsDistributor",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FraxGaugeFXSRewardsDistributor__factory>;
+    getContractFactory(
+      name: "IFraxGaugeController",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IFraxGaugeController__factory>;
+    getContractFactory(
+      name: "IFraxGaugeFXSRewardsDistributor",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IFraxGaugeFXSRewardsDistributor__factory>;
+    getContractFactory(
+      name: "SmartWalletChecker",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SmartWalletChecker__factory>;
+    getContractFactory(
+      name: "VeSumer",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.VeSumer__factory>;
 
     getContractAt(
       name: "AccessControlEnumerableUpgradeable",
@@ -958,6 +986,41 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.CommunalFarm>;
+    getContractAt(
+      name: "FraxGaugeController",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FraxGaugeController>;
+    getContractAt(
+      name: "VotingEscrow",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.VotingEscrow>;
+    getContractAt(
+      name: "FraxGaugeFXSRewardsDistributor",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FraxGaugeFXSRewardsDistributor>;
+    getContractAt(
+      name: "IFraxGaugeController",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IFraxGaugeController>;
+    getContractAt(
+      name: "IFraxGaugeFXSRewardsDistributor",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IFraxGaugeFXSRewardsDistributor>;
+    getContractAt(
+      name: "SmartWalletChecker",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SmartWalletChecker>;
+    getContractAt(
+      name: "VeSumer",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.VeSumer>;
 
     // default types
     getContractFactory(

@@ -1,21 +1,15 @@
 {
-  "proxyAdmin": {
-    "address": "0xD80d7eb97f51C8a1feF93838820BEeD3628B6CEA"
-  },
+  "proxyAdmin": { "address": "0xD80d7eb97f51C8a1feF93838820BEeD3628B6CEA" },
   "sumer": {
     "name": "Sumer Token",
     "symbol": "SUMER",
     "supply": "100000000",
     "address": "0xB28c8c2abF17243502eB28885455998e8B984B58"
   },
-  "feedPriceOracle": {
-    "address": "0x7E875A17FeB1B1D4eD0fF9d65420e9260CfC7AFE"
-  },
-  "compoundLens": {
-    "address": "0x473FA35846C6DA78764068BbF5140e5E9c0478e6"
-  },
+  "feedPriceOracle": { "address": "0x7E875A17FeB1B1D4eD0fF9d65420e9260CfC7AFE" },
+  "compoundLens": { "address": "0x9ada555AADF05addC88e067EBc9168Fa8917aE70" },
   "underwriterAdmin": {
-    "implementation": "0x2fF01f01a50E55aB7349DD637BB2229cBBe30B89",
+    "implementation": "0x78858c06D02F2a3eA24a7057e1284dBF753F7487",
     "address": "0x40DCdEE8414950569471C2Dc9e19053f451fC843"
   },
   "suInterestRateModel": {
@@ -37,7 +31,7 @@
     "address": "0xD26c4F0C4b4BD6620695468144F009DE7D88B430"
   },
   "cTokens": {
-    "implementation": "0xD6b9f0dDB5BAa4fbF3d6727602aa883a35956320",
+    "implementation": "0x3E251B25a03d1D4b85036bf6B8FB30408072a963",
     "tokens": [
       {
         "cTokenName": "Sumer ETH",
@@ -47,15 +41,10 @@
         "underly": "",
         "address": "0xe81bBDbe4Bcd784c30565123c38bED2e823F024f",
         "groupId": 2,
-        "oracle": {
-          "type": 0,
-          "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
-        },
-        "implementation": "0xbD9f91a2726De7b62A83bA1a836021744223fE8C",
-        "interestRateModel": {
-          "address": "0x7254b2e250d0d539103B1563ac0958c5910ca239"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 0, "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2" },
+        "implementation": "0x66073f28bc47dE84EbaC27C3f56C57bcBf86C24b",
+        "interestRateModel": { "address": "0x7254b2e250d0d539103B1563ac0958c5910ca239" },
+        "discountRate": 1000000000000000000
       },
       {
         "cTokenName": "Sumer BTC",
@@ -65,14 +54,9 @@
         "underly": "0x0D0267E89189D73826aeAa1556ac4428c845e68a",
         "address": "0xDD140a76908ee90919F259d21b155F8544854fc6",
         "groupId": 1,
-        "oracle": {
-          "type": 0,
-          "feed": "0xAC15714c08986DACC0379193e22382736796496f"
-        },
-        "interestRateModel": {
-          "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 0, "feed": "0xAC15714c08986DACC0379193e22382736796496f" },
+        "interestRateModel": { "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900" },
+        "discountRate": 1000000000000000000
       },
       {
         "cTokenName": "Sumer USD Coin",
@@ -82,14 +66,9 @@
         "underly": "0x93de053520D42B3F74281852Bd56F232A4E643DA",
         "address": "0x385f588FF87a9a791a67a53ae8130A84d293A995",
         "groupId": 3,
-        "oracle": {
-          "type": 0,
-          "feed": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0"
-        },
-        "interestRateModel": {
-          "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 0, "feed": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0" },
+        "interestRateModel": { "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141" },
+        "discountRate": 1000000000000000000
       },
       {
         "cTokenName": "Sumer Tether USD",
@@ -99,19 +78,14 @@
         "underly": "0x61E2c1608B1caA59136BCB7845637858d216c3B9",
         "address": "0xCD418f06Fe3CBF594f9c81e6F74BD7ff6492Bc54",
         "groupId": 3,
-        "oracle": {
-          "type": 0,
-          "feed": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C"
-        },
-        "interestRateModel": {
-          "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 0, "feed": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C" },
+        "interestRateModel": { "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141" },
+        "discountRate": 1000000000000000000
       }
     ]
   },
   "suTokens": {
-    "implementation": "0xd1EdB2B521A9C1293eCAfdD724Af1875dd02d88b",
+    "implementation": "0x5cF6bb4C0A84C0A80e7C980E0Ba81E043bD484D2",
     "underly_implementation": "0x5D9d509BbFE236e87990FeA86F15acE27c6aB27C",
     "tokens": [
       {
@@ -121,11 +95,8 @@
         "underly": "0x875A75e783145328880468C3e6cB791384D72e9d",
         "address": "0xdd0A286c88D00264b782Aa00cD937C9785dc2e97",
         "groupId": 3,
-        "oracle": {
-          "type": 1,
-          "price": "1000000000000000000"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 1, "price": "1000000000000000000" },
+        "discountRate": 1000000000000000000
       },
       {
         "name": "suETH",
@@ -134,11 +105,8 @@
         "underly": "0xEdd794DC7b4dFE58eBFC0f568F9A01F6eeB64563",
         "address": "0x548c4c2128E9d0B5F4d31855e46F6cE7843868E8",
         "groupId": 2,
-        "oracle": {
-          "type": 0,
-          "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 0, "feed": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2" },
+        "discountRate": 1000000000000000000
       },
       {
         "name": "suBTC",
@@ -147,11 +115,8 @@
         "underly": "0xd11f348AB72A02ccbb611d4590fF79Ff48a07911",
         "address": "0x394BF3C96480ace5B8C24b1A2073cd92d69D37D2",
         "groupId": 1,
-        "oracle": {
-          "type": 0,
-          "feed": "0xAC15714c08986DACC0379193e22382736796496f"
-        },
-        "discountRate": 1e18
+        "oracle": { "type": 0, "feed": "0xAC15714c08986DACC0379193e22382736796496f" },
+        "discountRate": 1000000000000000000
       }
     ]
   },
@@ -167,7 +132,7 @@
     },
     {
       "id": 2,
-      "name": "Ether",
+      "name": "Ethereum",
       "intraCRateMantissa": "900000000000000000",
       "intraMintRateMantissa": "999700000000000000",
       "intraSuRateMantissa": "700000000000000000",
@@ -182,22 +147,9 @@
       "intraSuRateMantissa": "700000000000000000",
       "interCRateMantissa": "800000000000000000",
       "interSuRateMantissa": "600000000000000000"
-    },
-    {
-      "id": 4,
-      "name": "MTR",
-      "intraCRateMantissa": "900000000000000000",
-      "intraMintRateMantissa": "999700000000000000",
-      "intraSuRateMantissa": "700000000000000000",
-      "interCRateMantissa": "800000000000000000",
-      "interSuRateMantissa": "600000000000000000"
     }
   ],
-  "multicall2": {
-    "address": "0x86FDdc06Abb5b0A0F2CBCC133880a55F80038CB8"
-  },
-  "lzEndpoint": {
-    "chainId": 10160,
-    "address": "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab"
-  }
+  "multicall2": { "address": "0x86FDdc06Abb5b0A0F2CBCC133880a55F80038CB8" },
+  "lzEndpoint": { "chainId": 10160, "address": "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab" },
+  "lzEndpointOracle": { "address": "0x00000000000000000000000053fd4c4fbbd53f6bc58cae6704b92db1f360a648" }
 }

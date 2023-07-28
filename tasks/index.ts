@@ -17,6 +17,8 @@ import './deploy/system/05_DeployComptroller';
 import './deploy/cToken/DeployCToken';
 import './deploy/cToken/DeploySuToken';
 import './deploy/cToken/DeploySuTokenOFT';
+import './deploy/cToken/DeployOFT';
+import './deploy/cToken/VeSumer';
 
 import './deploy/interestRateModels/JumpRateModelV2';
 import './deploy/interestRateModels/ZeroInterestRateModel';
@@ -43,6 +45,7 @@ import './setting/ctoken/setInterestRateModel';
 import './setting/comptroller/setCompSpeeds';
 
 import './setting/suToken/setTrustedRemoteAddress';
+import './setting/suToken/setConfig';
 import './setting/suToken/sendFrom';
 import './setting/suToken/multiSendFrom';
 
@@ -62,3 +65,4 @@ import './upgrade/UpdateComptroller';
 import './upgrade/UpdateUnderly';
 import './upgrade/UpdateAccountLiquidity';
 import './upgrade/UpdateCompLogic';
+import './upgrade/UpdateUnderwriteAdmin';

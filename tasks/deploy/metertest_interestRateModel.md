@@ -15,7 +15,7 @@ jumpMultiplierPerYear 3
 kink 0.6 
 -----------------------------------------------------------
 # BTC
-WhitePaperInterestRateModel:0x8fe57d06e674f37e435aac29c4143392ce4ad585
+WhitePaperInterestRateModel:0xf09c2ed5a45cc78ae1975a3503ffd888d791fe9b
 blocksPerYearOnChain: 13140000~16172000
 baseRatePerYear 0.02  
 multiplierPerYear 0.3

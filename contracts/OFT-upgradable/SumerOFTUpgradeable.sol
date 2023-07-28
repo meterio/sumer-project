@@ -140,14 +140,13 @@ contract SumerOFTUpgradeable is OFTUpgradeable, EIP712Upgradeable, PausableUpgra
    * - the contract must not be paused.
    */
 
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     super._beforeTokenTransfer(from, to, amount);
     require(!_blackList[from] && !_blackList[to], 'ERC20Pausable: account is in black list');
     require(!paused(), 'ERC20Pausable: token transfer while paused');
+    if (from == address(0)) {
+      require(_cap == 0 || (_cap > 0 && totalSupply() + amount <= _cap), 'ERC20Capped: cap exceeded');
+    }
   }
 
   function permit(

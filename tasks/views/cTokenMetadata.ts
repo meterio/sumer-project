@@ -65,6 +65,7 @@ task('cmd', 'sdrToken metadata')
         for (let i = 0; i < config.suTokens.tokens.length; i++) {
             cTokens.push(config.suTokens.tokens[i].address);
         }
+        console.log(cTokens)
         const lens = await ethers.getContractAt("CompoundLens", config.compoundLens.address, wallet) as CompoundLens;
         const cTokenMetadataAll = await lens.callStatic.cTokenMetadataAll(cTokens, override);
         for (let i = 0; i < cTokenMetadataAll.length; i++) {

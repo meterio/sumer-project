@@ -5,31 +5,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-
-library TransferHelper {
-  function safeApprove(address token, address to, uint value) internal {
-    // bytes4(keccak256(bytes('approve(address,uint256)')));
-    (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x095ea7b3, to, value));
-    require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper: APPROVE_FAILED');
-  }
-
-  function safeTransfer(address token, address to, uint value) internal {
-    // bytes4(keccak256(bytes('transfer(address,uint256)')));
-    (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0xa9059cbb, to, value));
-    require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper: TRANSFER_FAILED');
-  }
-
-  function safeTransferFrom(address token, address from, address to, uint value) internal {
-    // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
-    (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
-    require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper: TRANSFER_FROM_FAILED');
-  }
-
-  function safeTransferETH(address to, uint value) internal {
-    (bool success, ) = to.call{value: value}(new bytes(0));
-    require(success, 'TransferHelper: ETH_TRANSFER_FAILED');
-  }
-}
+import './TransferHelper.sol';
 
 contract CommunalFarm is Ownable, ReentrancyGuard {
   using SafeMath for uint256;
@@ -375,7 +351,7 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
     _locked_liquidity[staker_address] = _locked_liquidity[staker_address].add(liquidity);
 
     // Need to call to update the combined weights
-    _updateRewardAndBalance(staker_address, false);
+    _updateRewardAndBalance(staker_address, true);
 
     // Needed for edge case if the staker only claims once, and after the lock expired
     if (lastRewardClaimTime[staker_address] == 0) lastRewardClaimTime[staker_address] = block.timestamp;

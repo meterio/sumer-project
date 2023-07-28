@@ -6,7 +6,7 @@ const MANTISSA_DECIMALS = 18;
 const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
 
 /**
-npx hardhat doft \
+npx hardhat dsoft \
 --name "underly token name" \
 --symbol "underly token symbol" \
 --decimals [underly token decimals, optional, default: 18] \
@@ -17,7 +17,7 @@ npx hardhat doft \
 --pk <admin private key> \
 --gasprice 1000000000
  */
-task("doft", "deploy suToken contract")
+task("dsoft", "deploy suToken contract")
     .addParam("name", "underly token name")
     .addParam("symbol", "underly token symbol")
     .addOptionalParam("decimals", "underly token decimals", 18, types.int)

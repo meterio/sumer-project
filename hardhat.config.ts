@@ -4,6 +4,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-solhint';
+import '@nomiclabs/hardhat-vyper';
 import '@typechain/hardhat';
 import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
@@ -165,6 +166,10 @@ export default {
       chainId: 84531,
       accounts: [process.env.PRIVATE_KET_BASE]
     },
+    zkTestnet: {
+      url: "https://testnet.era.zksync.dev", // URL of the zkSync network RPC    
+      accounts: { mnemonic: process.env.MNEMONIC_1 }
+    },
     ganache: {
       url: argv.ganacheRpc,
       chainId: 1337,
@@ -175,7 +180,7 @@ export default {
     apiKey: argv.networkScanKey
   },
   solidity: {
-    compilers: [ compileSetting('0.8.19', 200)]
+    compilers: [compileSetting('0.8.19', 200)]
   },
   paths: {
     sources: './contracts',
@@ -187,8 +192,8 @@ export default {
     timeout: 9999999999
   },
   contractSizer: {
-    alphaSort: false,
-    runOnCompile: false,
+		alphaSort: true,
+		runOnCompile: true,
     disambiguatePaths: false
   },
   gasReporter: {
@@ -198,5 +203,10 @@ export default {
   },
   typechain: {
     outDir: 'typechain'
+  },
+  vyper: {
+    // version: "0.2.15"
+    // version: "0.2.16"
+    version: '0.3.7'
   }
 };
