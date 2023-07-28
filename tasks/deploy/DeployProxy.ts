@@ -22,7 +22,12 @@ task('p', 'deploy cToken contract')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
+        gasLimit: 1000000
+      };
+    } else {
+      override = {
+        gasLimit: 1000000
       };
     }
 

@@ -2,14 +2,7 @@ import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
 import { readFileSync, writeFileSync } from 'fs';
 import { log } from '../../log_settings';
-import {
-  AccountLiquidity,
-  CErc20,
-  CompLogic,
-  Comptroller,
-  PythOracle,
-  UnderwriterAdmin
-} from '../../typechain';
+import { AccountLiquidity, CErc20, CompLogic, Comptroller, PythOracle, UnderwriterAdmin } from '../../typechain';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 const MANTISSA_DECIMALS = 18;
@@ -246,9 +239,14 @@ task('all', 'deploy contract')
           let receipt = await comptroller._supportMarket(cToken.address, cToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', cToken.cTokenSymbol, receipt.hash);
         }
-        const cTokenContract = await ethers.getContractAt("CErc20",config.cTokens.tokens[i].address,wallet) as CErc20;
-        if(!(await cTokenContract.reserveFactorMantissa()).eq(parseUnits("0.1")) ) {
-          let receipt = await cTokenContract._setReserveFactor(parseUnits("0.1"));
+        const cTokenContract = (await ethers.getContractAt(
+          'CErc20',
+          config.cTokens.tokens[i].address,
+          wallet
+        )) as CErc20;
+        if (!(await cTokenContract.reserveFactorMantissa()).eq(parseUnits('0.1'))) {
+          let gas = await cTokenContract.estimateGas._setReserveFactor(parseUnits('0.1'));
+          let receipt = await cTokenContract._setReserveFactor(parseUnits('0.1'), { gasLimit: gas });
           log.info('_setReserveFactor:', cToken.cTokenSymbol, receipt.hash);
         }
         let price =
