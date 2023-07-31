@@ -151,19 +151,21 @@ task('all', 'deploy contract')
         pk: pk,
         gasprice: gasprice
       });
+      config.comptroller.implementation = comptrollerImpl.address;
+      config.comptroller.address = comptroller.address;
+      writeFileSync(json, JSON.stringify(config));
       const compLogicContract = (await ethers.getContractAt('CompLogic', compLogic.address, wallet)) as CompLogic;
-      let tx = await compLogicContract.setComptroller(comptroller.address);
+      let gas = await compLogicContract.estimateGas.setComptroller(comptroller.address);
+      let tx = await compLogicContract.setComptroller(comptroller.address, { gasLimit: gas });
       await tx.wait();
       const accountLiquidityContract = (await ethers.getContractAt(
         'AccountLiquidity',
         accountLiquidity.address,
         wallet
       )) as AccountLiquidity;
-      tx = await accountLiquidityContract.setComptroller(comptroller.address);
+      gas = await accountLiquidityContract.estimateGas.setComptroller(comptroller.address);
+      tx = await accountLiquidityContract.setComptroller(comptroller.address, { gasLimit: gas });
       await tx.wait();
-      config.comptroller.implementation = comptrollerImpl.address;
-      config.comptroller.address = comptroller.address;
-      writeFileSync(json, JSON.stringify(config));
     }
     if (config.cTokens.implementation == '') {
       const cErc20Impl = await run('d', {
@@ -187,14 +189,14 @@ task('all', 'deploy contract')
           let data: string;
           let impl: string;
           if (cToken.native) {
-            // const cEtherImpl = await run("d", {
-            //     name: "CEther",
-            //     rpc: rpc,
-            //     pk: pk,
-            //     gasprice: gasprice
-            // });
-            // config.cTokens.tokens[i].implementation = cEtherImpl.address;
-            // writeFileSync(json, JSON.stringify(config))
+            const cEtherImpl = await run('d', {
+              name: 'CEther',
+              rpc: rpc,
+              pk: pk,
+              gasprice: gasprice
+            });
+            config.cTokens.tokens[i].implementation = cEtherImpl.address;
+            writeFileSync(json, JSON.stringify(config));
 
             const cEther = await ethers.getContractFactory('CEther');
             data = cEther.interface.encodeFunctionData('initialize', [
@@ -233,7 +235,8 @@ task('all', 'deploy contract')
           config.cTokens.tokens[i].address = proxy.address;
           writeFileSync(json, JSON.stringify(config));
         }
-        const market = await comptroller.markets(cToken.address);
+        let gas = await comptroller.estimateGas.markets(cToken.address);
+        const market = await comptroller.markets(cToken.address, { gasLimit: gas });
         if (!market.isListed || market.assetGroupId != cToken.groupId) {
           let gas = await comptroller.estimateGas._supportMarket(cToken.address, cToken.groupId);
           let receipt = await comptroller._supportMarket(cToken.address, cToken.groupId, { gasLimit: gas });
