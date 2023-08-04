@@ -1,0 +1,15 @@
+{
+  "sumer": {
+    "address": "0xf67c5f20b95b7604ebb65a53e50ebd38300da8ee"
+  },
+  "veSumer": {
+    "address": "0x8b2Aa36aCb6D00beB8E770c6b7d7417291792448"
+  },
+  "FraxGaugeController": {
+    "address": "0x9F1dc42c962035673F69aaD8DC82374EF70E7374"
+  },
+  "FraxGaugeFXSRewardsDistributor": {
+    "address": "0xA24696789995705EDF50422C066f9fEF664f219B"
+  },
+  "multicall2": { "address": "0x649e0ce6fc6191d67ea81ba94b105e28d1815d95" }
+}

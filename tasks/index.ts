@@ -66,3 +66,5 @@ import './upgrade/UpdateUnderly';
 import './upgrade/UpdateAccountLiquidity';
 import './upgrade/UpdateCompLogic';
 import './upgrade/UpdateUnderwriteAdmin';
+
+import './ve/createLock';
