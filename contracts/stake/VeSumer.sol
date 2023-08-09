@@ -519,7 +519,7 @@ contract VeSumer is ReentrancyGuard {
     LockedBalance memory locked_balance,
     int128 flag
   ) internal {
-    require(ERC20(token).transferFrom(_payer_addr, address(this), _value), 'ERC20 transfer in failed');
+    require(ERC20(token).transferFrom(_payer_addr, address(this), _value), 'transfer failed');
 
     LockedBalance memory old_locked = locked_balance;
     uint256 supply_before = supply;
@@ -564,10 +564,10 @@ contract VeSumer is ReentrancyGuard {
     uint256 unlock_time = (_unlock_time / WEEK) * WEEK; // Locktime is rounded down to weeks
     LockedBalance memory _locked = locked[msg.sender];
 
-    require(_value > 0, 'need non-zero value');
-    require(_locked.amount == 0, 'Withdraw old tokens first');
-    require(unlock_time > block.timestamp, 'Can only lock until time in the future');
-    require(unlock_time <= block.timestamp + MAXTIME, 'Voting lock can be 3 years max');
+    require(_value > 0, '<=0');
+    require(_locked.amount == 0, 'amount=0');
+    require(unlock_time > block.timestamp, 'unlock_time');
+    require(unlock_time <= block.timestamp + MAXTIME, 'MAXTIME');
     _deposit_for(msg.sender, msg.sender, _value, unlock_time, _locked, CREATE_LOCK_TYPE);
   }
 
@@ -579,9 +579,9 @@ contract VeSumer is ReentrancyGuard {
 
     LockedBalance memory _locked = locked[_staker_addr];
 
-    require(_value > 0, 'need non-zero value');
-    require(_locked.amount == 0, 'Withdraw old tokens first');
-    require(_locked.end > block.timestamp, 'Can only lock until time in the future');
+    require(_value > 0, '<=0');
+    require(_locked.amount == 0, 'amount=0');
+    require(_locked.end > block.timestamp, 'unlock_time');
     _deposit_for(_staker_addr, _payer_addr, _value, 0, _locked, INCREASE_LOCK_AMOUNT);
   }
 
@@ -600,7 +600,7 @@ contract VeSumer is ReentrancyGuard {
 
   function checkpoint_user(address _staker_addr) external nonReentrant {
     LockedBalance memory _locked = locked[_staker_addr];
-    require(_locked.amount > 0, 'No existing lock found');
+    require(_locked.amount > 0, '<=0');
     _deposit_for(_staker_addr, _staker_addr, 0, 0, _locked, CHECKPOINT_ONLY);
   }
 
@@ -613,10 +613,10 @@ contract VeSumer is ReentrancyGuard {
     LockedBalance memory _locked = locked[msg.sender];
     uint256 unlock_time = (_unlock_time / WEEK) * WEEK; // Locktime is rounded down to weeks
 
-    require(_locked.end > block.timestamp, 'Lock expired');
-    require(_locked.amount > 0, 'Nothing is locked');
-    require(unlock_time > _locked.end, 'Can only increase lock duration');
-    require(unlock_time <= block.timestamp + MAXTIME, 'Voting lock can be 3 years max');
+    require(_locked.end > block.timestamp, 'end');
+    require(_locked.amount > 0, '<=0');
+    require(unlock_time > _locked.end, 'unlock_time');
+    require(unlock_time <= block.timestamp + MAXTIME, 'MAXTIME');
 
     _deposit_for(msg.sender, msg.sender, 0, unlock_time, _locked, INCREASE_UNLOCK_TIME);
   }
@@ -632,7 +632,7 @@ contract VeSumer is ReentrancyGuard {
     int128 amount_in,
     int128 flag
   ) internal {
-    require(amount_in >= 0 && amount_in <= locked_in.amount, 'Cannot withdraw more than the user has');
+    require(amount_in >= 0 && amount_in <= locked_in.amount, 'amount');
 
     LockedBalance memory _locked = locked_in;
     // require(block.timestamp >= _locked.end, "The lock didn't expire");
@@ -653,7 +653,7 @@ contract VeSumer is ReentrancyGuard {
     // Both can have >= 0 amount
     _checkpoint(staker_addr, old_locked, _locked, flag);
 
-    require(ERC20(token).transfer(msg.sender, value), 'ERC20 transfer out failed');
+    require(ERC20(token).transfer(msg.sender, value), 'transfer failed');
 
     emit Withdraw(staker_addr, addr_out, value, block.timestamp);
     emit Supply(supply_before, supply_before - value);
