@@ -73,7 +73,7 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   /* ========== STATE VARIABLES ========== */
 
   // Instances
-  IERC20 public constant veSUMER = IERC20(0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0);
+  IERC20 public constant veSUMER = IERC20(0xF67C5F20B95b7604EBB65A53E50ebd38300da8EE);
 
   // -------------------- VARIES --------------------
 
@@ -97,7 +97,7 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   IFraxGaugeFXSRewardsDistributor public rewards_distributor;
 
   // FRAX
-  address public constant usd_address = 0x853d955aCEf822Db058eb8505911ED77F175b99e;
+  address public constant usd_address = 0x0d893C092f7aE9D97c13307f2D66CFB59430b4Cb;
 
   // Constant for various precisions
   uint256 public constant MULTIPLIER_PRECISION = 1e18;
@@ -203,7 +203,6 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   /* ========== CONSTRUCTOR ========== */
 
   constructor(
-    address _owner,
     address _stakingToken,
     address _rewards_distributor_address,
     string[] memory _rewardSymbols,
