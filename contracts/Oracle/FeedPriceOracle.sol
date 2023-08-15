@@ -3,7 +3,6 @@ pragma solidity 0.8.19;
 import './PriceOracle.sol';
 import './Interfaces/IStdReference.sol';
 import './Interfaces/IWitnetFeed.sol';
-import './Interfaces/IChainlinkFeed.sol';
 
 contract FeedPriceOracle is PriceOracle {
   struct FeedData {
@@ -116,11 +115,6 @@ contract FeedPriceOracle is PriceOracle {
   function getUnderlyingPrice(address cToken_) public view override returns (uint256) {
     FeedData memory feed = feeds[cToken_]; // gas savings
     if (feed.addr != address(0)) {
-      if (feed.source == uint8(1)) {
-        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - IChainlinkFeed(feed.addr).decimals());
-        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
-        return IChainlinkFeed(feed.addr).latestAnswer() * (10**decimals);
-      }
       if (feed.source == uint8(2)) {
         uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
