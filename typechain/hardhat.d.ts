@@ -65,6 +65,18 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
+      name: "IERC721Metadata",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Metadata__factory>;
+    getContractFactory(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721__factory>;
+    getContractFactory(
+      name: "IERC165",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC165__factory>;
+    getContractFactory(
       name: "Multicall2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Multicall2__factory>;
@@ -101,6 +113,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IFraxGaugeFXSRewardsDistributor__factory>;
     getContractFactory(
+      name: "IUniswapV2Pair",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUniswapV2Pair__factory>;
+    getContractFactory(
+      name: "StakingRewardsMultiGauge",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.StakingRewardsMultiGauge__factory>;
+    getContractFactory(
       name: "SmartWalletChecker",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SmartWalletChecker__factory>;
@@ -108,6 +128,38 @@ declare module "hardhat/types/runtime" {
       name: "VeSumer",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.VeSumer__factory>;
+    getContractFactory(
+      name: "ICallee",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICallee__factory>;
+    getContractFactory(
+      name: "IFactory",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IFactory__factory>;
+    getContractFactory(
+      name: "IPair",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IPair__factory>;
+    getContractFactory(
+      name: "IUnderlying",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUnderlying__factory>;
+    getContractFactory(
+      name: "PairFees",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PairFees__factory>;
+    getContractFactory(
+      name: "VoltFactory",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.VoltFactory__factory>;
+    getContractFactory(
+      name: "VoltPair",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.VoltPair__factory>;
+    getContractFactory(
+      name: "Token",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Token__factory>;
 
     getContractAt(
       name: "Ownable",
@@ -175,6 +227,21 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
+      name: "IERC721Metadata",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Metadata>;
+    getContractAt(
+      name: "IERC721",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721>;
+    getContractAt(
+      name: "IERC165",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC165>;
+    getContractAt(
       name: "Multicall2",
       address: string,
       signer?: ethers.Signer
@@ -220,6 +287,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IFraxGaugeFXSRewardsDistributor>;
     getContractAt(
+      name: "IUniswapV2Pair",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUniswapV2Pair>;
+    getContractAt(
+      name: "StakingRewardsMultiGauge",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.StakingRewardsMultiGauge>;
+    getContractAt(
       name: "SmartWalletChecker",
       address: string,
       signer?: ethers.Signer
@@ -229,6 +306,46 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.VeSumer>;
+    getContractAt(
+      name: "ICallee",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICallee>;
+    getContractAt(
+      name: "IFactory",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IFactory>;
+    getContractAt(
+      name: "IPair",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IPair>;
+    getContractAt(
+      name: "IUnderlying",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUnderlying>;
+    getContractAt(
+      name: "PairFees",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PairFees>;
+    getContractAt(
+      name: "VoltFactory",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.VoltFactory>;
+    getContractAt(
+      name: "VoltPair",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.VoltPair>;
+    getContractAt(
+      name: "Token",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Token>;
 
     // default types
     getContractFactory(

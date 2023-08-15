@@ -695,6 +695,14 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
     lastRewardClaimTime[rewardee] = block.timestamp;
   }
 
+  error NoEnoughReward(
+    address token,
+    uint256 rewardRates,
+    uint256 rewardsDuration,
+    uint256 num_periods_elapsed,
+    uint256 balance
+  );
+
   // If the period expired, renew it
   function retroCatchUp() internal {
     // Pull in rewards from the rewards distributor
@@ -708,11 +716,23 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
 
     // Make sure there are enough tokens to renew the reward period
     for (uint256 i = 0; i < rewardTokens.length; i++) {
-      require(
-        rewardRates(i).mul(rewardsDuration).mul(num_periods_elapsed + 1) <=
-          ERC20(rewardTokens[i]).balanceOf(address(this)),
-        string(abi.encodePacked('Not enough reward tokens available: ', rewardTokens[i]))
-      );
+      // require(
+      //   rewardRates(i).mul(rewardsDuration).mul(num_periods_elapsed + 1) <=
+      //     ERC20(rewardTokens[i]).balanceOf(address(this)),
+      //   string(abi.encodePacked('Not enough reward tokens available: ', rewardTokens[i]))
+      // );
+      if (
+        rewardRates(i).mul(rewardsDuration).mul(num_periods_elapsed + 1) >
+        ERC20(rewardTokens[i]).balanceOf(address(this))
+      ) {
+        revert NoEnoughReward(
+          rewardTokens[i],
+          rewardRates(i),
+          rewardsDuration,
+          num_periods_elapsed,
+          ERC20(rewardTokens[i]).balanceOf(address(this))
+        );
+      }
     }
 
     // uint256 old_lastUpdateTime = lastUpdateTime;

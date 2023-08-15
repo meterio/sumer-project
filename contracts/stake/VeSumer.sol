@@ -144,8 +144,10 @@ contract VeSumer is ReentrancyGuard {
   mapping(address => LockedBalance) public locked; // user -> locked balance position info
 
   uint256 public epoch;
-  Point[100000000000000000000000000000] public point_history; // epoch -> unsigned point
+  Point[100000000000000000] public point_history; // epoch -> unsigned point
+  // mapping(uint256 => Point) public point_history; // epoch -> unsigned point
   mapping(address => Point[1000000000]) public user_point_history; // user -> Point[user_epoch]
+  // mapping(address => mapping(uint256 => Point)) public user_point_history; // user -> Point[user_epoch]
   mapping(address => uint256) public user_point_epoch; // user -> last week epoch their slope and bias were checkpointed
 
   // time -> signed slope change. Stored ahead of time so we can keep track of expiring users.
@@ -184,7 +186,7 @@ contract VeSumer is ReentrancyGuard {
   /* ========== MODIFIERS ========== */
 
   modifier onlyAdmin() {
-    require(msg.sender == admin, 'You are not the admin');
+    require(msg.sender == admin, 'admin!');
     _;
   }
 
@@ -260,7 +262,7 @@ contract VeSumer is ReentrancyGuard {
           return;
         }
       }
-      revert('Smart contract depositors not allowed');
+      revert('depositors');
     }
   }
 
@@ -321,7 +323,7 @@ contract VeSumer is ReentrancyGuard {
   }
 
   // Constant structs not allowed yet, so this will have to do
-  function EMPTY_POINT_FACTORY() internal view returns (Point memory) {
+  function EMPTY_POINT_FACTORY() internal pure returns (Point memory) {
     return Point({bias: 0, slope: 0, ts: 0, blk: 0, sumer_amt: 0});
   }
 
@@ -581,7 +583,7 @@ contract VeSumer is ReentrancyGuard {
 
     require(_value > 0, '<=0');
     require(_locked.amount == 0, 'amount=0');
-    require(_locked.end > block.timestamp, 'unlock_time');
+    require(_locked.end > block.timestamp, 'locked.end');
     _deposit_for(_staker_addr, _payer_addr, _value, 0, _locked, INCREASE_LOCK_AMOUNT);
   }
 
@@ -613,8 +615,8 @@ contract VeSumer is ReentrancyGuard {
     LockedBalance memory _locked = locked[msg.sender];
     uint256 unlock_time = (_unlock_time / WEEK) * WEEK; // Locktime is rounded down to weeks
 
-    require(_locked.end > block.timestamp, 'end');
-    require(_locked.amount > 0, '<=0');
+    require(_locked.end > block.timestamp, 'locked.end');
+    require(_locked.amount > 0, '=0');
     require(unlock_time > _locked.end, 'unlock_time');
     require(unlock_time <= block.timestamp + MAXTIME, 'MAXTIME');
 
@@ -661,11 +663,11 @@ contract VeSumer is ReentrancyGuard {
 
   function proxy_add(address _staker_addr, uint256 _add_amt) external nonReentrant {
     require(proxyAddsEnabled, 'Currently disabled');
-    require(msg.sender == current_proxy || historical_proxies[msg.sender], 'Proxy not whitelisted [admin level]');
-    require(msg.sender == staker_whitelisted_proxy[_staker_addr], 'Proxy not whitelisted [staker level]');
+    require(msg.sender == current_proxy || historical_proxies[msg.sender], 'Whitelisted[admin level]');
+    require(msg.sender == staker_whitelisted_proxy[_staker_addr], 'Whitelisted[staker level]');
 
     LockedBalance memory old_locked = locked[_staker_addr];
-    uint256 _proxy_balance = user_proxy_balance[_staker_addr];
+    // uint256 _proxy_balance = user_proxy_balance[_staker_addr];
 
     require(old_locked.amount > 0, 'No existing lock found');
     require(_add_amt > 0, 'Amount must be non-zero');
@@ -688,16 +690,16 @@ contract VeSumer is ReentrancyGuard {
 
   function proxy_slash(address _staker_addr, uint256 _slash_amt) external nonReentrant {
     require(proxyAddsEnabled, 'Currently disabled');
-    require(msg.sender == current_proxy || historical_proxies[msg.sender], 'Proxy not whitelisted [admin level]');
-    require(msg.sender == staker_whitelisted_proxy[_staker_addr], 'Proxy not whitelisted [staker level]');
+    require(msg.sender == current_proxy || historical_proxies[msg.sender], 'Whitelisted[admin level]');
+    require(msg.sender == staker_whitelisted_proxy[_staker_addr], 'whitelisted[staker level]');
 
     LockedBalance memory old_locked = locked[_staker_addr];
-    uint256 _proxy_balance = user_proxy_balance[_staker_addr];
+    // uint256 _proxy_balance = user_proxy_balance[_staker_addr];
 
     require(old_locked.amount > 0, 'No existing lock found');
     require(_slash_amt > 0, 'Amount must be non-zero');
 
-    require(user_proxy_balance[_staker_addr] >= _slash_amt, 'Trying to slash too much');
+    require(user_proxy_balance[_staker_addr] >= _slash_amt, 'user_proxy_balance');
     user_proxy_balance[_staker_addr] -= _slash_amt;
 
     uint256 supply_before = supply;
@@ -716,32 +718,32 @@ contract VeSumer is ReentrancyGuard {
   function withdraw() external nonReentrant {
     LockedBalance memory _locked = locked[msg.sender];
 
-    require(block.timestamp >= _locked.end || emergencyUnlockActive, "The lock didn't expire");
-    require(user_proxy_balance[msg.sender] == 0, 'Outstanding Sumer in proxy');
+    require(block.timestamp >= _locked.end || emergencyUnlockActive, 'locked.end');
+    require(user_proxy_balance[msg.sender] == 0, 'user_proxy_balance');
 
     _withdraw(msg.sender, msg.sender, _locked, _locked.amount, USER_WITHDRAW);
   }
 
   function transfer_from_app(address _staker_addr, address _app_addr, int128 _transfer_amt) external nonReentrant {
     require(appTransferFromsEnabled, 'Currently disabled');
-    require(msg.sender == current_proxy || historical_proxies[msg.sender], 'Proxy not whitelisted [admin level]');
-    require(msg.sender == staker_whitelisted_proxy[_staker_addr], 'Proxy not whitelisted [staker level]');
+    require(msg.sender == current_proxy || historical_proxies[msg.sender], 'whitelisted[admin level]');
+    require(msg.sender == staker_whitelisted_proxy[_staker_addr], 'whitelisted[staker level]');
 
     LockedBalance memory _locked = locked[_staker_addr];
-    require(_locked.amount > 0, 'No existing lock found');
+    require(_locked.amount > 0, '_locked.amount');
 
     uint256 _value = uint128(_transfer_amt);
-    require(user_proxy_balance[_staker_addr] >= _value, 'Trying to transfer back too much');
+    require(user_proxy_balance[_staker_addr] >= _value, 'user_proxy_balance');
     user_proxy_balance[_staker_addr] -= _value;
 
-    require(ERC20(token).transferFrom(_app_addr, address(this), _value), 'ERC20 transfer in failed');
+    require(ERC20(token).transferFrom(_app_addr, address(this), _value), 'transfer failed');
     _checkpoint(_staker_addr, _locked, _locked, TRANSFER_FROM_APP);
     emit TransferFromApp(_app_addr, _staker_addr, _value);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Constant structs not allowed yet, so this will have to do
-  function EMPTY_LOCKED_BALANCE_FACTORY() internal view returns (LockedBalance memory) {
+  function EMPTY_LOCKED_BALANCE_FACTORY() internal pure returns (LockedBalance memory) {
     return LockedBalance({amount: 0, end: 0});
   }
 
@@ -954,9 +956,9 @@ contract VeSumer is ReentrancyGuard {
     */
   function deposit_for(address _addr, uint256 _value) external nonReentrant {
     LockedBalance memory _locked = locked[_addr];
-    require(_value > 0, 'need non-zero value');
-    require(_locked.amount > 0, 'No existing lock found');
-    require(_locked.end > block.timestamp, 'Cannot add to expired lock. Withdraw');
+    require(_value > 0, '=0');
+    require(_locked.amount > 0, 'locked.amount');
+    require(_locked.end > block.timestamp, 'locked.end');
     _deposit_for(_addr, msg.sender, _value, 0, locked[_addr], DEPOSIT_FOR_TYPE);
   }
 

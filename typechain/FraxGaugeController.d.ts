@@ -25,18 +25,29 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
     "WEEK()": FunctionFragment;
     "WEIGHT_VOTE_DELAY()": FunctionFragment;
     "add_gauge(address,int128,uint256)": FunctionFragment;
+    "add_type(string,uint256)": FunctionFragment;
     "admin()": FunctionFragment;
     "apply_transfer_ownership()": FunctionFragment;
+    "change_gauge_weight(address,uint256)": FunctionFragment;
+    "change_global_emission_rate(uint256)": FunctionFragment;
+    "change_type_weight(int128,uint256)": FunctionFragment;
     "changes_sum(int128,uint256)": FunctionFragment;
     "changes_weight(address,uint256)": FunctionFragment;
     "checkpoint()": FunctionFragment;
+    "checkpoint_gauge(address)": FunctionFragment;
     "commit_transfer_ownership(address)": FunctionFragment;
     "future_admin()": FunctionFragment;
+    "gauge_relative_weight(address,uint256)": FunctionFragment;
+    "gauge_relative_weight_write(address,uint256)": FunctionFragment;
     "gauge_type_names(int128)": FunctionFragment;
     "gauge_types(address)": FunctionFragment;
     "gauge_types_(address)": FunctionFragment;
     "gauges(uint256)": FunctionFragment;
     "get_corrected_info(address)": FunctionFragment;
+    "get_gauge_weight(address)": FunctionFragment;
+    "get_total_weight()": FunctionFragment;
+    "get_type_weight(int128)": FunctionFragment;
+    "get_weights_sum_per_type(int128)": FunctionFragment;
     "global_emission_rate()": FunctionFragment;
     "last_user_vote(address,address)": FunctionFragment;
     "n_gauge_types()": FunctionFragment;
@@ -50,6 +61,7 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
     "time_type_weight(uint256)": FunctionFragment;
     "time_weight(address)": FunctionFragment;
     "token()": FunctionFragment;
+    "vote_for_gauge_weights(address,uint256)": FunctionFragment;
     "vote_user_power(address)": FunctionFragment;
     "vote_user_slopes(address,address)": FunctionFragment;
     "voting_escrow()": FunctionFragment;
@@ -68,10 +80,26 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
     functionFragment: "add_gauge",
     values: [string, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "add_type",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "apply_transfer_ownership",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "change_gauge_weight",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "change_global_emission_rate",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "change_type_weight",
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "changes_sum",
@@ -86,12 +114,24 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "checkpoint_gauge",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "commit_transfer_ownership",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "future_admin",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "gauge_relative_weight",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "gauge_relative_weight_write",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "gauge_type_names",
@@ -109,6 +149,22 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "get_corrected_info",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get_gauge_weight",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get_total_weight",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get_type_weight",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get_weights_sum_per_type",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "global_emission_rate",
@@ -154,6 +210,10 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "time_weight", values: [string]): string;
   encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "vote_for_gauge_weights",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "vote_user_power",
     values: [string]
   ): string;
@@ -173,9 +233,22 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "add_gauge", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "add_type", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "apply_transfer_ownership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "change_gauge_weight",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "change_global_emission_rate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "change_type_weight",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -188,11 +261,23 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "checkpoint", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "checkpoint_gauge",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "commit_transfer_ownership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "future_admin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "gauge_relative_weight",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "gauge_relative_weight_write",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -210,6 +295,22 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "gauges", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "get_corrected_info",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get_gauge_weight",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get_total_weight",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get_type_weight",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get_weights_sum_per_type",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -249,6 +350,10 @@ interface FraxGaugeControllerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "vote_for_gauge_weights",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "vote_user_power",
     data: BytesLike
@@ -381,9 +486,32 @@ export class FraxGaugeController extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    add_type(
+      _name: string,
+      weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     admin(overrides?: CallOverrides): Promise<[string]>;
 
     apply_transfer_ownership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    change_gauge_weight(
+      addr: string,
+      weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    change_global_emission_rate(
+      new_rate: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    change_type_weight(
+      type_id: BigNumberish,
+      weight: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -403,12 +531,29 @@ export class FraxGaugeController extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    checkpoint_gauge(
+      addr: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     commit_transfer_ownership(
       addr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     future_admin(overrides?: CallOverrides): Promise<[string]>;
+
+    gauge_relative_weight(
+      addr: string,
+      time: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    gauge_relative_weight_write(
+      addr: string,
+      time: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     gauge_type_names(
       arg0: BigNumberish,
@@ -434,6 +579,23 @@ export class FraxGaugeController extends BaseContract {
         }
       ]
     >;
+
+    get_gauge_weight(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    get_total_weight(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    get_type_weight(
+      type_id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    get_weights_sum_per_type(
+      type_id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     global_emission_rate(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -486,6 +648,12 @@ export class FraxGaugeController extends BaseContract {
 
     token(overrides?: CallOverrides): Promise<[string]>;
 
+    vote_for_gauge_weights(
+      _gauge_addr: string,
+      _user_weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     vote_user_power(
       arg0: string,
       overrides?: CallOverrides
@@ -519,9 +687,32 @@ export class FraxGaugeController extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  add_type(
+    _name: string,
+    weight: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   admin(overrides?: CallOverrides): Promise<string>;
 
   apply_transfer_ownership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  change_gauge_weight(
+    addr: string,
+    weight: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  change_global_emission_rate(
+    new_rate: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  change_type_weight(
+    type_id: BigNumberish,
+    weight: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -541,12 +732,29 @@ export class FraxGaugeController extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  checkpoint_gauge(
+    addr: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   commit_transfer_ownership(
     addr: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   future_admin(overrides?: CallOverrides): Promise<string>;
+
+  gauge_relative_weight(
+    addr: string,
+    time: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  gauge_relative_weight_write(
+    addr: string,
+    time: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   gauge_type_names(
     arg0: BigNumberish,
@@ -570,6 +778,20 @@ export class FraxGaugeController extends BaseContract {
       fxs_amount: BigNumber;
     }
   >;
+
+  get_gauge_weight(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  get_total_weight(overrides?: CallOverrides): Promise<BigNumber>;
+
+  get_type_weight(
+    type_id: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  get_weights_sum_per_type(
+    type_id: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   global_emission_rate(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -619,6 +841,12 @@ export class FraxGaugeController extends BaseContract {
 
   token(overrides?: CallOverrides): Promise<string>;
 
+  vote_for_gauge_weights(
+    _gauge_addr: string,
+    _user_weight: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   vote_user_power(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   vote_user_slopes(
@@ -649,9 +877,32 @@ export class FraxGaugeController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    add_type(
+      _name: string,
+      weight: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     admin(overrides?: CallOverrides): Promise<string>;
 
     apply_transfer_ownership(overrides?: CallOverrides): Promise<void>;
+
+    change_gauge_weight(
+      addr: string,
+      weight: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    change_global_emission_rate(
+      new_rate: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    change_type_weight(
+      type_id: BigNumberish,
+      weight: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     changes_sum(
       arg0: BigNumberish,
@@ -667,12 +918,26 @@ export class FraxGaugeController extends BaseContract {
 
     checkpoint(overrides?: CallOverrides): Promise<BigNumber>;
 
+    checkpoint_gauge(addr: string, overrides?: CallOverrides): Promise<void>;
+
     commit_transfer_ownership(
       addr: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     future_admin(overrides?: CallOverrides): Promise<string>;
+
+    gauge_relative_weight(
+      addr: string,
+      time: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    gauge_relative_weight_write(
+      addr: string,
+      time: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     gauge_type_names(
       arg0: BigNumberish,
@@ -696,6 +961,23 @@ export class FraxGaugeController extends BaseContract {
         fxs_amount: BigNumber;
       }
     >;
+
+    get_gauge_weight(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    get_total_weight(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get_type_weight(
+      type_id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    get_weights_sum_per_type(
+      type_id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     global_emission_rate(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -744,6 +1026,12 @@ export class FraxGaugeController extends BaseContract {
     time_weight(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     token(overrides?: CallOverrides): Promise<string>;
+
+    vote_for_gauge_weights(
+      _gauge_addr: string,
+      _user_weight: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     vote_user_power(
       arg0: string,
@@ -909,9 +1197,32 @@ export class FraxGaugeController extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    add_type(
+      _name: string,
+      weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     admin(overrides?: CallOverrides): Promise<BigNumber>;
 
     apply_transfer_ownership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    change_gauge_weight(
+      addr: string,
+      weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    change_global_emission_rate(
+      new_rate: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    change_type_weight(
+      type_id: BigNumberish,
+      weight: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -931,12 +1242,29 @@ export class FraxGaugeController extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    checkpoint_gauge(
+      addr: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     commit_transfer_ownership(
       addr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     future_admin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    gauge_relative_weight(
+      addr: string,
+      time: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    gauge_relative_weight_write(
+      addr: string,
+      time: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     gauge_type_names(
       arg0: BigNumberish,
@@ -951,6 +1279,23 @@ export class FraxGaugeController extends BaseContract {
 
     get_corrected_info(
       addr: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    get_gauge_weight(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    get_total_weight(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get_type_weight(
+      type_id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    get_weights_sum_per_type(
+      type_id: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1002,6 +1347,12 @@ export class FraxGaugeController extends BaseContract {
 
     token(overrides?: CallOverrides): Promise<BigNumber>;
 
+    vote_for_gauge_weights(
+      _gauge_addr: string,
+      _user_weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     vote_user_power(
       arg0: string,
       overrides?: CallOverrides
@@ -1030,9 +1381,32 @@ export class FraxGaugeController extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    add_type(
+      _name: string,
+      weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     apply_transfer_ownership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    change_gauge_weight(
+      addr: string,
+      weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    change_global_emission_rate(
+      new_rate: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    change_type_weight(
+      type_id: BigNumberish,
+      weight: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1052,12 +1426,29 @@ export class FraxGaugeController extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    checkpoint_gauge(
+      addr: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     commit_transfer_ownership(
       addr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     future_admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    gauge_relative_weight(
+      addr: string,
+      time: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    gauge_relative_weight_write(
+      addr: string,
+      time: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     gauge_type_names(
       arg0: BigNumberish,
@@ -1081,6 +1472,23 @@ export class FraxGaugeController extends BaseContract {
 
     get_corrected_info(
       addr: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    get_gauge_weight(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    get_total_weight(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    get_type_weight(
+      type_id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    get_weights_sum_per_type(
+      type_id: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1139,6 +1547,12 @@ export class FraxGaugeController extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    vote_for_gauge_weights(
+      _gauge_addr: string,
+      _user_weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     vote_user_power(
       arg0: string,

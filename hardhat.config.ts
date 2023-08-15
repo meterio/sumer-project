@@ -12,7 +12,7 @@ import 'hardhat-tracer';
 import 'hardhat-etherscan-abi';
 import 'hardhat-contract-sizer';
 
-import './tasks';
+// import './tasks';
 import { compileSetting } from './scripts/deployTool';
 
 const dotenv = require('dotenv');
@@ -180,7 +180,10 @@ export default {
     apiKey: argv.networkScanKey
   },
   solidity: {
-    compilers: [compileSetting('0.8.19', 200)]
+    compilers: [compileSetting('0.8.19', 200)],
+    overrides:{
+      "contracts/stake/VeSumer.sol": compileSetting("0.8.19", 10),
+    }
   },
   paths: {
     sources: './contracts',
