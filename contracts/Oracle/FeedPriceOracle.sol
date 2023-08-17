@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 import './PriceOracle.sol';
 import './Interfaces/IStdReference.sol';
 import './Interfaces/IWitnetFeed.sol';
+import './Interfaces/IChainlinkFeed.sol';
 
 contract FeedPriceOracle is PriceOracle {
   struct FeedData {
@@ -42,20 +43,11 @@ contract FeedPriceOracle is PriceOracle {
   }
 
   // TODO: name this setChainlinkFeed
-  function setChainlinkFeed(
-    address cToken_,
-    address feed_,
-    uint8 tokenDecimals_
-  ) public onlyOwner {
+  function setChainlinkFeed(address cToken_, address feed_, uint8 tokenDecimals_) public onlyOwner {
     _setFeed(cToken_, uint8(1), feed_, tokenDecimals_, 8, '');
   }
 
-  function setWitnetFeed(
-    address cToken_,
-    address feed_,
-    uint8 tokenDecimals_,
-    uint8 feedDecimals_
-  ) public onlyOwner {
+  function setWitnetFeed(address cToken_, address feed_, uint8 tokenDecimals_, uint8 feedDecimals_) public onlyOwner {
     _setFeed(cToken_, uint8(2), feed_, tokenDecimals_, feedDecimals_, '');
   }
 
@@ -115,17 +107,27 @@ contract FeedPriceOracle is PriceOracle {
   function getUnderlyingPrice(address cToken_) public view override returns (uint256) {
     FeedData memory feed = feeds[cToken_]; // gas savings
     if (feed.addr != address(0)) {
+      if (feed.source == uint8(1)) {
+        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - IChainlinkFeed(feed.addr).decimals());
+        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+        (uint80 roundID, int256 answer, , uint256 updatedAt, uint80 answeredInRound) = IChainlinkFeed(feed.addr)
+          .latestRoundData();
+        require(answeredInRound >= roundID, 'Stale price');
+        require(answer > 0, 'negative price');
+        require(block.timestamp <= updatedAt + 600, 'timeout');
+        return uint256(answer) * (10 ** decimals);
+      }
       if (feed.source == uint8(2)) {
         uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         uint256 _temp = uint256(IWitnetFeed(feed.addr).lastPrice());
-        return _temp * (10**decimals);
+        return _temp * (10 ** decimals);
       }
       if (feed.source == uint8(3)) {
         uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         IStdReference.ReferenceData memory refData = IStdReference(feed.addr).getReferenceData(feed.name, 'USD');
-        return refData.rate * (10**decimals);
+        return refData.rate * (10 ** decimals);
       }
     }
     return fixedPrices[cToken_];
