@@ -28,6 +28,8 @@ interface IComptroller {
 
   function getAssetsIn(address account) external view returns (address[] memory);
 
+  function timelock() external view returns (address);
+
   /*** Policy Hooks ***/
 
   function mintAllowed(address cToken, address minter, uint256 mintAmount) external returns (uint256);

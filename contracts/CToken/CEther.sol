@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import './CToken.sol';
 import './Interfaces/ICErc20.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '../ITimelock.sol';
 
 /**
  * @title Compound's CEther Contract
@@ -169,6 +170,15 @@ contract CEther is CToken, Initializable {
   function doTransferOut(address payable to, uint256 amount) internal override {
     /* Send the Ether, with minimal gas and revert on failure */
     to.transfer(amount);
+  }
+
+  function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
+    address timelock = IComptroller(comptroller).timelock();
+    doTransferOut(payable(timelock), amount);
+    ITimelock.TimeLockActionType actionType = isBorrow
+      ? ITimelock.TimeLockActionType.BORROW
+      : ITimelock.TimeLockActionType.REDEEM;
+    ITimelock(timelock).createAgreement(actionType, address(1), amount, to);
   }
 
   function requireNoError(uint256 errCode, string memory message) internal pure {

@@ -764,7 +764,8 @@ abstract contract CToken is CTokenStorage {
      *  On success, the cToken has redeemAmount less of cash.
      *  doTransferOut reverts if anything goes wrong, since we can't be sure if side effects occurred.
      */
-    doTransferOut(redeemer, vars.redeemAmount);
+    // doTransferOut(redeemer, vars.redeemAmount);
+    transferToTimelock(false, redeemer, vars.redeemAmount);
 
     /* We emit a Transfer event, and a Redeem event */
     emit Transfer(redeemer, address(this), vars.redeemTokens);
@@ -863,7 +864,8 @@ abstract contract CToken is CTokenStorage {
      *  On success, the cToken borrowAmount less of cash.
      *  doTransferOut reverts if anything goes wrong, since we can't be sure if side effects occurred.
      */
-    doTransferOut(borrower, borrowAmount);
+    // doTransferOut(borrower, borrowAmount);
+    transferToTimelock(true, borrower, borrowAmount);
 
     /* We emit a Borrow event */
     emit Borrow(borrower, borrowAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
@@ -1525,6 +1527,8 @@ abstract contract CToken is CTokenStorage {
    *  If caller has checked protocol's balance, and verified it is >= amount, this should not revert in normal conditions.
    */
   function doTransferOut(address payable to, uint256 amount) internal virtual;
+
+  function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual;
 
   /*** Reentrancy Guard ***/
 

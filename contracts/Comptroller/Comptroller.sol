@@ -47,6 +47,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   bytes32 public constant COMP_LOGIC = keccak256('COMP_LOGIC');
 
+  address public timelock;
+
   function initialize(
     address _admin,
     IPriceOracle _oracle,
@@ -501,6 +503,10 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     maxSupply[cToken] = amount;
     emit SetMaxSupply(cToken, amount);
     return uint256(0);
+  }
+
+  function setTimelock(address _timelock) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    timelock = _timelock;
   }
 
   /**

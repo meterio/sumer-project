@@ -43,6 +43,7 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     "redeemVerify(address,address,uint256,uint256)": FunctionFragment;
     "repayBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
+    "timelock()": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
   };
@@ -114,6 +115,7 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "seizeAllowed",
     values: [string, string, string, string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferAllowed",
     values: [string, string, string, BigNumberish]
@@ -196,6 +198,7 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "seizeAllowed",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferAllowed",
     data: BytesLike
@@ -359,6 +362,8 @@ export class IComptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    timelock(overrides?: CallOverrides): Promise<[string]>;
+
     transferAllowed(
       cToken: string,
       src: string,
@@ -472,6 +477,8 @@ export class IComptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  timelock(overrides?: CallOverrides): Promise<string>;
+
   transferAllowed(
     cToken: string,
     src: string,
@@ -578,6 +585,8 @@ export class IComptroller extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    timelock(overrides?: CallOverrides): Promise<string>;
 
     transferAllowed(
       cToken: string,
@@ -691,6 +700,8 @@ export class IComptroller extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferAllowed(
       cToken: string,
@@ -821,6 +832,8 @@ export class IComptroller extends BaseContract {
       seizeTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferAllowed(
       cToken: string,

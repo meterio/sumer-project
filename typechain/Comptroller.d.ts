@@ -65,7 +65,9 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "setCompSpeed(address,uint256,uint256)": FunctionFragment;
     "setComptroller(address)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
+    "setTimelock(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "timelock()": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
   };
@@ -225,10 +227,12 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "setMaxSupply",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "setTimelock", values: [string]): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferAllowed",
     values: [string, string, string, BigNumberish]
@@ -379,9 +383,14 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setTimelock",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferAllowed",
     data: BytesLike
@@ -737,10 +746,17 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setTimelock(
+      _timelock: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    timelock(overrides?: CallOverrides): Promise<[string]>;
 
     transferAllowed(
       cToken: string,
@@ -970,10 +986,17 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setTimelock(
+    _timelock: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  timelock(overrides?: CallOverrides): Promise<string>;
 
   transferAllowed(
     cToken: string,
@@ -1203,10 +1226,14 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    setTimelock(_timelock: string, overrides?: CallOverrides): Promise<void>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    timelock(overrides?: CallOverrides): Promise<string>;
 
     transferAllowed(
       cToken: string,
@@ -1594,10 +1621,17 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setTimelock(
+      _timelock: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferAllowed(
       cToken: string,
@@ -1846,10 +1880,17 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setTimelock(
+      _timelock: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferAllowed(
       cToken: string,

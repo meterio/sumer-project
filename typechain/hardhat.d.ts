@@ -301,6 +301,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ZeroInterestRateModel__factory>;
     getContractFactory(
+      name: "ITimelock",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ITimelock__factory>;
+    getContractFactory(
       name: "Multicall2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Multicall2__factory>;
@@ -453,6 +457,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IFraxGaugeFXSRewardsDistributor__factory>;
     getContractFactory(
+      name: "IUniswapV2Pair",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUniswapV2Pair__factory>;
+    getContractFactory(
+      name: "StakingRewardsMultiGauge",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.StakingRewardsMultiGauge__factory>;
+    getContractFactory(
       name: "SmartWalletChecker",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SmartWalletChecker__factory>;
@@ -460,6 +472,14 @@ declare module "hardhat/types/runtime" {
       name: "VeSumer",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.VeSumer__factory>;
+    getContractFactory(
+      name: "ICToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICToken__factory>;
+    getContractFactory(
+      name: "Timelock",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Timelock__factory>;
 
     getContractAt(
       name: "AccessControlEnumerableUpgradeable",
@@ -822,6 +842,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ZeroInterestRateModel>;
     getContractAt(
+      name: "ITimelock",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ITimelock>;
+    getContractAt(
       name: "Multicall2",
       address: string,
       signer?: ethers.Signer
@@ -1012,6 +1037,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IFraxGaugeFXSRewardsDistributor>;
     getContractAt(
+      name: "IUniswapV2Pair",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUniswapV2Pair>;
+    getContractAt(
+      name: "StakingRewardsMultiGauge",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.StakingRewardsMultiGauge>;
+    getContractAt(
       name: "SmartWalletChecker",
       address: string,
       signer?: ethers.Signer
@@ -1021,6 +1056,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.VeSumer>;
+    getContractAt(
+      name: "ICToken",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICToken>;
+    getContractAt(
+      name: "Timelock",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Timelock>;
 
     // default types
     getContractFactory(

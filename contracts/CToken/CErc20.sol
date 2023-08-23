@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 import './CToken.sol';
 import './Interfaces/ICErc20.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '../ITimelock.sol';
 
 /**
  * @title Compound's CErc20 Contract
@@ -241,5 +242,14 @@ contract CErc20 is CToken, ICErc20, Initializable {
       }
     }
     require(success, 'TOKEN_TRANSFER_OUT_FAILED');
+  }
+
+  function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
+    address timelock = IComptroller(comptroller).timelock();
+    doTransferOut(payable(timelock), amount);
+    ITimelock.TimeLockActionType actionType = isBorrow
+      ? ITimelock.TimeLockActionType.BORROW
+      : ITimelock.TimeLockActionType.REDEEM;
+    ITimelock(timelock).createAgreement(actionType, underlying, amount, to);
   }
 }

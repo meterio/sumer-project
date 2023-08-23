@@ -21,18 +21,18 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface IChainlinkFeedInterface extends ethers.utils.Interface {
   functions: {
     "decimals()": FunctionFragment;
-    "latestAnswer()": FunctionFragment;
+    "latestRoundData()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "latestAnswer",
+    functionFragment: "latestRoundData",
     values?: undefined
   ): string;
 
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "latestAnswer",
+    functionFragment: "latestRoundData",
     data: BytesLike
   ): Result;
 
@@ -85,17 +85,47 @@ export class IChainlinkFeed extends BaseContract {
   functions: {
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
-    latestAnswer(overrides?: CallOverrides): Promise<[BigNumber]>;
+    latestRoundData(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        roundId: BigNumber;
+        answer: BigNumber;
+        startedAt: BigNumber;
+        updatedAt: BigNumber;
+        answeredInRound: BigNumber;
+      }
+    >;
   };
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
-  latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
+  latestRoundData(
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      roundId: BigNumber;
+      answer: BigNumber;
+      startedAt: BigNumber;
+      updatedAt: BigNumber;
+      answeredInRound: BigNumber;
+    }
+  >;
 
   callStatic: {
     decimals(overrides?: CallOverrides): Promise<number>;
 
-    latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
+    latestRoundData(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        roundId: BigNumber;
+        answer: BigNumber;
+        startedAt: BigNumber;
+        updatedAt: BigNumber;
+        answeredInRound: BigNumber;
+      }
+    >;
   };
 
   filters: {};
@@ -103,12 +133,12 @@ export class IChainlinkFeed extends BaseContract {
   estimateGas: {
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
-    latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
+    latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    latestAnswer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
