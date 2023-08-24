@@ -22,17 +22,20 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface ITimelockInterface extends ethers.utils.Interface {
   functions: {
     "createAgreement(uint8,address,uint256,address)": FunctionFragment;
+    "isSupport(address)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "createAgreement",
     values: [BigNumberish, string, BigNumberish, string]
   ): string;
+  encodeFunctionData(functionFragment: "isSupport", values: [string]): string;
 
   decodeFunctionResult(
     functionFragment: "createAgreement",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isSupport", data: BytesLike): Result;
 
   events: {
     "AgreementClaimed(uint256,uint8,address,uint256,address)": EventFragment;
@@ -126,29 +129,38 @@ export class ITimelock extends BaseContract {
   functions: {
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    isSupport(
+      underlying: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
   };
 
   createAgreement(
     actionType: BigNumberish,
-    underly: string,
+    underlying: string,
     amount: BigNumberish,
     beneficiary: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  isSupport(underlying: string, overrides?: CallOverrides): Promise<boolean>;
+
   callStatic: {
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    isSupport(underlying: string, overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {
@@ -270,20 +282,30 @@ export class ITimelock extends BaseContract {
   estimateGas: {
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    isSupport(
+      underlying: string,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    isSupport(
+      underlying: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

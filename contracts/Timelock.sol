@@ -17,22 +17,25 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
   using EnumerableSet for EnumerableSet.UintSet;
 
   bytes32 public constant EMERGENCY_ADMIN = keccak256('EMERGENCY_ADMIN');
+  /// @notice user => agreements ids set
   mapping(address => EnumerableSet.UintSet) private _userAgreements;
+  /// @notice ids => agreement
   mapping(uint256 => Agreement) private agreements;
-  mapping(address => uint256) public underlyBalances;
-  mapping(address => address) public cTokenToUnderly;
+  /// @notice cToken => underlying
+  mapping(address => address) public cTokenToUnderlying;
+  /// @notice underlying => underlyDetial
+  mapping(address => Underlying) public underlyingDetail;
   uint256 public agreementCount;
   bool public frozen;
-  uint256 public lockDuration = 2 hours;
 
   constructor(address[] memory cTokens) {
     for (uint i; i < cTokens.length; ++i) {
       address cToken = cTokens[i];
       require(cToken != address(0), 'cToken is zero');
       if (ICToken(cToken).isCEther()) {
-        cTokenToUnderly[cToken] = address(1);
+        cTokenToUnderlying[cToken] = address(1);
       } else {
-        cTokenToUnderly[cToken] = ICToken(cToken).underlying();
+        cTokenToUnderlying[cToken] = ICToken(cToken).underlying();
       }
     }
   }
@@ -49,17 +52,20 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     _;
   }
 
-  modifier onlyCToken(address underly) {
-    require(cTokenToUnderly[msg.sender] == underly && underly != address(0), 'CALLER_NOT_CTOKEN');
+  modifier onlyCToken(address underlying) {
+    require(cTokenToUnderlying[msg.sender] == underlying && underlying != address(0), 'CALLER_NOT_CTOKEN');
+    require(underlyingDetail[underlying].isSupport, 'NOT_SUPPORT');
     _;
   }
 
-  function setUnderly(address cToken, address underly) external onlyAdmin {
-    cTokenToUnderly[cToken] = underly;
+  function setUnderly(address cToken, address underlying, bool isSupport) external onlyAdmin {
+    cTokenToUnderlying[cToken] = underlying;
+    underlyingDetail[underlying].cToken = cToken;
+    underlyingDetail[underlying].isSupport = isSupport;
   }
 
-  function setLockDuration(uint256 _lockDuration) external onlyAdmin {
-    lockDuration = _lockDuration;
+  function setLockDuration(address underlying, uint256 lockDuration) external onlyAdmin {
+    underlyingDetail[underlying].lockDuration = lockDuration;
   }
 
   function rescueERC20(address token, address to, uint256 amount) external onlyEmergencyAdmin {
@@ -69,25 +75,25 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
 
   function createAgreement(
     TimeLockActionType actionType,
-    address underly,
+    address underlying,
     uint256 amount,
     address beneficiary
-  ) external onlyCToken(underly) returns (uint256) {
+  ) external onlyCToken(underlying) returns (uint256) {
     require(beneficiary != address(0), 'Beneficiary cant be zero address');
     uint256 underlyBalance;
-    if (underly == address(1)) {
+    if (underlying == address(1)) {
       underlyBalance = address(this).balance;
     } else {
-      underlyBalance = IERC20(underly).balanceOf(address(this));
+      underlyBalance = IERC20(underlying).balanceOf(address(this));
     }
-    require(underlyBalance >= underlyBalances[underly] + amount, 'balance error');
-    underlyBalances[underly] = underlyBalance;
+    require(underlyBalance >= underlyingDetail[underlying].totalBalance + amount, 'balance error');
+    underlyingDetail[underlying].totalBalance = underlyBalance;
 
     uint256 agreementId = agreementCount++;
-    uint256 releaseTime = block.timestamp + lockDuration;
+    uint256 releaseTime = block.timestamp + underlyingDetail[underlying].lockDuration;
     agreements[agreementId] = Agreement({
       actionType: actionType,
-      underly: underly,
+      underlying: underlying,
       amount: amount,
       beneficiary: beneficiary,
       releaseTime: releaseTime,
@@ -95,7 +101,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     });
     _userAgreements[beneficiary].add(agreementId);
 
-    emit AgreementCreated(agreementId, actionType, underly, amount, beneficiary, releaseTime);
+    emit AgreementCreated(agreementId, actionType, underlying, amount, beneficiary, releaseTime);
     return agreementId;
   }
 
@@ -110,7 +116,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     emit AgreementClaimed(
       agreementId,
       agreement.actionType,
-      agreement.underly,
+      agreement.underlying,
       agreement.amount,
       agreement.beneficiary
     );
@@ -123,12 +129,12 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
 
     for (uint256 index = 0; index < agreementIds.length; index++) {
       Agreement memory agreement = _validateAndDeleteAgreement(agreementIds[index]);
-      if (agreement.underly == address(1)) {
+      if (agreement.underlying == address(1)) {
         payable(agreement.beneficiary).transfer(agreement.amount);
       } else {
-        IERC20(agreement.underly).safeTransfer(agreement.beneficiary, agreement.amount);
+        IERC20(agreement.underlying).safeTransfer(agreement.beneficiary, agreement.amount);
       }
-      underlyBalances[agreement.underly] -= agreement.amount;
+      underlyingDetail[agreement.underlying].totalBalance -= agreement.amount;
     }
   }
 
@@ -139,6 +145,10 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
       userAgreements[i] = agreements[_userAgreements[user].at(i)];
     }
     return userAgreements;
+  }
+
+  function isSupport(address underlying) external view returns (bool) {
+    return underlyingDetail[underlying].isSupport;
   }
 
   function freezeAgreement(uint256 agreementId) external onlyEmergencyAdmin {

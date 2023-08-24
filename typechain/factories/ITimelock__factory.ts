@@ -153,7 +153,7 @@ const _abi = [
       },
       {
         internalType: "address",
-        name: "underly",
+        name: "underlying",
         type: "address",
       },
       {
@@ -176,6 +176,25 @@ const _abi = [
       },
     ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "underlying",
+        type: "address",
+      },
+    ],
+    name: "isSupport",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ];

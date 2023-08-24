@@ -59,17 +59,26 @@ interface ITimelock {
   }
   struct Agreement {
     TimeLockActionType actionType;
-    address underly;
+    address underlying;
     bool isFrozen;
     address beneficiary;
     uint256 releaseTime;
     uint256 amount;
   }
 
+  struct Underlying {
+    address cToken;
+    uint256 totalBalance;
+    uint256 lockDuration;
+    bool isSupport;
+  }
+
   function createAgreement(
     TimeLockActionType actionType,
-    address underly,
+    address underlying,
     uint256 amount,
     address beneficiary
   ) external returns (uint256);
+
+  function isSupport(address underlying) external view returns (bool);
 }

@@ -24,7 +24,7 @@ interface TimelockInterface extends ethers.utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "EMERGENCY_ADMIN()": FunctionFragment;
     "agreementCount()": FunctionFragment;
-    "cTokenToUnderly(address)": FunctionFragment;
+    "cTokenToUnderlying(address)": FunctionFragment;
     "claim(uint256[])": FunctionFragment;
     "createAgreement(uint8,address,uint256,address)": FunctionFragment;
     "freezeAgreement(uint256)": FunctionFragment;
@@ -35,14 +35,14 @@ interface TimelockInterface extends ethers.utils.Interface {
     "getRoleMemberCount(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "lockDuration()": FunctionFragment;
+    "isSupport(address)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "rescueERC20(address,address,uint256)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
-    "setLockDuration(uint256)": FunctionFragment;
-    "setUnderly(address,address)": FunctionFragment;
+    "setLockDuration(address,uint256)": FunctionFragment;
+    "setUnderly(address,address,bool)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "underlyBalances(address)": FunctionFragment;
+    "underlyingDetail(address)": FunctionFragment;
     "unfreezeAllAgreements()": FunctionFragment;
     "userAgreements(address)": FunctionFragment;
   };
@@ -60,7 +60,7 @@ interface TimelockInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "cTokenToUnderly",
+    functionFragment: "cTokenToUnderlying",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -100,10 +100,7 @@ interface TimelockInterface extends ethers.utils.Interface {
     functionFragment: "hasRole",
     values: [BytesLike, string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "lockDuration",
-    values?: undefined
-  ): string;
+  encodeFunctionData(functionFragment: "isSupport", values: [string]): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -118,18 +115,18 @@ interface TimelockInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setLockDuration",
-    values: [BigNumberish]
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setUnderly",
-    values: [string, string]
+    values: [string, string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "underlyBalances",
+    functionFragment: "underlyingDetail",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -154,7 +151,7 @@ interface TimelockInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "cTokenToUnderly",
+    functionFragment: "cTokenToUnderlying",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
@@ -185,10 +182,7 @@ interface TimelockInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "lockDuration",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "isSupport", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -208,7 +202,7 @@ interface TimelockInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "underlyBalances",
+    functionFragment: "underlyingDetail",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -338,7 +332,10 @@ export class Timelock extends BaseContract {
 
     agreementCount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    cTokenToUnderly(arg0: string, overrides?: CallOverrides): Promise<[string]>;
+    cTokenToUnderlying(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     claim(
       agreementIds: BigNumberish[],
@@ -347,7 +344,7 @@ export class Timelock extends BaseContract {
 
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -389,7 +386,10 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    lockDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
+    isSupport(
+      underlying: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     renounceRole(
       role: BytesLike,
@@ -411,13 +411,15 @@ export class Timelock extends BaseContract {
     ): Promise<ContractTransaction>;
 
     setLockDuration(
-      _lockDuration: BigNumberish,
+      underlying: string,
+      lockDuration: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setUnderly(
       cToken: string,
-      underly: string,
+      underlying: string,
+      isSupport: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -426,10 +428,17 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    underlyBalances(
+    underlyingDetail(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<
+      [string, BigNumber, BigNumber, boolean] & {
+        cToken: string;
+        totalBalance: BigNumber;
+        lockDuration: BigNumber;
+        isSupport: boolean;
+      }
+    >;
 
     unfreezeAllAgreements(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -442,7 +451,7 @@ export class Timelock extends BaseContract {
       [
         ([number, string, boolean, string, BigNumber, BigNumber] & {
           actionType: number;
-          underly: string;
+          underlying: string;
           isFrozen: boolean;
           beneficiary: string;
           releaseTime: BigNumber;
@@ -458,7 +467,7 @@ export class Timelock extends BaseContract {
 
   agreementCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-  cTokenToUnderly(arg0: string, overrides?: CallOverrides): Promise<string>;
+  cTokenToUnderlying(arg0: string, overrides?: CallOverrides): Promise<string>;
 
   claim(
     agreementIds: BigNumberish[],
@@ -467,7 +476,7 @@ export class Timelock extends BaseContract {
 
   createAgreement(
     actionType: BigNumberish,
-    underly: string,
+    underlying: string,
     amount: BigNumberish,
     beneficiary: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -509,7 +518,7 @@ export class Timelock extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  lockDuration(overrides?: CallOverrides): Promise<BigNumber>;
+  isSupport(underlying: string, overrides?: CallOverrides): Promise<boolean>;
 
   renounceRole(
     role: BytesLike,
@@ -531,13 +540,15 @@ export class Timelock extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setLockDuration(
-    _lockDuration: BigNumberish,
+    underlying: string,
+    lockDuration: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setUnderly(
     cToken: string,
-    underly: string,
+    underlying: string,
+    isSupport: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -546,7 +557,17 @@ export class Timelock extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  underlyBalances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+  underlyingDetail(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, BigNumber, BigNumber, boolean] & {
+      cToken: string;
+      totalBalance: BigNumber;
+      lockDuration: BigNumber;
+      isSupport: boolean;
+    }
+  >;
 
   unfreezeAllAgreements(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -558,7 +579,7 @@ export class Timelock extends BaseContract {
   ): Promise<
     ([number, string, boolean, string, BigNumber, BigNumber] & {
       actionType: number;
-      underly: string;
+      underlying: string;
       isFrozen: boolean;
       beneficiary: string;
       releaseTime: BigNumber;
@@ -573,7 +594,10 @@ export class Timelock extends BaseContract {
 
     agreementCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-    cTokenToUnderly(arg0: string, overrides?: CallOverrides): Promise<string>;
+    cTokenToUnderlying(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     claim(
       agreementIds: BigNumberish[],
@@ -582,7 +606,7 @@ export class Timelock extends BaseContract {
 
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: CallOverrides
@@ -622,7 +646,7 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    lockDuration(overrides?: CallOverrides): Promise<BigNumber>;
+    isSupport(underlying: string, overrides?: CallOverrides): Promise<boolean>;
 
     renounceRole(
       role: BytesLike,
@@ -644,13 +668,15 @@ export class Timelock extends BaseContract {
     ): Promise<void>;
 
     setLockDuration(
-      _lockDuration: BigNumberish,
+      underlying: string,
+      lockDuration: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     setUnderly(
       cToken: string,
-      underly: string,
+      underlying: string,
+      isSupport: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -659,10 +685,17 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    underlyBalances(
+    underlyingDetail(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<
+      [string, BigNumber, BigNumber, boolean] & {
+        cToken: string;
+        totalBalance: BigNumber;
+        lockDuration: BigNumber;
+        isSupport: boolean;
+      }
+    >;
 
     unfreezeAllAgreements(overrides?: CallOverrides): Promise<void>;
 
@@ -672,7 +705,7 @@ export class Timelock extends BaseContract {
     ): Promise<
       ([number, string, boolean, string, BigNumber, BigNumber] & {
         actionType: number;
-        underly: string;
+        underlying: string;
         isFrozen: boolean;
         beneficiary: string;
         releaseTime: BigNumber;
@@ -858,7 +891,7 @@ export class Timelock extends BaseContract {
 
     agreementCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-    cTokenToUnderly(
+    cTokenToUnderlying(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -870,7 +903,7 @@ export class Timelock extends BaseContract {
 
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -915,7 +948,10 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    lockDuration(overrides?: CallOverrides): Promise<BigNumber>;
+    isSupport(
+      underlying: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     renounceRole(
       role: BytesLike,
@@ -937,13 +973,15 @@ export class Timelock extends BaseContract {
     ): Promise<BigNumber>;
 
     setLockDuration(
-      _lockDuration: BigNumberish,
+      underlying: string,
+      lockDuration: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setUnderly(
       cToken: string,
-      underly: string,
+      underlying: string,
+      isSupport: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -952,7 +990,7 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    underlyBalances(
+    underlyingDetail(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -973,7 +1011,7 @@ export class Timelock extends BaseContract {
 
     agreementCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    cTokenToUnderly(
+    cTokenToUnderlying(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -985,7 +1023,7 @@ export class Timelock extends BaseContract {
 
     createAgreement(
       actionType: BigNumberish,
-      underly: string,
+      underlying: string,
       amount: BigNumberish,
       beneficiary: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1030,7 +1068,10 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    lockDuration(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    isSupport(
+      underlying: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: BytesLike,
@@ -1052,13 +1093,15 @@ export class Timelock extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setLockDuration(
-      _lockDuration: BigNumberish,
+      underlying: string,
+      lockDuration: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setUnderly(
       cToken: string,
-      underly: string,
+      underlying: string,
+      isSupport: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1067,7 +1110,7 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    underlyBalances(
+    underlyingDetail(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

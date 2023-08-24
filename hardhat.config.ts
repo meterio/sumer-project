@@ -167,7 +167,7 @@ export default {
       accounts: [process.env.PRIVATE_KET_BASE]
     },
     zkTestnet: {
-      url: "https://testnet.era.zksync.dev", // URL of the zkSync network RPC    
+      url: 'https://testnet.era.zksync.dev', // URL of the zkSync network RPC
       accounts: { mnemonic: process.env.MNEMONIC_1 }
     },
     ganache: {
@@ -180,7 +180,10 @@ export default {
     apiKey: argv.networkScanKey
   },
   solidity: {
-    compilers: [compileSetting('0.8.19', 200)]
+    compilers: [compileSetting('0.8.19', 200)],
+    overrides: {
+      'contracts/CToken/CErc20.sol': compileSetting('0.8.19', 20)
+    }
   },
   paths: {
     sources: './contracts',
@@ -192,8 +195,8 @@ export default {
     timeout: 9999999999
   },
   contractSizer: {
-		alphaSort: true,
-		runOnCompile: true,
+    alphaSort: true,
+    runOnCompile: true,
     disambiguatePaths: false
   },
   gasReporter: {
