@@ -12,7 +12,7 @@ import 'hardhat-tracer';
 import 'hardhat-etherscan-abi';
 import 'hardhat-contract-sizer';
 
-// import './tasks';
+import './tasks';
 import { compileSetting } from './scripts/deployTool';
 
 const dotenv = require('dotenv');

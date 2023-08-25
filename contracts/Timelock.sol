@@ -38,6 +38,8 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
         cTokenToUnderlying[cToken] = ICToken(cToken).underlying();
       }
     }
+    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _grantRole(EMERGENCY_ADMIN, msg.sender);
   }
 
   receive() external payable {}

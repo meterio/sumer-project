@@ -13,6 +13,7 @@ import './deploy/system/02_DeployFeedPriceOracle';
 import './deploy/system/03_DeployCompoundLens';
 import './deploy/system/04_DeployUnderwriterAdmin';
 import './deploy/system/05_DeployComptroller';
+import './deploy/system/06_DeployTimelock';
 
 import './deploy/cToken/DeployCToken';
 import './deploy/cToken/DeploySuToken';
