@@ -472,7 +472,8 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        ([number, string, boolean, string, BigNumber, BigNumber] & {
+        ([BigNumber, number, string, boolean, string, BigNumber, BigNumber] & {
+          agreementId: BigNumber;
           actionType: number;
           underlying: string;
           isFrozen: boolean;
@@ -612,7 +613,8 @@ export class Timelock extends BaseContract {
     user: string,
     overrides?: CallOverrides
   ): Promise<
-    ([number, string, boolean, string, BigNumber, BigNumber] & {
+    ([BigNumber, number, string, boolean, string, BigNumber, BigNumber] & {
+      agreementId: BigNumber;
       actionType: number;
       underlying: string;
       isFrozen: boolean;
@@ -750,7 +752,8 @@ export class Timelock extends BaseContract {
       user: string,
       overrides?: CallOverrides
     ): Promise<
-      ([number, string, boolean, string, BigNumber, BigNumber] & {
+      ([BigNumber, number, string, boolean, string, BigNumber, BigNumber] & {
+        agreementId: BigNumber;
         actionType: number;
         underlying: string;
         isFrozen: boolean;

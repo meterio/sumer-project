@@ -104,7 +104,8 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
       amount: amount,
       beneficiary: beneficiary,
       releaseTime: releaseTime,
-      isFrozen: false
+      isFrozen: false,
+      agreementId:agreementId
     });
     _userAgreements[beneficiary].add(agreementId);
 

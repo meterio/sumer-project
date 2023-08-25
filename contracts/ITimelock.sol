@@ -58,6 +58,7 @@ interface ITimelock {
     REDEEM
   }
   struct Agreement {
+    uint256 agreementId;
     TimeLockActionType actionType;
     address underlying;
     bool isFrozen;
