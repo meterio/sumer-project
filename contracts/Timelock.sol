@@ -32,14 +32,19 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     for (uint i; i < cTokens.length; ++i) {
       address cToken = cTokens[i];
       require(cToken != address(0), 'cToken is zero');
+      address underlying;
       if (ICToken(cToken).isCEther()) {
-        cTokenToUnderlying[cToken] = address(1);
+        underlying = address(1);
       } else {
-        cTokenToUnderlying[cToken] = ICToken(cToken).underlying();
+        underlying = ICToken(cToken).underlying();
       }
+      require(underlying != address(0), 'underlying is zero');
+      cTokenToUnderlying[cToken] = underlying;
+      underlyingDetail[underlying].cToken = cToken;
+      underlyingDetail[underlying].isSupport = true;
     }
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    _grantRole(EMERGENCY_ADMIN, msg.sender);
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _setupRole(EMERGENCY_ADMIN, msg.sender);
   }
 
   receive() external payable {}
