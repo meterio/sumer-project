@@ -43,6 +43,7 @@ interface TimelockInterface extends ethers.utils.Interface {
     "setUnderly(address,address,bool)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "underlyingDetail(address)": FunctionFragment;
+    "underlyingDetails(address[])": FunctionFragment;
     "unfreezeAllAgreements()": FunctionFragment;
     "userAgreements(address)": FunctionFragment;
   };
@@ -130,6 +131,10 @@ interface TimelockInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "underlyingDetails",
+    values: [string[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "unfreezeAllAgreements",
     values?: undefined
   ): string;
@@ -203,6 +208,10 @@ interface TimelockInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "underlyingDetail",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "underlyingDetails",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -440,6 +449,20 @@ export class Timelock extends BaseContract {
       }
     >;
 
+    underlyingDetails(
+      underlyings: string[],
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        ([string, BigNumber, BigNumber, boolean] & {
+          cToken: string;
+          totalBalance: BigNumber;
+          lockDuration: BigNumber;
+          isSupport: boolean;
+        })[]
+      ]
+    >;
+
     unfreezeAllAgreements(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -569,6 +592,18 @@ export class Timelock extends BaseContract {
     }
   >;
 
+  underlyingDetails(
+    underlyings: string[],
+    overrides?: CallOverrides
+  ): Promise<
+    ([string, BigNumber, BigNumber, boolean] & {
+      cToken: string;
+      totalBalance: BigNumber;
+      lockDuration: BigNumber;
+      isSupport: boolean;
+    })[]
+  >;
+
   unfreezeAllAgreements(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -695,6 +730,18 @@ export class Timelock extends BaseContract {
         lockDuration: BigNumber;
         isSupport: boolean;
       }
+    >;
+
+    underlyingDetails(
+      underlyings: string[],
+      overrides?: CallOverrides
+    ): Promise<
+      ([string, BigNumber, BigNumber, boolean] & {
+        cToken: string;
+        totalBalance: BigNumber;
+        lockDuration: BigNumber;
+        isSupport: boolean;
+      })[]
     >;
 
     unfreezeAllAgreements(overrides?: CallOverrides): Promise<void>;
@@ -995,6 +1042,11 @@ export class Timelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    underlyingDetails(
+      underlyings: string[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     unfreezeAllAgreements(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1112,6 +1164,11 @@ export class Timelock extends BaseContract {
 
     underlyingDetail(
       arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    underlyingDetails(
+      underlyings: string[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

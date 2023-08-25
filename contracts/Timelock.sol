@@ -138,6 +138,15 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     }
   }
 
+  function underlyingDetails(address[] calldata underlyings) external view returns (Underlying[] memory) {
+    uint256 underlyingLength = underlyings.length;
+    Underlying[] memory underlyingDetails = new Underlying[](underlyingLength);
+    for (uint256 i; i < underlyingLength; ++i) {
+      underlyingDetails[i] = underlyingDetail[underlyings[i]];
+    }
+    return underlyingDetails;
+  }
+
   function userAgreements(address user) external view returns (Agreement[] memory) {
     uint256 agreementLength = _userAgreements[user].length();
     Agreement[] memory userAgreements = new Agreement[](agreementLength);
