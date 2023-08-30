@@ -1,40 +1,56 @@
 import { task } from 'hardhat/config';
-import { types } from "hardhat/config";
+import { types } from 'hardhat/config';
 import { FeedPriceOracle } from '../../../typechain';
+import { readFileSync } from 'fs';
 
 /**
 npx hardhat soc \
---address <FeedPriceOracle address> \
---ctoken <cToken address> \
---feed <Feed address> \
---decimal [optional, 18 for default] \
+--json "config json file" \
 --rpc http://127.0.0.1:7545 \
 --pk <admin private key> \
 --gasprice 1000000000
  */
 
 task('soc', 'set FeedPriceOracle with chainlink feed')
-    .addParam("address", "FeedPriceOracle contract address")
-    .addParam("ctoken", "cToken contract address")
-    .addParam("feed", "feed contract address")
-    .addOptionalParam("decimal", "Token decimals", 18, types.int)
-    .addParam("rpc", "rpc connect")
-    .addParam("pk", "proxy admin private key")
-    .addOptionalParam("gasprice", "gas price", 0, types.int)
-    .setAction(async ({ address, ctoken, feed, decimal, rpc, pk, gasprice }, { ethers, run, network }) => {
-        await run('compile');
-        let override = {}
-        if (gasprice > 0) {
-            override = {
-                gasPrice: gasprice
-            }
-        }
-        let provider = new ethers.providers.JsonRpcProvider(rpc);
-        const wallet = new ethers.Wallet(pk, provider);
+  .addParam('json', 'config json file')
+  .addParam('rpc', 'rpc connect')
+  .addParam('pk', 'proxy admin private key')
+  .addOptionalParam('gasprice', 'gas price', 0, types.int)
+  .setAction(async ({ json, rpc, pk, gasprice }, { ethers, run, network }) => {
+    await run('compile');
+    let override = {};
+    if (gasprice > 0) {
+      override = {
+        gasPrice: gasprice
+      };
+    }
+    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    const wallet = new ethers.Wallet(pk, provider);
+    let config = JSON.parse(readFileSync(json).toString());
 
-        const feedPriceOracle = await ethers.getContractAt("FeedPriceOracle", address, wallet) as FeedPriceOracle;
-        console.log("find FeedPriceOracle:", address);
-        const receipt = await feedPriceOracle.setChainlinkFeed(ctoken, feed, decimal, override)
-        console.log("setChainlinkFeed tx:", receipt.hash);
+    const feedPriceOracle = (await ethers.getContractAt(
+      'FeedPriceOracle',
+      config.feedPriceOracle.address,
+      wallet
+    )) as FeedPriceOracle;
+    console.log('find FeedPriceOracle:', config.feedPriceOracle.address);
 
-    });
+    for (let i = 0; i < config.cTokens.tokens.length; i++) {
+      let ctoken = config.cTokens.tokens[i];
+      let oracle = ctoken.oracle;
+      let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals);
+      let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals, {
+        gasLimit: gas
+      });
+      console.log('setChainlinkFeed tx:', receipt.hash);
+    }
+    for (let i = 1; i < config.suTokens.tokens.length; i++) {
+      let ctoken = config.suTokens.tokens[i];
+      let oracle = ctoken.oracle;
+      let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals);
+      let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals, {
+        gasLimit: gas
+      });
+      console.log('setChainlinkFeed tx:', receipt.hash);
+    }
+  });

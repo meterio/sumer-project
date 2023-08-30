@@ -89,19 +89,6 @@ contract suErc20 is CErc20 {
     require(success, 'TOKEN_TRANSFER_OUT_FAILED');
   }
 
-  function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
-    address timelock = IComptroller(comptroller).timelock();
-    if (ITimelock(timelock).isSupport(underlying)) {
-      doTransferOut(payable(timelock), amount);
-      ITimelock.TimeLockActionType actionType = isBorrow
-        ? ITimelock.TimeLockActionType.BORROW
-        : ITimelock.TimeLockActionType.REDEEM;
-      ITimelock(timelock).createAgreement(actionType, underlying, amount, to);
-    } else {
-      doTransferOut(payable(to), amount);
-    }
-  }
-
   function changeCtoken() public onlyAdmin {
     isCToken = !isCToken;
   }

@@ -182,7 +182,7 @@ export default {
   solidity: {
     compilers: [compileSetting('0.8.19', 200)],
     overrides: {
-      'contracts/CToken/CErc20.sol': compileSetting('0.8.19', 20)
+      'contracts/CToken/CErc20.sol': compileSetting('0.8.19', 10)
     }
   },
   paths: {

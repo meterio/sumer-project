@@ -1,0 +1,44 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Oracle/FeedPriceOracle.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.19;\nimport './PriceOracle.sol';\nimport './Interfaces/IStdReference.sol';\nimport './Interfaces/IWitnetFeed.sol';\nimport './Interfaces/IChainlinkFeed.sol';\n\ncontract FeedPriceOracle is PriceOracle {\n  struct FeedData {\n    uint8 source; // 1 - chainlink feed, 2 - witnet router, 3 - Band\n    address addr; // feed address\n    uint8 tokenDecimals; // token decimals\n    uint8 feedDecimals; // feed decimals (only used in witnet)\n    string name;\n  }\n\n  address public owner;\n  mapping(address => FeedData) public feeds; // cToken -> feed data\n  mapping(address => uint256) public fixedPrices; // cToken -> price\n  uint8 constant DECIMALS = 36;\n\n  event SetFeed(\n    address indexed cToken_,\n    uint8 source,\n    address addr,\n    uint8 tokenDecimals,\n    uint8 feedDecimals,\n    string name\n  );\n\n  modifier onlyOwner() {\n    require(msg.sender == owner, 'ONLY OWNER');\n    _;\n  }\n\n  constructor() {\n    owner = msg.sender;\n  }\n\n  function changeOwner(address owner_) public onlyOwner {\n    require(owner_ != address(0), 'Address is Zero!');\n    owner = owner_;\n  }\n\n  // TODO: name this setChainlinkFeed\n  function setChainlinkFeed(address cToken_, address feed_, uint8 tokenDecimals_) public onlyOwner {\n    _setFeed(cToken_, uint8(1), feed_, tokenDecimals_, 8, '');\n  }\n\n  function setWitnetFeed(address cToken_, address feed_, uint8 tokenDecimals_, uint8 feedDecimals_) public onlyOwner {\n    _setFeed(cToken_, uint8(2), feed_, tokenDecimals_, feedDecimals_, '');\n  }\n\n  function setBandFeed(\n    address cToken_,\n    address feed_,\n    uint8 tokenDecimals_,\n    uint8 feedDecimals_,\n    string memory name\n  ) public onlyOwner {\n    _setFeed(cToken_, uint8(3), feed_, tokenDecimals_, feedDecimals_, name);\n  }\n\n  function setFixedPrice(address cToken_, uint256 price) public onlyOwner {\n    fixedPrices[cToken_] = price;\n  }\n\n  function _setFeed(\n    address cToken_,\n    uint8 source,\n    address addr,\n    uint8 tokenDecimals,\n    uint8 feedDecimals,\n    string memory name\n  ) private {\n    require(addr != address(0), 'Address is Zero!');\n    if (feeds[cToken_].source != 0) {\n      delete fixedPrices[cToken_];\n    }\n    FeedData memory feedData = FeedData({\n      source: source,\n      addr: addr,\n      tokenDecimals: tokenDecimals,\n      feedDecimals: feedDecimals,\n      name: name\n    });\n    feeds[cToken_] = feedData;\n    emit SetFeed(cToken_, source, addr, tokenDecimals, feedDecimals, name);\n  }\n\n  function removeFeed(address cToken_) public onlyOwner {\n    delete feeds[cToken_];\n  }\n\n  function getFeed(address cToken_) public view returns (FeedData memory) {\n    return feeds[cToken_];\n  }\n\n  function removeFixedPrice(address cToken_) public onlyOwner {\n    delete fixedPrices[cToken_];\n  }\n\n  function getFixedPrice(address cToken_) public view returns (uint256) {\n    return fixedPrices[cToken_];\n  }\n\n  function getUnderlyingPrice(address cToken_) public view override returns (uint256) {\n    FeedData memory feed = feeds[cToken_]; // gas savings\n    if (feed.addr != address(0)) {\n      if (feed.source == uint8(1)) {\n        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - IChainlinkFeed(feed.addr).decimals());\n        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');\n        (uint80 roundID, int256 answer, , uint256 updatedAt, uint80 answeredInRound) = IChainlinkFeed(feed.addr)\n          .latestRoundData();\n        require(answeredInRound >= roundID, 'Stale price');\n        require(answer > 0, 'negative price');\n        require(block.timestamp <= updatedAt + 86400, 'timeout');\n        return uint256(answer) * (10 ** decimals);\n      }\n      if (feed.source == uint8(2)) {\n        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);\n        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');\n        uint256 _temp = uint256(IWitnetFeed(feed.addr).lastPrice());\n        return _temp * (10 ** decimals);\n      }\n      if (feed.source == uint8(3)) {\n        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);\n        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');\n        IStdReference.ReferenceData memory refData = IStdReference(feed.addr).getReferenceData(feed.name, 'USD');\n        return refData.rate * (10 ** decimals);\n      }\n    }\n    return fixedPrices[cToken_];\n  }\n\n  function getUnderlyingPrices(address[] memory cTokens) public view returns (uint256[] memory) {\n    uint256 length = cTokens.length;\n    uint256[] memory results = new uint256[](length);\n    for (uint256 i; i < length; ++i) {\n      results[i] = getUnderlyingPrice(cTokens[i]);\n    }\n    return results;\n  }\n}\n"
+    },
+    "contracts/Oracle/Interfaces/IChainlinkFeed.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.19;\n\ninterface IChainlinkFeed {\n  function decimals() external view returns (uint8);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n"
+    },
+    "contracts/Oracle/Interfaces/IWitnetFeed.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.19;\n\ninterface IWitnetFeed {\n  function lastPrice() external view returns (int256);\n}\n"
+    },
+    "contracts/Oracle/Interfaces/IStdReference.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.19;\n\ninterface IStdReference {\n  /// A structure returned whenever someone requests for standard reference data.\n  struct ReferenceData {\n    uint256 rate; // base/quote exchange rate, multiplied by 1e18.\n    uint256 lastUpdatedBase; // UNIX epoch of the last time when base price gets updated.\n    uint256 lastUpdatedQuote; // UNIX epoch of the last time when quote price gets updated.\n  }\n\n  /// Returns the price data for the given base/quote pair. Revert if not available.\n  function getReferenceData(string calldata _base, string calldata _quote) external view returns (ReferenceData memory);\n\n  /// Similar to getReferenceData, but with multiple base/quote pairs at once.\n  function getReferenceDataBulk(string[] calldata _bases, string[] calldata _quotes)\n    external\n    view\n    returns (ReferenceData[] memory);\n}\n"
+    },
+    "contracts/Oracle/PriceOracle.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.19;\n\nabstract contract PriceOracle {\n  /// @notice Indicator that this is a PriceOracle contract (for inspection)\n  bool public constant isPriceOracle = true;\n\n  /**\n   * @notice Get the underlying price of a cToken asset\n   * @param cToken The cToken to get the underlying price of\n   * @return The underlying asset price mantissa (scaled by 1e18).\n   *  Zero means the price is unavailable.\n   */\n  function getUnderlyingPrice(address cToken) external view virtual returns (uint256);\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 20
+    },
+    "outputSelection": {
+      "*": {
+        "": ["ast"],
+        "*": [
+          "abi",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.legacyAssembly",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "evm.gasEstimates",
+          "evm.assembly"
+        ]
+      }
+    }
+  }
+}

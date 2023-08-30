@@ -6,7 +6,7 @@
     "supply": "100000000",
     "address": "0xB28c8c2abF17243502eB28885455998e8B984B58"
   },
-  "feedPriceOracle": { "address": "0x173A77e36C5AbFC72085EC6d8e412bc5E29D0538" },
+  "feedPriceOracle": { "address": "0x186ac52a93699351f0407c47a369c7e2e8B9c666" },
   "compoundLens": { "address": "0x1dB99Ae66bf9d40A8d8eB134d7C6a68F61c73fc4" },
   "underwriterAdmin": {
     "implementation": "0xD2c44eD3D10c5307abe015C87731745aF395b77C",
@@ -42,8 +42,7 @@
         "address": "0x03f6A3BEc36B1CaBE4ccfF755eC32438F6937a15",
         "groupId": 2,
         "oracle": {
-          "feedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
-          "addr": "0x5955c1478f0dad753c7e2b4dd1b4bc530c64749f",
+          "addr": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2",
           "tokenDecimals": 18,
           "name": "sdrETH"
         },
@@ -62,9 +61,8 @@
         "address": "0x0A6184143Ef822A0689c8e560DfD15e447eba7C0",
         "groupId": 1,
         "oracle": {
-          "feedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
-          "addr": "0x5955c1478f0dad753c7e2b4dd1b4bc530c64749f",
-          "tokenDecimals": 8,
+          "addr": "0xAC15714c08986DACC0379193e22382736796496f",
+          "tokenDecimals": 18,
           "name": "sdrBTC"
         },
         "interestRateModel": { "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900" },
@@ -81,9 +79,8 @@
         "address": "0x0B9BF436bb802E1B98e6BEC940Dc6Aae5f575a54",
         "groupId": 3,
         "oracle": {
-          "feedId": "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
-          "addr": "0x5955c1478f0dad753c7e2b4dd1b4bc530c64749f",
-          "tokenDecimals": 6,
+          "addr": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0",
+          "tokenDecimals": 18,
           "name": "sdrUSDC"
         },
         "interestRateModel": { "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141" },
@@ -100,9 +97,8 @@
         "address": "0xD81cb1DFBB98c59935A5fd2C6076B2E4903164E1",
         "groupId": 3,
         "oracle": {
-          "feedId": "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
-          "addr": "0x5955c1478f0dad753c7e2b4dd1b4bc530c64749f",
-          "tokenDecimals": 6,
+          "addr": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C",
+          "tokenDecimals": 18,
           "name": "sdrUSDT"
         },
         "interestRateModel": { "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141" },
@@ -136,8 +132,7 @@
         "address": "0x613d40382cF628d8A6E225CC5010a28f4f6C79ad",
         "groupId": 2,
         "oracle": {
-          "feedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
-          "addr": "0x5955c1478f0dad753c7e2b4dd1b4bc530c64749f",
+          "addr": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2",
           "tokenDecimals": 18,
           "name": "suETH"
         },
@@ -153,8 +148,7 @@
         "address": "0x72736b541D214fd310A7FdE7A2F805101D50d174",
         "groupId": 1,
         "oracle": {
-          "feedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
-          "addr": "0x5955c1478f0dad753c7e2b4dd1b4bc530c64749f",
+          "addr": "0xAC15714c08986DACC0379193e22382736796496f",
           "tokenDecimals": 18,
           "name": "suBTC"
         },

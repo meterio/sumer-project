@@ -425,6 +425,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PythOracle__factory>;
     getContractFactory(
+      name: "IWstMTRG",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IWstMTRG__factory>;
+    getContractFactory(
+      name: "WstMTRGOracle",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WstMTRGOracle__factory>;
+    getContractFactory(
       name: "SumerProxyAdmin",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SumerProxyAdmin__factory>;
@@ -996,6 +1004,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.PythOracle>;
+    getContractAt(
+      name: "IWstMTRG",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IWstMTRG>;
+    getContractAt(
+      name: "WstMTRGOracle",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.WstMTRGOracle>;
     getContractAt(
       name: "SumerProxyAdmin",
       address: string,

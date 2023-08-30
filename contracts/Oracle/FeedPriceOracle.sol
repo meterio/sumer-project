@@ -114,7 +114,7 @@ contract FeedPriceOracle is PriceOracle {
           .latestRoundData();
         require(answeredInRound >= roundID, 'Stale price');
         require(answer > 0, 'negative price');
-        require(block.timestamp <= updatedAt + 600, 'timeout');
+        require(block.timestamp <= updatedAt + 86400, 'timeout');
         return uint256(answer) * (10 ** decimals);
       }
       if (feed.source == uint8(2)) {
