@@ -218,7 +218,9 @@ abstract contract CToken is CTokenStorage {
   function balanceOfUnderlying(address owner) external override returns (uint256) {
     Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
     (MathError mErr, uint256 balance) = exchangeRate.mulScalarTruncate(accountTokens[owner]);
-    require(mErr == MathError.NO_ERROR, 'BCNB'); // balance could not be calculated
+    if (mErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.BALANCE_COULD_NOT_BE_CALCULATED);
+    }
     return balance;
   }
 
@@ -283,7 +285,7 @@ abstract contract CToken is CTokenStorage {
    * @return The total borrows with interest
    */
   function totalBorrowsCurrent() external override nonReentrant returns (uint256) {
-    require(accrueInterest() == uint256(Error.NO_ERROR), 'AIF'); // accrue interest failed
+    accrueInterest();
     return totalBorrows;
   }
 
@@ -293,7 +295,7 @@ abstract contract CToken is CTokenStorage {
    * @return The calculated balance
    */
   function borrowBalanceCurrent(address account) external override nonReentrant returns (uint256) {
-    require(accrueInterest() == uint256(Error.NO_ERROR),'AIF'); // accrue interest failed
+    accrueInterest();
     return borrowBalanceStored(account);
   }
 
@@ -304,7 +306,9 @@ abstract contract CToken is CTokenStorage {
    */
   function borrowBalanceStored(address account) public view override returns (uint256) {
     (MathError err, uint256 result) = borrowBalanceStoredInternal(account);
-    require(err == MathError.NO_ERROR, 'BBIF'); //borrowBalanceStored: borrowBalanceStoredInternal failed
+    if (err != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.BORROW_BALANCE_STORED_INTERNAL_FAILED);
+    }
     return result;
   }
 
@@ -350,7 +354,7 @@ abstract contract CToken is CTokenStorage {
    * @return Calculated exchange rate scaled by 1e18
    */
   function exchangeRateCurrent() public override nonReentrant returns (uint256) {
-    require(accrueInterest() == uint256(Error.NO_ERROR),'AIF'); // accrue interest failed
+    accrueInterest();
     return exchangeRateStored();
   }
 
@@ -361,7 +365,9 @@ abstract contract CToken is CTokenStorage {
    */
   function exchangeRateStored() public view override returns (uint256) {
     (MathError err, uint256 result) = exchangeRateStoredInternal();
-    require(err == MathError.NO_ERROR, 'ERIF'); // exchangeRateStored: exchangeRateStoredInternal failed
+    if (err != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.EXCHANGE_RATE_STORED_INTERNAL_FAILED);
+    }
     return result;
   }
 
@@ -441,11 +447,15 @@ abstract contract CToken is CTokenStorage {
       borrowsPrior,
       reservesPrior
     );
-    require(borrowRateMantissa <= BORROW_RATE_MAX_MANTISSA, 'BRIA'); // borrow rate is absurdly high
+    if (borrowRateMantissa > BORROW_RATE_MAX_MANTISSA) {
+      Error.TOKEN_ERROR.failOpaque(FailureInfo.BORROW_RATE_ABSURDLY_HIGH, borrowRateMantissa);
+    }
 
     /* Calculate the number of blocks elapsed since the last accrual */
     (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
-    require(mathErr == MathError.NO_ERROR, 'CNCB'); // could not calculate block delta
+    if (mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
+    }
 
     /*
      * Calculate the interest accumulated into borrows and reserves and the new index:
@@ -464,26 +474,23 @@ abstract contract CToken is CTokenStorage {
 
     (mathErr, simpleInterestFactor) = Exp({mantissa: borrowRateMantissa}).mulScalar(blockDelta);
     if (mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(
-          FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
-          uint256(mathErr)
-        );
+      Error.MATH_ERROR.failOpaque(
+        FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
+        uint256(mathErr)
+      );
     }
 
     (mathErr, interestAccumulated) = simpleInterestFactor.mulScalarTruncate(borrowsPrior);
     if (mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(
-          FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
-          uint256(mathErr)
-        );
+      Error.MATH_ERROR.failOpaque(
+        FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
+        uint256(mathErr)
+      );
     }
 
     (mathErr, totalBorrowsNew) = interestAccumulated.addUInt(borrowsPrior);
     if (mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
+      Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
     }
 
     (mathErr, totalReservesNew) = Exp({mantissa: reserveFactorMantissa}).mulScalarTruncateAddUInt(
@@ -491,17 +498,12 @@ abstract contract CToken is CTokenStorage {
       reservesPrior
     );
     if (mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(
-          FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED,
-          uint256(mathErr)
-        );
+      Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED, uint256(mathErr));
     }
 
     (mathErr, borrowIndexNew) = simpleInterestFactor.mulScalarTruncateAddUInt(borrowIndexPrior, borrowIndexPrior);
     if (mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
+      Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
     }
 
     /////////////////////////
@@ -527,11 +529,7 @@ abstract contract CToken is CTokenStorage {
    * @return (uint, uint) An error code (0=success, otherwise a failure, see ErrorReporter.sol), and the actual mint amount.
    */
   function mintInternal(uint256 mintAmount) internal nonReentrant returns (uint256, uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted borrow failed
-      Error(error).fail(FailureInfo.MINT_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // mintFresh emits the actual Mint event if successful and logs on errors, so we don't need to
     return mintFresh(msg.sender, mintAmount);
   }
@@ -594,7 +592,9 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.mintTokens) = vars.actualMintAmount.divScalarByExpTruncate(
       Exp({mantissa: vars.exchangeRateMantissa})
     );
-    require(vars.mathErr == MathError.NO_ERROR, 'MECF'); // MINT_EXCHANGE_CALCULATION_FAILED
+    if (vars.mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.MINT_EXCHANGE_CALCULATION_FAILED);
+    }
 
     /*
      * We calculate the new total supply of cTokens and minter token balance, checking for overflow:
@@ -602,10 +602,14 @@ abstract contract CToken is CTokenStorage {
      *  accountTokensNew = accountTokens[minter] + mintTokens
      */
     (vars.mathErr, vars.totalSupplyNew) = totalSupply.addUInt(vars.mintTokens);
-    require(vars.mathErr == MathError.NO_ERROR, 'MNTS'); // MINT_NEW_TOTAL_SUPPLY_CALCULATION_FAILED
+    if (vars.mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.MINT_NEW_TOTAL_SUPPLY_CALCULATION_FAILED);
+    }
 
     (vars.mathErr, vars.accountTokensNew) = accountTokens[minter].addUInt(vars.mintTokens);
-    require(vars.mathErr == MathError.NO_ERROR, 'MNAB'); // MINT_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED
+    if (vars.mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.MINT_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED);
+    }
 
     /* We write previously calculated values into storage */
     totalSupply = vars.totalSupplyNew;
@@ -629,11 +633,7 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function redeemInternal(uint256 redeemTokens) internal nonReentrant returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted redeem failed
-      Error(error).fail(FailureInfo.REDEEM_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // redeemFresh emits redeem-specific logs on errors, so we don't need to
     return redeemFresh(payable(msg.sender), redeemTokens, 0);
   }
@@ -645,11 +645,7 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function redeemUnderlyingInternal(uint256 redeemAmount) internal nonReentrant returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted redeem failed
-      Error(error).fail(FailureInfo.REDEEM_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // redeemFresh emits redeem-specific logs on errors, so we don't need to
     return redeemFresh(payable(msg.sender), 0, redeemAmount);
   }
@@ -677,8 +673,9 @@ abstract contract CToken is CTokenStorage {
     uint256 redeemTokensIn,
     uint256 redeemAmountIn
   ) internal returns (uint256) {
-    require(redeemTokensIn == 0 || redeemAmountIn == 0, 'OORR'); // one of redeemTokensIn or redeemAmountIn must be zero
-
+    if (redeemTokensIn != 0 && redeemAmountIn != 0) {
+      Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
+    }
     RedeemLocalVars memory vars;
 
     /* exchangeRate = invoke Exchange Rate Stored() */
@@ -711,8 +708,7 @@ abstract contract CToken is CTokenStorage {
         Exp({mantissa: vars.exchangeRateMantissa})
       );
       if (vars.mathErr != MathError.NO_ERROR) {
-        return
-          Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_AMOUNT_CALCULATION_FAILED, uint256(vars.mathErr));
+        Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_AMOUNT_CALCULATION_FAILED, uint256(vars.mathErr));
       }
 
       vars.redeemAmount = redeemAmountIn;
@@ -777,8 +773,9 @@ abstract contract CToken is CTokenStorage {
   }
 
   function redeemAndTransferFresh(address payable redeemer, uint256 redeemTokensIn) internal returns (uint256) {
-    require(redeemTokensIn == 0, 'OORR'); // one of redeemTokensIn or redeemAmountIn must be zero
-
+    if (redeemTokensIn != 0) {
+      Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
+    }
     RedeemLocalVars memory vars;
 
     /* exchangeRate = invoke Exchange Rate Stored() */
@@ -862,11 +859,7 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function borrowInternal(uint256 borrowAmount) internal nonReentrant returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted borrow failed
-      Error(error).fail(FailureInfo.BORROW_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // borrowFresh emits borrow-specific logs on errors, so we don't need to
     return borrowFresh(payable(msg.sender), borrowAmount);
   }
@@ -909,23 +902,20 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.accountBorrows) = borrowBalanceStoredInternal(borrower);
     if (vars.mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(FailureInfo.BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      Error.MATH_ERROR.failOpaque(FailureInfo.BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
     }
 
     (vars.mathErr, vars.accountBorrowsNew) = vars.accountBorrows.addUInt(borrowAmount);
     if (vars.mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(
-          FailureInfo.BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED,
-          uint256(vars.mathErr)
-        );
+      Error.MATH_ERROR.failOpaque(
+        FailureInfo.BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED,
+        uint256(vars.mathErr)
+      );
     }
 
     (vars.mathErr, vars.totalBorrowsNew) = totalBorrows.addUInt(borrowAmount);
     if (vars.mathErr != MathError.NO_ERROR) {
-      return
-        Error.MATH_ERROR.failOpaque(FailureInfo.BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      Error.MATH_ERROR.failOpaque(FailureInfo.BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
     }
 
     /////////////////////////
@@ -962,11 +952,7 @@ abstract contract CToken is CTokenStorage {
    * @return (uint, uint) An error code (0=success, otherwise a failure, see ErrorReporter.sol), and the actual repayment amount.
    */
   function repayBorrowInternal(uint256 repayAmount) internal nonReentrant returns (uint256, uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted borrow failed
-      Error(error).fail(FailureInfo.REPAY_BORROW_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // repayBorrowFresh emits repay-borrow-specific logs on errors, so we don't need to
     return repayBorrowFresh(msg.sender, msg.sender, repayAmount);
   }
@@ -981,11 +967,7 @@ abstract contract CToken is CTokenStorage {
     address borrower,
     uint256 repayAmount
   ) internal nonReentrant returns (uint256, uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted borrow failed
-      Error(error).fail(FailureInfo.REPAY_BEHALF_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // repayBorrowFresh emits repay-borrow-specific logs on errors, so we don't need to
     return repayBorrowFresh(msg.sender, borrower, repayAmount);
   }
@@ -1060,10 +1042,14 @@ abstract contract CToken is CTokenStorage {
      *  totalBorrowsNew = totalBorrows - actualRepayAmount
      */
     (vars.mathErr, vars.accountBorrowsNew) = vars.accountBorrows.subUInt(vars.actualRepayAmount);
-    require(vars.mathErr == MathError.NO_ERROR, 'RBNA'); // REPAY_BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED
+    if (vars.mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.REPAY_BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED);
+    }
 
     (vars.mathErr, vars.totalBorrowsNew) = totalBorrows.subUInt(vars.actualRepayAmount);
-    require(vars.mathErr == MathError.NO_ERROR, 'RBNT'); // REPAY_BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED
+    if (vars.mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.fail(FailureInfo.REPAY_BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED);
+    }
 
     /* We write the previously calculated values into storage */
     accountBorrows[borrower].principal = vars.accountBorrowsNew;
@@ -1093,17 +1079,8 @@ abstract contract CToken is CTokenStorage {
     uint256 repayAmount,
     address cTokenCollateral
   ) internal nonReentrant returns (uint256, uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted liquidation failed
-      Error(error).fail(FailureInfo.LIQUIDATE_ACCRUE_BORROW_INTEREST_FAILED);
-    }
-
-    error = ICToken(cTokenCollateral).accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but we still want to log the fact that an attempted liquidation failed
-      Error(error).fail(FailureInfo.LIQUIDATE_ACCRUE_COLLATERAL_INTEREST_FAILED);
-    }
+    accrueInterest();
+    ICToken(cTokenCollateral).accrueInterest();
 
     // liquidateBorrowFresh emits borrow-specific logs on errors, so we don't need to
     return liquidateBorrowFresh(msg.sender, borrower, repayAmount, cTokenCollateral);
@@ -1156,35 +1133,26 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Fail if repayBorrow fails */
-    (uint256 repayBorrowError, uint256 actualRepayAmount) = repayBorrowFresh(liquidator, borrower, repayAmount);
-    if (repayBorrowError != uint256(Error.NO_ERROR)) {
-      Error(repayBorrowError).fail(FailureInfo.LIQUIDATE_REPAY_BORROW_FRESH_FAILED);
-    }
+    (, uint256 actualRepayAmount) = repayBorrowFresh(liquidator, borrower, repayAmount);
 
     /////////////////////////
     // EFFECTS & INTERACTIONS
     // (No safe failures beyond this point)
 
     /* We calculate the number of collateral tokens that will be seized */
-    (uint256 amountSeizeError, uint256 seizeTokens) = liquidateCalculateSeizeTokens(
-      cTokenCollateral,
-      actualRepayAmount
-    );
-    require(amountSeizeError == uint256(Error.NO_ERROR), 'LCCA'); // LIQUIDATE_COMPTROLLER_CALCULATE_AMOUNT_SEIZE_FAILED
+    (, uint256 seizeTokens) = liquidateCalculateSeizeTokens(cTokenCollateral, actualRepayAmount);
 
     /* Revert if borrower collateral token balance < seizeTokens */
-    require(ICToken(cTokenCollateral).balanceOf(borrower) >= seizeTokens, 'LSTM'); // LIQUIDATE_SEIZE_TOO_MUCH
-
-    // If this is also the collateral, run seizeInternal to avoid re-entrancy, otherwise make an external call
-    uint256 seizeError;
-    if (cTokenCollateral == address(this)) {
-      seizeError = seizeInternal(address(this), liquidator, borrower, seizeTokens);
-    } else {
-      seizeError = ICToken(cTokenCollateral).seize(liquidator, borrower, seizeTokens);
+    if (ICToken(cTokenCollateral).balanceOf(borrower) < seizeTokens) {
+      Error.TOKEN_ERROR.fail(FailureInfo.LIQUIDATE_SEIZE_TOO_MUCH);
     }
 
-    /* Revert if seize tokens fails (since we cannot be sure of side effects) */
-    require(seizeError == uint256(Error.NO_ERROR), 'TSF'); // token seizure failed
+    // If this is also the collateral, run seizeInternal to avoid re-entrancy, otherwise make an external call
+    if (cTokenCollateral == address(this)) {
+      seizeInternal(address(this), liquidator, borrower, seizeTokens);
+    } else {
+      ICToken(cTokenCollateral).seize(liquidator, borrower, seizeTokens);
+    }
 
     /* We emit a LiquidateBorrow event */
     emit LiquidateBorrow(liquidator, borrower, actualRepayAmount, address(cTokenCollateral), seizeTokens);
@@ -1274,7 +1242,9 @@ abstract contract CToken is CTokenStorage {
     vars.liquidatorSeizeTokens = seizeTokens.sub_(vars.protocolSeizeTokens);
 
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
-    require(vars.mathErr == MathError.NO_ERROR, 'ERME'); // exchange rate math error
+    if (vars.mathErr != MathError.NO_ERROR) {
+      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+    }
 
     vars.protocolSeizeAmount = Exp({mantissa: vars.exchangeRateMantissa}).mul_ScalarTruncate(vars.protocolSeizeTokens);
 
@@ -1384,11 +1354,7 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function _setReserveFactor(uint256 newReserveFactorMantissa) external override nonReentrant returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reserve factor change failed.
-      Error(error).fail(FailureInfo.SET_RESERVE_FACTOR_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // _setReserveFactorFresh emits reserve-factor-specific logs on errors, so we don't need to.
     return _setReserveFactorFresh(newReserveFactorMantissa);
   }
@@ -1423,14 +1389,9 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function _addReservesInternal(uint256 addAmount) internal nonReentrant returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reduce reserves failed.
-      Error(error).fail(FailureInfo.ADD_RESERVES_ACCRUE_INTEREST_FAILED);
-    }
-
+    accrueInterest();
     // _addReservesFresh emits reserve-addition-specific logs on errors, so we don't need to.
-    (error, ) = _addReservesFresh(addAmount);
+    (uint256 error, ) = _addReservesFresh(addAmount);
     return error;
   }
 
@@ -1467,7 +1428,9 @@ abstract contract CToken is CTokenStorage {
     totalReservesNew = totalReserves + actualAddAmount;
 
     /* Revert on overflow */
-    require(totalReservesNew >= totalReserves, 'ARUO'); // add reserves unexpected overflow
+    if (totalReservesNew < totalReserves) {
+      Error.MATH_ERROR.fail(FailureInfo.ADD_RESERVES_UNEXPECTED_OVERFLOW);
+    }
 
     // Store reserves[n+1] = reserves[n] + actualAddAmount
     totalReserves = totalReservesNew;
@@ -1485,11 +1448,7 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function _reduceReserves(uint256 reduceAmount) external override nonReentrant returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reduce reserves failed.
-      Error(error).fail(FailureInfo.REDUCE_RESERVES_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // _reduceReservesFresh emits reserve-reduction-specific logs on errors, so we don't need to.
     return _reduceReservesFresh(reduceAmount);
   }
@@ -1525,7 +1484,9 @@ abstract contract CToken is CTokenStorage {
 
     totalReservesNew = totalReserves - reduceAmount;
     // We checked reduceAmount <= totalReserves above, so this should never revert.
-    require(totalReservesNew <= totalReserves, 'RRUU'); // reduce reserves unexpected underflow
+    if (totalReservesNew < totalReserves) {
+      Error.MATH_ERROR.fail(FailureInfo.ADD_RESERVES_UNEXPECTED_OVERFLOW);
+    }
 
     // Store reserves[n+1] = reserves[n] - reduceAmount
     totalReserves = totalReservesNew;
@@ -1545,11 +1506,7 @@ abstract contract CToken is CTokenStorage {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function _setInterestRateModel(address newInterestRateModel) public override returns (uint256) {
-    uint256 error = accrueInterest();
-    if (error != uint256(Error.NO_ERROR)) {
-      // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted change of interest rate model failed
-      Error(error).fail(FailureInfo.SET_INTEREST_RATE_MODEL_ACCRUE_INTEREST_FAILED);
-    }
+    accrueInterest();
     // _setInterestRateModelFresh emits interest-rate-model-update-specific logs on errors, so we don't need to.
     return _setInterestRateModelFresh(newInterestRateModel);
   }
@@ -1649,17 +1606,17 @@ abstract contract CToken is CTokenStorage {
     uint256 repayAmount
   ) public view returns (uint256) {
     // Shh - currently unused: liquidator;
-
-    require(
-      IComptroller(comptroller).isListed(address(this)) && IComptroller(comptroller).isListed(cTokenCollateral),
-      'MNL'
-    ); // MARKET_NOT_LISTED
+    if (!IComptroller(comptroller).isListed(address(this)) || !IComptroller(comptroller).isListed(cTokenCollateral)) {
+      Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
+    }
 
     (, uint256 borrowBalance) = borrowBalanceStoredInternal(borrower);
 
     /* allow accounts to be liquidated if the market is deprecated */
     if (isDeprecated()) {
-      require(borrowBalance >= repayAmount, 'TMR'); // too much repay
+      if (borrowBalance < repayAmount) {
+        Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+      }
     } else {
       /* The borrower must have shortfall in order to be liquidatable */
       (, , uint256 shortfall) = IComptroller(comptroller).getHypotheticalAccountLiquidity(
@@ -1669,13 +1626,17 @@ abstract contract CToken is CTokenStorage {
         0
       );
 
-      require(shortfall > 0, 'IS'); // insufficient shortfall
+      if (shortfall <= 0) {
+        Error.TOKEN_ERROR.fail(FailureInfo.INSUFFICIENT_SHORTFALL);
+      }
 
       /* The liquidator may not repay more than what is allowed by the closeFactor */
       uint256 maxClose = Exp({mantissa: IComptroller(comptroller).closeFactorMantissa()}).mul_ScalarTruncate(
         borrowBalance
       );
-      require(repayAmount <= maxClose, 'TMR2'); // too much repay
+      if (repayAmount > maxClose) {
+        Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+      }
     }
     return uint256(0);
   }
@@ -1695,8 +1656,9 @@ abstract contract CToken is CTokenStorage {
     address oracle = IComptroller(comptroller).oracle();
     uint256 priceBorrowedMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(address(this)));
     uint256 priceCollateralMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenCollateral));
-    require(priceBorrowedMantissa > 0 && priceCollateralMantissa > 0, 'PE'); // PRICE_ERROR
-
+    if (priceBorrowedMantissa <= 0 || priceCollateralMantissa <= 0) {
+      Error.TOKEN_ERROR.fail(FailureInfo.PRICE_ERROR);
+    }
     /*
      * Get the exchange rate and calculate the number of collateral tokens to seize:
      *  seizeAmount = actualRepayAmount * liquidationIncentive * priceBorrowed / priceCollateral
