@@ -29,7 +29,7 @@ task('ust', 'deploy cToken contract')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice,
+        gasPrice: gasprice
       };
     }
     if (impl == constants.AddressZero) {
@@ -37,7 +37,7 @@ task('ust', 'deploy cToken contract')
         name: 'suErc20',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice,
+        gasprice: gasprice
       });
       config.suTokens.implementation = suErc20Impl.address;
     } else {
@@ -47,11 +47,13 @@ task('ust', 'deploy cToken contract')
 
     for (let i = 0; i < config.suTokens.tokens.length; i++) {
       const proxyContract = (await ethers.getContractAt('ProxyAdmin', config.proxyAdmin.address, wallet)) as ProxyAdmin;
-      let receipt = await proxyContract.upgrade(
+      let gas = await proxyContract.estimateGas.upgrade(
         config.suTokens.tokens[i].address,
-        config.suTokens.implementation,
-        override
+        config.suTokens.implementation
       );
+      let receipt = await proxyContract.upgrade(config.suTokens.tokens[i].address, config.suTokens.implementation, {
+        gasLimit: gas
+      });
       log.info('proxyContract.upgradeTo tx:', receipt.hash);
     }
   });

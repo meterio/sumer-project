@@ -46,20 +46,21 @@ task('uct', 'deploy cToken contract')
 
     for (let i = 0; i < config.cTokens.tokens.length; i++) {
       if (!config.cTokens.tokens[i].native) {
-        const proxyContract = (await ethers.getContractAt(
-          'ProxyAdmin',
-          config.proxyAdmin.address,
-          wallet
-        )) as ProxyAdmin;
-        let receipt = await proxyContract.upgrade(
+        let proxyContract = (await ethers.getContractAt('ProxyAdmin', config.proxyAdmin.address, wallet)) as ProxyAdmin;
+        let gas = await proxyContract.estimateGas.upgrade(
           config.cTokens.tokens[i].address,
-          config.cTokens.implementation,
-          override
+          config.cTokens.implementation
         );
+        let receipt = await proxyContract.upgrade(config.cTokens.tokens[i].address, config.cTokens.implementation, {
+          gasLimit: gas
+        });
+        await receipt.wait();
         log.info('proxyContract.upgradeTo tx:', receipt.hash);
-        const cToken = (await ethers.getContractAt('CErc20', config.cTokens.tokens[i].address, wallet)) as CErc20;
-        receipt = await cToken._syncUnderlyingBalance();
+        let cToken = (await ethers.getContractAt('CErc20', config.cTokens.tokens[i].address, wallet)) as CErc20;
+        gas = await cToken.estimateGas._syncUnderlyingBalance();
+        receipt = await cToken._syncUnderlyingBalance({ gasLimit: gas });
         log.info('cToken._syncUnderlyingBalance tx:', receipt.hash);
+        await receipt.wait();
       }
     }
   });

@@ -28,7 +28,7 @@ task('uce', 'deploy cToken contract')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice,
+        gasPrice: gasprice
       };
     }
     if (impl == constants.AddressZero) {
@@ -36,7 +36,7 @@ task('uce', 'deploy cToken contract')
         name: 'CEther',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice,
+        gasprice: gasprice
       });
       impl = cEtherImpl.address;
     }
@@ -44,7 +44,10 @@ task('uce', 'deploy cToken contract')
     const proxyContract = (await ethers.getContractAt('ProxyAdmin', config.proxyAdmin.address, wallet)) as ProxyAdmin;
     for (let i = 0; i < config.cTokens.tokens.length; i++) {
       if (config.cTokens.tokens[i].native) {
-        let receipt = await proxyContract.upgrade(config.cTokens.tokens[i].address, impl, override);
+        let cToken = config.cTokens.tokens[i];
+        let gas = await proxyContract.estimateGas.upgrade(cToken.address, impl);
+        let receipt = await proxyContract.upgrade(cToken.address, impl, { gasLimit: gas });
+        await receipt.wait();
         log.info('proxyContract.upgradeTo tx:', receipt.hash);
         config.cTokens.tokens[i].implementation = impl;
         writeFileSync(json, JSON.stringify(config));
