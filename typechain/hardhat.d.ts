@@ -265,6 +265,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SuErc20__factory>;
     getContractFactory(
+      name: "ErrorTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ErrorTest__factory>;
+    getContractFactory(
       name: "TokenErrorReporter",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TokenErrorReporter__factory>;
@@ -804,6 +808,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SuErc20>;
+    getContractAt(
+      name: "ErrorTest",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ErrorTest>;
     getContractAt(
       name: "TokenErrorReporter",
       address: string,

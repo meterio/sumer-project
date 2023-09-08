@@ -142,6 +142,14 @@ task('hal', 'get Hypothetical Account Liquidity')
         .div(expScale)
         .mul(vars.discountRate)
         .div(expScale); // Line 122
+
+      const symbol = await assetToken.symbol();
+      console.log(`asset ${symbol}
+      exchangeRate: ${vars.exchangeRate}
+      oraclePrice : ${vars.oraclePrice}
+      discountRate : ${vars.discountRate}
+      expScale : ${expScale}`);
+
       let index: number; // Line 124
       for (index = 0; index < vars.equalAssetsGroupNum; index++) {
         // Line 125
@@ -158,6 +166,12 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.tokenDepositVal = mul_ScalarTruncateAddUInt(vars.tokensToDenom, vars.cTokenBalance, vars.tokenDepositVal); // Line 136
       vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, vars.borrowBalance, vars.tokenBorrowVal); // Line 137
 
+      // const symbol = await assetToken.symbol();
+      // console.log(`asset ${symbol}
+      // tokensToDenom: ${vars.tokensToDenom}
+      // cTokenBalance : ${vars.cTokenBalance}
+      // tokenDepositVal : ${vars.tokenDepositVal}`);
+
       if (asset == ctoken) {
         // Line 138
         let redeemVal = truncate(vars.tokensToDenom.mul(redeem)); // Line 139
@@ -172,7 +186,7 @@ task('hal', 'get Hypothetical Account Liquidity')
         }
         vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrow, vars.tokenBorrowVal); // Line 154
       }
-      const symbol = await assetToken.symbol();
+      // const symbol = await assetToken.symbol();
       //   console.log(`asset ${symbol}
       //   depositVal: ${vars.tokenDepositVal}
       //   borrowVal : ${vars.tokenBorrowVal}`);

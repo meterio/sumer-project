@@ -12,18 +12,6 @@
     "implementation": "0xD2c44eD3D10c5307abe015C87731745aF395b77C",
     "address": "0x3c4b1E29Eee4d6fe75e5F71524653a829aF4E447"
   },
-  "suInterestRateModel": {
-    "blocks": "15768000",
-    "base": "0",
-    "mul": "0",
-    "address": "0x0C978D33b4BCB2aae5922a5998e8e88E41D9a149"
-  },
-  "cInterestRateModel": {
-    "blocks": "15768000",
-    "base": "0.05",
-    "mul": "0.45",
-    "address": "0xa21f556B235f2E4018eC1620B70f522bb5F2A451"
-  },
   "accountLiquidity": {
     "implementation": "0x54d342c5fa080f16e764781bb0e8a43edbad3e3f",
     "address": "0xA7ab24239A5C48F16790D028755a7e9FCD604C2B"
@@ -38,6 +26,41 @@
     "implementation": "0x9ffB36eF3D4E331B7ECdf83A204b83571FDd213f",
     "address": "0xb838B9E26A567fCb2880D57a72d15d4bEF8ed0CB"
   },
+  "InterestRateModel": [
+    {
+      "tokens": "USDT、USDC、BUSD",
+      "contract": "JumpRateModelV2",
+      "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141",
+      "blocksPerYearOnChain": "15768000",
+      "baseRatePerYear": "0",
+      "multiplierPerYear": "40000000000000000",
+      "jumpMultiplierPerYear": "1090000000000000000",
+      "kink": "800000000000000000"
+    },
+    {
+      "tokens": "ETH、MTR、MTRG",
+      "contract": "JumpRateModelV2",
+      "address": "0x7254b2e250d0d539103B1563ac0958c5910ca239",
+      "blocksPerYearOnChain": "15768000",
+      "baseRatePerYear": "20000000000000000",
+      "multiplierPerYear": "150000000000000000",
+      "jumpMultiplierPerYear": "3000000000000000000",
+      "kink": "600000000000000000"
+    },
+    {
+      "tokens": "BTC",
+      "contract": "WhitePaperInterestRateModel",
+      "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900",
+      "blocksPerYearOnChain": "15768000",
+      "baseRatePerYear": "20000000000000000",
+      "multiplierPerYear": "300000000000000000"
+    },
+    {
+      "tokens": "suUSD、suETH、suBTC",
+      "contract": "ZeroInterestRateModel",
+      "address": "0x0C978D33b4BCB2aae5922a5998e8e88E41D9a149"
+    }
+  ],
   "cTokens": {
     "implementation": "0x1d300388E0E07750E5497c0a4AfAA087176E959e",
     "tokens": [
@@ -64,7 +87,7 @@
         "underly": "0x0D0267E89189D73826aeAa1556ac4428c845e68a",
         "address": "0x0A6184143Ef822A0689c8e560DfD15e447eba7C0",
         "groupId": 1,
-        "oracle": { "addr": "0xAC15714c08986DACC0379193e22382736796496f", "tokenDecimals": 18, "name": "sdrBTC" },
+        "oracle": { "addr": "0xAC15714c08986DACC0379193e22382736796496f", "tokenDecimals": 8, "name": "sdrBTC" },
         "interestRateModel": { "address": "0xac13A5e7D237099C51e11f89eD0b8c44719e1900" },
         "discountRate": "1000000000000000000",
         "supplySpeed": "10000000000000000",
@@ -78,7 +101,7 @@
         "underly": "0x93de053520D42B3F74281852Bd56F232A4E643DA",
         "address": "0x0B9BF436bb802E1B98e6BEC940Dc6Aae5f575a54",
         "groupId": 3,
-        "oracle": { "addr": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0", "tokenDecimals": 18, "name": "sdrUSDC" },
+        "oracle": { "addr": "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0", "tokenDecimals": 6, "name": "sdrUSDC" },
         "interestRateModel": { "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141" },
         "discountRate": "1000000000000000000",
         "supplySpeed": "10000000000000000",
@@ -92,7 +115,7 @@
         "underly": "0x61E2c1608B1caA59136BCB7845637858d216c3B9",
         "address": "0xD81cb1DFBB98c59935A5fd2C6076B2E4903164E1",
         "groupId": 3,
-        "oracle": { "addr": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C", "tokenDecimals": 18, "name": "sdrUSDT" },
+        "oracle": { "addr": "0xd5973EB46D6fE54E82C5337dD9536B35D080912C", "tokenDecimals": 6, "name": "sdrUSDT" },
         "interestRateModel": { "address": "0x96fFa1203e4479f6656A21E5f00eEc284daD7141" },
         "discountRate": "1000000000000000000",
         "supplySpeed": "10000000000000000",
@@ -112,6 +135,7 @@
         "address": "0xc2757b559aF5C40e57BEBD02463F5DF9CCaAaA18",
         "groupId": 3,
         "oracle": { "feedId": 1, "price": "1000000000000000000" },
+        "interestRateModel": { "address": "0x0C978D33b4BCB2aae5922a5998e8e88E41D9a149" },
         "discountRate": "1000000000000000000",
         "supplySpeed": "1",
         "borrowSpeed": "10000000000000000"
@@ -124,6 +148,7 @@
         "address": "0x613d40382cF628d8A6E225CC5010a28f4f6C79ad",
         "groupId": 2,
         "oracle": { "addr": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2", "tokenDecimals": 18, "name": "suETH" },
+        "interestRateModel": { "address": "0x0C978D33b4BCB2aae5922a5998e8e88E41D9a149" },
         "discountRate": "1000000000000000000",
         "supplySpeed": "1",
         "borrowSpeed": "10000000000000000"
@@ -136,6 +161,7 @@
         "address": "0x72736b541D214fd310A7FdE7A2F805101D50d174",
         "groupId": 1,
         "oracle": { "addr": "0xAC15714c08986DACC0379193e22382736796496f", "tokenDecimals": 18, "name": "suBTC" },
+        "interestRateModel": { "address": "0x0C978D33b4BCB2aae5922a5998e8e88E41D9a149" },
         "discountRate": "1000000000000000000",
         "supplySpeed": "1",
         "borrowSpeed": "10000000000000000"
