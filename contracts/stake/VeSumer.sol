@@ -53,7 +53,7 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import './TransferHelper.sol';
 
 // Inheritance
-import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/access/Ownable2Step.sol';
 import '@openzeppelin/contracts/security/Pausable.sol';
 
 // # Interface for checking whether address belongs to a whitelisted
@@ -84,7 +84,7 @@ struct LockedBalance {
   uint256 end;
 }
 
-contract VeSumer is ReentrancyGuard {
+contract VeSumer is ReentrancyGuard, Ownable2Step {
   using SafeMath for uint256;
   using SafeERC20 for ERC20;
 
@@ -96,7 +96,6 @@ contract VeSumer is ReentrancyGuard {
   int128 public constant INCREASE_UNLOCK_TIME = 3;
   int128 public constant USER_WITHDRAW = 4;
   int128 public constant TRANSFER_FROM_APP = 5;
-  int128 public constant TRANSFER_TO_APP = 6;
   int128 public constant PROXY_ADD = 7;
   int128 public constant PROXY_SLASH = 8;
   int128 public constant CHECKPOINT_ONLY = 9;
@@ -115,13 +114,10 @@ contract VeSumer is ReentrancyGuard {
   );
   event Withdraw(address indexed provider, address indexed to_addr, uint256 value, uint256 ts);
   event Supply(uint256 prevSupply, uint256 supply);
-  event TransferToApp(address indexed staker_addr, address indexed app_addr, uint256 transfer_amt);
   event TransferFromApp(address indexed app_addr, address indexed staker_addr, uint256 transfer_amt);
   event ProxyAdd(address indexed staker_addr, address indexed proxy_addr, uint256 add_amt);
-  event ProxySlash(address indexed staker_addr, address indexed proxy_addr, uint256 slash_amt);
   event SmartWalletCheckerComitted(address future_smart_wallet_checker);
   event SmartWalletCheckerApplied(address smart_wallet_checker);
-  event EmergencyUnlockToggled(bool emergencyUnlockActive);
   event AppIncreaseAmountForsToggled(bool appIncreaseAmountForsEnabled);
   event ProxyTransferFromsToggled(bool appTransferFromsEnabled);
   event ProxyTransferTosToggled(bool appTransferTosEnabled);
@@ -135,7 +131,6 @@ contract VeSumer is ReentrancyGuard {
   uint256 public constant MAXTIME = 4 * 365 * 86400; // 4 years
   int128 public constant MAXTIME_I128 = 4 * 365 * 86400; // 4 years
   uint256 public constant MULTIPLIER = 10 ** 18;
-  uint256 public constant VOTE_WEIGHT_MULTIPLIER = 4 - 1; // 4x gives 300% boost at 4 years
   int128 public constant VOTE_WEIGHT_MULTIPLIER_I128 = 4 - 1; // 4x gives 300% boost at 4 years
 
   address public token; // Sumer
@@ -185,10 +180,6 @@ contract VeSumer is ReentrancyGuard {
 
   /* ========== MODIFIERS ========== */
 
-  modifier onlyAdmin() {
-    require(msg.sender == admin, 'admin!');
-    _;
-  }
 
   /* ========== CONSTRUCTOR ========== */
   // token_addr: address, _name: String[64], _symbol: String[32], _version: String[32]
@@ -216,23 +207,11 @@ contract VeSumer is ReentrancyGuard {
     version = 'veSumer0.1';
   }
 
-  function nominate_ownership(address addr) external onlyAdmin {
-    future_admin = addr;
-    emit NominateOwnership(addr);
-  }
-
-  function accept_transfer_ownership() external {
-    address _admin = future_admin;
-    require(_admin != address(0), '!future_admin');
-    admin = _admin;
-    emit AcceptOwnership(admin);
-  }
-
   /**
    * @notice Set an external contract to check for approved smart contract wallets
    * @param addr Address of Smart contract checker
    */
-  function commit_smart_wallet_checker(address addr) external onlyAdmin {
+  function commit_smart_wallet_checker(address addr) external onlyOwner {
     future_smart_wallet_checker = addr;
     emit SmartWalletCheckerComitted(future_smart_wallet_checker);
   }
@@ -240,12 +219,12 @@ contract VeSumer is ReentrancyGuard {
   /**
    * @notice Apply setting external contract to check approved smart contract wallets
    */
-  function apply_smart_wallet_checker() external onlyAdmin {
+  function apply_smart_wallet_checker() external onlyOwner {
     smart_wallet_checker = future_smart_wallet_checker;
     emit SmartWalletCheckerApplied(smart_wallet_checker);
   }
 
-  function recoverERC20(address token_addr, uint256 amount) external onlyAdmin {
+  function recoverERC20(address token_addr, uint256 amount) external onlyOwner {
     require(token_addr != token, '!token_addr');
     ERC20(token_addr).transfer(admin, amount);
   }

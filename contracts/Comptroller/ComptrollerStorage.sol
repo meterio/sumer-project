@@ -18,7 +18,6 @@ contract ComptrollerStorage {
     string internal constant INSUFFICIENT_LIQUIDITY = "insufficient liquidity";
     string internal constant MARKET_NOT_LISTED = "market not listed";
     string internal constant UNAUTHORIZED = "unauthorized";
-    string internal constant PRICE_ERROR = "price error";
     string internal constant SNAPSHOT_ERROR = "snapshot error";
     /**
      * @notice Per-account mapping of "assets you are in", capped by maxAssets

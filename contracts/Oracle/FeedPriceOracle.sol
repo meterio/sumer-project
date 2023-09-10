@@ -42,7 +42,6 @@ contract FeedPriceOracle is PriceOracle {
     owner = owner_;
   }
 
-  // TODO: name this setChainlinkFeed
   function setChainlinkFeed(address cToken_, address feed_, uint8 tokenDecimals_) public onlyOwner {
     _setFeed(cToken_, uint8(1), feed_, tokenDecimals_, 8, '');
   }

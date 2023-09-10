@@ -101,13 +101,15 @@ contract CEther is CToken, Initializable {
   /**
    * @notice Sender repays a borrow belonging to borrower
    * @dev Reverts upon any failure
-   * @param borrower the account with the debt being payed off
+   * @param borrower the account with the debt being paid off
    */
   function repayBorrowBehalf(address borrower) external payable {
     uint256 received = msg.value;
     uint256 borrows = CEther(payable(this)).borrowBalanceCurrent(borrower);
     if (received > borrows) {
-      payable(msg.sender).transfer(received - borrows);
+      // payable(msg.sender).transfer(received - borrows);
+      (bool success, ) = msg.sender.call{value: received - borrows}('');
+      require(success, 'Address: unable to send value, recipient may have reverted');
     }
     (uint256 err, ) = repayBorrowBehalfInternal(borrower, borrows);
     requireNoError(err, 'repayBorrowBehalf failed');
@@ -169,7 +171,9 @@ contract CEther is CToken, Initializable {
 
   function doTransferOut(address payable to, uint256 amount) internal override {
     /* Send the Ether, with minimal gas and revert on failure */
-    to.transfer(amount);
+    // to.transfer(amount);
+    (bool success, ) = to.call{value: amount}('');
+    require(success, 'Address: unable to send value, recipient may have reverted');
   }
 
   function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {

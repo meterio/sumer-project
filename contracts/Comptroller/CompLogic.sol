@@ -64,6 +64,11 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
     uint256 compBorrowIndex
   );
 
+  modifier onlyComptroller() {
+    require(msg.sender == address(comptroller), 'forbidden!');
+    _;
+  }
+
   function initialize(address _admin, address _comp) external initializer {
     comp = _comp;
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
@@ -84,14 +89,15 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @param supplySpeed New supply-side COMP speed for market
    * @param borrowSpeed New borrow-side COMP speed for market
    */
-  function setCompSpeed(address cToken, uint256 supplySpeed, uint256 borrowSpeed) external {
-    require(msg.sender == address(comptroller), 'forbidden!');
+  function setCompSpeed(address cToken, uint256 supplySpeed, uint256 borrowSpeed) external onlyComptroller {
     _setCompSpeedInternal(cToken, supplySpeed, borrowSpeed);
   }
 
   function _setCompSpeedInternal(address cToken, uint256 supplySpeed, uint256 borrowSpeed) private {
     (bool isListed, , ) = comptroller.markets(cToken);
     require(isListed, 'comp market is not listed');
+    require(supplySpeed > 0, 'supplySpeed=0');
+    require(borrowSpeed > 0, 'borrowSpeed=0');
 
     if (compSupplySpeeds[cToken] != supplySpeed) {
       // Supply speed updated so let's update supply state to ensure that
@@ -122,8 +128,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @param cToken The market whose supply index to update
    * @dev Index is a cumulative sum of the COMP per cToken accrued.
    */
-  function updateCompSupplyIndex(address cToken) external {
-    require(msg.sender == address(comptroller), 'forbidden!');
+  function updateCompSupplyIndex(address cToken) external onlyComptroller {
     _updateCompSupplyIndex(cToken);
   }
 
@@ -132,7 +137,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
     uint256 supplySpeed = compSupplySpeeds[cToken];
     uint32 blockNumber = block.number.safe32('block number exceeds 32 bits');
     uint256 deltaBlocks = uint256(blockNumber).sub_(uint256(supplyState.block));
-    if (deltaBlocks > 0 && supplySpeed > 0) {
+    if (deltaBlocks != 0 && supplySpeed != 0) {
       uint256 supplyTokens = ICToken(cToken).totalSupply();
       uint256 _compAccrued = deltaBlocks.mul_(supplySpeed);
       Double memory ratio = supplyTokens > 0 ? _compAccrued.fraction(supplyTokens) : Double({mantissa: 0});
@@ -151,8 +156,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @dev Index is a cumulative sum of the COMP per cToken accrued.
    */
 
-  function updateCompBorrowIndex(address cToken, Exp memory marketBorrowIndex) external {
-    require(msg.sender == address(comptroller), 'forbidden!');
+  function updateCompBorrowIndex(address cToken, Exp memory marketBorrowIndex) external onlyComptroller {
     _updateCompBorrowIndex(cToken, marketBorrowIndex);
   }
 
@@ -180,13 +184,11 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @param supplier The address of the supplier to distribute COMP to
    */
 
-  function distributeSupplierComp(address cToken, address supplier) external {
-    require(msg.sender == address(comptroller), 'forbidden!');
+  function distributeSupplierComp(address cToken, address supplier) external onlyComptroller {
     _distributeSupplierComp(cToken, supplier);
   }
 
   function _distributeSupplierComp(address cToken, address supplier) private {
-    // TODO: Don't distribute supplier COMP if the user is not in the supplier market.
     // This check should be as gas efficient as possible as distributeSupplierComp is called in many places.
     // - We really don't want to call an external contract as that's quite expensive.
 
@@ -224,13 +226,15 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
    * @param cToken The market in which the borrower is interacting
    * @param borrower The address of the borrower to distribute COMP to
    */
-  function distributeBorrowerComp(address cToken, address borrower, Exp memory marketBorrowIndex) external {
-    require(msg.sender == address(comptroller), 'forbidden!');
+  function distributeBorrowerComp(
+    address cToken,
+    address borrower,
+    Exp memory marketBorrowIndex
+  ) external onlyComptroller {
     _distributeBorrowerComp(cToken, borrower, marketBorrowIndex);
   }
 
   function _distributeBorrowerComp(address cToken, address borrower, Exp memory marketBorrowIndex) private {
-    // TODO: Don't distribute supplier COMP if the user is not in the borrower market.
     // This check should be as gas efficient as possible as distributeBorrowerComp is called in many places.
     // - We really don't want to call an external contract as that's quite expensive.
 
@@ -331,7 +335,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
 
   /**
    * @notice Transfer COMP to the user
-   * @dev Note: If there is not enough COMP, we do not perform the transfer all.
+   * @dev Note: If there is not enough COMP, we do not perform the transfer at all.
    * @param user The address of the user to transfer COMP to
    * @param amount The amount of COMP to (possibly) transfer
    * @return The amount of COMP which was NOT transferred to the user
@@ -361,8 +365,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
     return amount;
   }
 
-  function initializeMarket(address cToken, uint32 blockNumber) external {
-    require(msg.sender == address(comptroller), 'forbidden!');
+  function initializeMarket(address cToken, uint32 blockNumber) external onlyComptroller {
     CompMarketState storage supplyState = compSupplyState[cToken];
     CompMarketState storage borrowState = compBorrowState[cToken];
     /*
@@ -385,7 +388,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
   /*** Comp Distribution Admin ***/
   /**
    * @notice Transfer COMP to the recipient
-   * @dev Note: If there is not enough COMP, we do not perform the transfer all.
+   * @dev Note: If there is not enough COMP, we do not perform the transfer at all.
    * @param recipient The address of the recipient to transfer COMP to
    * @param amount The amount of COMP to (possibly) transfer
    */

@@ -64,16 +64,16 @@ import './IFraxGaugeFXSRewardsDistributor.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 // Inheritance
-import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/access/Ownable2Step.sol';
 
-contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
+contract StakingRewardsMultiGauge is Ownable2Step, ReentrancyGuard {
   using SafeMath for uint256;
   using SafeERC20 for ERC20;
 
   /* ========== STATE VARIABLES ========== */
 
   // Instances
-  IERC20 public constant veSUMER = IERC20(0xF67C5F20B95b7604EBB65A53E50ebd38300da8EE);
+  IERC20 private constant veSUMER = IERC20(0xF67C5F20B95b7604EBB65A53E50ebd38300da8EE);
 
   // -------------------- VARIES --------------------
 
@@ -96,7 +96,6 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
 
   IFraxGaugeFXSRewardsDistributor public rewards_distributor;
 
-  // FRAX
   address public constant usd_address = 0x0d893C092f7aE9D97c13307f2D66CFB59430b4Cb;
 
   // Constant for various precisions
@@ -125,7 +124,7 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   mapping(address => uint256) public rewardTokenAddrToIdx; // token addr -> token index
 
   // Reward period
-  uint256 public rewardsDuration = 604800; // 7 * 86400  (7 days)
+  uint256 public rewardsDuration = 7 days; // 7 * 86400  (7 days)
 
   // Reward tracking
   uint256[] private rewardsPerTokenStored;
@@ -175,11 +174,6 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
 
   /* ========== MODIFIERS ========== */
 
-  modifier onlyByOwner() {
-    require(msg.sender == owner(), 'Not the owner');
-    _;
-  }
-
   modifier onlyTknMgrs(address reward_token_address) {
     require(msg.sender == owner() || isTokenManagerFor(msg.sender, reward_token_address), 'Not owner or tkn mgr');
     _;
@@ -187,11 +181,6 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
 
   modifier isMigrating() {
     require(migrationsOn == true, 'Not in migration');
-    _;
-  }
-
-  modifier notStakingPaused() {
-    require(stakingPaused == false, 'Staking paused');
     _;
   }
 
@@ -232,7 +221,12 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
     if (token0 == usd_address) usd_is_token0 = true;
     else usd_is_token0 = false;
     // ------------------------------------------------
-
+    require(
+      _rewardSymbols.length == _rewardTokens.length &&
+        _rewardSymbols.length == _rewardManagers.length &&
+        _rewardSymbols.length == _rewardRatesManual.length,
+      'length!'
+    );
     rewards_distributor = IFraxGaugeFXSRewardsDistributor(_rewards_distributor_address);
 
     rewardTokens = _rewardTokens;
@@ -289,7 +283,6 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   }
 
   function usdPerLPToken() public view returns (uint256) {
-    // Get the amount of FRAX 'inside' of the lp tokens
     uint256 usd_per_lp_token;
 
     // G-UNI
@@ -813,12 +806,12 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   }
 
   // Adds supported migrator address
-  function addMigrator(address migrator_address) external onlyByOwner {
+  function addMigrator(address migrator_address) external onlyOwner {
     valid_migrators[migrator_address] = true;
   }
 
   // Remove a migrator address
-  function removeMigrator(address migrator_address) external onlyByOwner {
+  function removeMigrator(address migrator_address) external onlyOwner {
     require(valid_migrators[migrator_address] == true, 'Address nonexistent');
 
     // Delete from the mapping
@@ -854,8 +847,9 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
     }
   }
 
-  function setRewardsDuration(uint256 _rewardsDuration) external onlyByOwner {
+  function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
     require(_rewardsDuration >= 86400, 'Rewards duration too short');
+    require(_rewardsDuration < 365 days, 'Rewards duration too long');
     require(periodFinish == 0 || block.timestamp > periodFinish, 'Reward period incomplete');
     rewardsDuration = _rewardsDuration;
     emit RewardsDurationUpdated(rewardsDuration);
@@ -865,7 +859,7 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
     uint256 _lock_max_multiplier,
     uint256 _veSumer_max_multiplier,
     uint256 _veSumer_per_usd_for_max_boost
-  ) external onlyByOwner {
+  ) external onlyOwner {
     require(_lock_max_multiplier >= MULTIPLIER_PRECISION, 'Mult must be >= MULTIPLIER_PRECISION');
     require(_veSumer_max_multiplier >= 0, 'veSumer mul must be >= 0');
     require(_veSumer_per_usd_for_max_boost > 0, 'veSumer pct max must be >= 0');
@@ -882,7 +876,7 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
   function setLockedStakeTimeForMinAndMaxMultiplier(
     uint256 _lock_time_for_max_multiplier,
     uint256 _lock_time_min
-  ) external onlyByOwner {
+  ) external onlyOwner {
     require(_lock_time_for_max_multiplier >= 1, 'Mul max time must be >= 1');
     require(_lock_time_min >= 1, 'Mul min time must be >= 1');
 
@@ -893,27 +887,27 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
     emit LockedStakeMinTime(_lock_time_min);
   }
 
-  function greylistAddress(address _address) external onlyByOwner {
+  function greylistAddress(address _address) external onlyOwner {
     greylist[_address] = !(greylist[_address]);
   }
 
-  function unlockStakes() external onlyByOwner {
+  function unlockStakes() external onlyOwner {
     stakesUnlocked = !stakesUnlocked;
   }
 
-  function toggleStaking() external onlyByOwner {
+  function toggleStaking() external onlyOwner {
     stakingPaused = !stakingPaused;
   }
 
-  function toggleMigrations() external onlyByOwner {
+  function toggleMigrations() external onlyOwner {
     migrationsOn = !migrationsOn;
   }
 
-  function toggleWithdrawals() external onlyByOwner {
+  function toggleWithdrawals() external onlyOwner {
     withdrawalsPaused = !withdrawalsPaused;
   }
 
-  function toggleRewardsCollection() external onlyByOwner {
+  function toggleRewardsCollection() external onlyOwner {
     rewardsCollectionPaused = !rewardsCollectionPaused;
   }
 
@@ -923,6 +917,7 @@ contract StakingRewardsMultiGauge is Ownable, ReentrancyGuard {
     uint256 new_rate,
     bool sync_too
   ) external onlyTknMgrs(reward_token_address) {
+    require(new_rate > 0, 'new_rate=0');
     rewardRatesManual[rewardTokenAddrToIdx[reward_token_address]] = new_rate;
 
     if (sync_too) {

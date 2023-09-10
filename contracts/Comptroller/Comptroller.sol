@@ -341,7 +341,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       assert(markets[cToken].accountMembership[borrower]);
     }
 
-    require(oracle.getUnderlyingPrice(cToken) > 0, PRICE_ERROR);
+    require(oracle.getUnderlyingPrice(cToken) > 0, "PRICE_ERROR");
 
     //uint borrowCap = borrowCaps[cToken];
     uint256 borrowCap = underWriterAdmin._getMarketBorrowCap(cToken);
@@ -532,6 +532,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @return uint 0=success, otherwise a failure
    */
   function _setCloseFactor(uint256 newCloseFactorMantissa) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    require(newCloseFactorMantissa > 0, 'newCloseFactorMantissa=0');
     // Check caller is admin
     uint256 oldCloseFactorMantissa = closeFactorMantissa;
     closeFactorMantissa = newCloseFactorMantissa;
@@ -650,15 +651,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * ====
    */
   function isContract(address account) internal view returns (bool) {
-    // This method relies on extcodesize, which returns 0 for contracts in
-    // construction, since the code is only stored at the end of the
-    // constructor execution.
-
-    uint256 size;
-    // solhint-disable-next-line no-inline-assembly
-    assembly {
-      size := extcodesize(account)
-    }
-    return size > 0;
+    return account.code.length > 0;
   }
 }

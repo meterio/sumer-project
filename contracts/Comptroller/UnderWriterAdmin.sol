@@ -7,7 +7,7 @@ import './Interfaces/IPriceOracle.sol';
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializable {
-  function initialize(address _gov, address _admin) public initializer {
+  function initialize(address _gov, address _admin) external initializer {
     admin = _admin;
     governanceToken = _gov;
     suTokenRateMantissa = 10**18;
@@ -21,7 +21,7 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     uint256 intraSuRateMantissa, // sutoken collateral rate for intra group ctoken liability
     uint256 interCRateMantissa, // ctoken collateral rate for inter group ctoken/sutoken liability
     uint256 interSuRateMantissa // sutoken collateral rate for inter group ctoken/sutoken liability
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     // Check caller is admin
     if (msg.sender != admin) {
       return
@@ -54,7 +54,7 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return uint256(ComptrollerErrorReporter.Error.NO_ERROR);
   }
 
-  function removeAssetGroup(uint8 groupId) public returns (uint256) {
+  function removeAssetGroup(uint8 groupId) external returns (uint256) {
     // Check caller is admin
     if (msg.sender != admin) {
       return
@@ -70,11 +70,11 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return uint256(ComptrollerErrorReporter.Error.NO_ERROR);
   }
 
-  function getAssetGroup(uint8 groupId) public view override returns (AssetGroup memory) {
+  function getAssetGroup(uint8 groupId) external view override returns (AssetGroup memory) {
     return eqAssetGroup[groupId];
   }
 
-  function getAssetGroupNum() public view override returns (uint8) {
+  function getAssetGroupNum() external view override returns (uint8) {
     return equalAssetsGroupNum;
   }
 
@@ -83,7 +83,7 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
    * @param newPauseGuardian The address of the new Pause Guardian
    * @return uint 0=success, otherwise a failure. (See enum Error for details)
    */
-  function _setPauseGuardian(address newPauseGuardian) public returns (uint256) {
+  function _setPauseGuardian(address newPauseGuardian) external returns (uint256) {
     if (msg.sender != admin) {
       return
         ComptrollerErrorReporter.fail(
@@ -105,11 +105,11 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return uint256(ComptrollerErrorReporter.Error.NO_ERROR);
   }
 
-  function _getPauseGuardian() public view returns (address) {
+  function _getPauseGuardian() external view returns (address) {
     return pauseGuardian;
   }
 
-  function _setMintPaused(ICToken cToken, bool state) public returns (bool) {
+  function _setMintPaused(ICToken cToken, bool state) external returns (bool) {
     //require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
     require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
     require(msg.sender == admin || state, 'only admin can unpause');
@@ -119,11 +119,11 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return state;
   }
 
-  function _getMintPaused(address cToken) public view override returns (bool) {
+  function _getMintPaused(address cToken) external view override returns (bool) {
     return mintGuardianPaused[cToken];
   }
 
-  function _setBorrowPaused(ICToken cToken, bool state) public returns (bool) {
+  function _setBorrowPaused(ICToken cToken, bool state) external returns (bool) {
     //require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
     require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
     require(msg.sender == admin || state, 'only admin can unpause');
@@ -133,11 +133,11 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return state;
   }
 
-  function _getBorrowPaused(address cToken) public view override returns (bool) {
+  function _getBorrowPaused(address cToken) external view override returns (bool) {
     return borrowGuardianPaused[cToken];
   }
 
-  function _setTransferPaused(bool state) public returns (bool) {
+  function _setTransferPaused(bool state) external returns (bool) {
     require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
     require(msg.sender == admin || state, 'only admin can unpause');
 
@@ -146,11 +146,11 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return state;
   }
 
-  function _getTransferPaused() public view override returns (bool) {
+  function _getTransferPaused() external view override returns (bool) {
     return transferGuardianPaused;
   }
 
-  function _setSeizePaused(bool state) public returns (bool) {
+  function _setSeizePaused(bool state) external returns (bool) {
     require(msg.sender == pauseGuardian || msg.sender == admin, 'only pause guardian and admin can pause');
     require(msg.sender == admin || state, 'only admin can unpause');
 
@@ -159,7 +159,7 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
     return state;
   }
 
-  function _getSeizePaused() public view override returns (bool) {
+  function _getSeizePaused() external view override returns (bool) {
     return seizeGuardianPaused;
   }
 
@@ -167,7 +167,7 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
    * @notice Return the address of the COMP token
    * @return The address of COMP
    */
-  function getCompAddress() public view override returns (address) {
+  function getCompAddress() external view override returns (address) {
     /*
         return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
         */
@@ -178,7 +178,7 @@ contract UnderwriterAdmin is IUnderwriterAdmin, UnderwriterStorage, Initializabl
    * @notice Return the address of the COMP token
    * @param _governanceToken The address of COMP(governance token)
    */
-  function setGovTokenAddress(address _governanceToken) public {
+  function setGovTokenAddress(address _governanceToken) external {
     //require(adminOrInitializing(), "only admin can set governanceToken");
     require(msg.sender == admin, 'only admin can set');
     require(_governanceToken != address(0), 'Address is Zero!');

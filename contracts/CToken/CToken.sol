@@ -448,7 +448,8 @@ abstract contract CToken is CTokenStorage {
       reservesPrior
     );
     if (borrowRateMantissa > BORROW_RATE_MAX_MANTISSA) {
-      Error.TOKEN_ERROR.failOpaque(FailureInfo.BORROW_RATE_ABSURDLY_HIGH, borrowRateMantissa);
+      // Error.TOKEN_ERROR.failOpaque(FailureInfo.BORROW_RATE_ABSURDLY_HIGH, borrowRateMantissa);
+      borrowRateMantissa = BORROW_RATE_MAX_MANTISSA;
     }
 
     /* Calculate the number of blocks elapsed since the last accrual */
@@ -959,7 +960,7 @@ abstract contract CToken is CTokenStorage {
 
   /**
    * @notice Sender repays a borrow belonging to borrower
-   * @param borrower the account with the debt being payed off
+   * @param borrower the account with the debt being paid off
    * @param repayAmount The amount to repay
    * @return (uint, uint) An error code (0=success, otherwise a failure, see ErrorReporter.sol), and the actual repayment amount.
    */
@@ -986,8 +987,8 @@ abstract contract CToken is CTokenStorage {
   /**
    * @notice Borrows are repaid by another user (possibly the borrower).
    * @param payer the account paying off the borrow
-   * @param borrower the account with the debt being payed off
-   * @param repayAmount the amount of undelrying tokens being returned
+   * @param borrower the account with the debt being paid off
+   * @param repayAmount the amount of underlying tokens being returned
    * @return (uint, uint) An error code (0=success, otherwise a failure, see ErrorReporter.sol), and the actual repayment amount.
    */
   function repayBorrowFresh(address payer, address borrower, uint256 repayAmount) internal returns (uint256, uint256) {
@@ -1127,7 +1128,6 @@ abstract contract CToken is CTokenStorage {
       Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_ZERO);
     }
 
-    /* Fail if repayAmount = -1 */
     if (repayAmount == ~uint256(0)) {
       Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_UINT_MAX);
     }
@@ -1337,7 +1337,7 @@ abstract contract CToken is CTokenStorage {
   function _setComptroller(address newComptroller) public override onlyAdmin returns (uint256) {
     address oldComptroller = comptroller;
     // Ensure invoke comptroller.isComptroller() returns true
-    require(IComptroller(newComptroller).isComptroller(), 'MMRF'); // marker method returned false
+    require(IComptroller(newComptroller).isComptroller(), 'MMRF'); // market method returned false
 
     // Set market's comptroller to newComptroller
     comptroller = newComptroller;
@@ -1529,7 +1529,7 @@ abstract contract CToken is CTokenStorage {
     oldInterestRateModel = interestRateModel;
 
     // Ensure invoke newInterestRateModel.isInterestRateModel() returns true
-    require(IInterestRateModel(interestRateModel).isInterestRateModel(), 'MMRF'); // marker method returned false
+    require(IInterestRateModel(interestRateModel).isInterestRateModel(), 'MMRF'); // market method returned false
 
     // Set the interest rate model to newInterestRateModel
     interestRateModel = newInterestRateModel;

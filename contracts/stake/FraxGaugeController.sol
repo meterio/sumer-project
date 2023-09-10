@@ -27,15 +27,13 @@ struct LockedBalance {
 interface VotingEscrow {
   function balanceOf(address addr) external view returns (uint256);
 
-  function balget_last_user_slopeanceOf(address addr) external view returns (int128);
-
   function locked__end(address addr) external view returns (uint256);
 
   function locked(address addr) external view returns (LockedBalance memory);
 }
 
 contract FraxGaugeController {
-  uint256 public constant WEEK = 604800;
+  uint256 public constant WEEK = 7 days;
   uint256 public constant WEIGHT_VOTE_DELAY = 10 * 86400;
   uint256 public constant MULTIPLIER = 10 ** 18;
 

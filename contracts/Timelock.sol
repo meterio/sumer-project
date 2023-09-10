@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/utils/Address.sol';
 import './ITimelock.sol';
 
 interface ICToken {
@@ -105,7 +106,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
       beneficiary: beneficiary,
       releaseTime: releaseTime,
       isFrozen: false,
-      agreementId:agreementId
+      agreementId: agreementId
     });
     _userAgreements[beneficiary].add(agreementId);
 
@@ -138,7 +139,8 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     for (uint256 index = 0; index < agreementIds.length; index++) {
       Agreement memory agreement = _validateAndDeleteAgreement(agreementIds[index]);
       if (agreement.underlying == address(1)) {
-        payable(agreement.beneficiary).transfer(agreement.amount);
+        // payable(agreement.beneficiary).transfer(agreement.amount);
+        Address.sendValue(payable(agreement.beneficiary), agreement.amount);
       } else {
         IERC20(agreement.underlying).safeTransfer(agreement.beneficiary, agreement.amount);
       }

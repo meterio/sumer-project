@@ -48,7 +48,7 @@ contract FraxGaugeFXSRewardsDistributor is Ownable, ReentrancyGuard {
 
   // Constants
   uint256 private constant MULTIPLIER_PRECISION = 1e18;
-  uint256 private constant ONE_WEEK = 604800;
+  uint256 private constant ONE_WEEK = 7 days;
 
   // Gauge controller related
   mapping(address => bool) public gauge_whitelist;

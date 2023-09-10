@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/access/Ownable2Step.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import './TransferHelper.sol';
 
-contract CommunalFarm is Ownable, ReentrancyGuard {
+contract CommunalFarm is Ownable2Step, ReentrancyGuard {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -36,7 +36,7 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
   mapping(address => uint256) public rewardTokenAddrToIdx; // token addr -> token index
 
   // Reward period
-  uint256 public rewardsDuration = 604800; // 7 * 86400  (7 days)
+  uint256 public rewardsDuration = 7 days; // 7 * 86400  (7 days)
 
   // Reward tracking
   uint256[] private rewardsPerTokenStored;
@@ -76,11 +76,6 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
 
   modifier onlyTknMgrs(address reward_token_address) {
     require(msg.sender == owner() || isTokenManagerFor(msg.sender, reward_token_address), 'Not owner or tkn mgr');
-    _;
-  }
-
-  modifier notStakingPaused() {
-    require(stakingPaused == false, 'Staking paused');
     _;
   }
 
@@ -399,7 +394,7 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
 
       // Give the tokens to the destination_address
       // Should throw if insufficient balance
-      stakingToken.transfer(destination_address, liquidity);
+      stakingToken.safeTransfer(destination_address, liquidity);
 
       emit WithdrawLocked(staker_address, liquidity, kek_id, destination_address);
     }
@@ -422,7 +417,7 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
     for (uint256 i = 0; i < rewardTokens.length; i++) {
       rewards_before[i] = rewards[rewardee][i];
       rewards[rewardee][i] = 0;
-      IERC20(rewardTokens[i]).transfer(destination_address, rewards_before[i]);
+      IERC20(rewardTokens[i]).safeTransfer(destination_address, rewards_before[i]);
       emit RewardPaid(rewardee, rewards_before[i], rewardTokens[i], destination_address);
     }
 
@@ -484,33 +479,20 @@ contract CommunalFarm is Ownable, ReentrancyGuard {
   /* ========== RESTRICTED FUNCTIONS ========== */
 
   // Added to support recovering LP Rewards and other mistaken tokens from other systems to be distributed to holders
-  function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyTknMgrs(tokenAddress) {
+  function recoverERC20(address tokenAddress, uint256 tokenAmount) external {
     // Cannot rug the staking / LP tokens
     require(tokenAddress != address(stakingToken), 'Cannot rug staking / LP tokens');
 
-    // Check if the desired token is a reward token
-    bool isRewardToken = false;
     for (uint256 i = 0; i < rewardTokens.length; i++) {
       if (rewardTokens[i] == tokenAddress) {
-        isRewardToken = true;
-        break;
+        revert('No valid tokens to recover');
       }
     }
-
-    // Only the reward managers can take back their reward tokens
-    if (isRewardToken && rewardManagers[tokenAddress] == msg.sender) {
-      IERC20(tokenAddress).transfer(msg.sender, tokenAmount);
+    if (msg.sender == owner()) {
+      IERC20(tokenAddress).safeTransfer(msg.sender, tokenAmount);
       emit Recovered(msg.sender, tokenAddress, tokenAmount);
       return;
-    }
-    // Other tokens, like airdrops or accidental deposits, can be withdrawn by the owner
-    else if (!isRewardToken && (msg.sender == owner())) {
-      IERC20(tokenAddress).transfer(msg.sender, tokenAmount);
-      emit Recovered(msg.sender, tokenAddress, tokenAmount);
-      return;
-    }
-    // If none of the above conditions are true
-    else {
+    } else {
       revert('No valid tokens to recover');
     }
   }
