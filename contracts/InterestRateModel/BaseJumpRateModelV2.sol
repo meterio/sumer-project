@@ -106,7 +106,7 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
       return 0;
     }
     if (reserves > cash && (borrows + cash - reserves > 0)) {
-      return 1;
+      return 1e18;
     }
 
     return borrows.mul(1e18).div(cash.add(borrows).sub(reserves));
