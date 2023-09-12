@@ -9,7 +9,6 @@ contract FeedPriceOracle is PriceOracle {
   struct FeedData {
     uint8 source; // 1 - chainlink feed, 2 - witnet router, 3 - Band
     address addr; // feed address
-    uint8 tokenDecimals; // token decimals
     uint8 feedDecimals; // feed decimals (only used in witnet)
     string name;
   }
@@ -17,16 +16,9 @@ contract FeedPriceOracle is PriceOracle {
   address public owner;
   mapping(address => FeedData) public feeds; // cToken -> feed data
   mapping(address => uint256) public fixedPrices; // cToken -> price
-  uint8 constant DECIMALS = 36;
+  uint8 constant DECIMALS = 18;
 
-  event SetFeed(
-    address indexed cToken_,
-    uint8 source,
-    address addr,
-    uint8 tokenDecimals,
-    uint8 feedDecimals,
-    string name
-  );
+  event SetFeed(address indexed cToken_, uint8 source, address addr, uint8 feedDecimals, string name);
 
   modifier onlyOwner() {
     require(msg.sender == owner, 'ONLY OWNER');
@@ -42,49 +34,30 @@ contract FeedPriceOracle is PriceOracle {
     owner = owner_;
   }
 
-  function setChainlinkFeed(address cToken_, address feed_, uint8 tokenDecimals_) public onlyOwner {
-    _setFeed(cToken_, uint8(1), feed_, tokenDecimals_, 8, '');
+  function setChainlinkFeed(address cToken_, address feed_) public onlyOwner {
+    _setFeed(cToken_, uint8(1), feed_, 8, '');
   }
 
-  function setWitnetFeed(address cToken_, address feed_, uint8 tokenDecimals_, uint8 feedDecimals_) public onlyOwner {
-    _setFeed(cToken_, uint8(2), feed_, tokenDecimals_, feedDecimals_, '');
+  function setWitnetFeed(address cToken_, address feed_, uint8 feedDecimals_) public onlyOwner {
+    _setFeed(cToken_, uint8(2), feed_, feedDecimals_, '');
   }
 
-  function setBandFeed(
-    address cToken_,
-    address feed_,
-    uint8 tokenDecimals_,
-    uint8 feedDecimals_,
-    string memory name
-  ) public onlyOwner {
-    _setFeed(cToken_, uint8(3), feed_, tokenDecimals_, feedDecimals_, name);
+  function setBandFeed(address cToken_, address feed_, uint8 feedDecimals_, string memory name) public onlyOwner {
+    _setFeed(cToken_, uint8(3), feed_, feedDecimals_, name);
   }
 
   function setFixedPrice(address cToken_, uint256 price) public onlyOwner {
     fixedPrices[cToken_] = price;
   }
 
-  function _setFeed(
-    address cToken_,
-    uint8 source,
-    address addr,
-    uint8 tokenDecimals,
-    uint8 feedDecimals,
-    string memory name
-  ) private {
+  function _setFeed(address cToken_, uint8 source, address addr, uint8 feedDecimals, string memory name) private {
     require(addr != address(0), 'Address is Zero!');
     if (feeds[cToken_].source != 0) {
       delete fixedPrices[cToken_];
     }
-    FeedData memory feedData = FeedData({
-      source: source,
-      addr: addr,
-      tokenDecimals: tokenDecimals,
-      feedDecimals: feedDecimals,
-      name: name
-    });
+    FeedData memory feedData = FeedData({source: source, addr: addr, feedDecimals: feedDecimals, name: name});
     feeds[cToken_] = feedData;
-    emit SetFeed(cToken_, source, addr, tokenDecimals, feedDecimals, name);
+    emit SetFeed(cToken_, source, addr, feedDecimals, name);
   }
 
   function removeFeed(address cToken_) public onlyOwner {
@@ -107,7 +80,7 @@ contract FeedPriceOracle is PriceOracle {
     FeedData memory feed = feeds[cToken_]; // gas savings
     if (feed.addr != address(0)) {
       if (feed.source == uint8(1)) {
-        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - IChainlinkFeed(feed.addr).decimals());
+        uint256 decimals = uint256(DECIMALS - IChainlinkFeed(feed.addr).decimals());
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         (uint80 roundID, int256 answer, , uint256 updatedAt, uint80 answeredInRound) = IChainlinkFeed(feed.addr)
           .latestRoundData();
@@ -117,13 +90,13 @@ contract FeedPriceOracle is PriceOracle {
         return uint256(answer) * (10 ** decimals);
       }
       if (feed.source == uint8(2)) {
-        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);
+        uint256 decimals = uint256(DECIMALS - feed.feedDecimals);
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         uint256 _temp = uint256(IWitnetFeed(feed.addr).lastPrice());
         return _temp * (10 ** decimals);
       }
       if (feed.source == uint8(3)) {
-        uint256 decimals = uint256(DECIMALS - feed.tokenDecimals - feed.feedDecimals);
+        uint256 decimals = uint256(DECIMALS - feed.feedDecimals);
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         IStdReference.ReferenceData memory refData = IStdReference(feed.addr).getReferenceData(feed.name, 'USD');
         return refData.rate * (10 ** decimals);
