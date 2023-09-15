@@ -19,6 +19,7 @@ export type { AccessControlEnumerable } from "./AccessControlEnumerable";
 export type { IAccessControl } from "./IAccessControl";
 export type { IAccessControlEnumerable } from "./IAccessControlEnumerable";
 export type { Ownable } from "./Ownable";
+export type { Ownable2Step } from "./Ownable2Step";
 export type { IERC1822Proxiable } from "./IERC1822Proxiable";
 export type { IBeacon } from "./IBeacon";
 export type { ERC1967Proxy } from "./ERC1967Proxy";
@@ -138,6 +139,7 @@ export { AccessControlEnumerable__factory } from "./factories/AccessControlEnume
 export { IAccessControl__factory } from "./factories/IAccessControl__factory";
 export { IAccessControlEnumerable__factory } from "./factories/IAccessControlEnumerable__factory";
 export { Ownable__factory } from "./factories/Ownable__factory";
+export { Ownable2Step__factory } from "./factories/Ownable2Step__factory";
 export { IERC1822Proxiable__factory } from "./factories/IERC1822Proxiable__factory";
 export { IBeacon__factory } from "./factories/IBeacon__factory";
 export { ERC1967Proxy__factory } from "./factories/ERC1967Proxy__factory";

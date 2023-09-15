@@ -40,6 +40,17 @@ task('all', 'deploy contract')
     }
     admin = config.proxyAdmin.address;
 
+    if (config.multicall2.address == '') {
+      const multicall2 = await run('d', {
+        name: 'Multicall2',
+        rpc: rpc,
+        pk: pk,
+        gasprice: gasprice
+      });
+      config.multicall2.address = multicall2.address;
+      writeFileSync(json, JSON.stringify(config));
+    }
+
     if (config.sumer.address == '') {
       const sumer = await run('dt', {
         name: config.sumer.name,
@@ -109,27 +120,20 @@ task('all', 'deploy contract')
       }
     }
 
-    if (config.suInterestRateModel.address == '') {
-      const suInterestRateModel = await run('zim', {
-        rpc: rpc,
-        pk: pk,
-        gasprice: gasprice
-      });
-      config.suInterestRateModel.address = suInterestRateModel.address;
-      writeFileSync(json, JSON.stringify(config));
-    }
-
-    if (config.cInterestRateModel.address == '') {
-      const cInterestRateModel = await run('di', {
-        blocks: config.cInterestRateModel.blocks,
-        base: config.cInterestRateModel.base,
-        mul: config.cInterestRateModel.mul,
-        rpc: rpc,
-        pk: pk,
-        gasprice: gasprice
-      });
-      config.cInterestRateModel.address = cInterestRateModel.address;
-      writeFileSync(json, JSON.stringify(config));
+    let insterestRateModel = config.InterestRateModel;
+    for (let i = 0; i < insterestRateModel.length; i++) {
+      let iModel = insterestRateModel[i];
+      if (iModel.address == '') {
+        let iModel_contract = await run('d', {
+          name: iModel.contract,
+          args: iModel.args,
+          rpc: rpc,
+          pk: pk,
+          gasprice: gasprice
+        });
+        config.InterestRateModel[i].address = iModel_contract.address;
+        writeFileSync(json, JSON.stringify(config));
+      }
     }
 
     if (config.comptroller.address == '') {
@@ -151,6 +155,10 @@ task('all', 'deploy contract')
         pk: pk,
         gasprice: gasprice
       });
+      config.compLogic.implementation = compLogicImpl.address;
+      config.compLogic.address = compLogic.address;
+      config.accountLiquidity.implementation = accountLiquidityImpl.address;
+      config.accountLiquidity.address = accountLiquidity.address;
       config.comptroller.implementation = comptrollerImpl.address;
       config.comptroller.address = comptroller.address;
       writeFileSync(json, JSON.stringify(config));
@@ -188,6 +196,7 @@ task('all', 'deploy contract')
         if (cToken.address == '') {
           let data: string;
           let impl: string;
+          let InterestRateModel = config.InterestRateModel[cToken.interestRateModelIndex];
           if (cToken.native) {
             const cEtherImpl = await run('d', {
               name: 'CEther',
@@ -201,7 +210,7 @@ task('all', 'deploy contract')
             const cEther = await ethers.getContractFactory('CEther');
             data = cEther.interface.encodeFunctionData('initialize', [
               config.comptroller.address,
-              config.cInterestRateModel.address,
+              InterestRateModel.address,
               ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
               cToken.cTokenName,
               cToken.cTokenSymbol,
@@ -214,7 +223,7 @@ task('all', 'deploy contract')
             data = cErc20.interface.encodeFunctionData('initialize', [
               cToken.underly,
               config.comptroller.address,
-              config.cInterestRateModel.address,
+              InterestRateModel.address,
               ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
               cToken.cTokenName,
               cToken.cTokenSymbol,
@@ -251,28 +260,6 @@ task('all', 'deploy contract')
           let gas = await cTokenContract.estimateGas._setReserveFactor(parseUnits('0.1'));
           let receipt = await cTokenContract._setReserveFactor(parseUnits('0.1'), { gasLimit: gas });
           log.info('_setReserveFactor:', cToken.cTokenSymbol, receipt.hash);
-        }
-        let price =
-          (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(cToken.address) : BigNumber.from(0);
-        if (price.eq(BigNumber.from(0))) {
-          let gas = await oracle.estimateGas.setFeedId(
-            cToken.address,
-            cToken.oracle.feedId,
-            cToken.oracle.addr,
-            cToken.oracle.tokenDecimals,
-            cToken.oracle.name
-          );
-          let receipt = await oracle.setFeedId(
-            cToken.address,
-            cToken.oracle.feedId,
-            cToken.oracle.addr,
-            cToken.oracle.tokenDecimals,
-            cToken.oracle.name,
-            {
-              gasLimit: gas
-            }
-          );
-          log.info('setFeedId:', cToken.cTokenSymbol, receipt.hash);
         }
       }
     }
@@ -320,10 +307,11 @@ task('all', 'deploy contract')
         }
         const suTokenSymbol = `sdr${suToken.symbol}`;
         if (suToken.address == '') {
+          let InterestRateModel = config.InterestRateModel[suToken.interestRateModelIndex];
           let data = suErc20.interface.encodeFunctionData('initialize', [
             suToken.underly,
             config.comptroller.address,
-            config.suInterestRateModel.address,
+            InterestRateModel.address,
             ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
             suTokenSymbol,
             suTokenSymbol,
@@ -366,37 +354,17 @@ task('all', 'deploy contract')
           let receipt = await suTokenInst.changeCtoken({ gasLimit: gas });
           log.info('changeCtoken:', isCToken, receipt.hash);
         }
-
-        let price =
-          (await wallet.getChainId()) != 1337 ? await oracle.getUnderlyingPrice(suToken.address) : BigNumber.from(0);
-        if (price.eq(BigNumber.from(0))) {
-          if (suToken.oracle.feedId == '1') {
-            let gas = await oracle.estimateGas.setFixedPrice(suToken.address, '1000000000000000000');
-            let receipt = await oracle.setFixedPrice(suToken.address, '1000000000000000000', {
-              gasLimit: gas
-            });
-            log.info('setFixedPrice:', suToken.symbol, receipt.hash);
-          } else {
-            let gas = await oracle.estimateGas.setFeedId(
-              suToken.address,
-              suToken.oracle.feedId,
-              suToken.oracle.addr,
-              suToken.oracle.tokenDecimals,
-              suToken.oracle.name
-            );
-            let receipt = await oracle.setFeedId(
-              suToken.address,
-              suToken.oracle.feedId,
-              suToken.oracle.addr,
-              suToken.oracle.tokenDecimals,
-              suToken.oracle.name,
-              {
-                gasLimit: gas
-              }
-            );
-            log.info('setFeedId:', suToken.symbol, receipt.hash);
-          }
-        }
       }
+    }
+
+    if (config.timelock.address == '') {
+      const timelock = await run('dtl', {
+        json: json,
+        rpc: rpc,
+        pk: pk,
+        gasprice: gasprice
+      });
+      config.timelock.address = timelock.address;
+      writeFileSync(json, JSON.stringify(config));
     }
   });

@@ -34,25 +34,6 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "balget_last_user_slopeanceOf",
-    outputs: [
-      {
-        internalType: "int128",
-        name: "",
-        type: "int128",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-    ],
     name: "locked",
     outputs: [
       {

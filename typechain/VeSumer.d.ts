@@ -32,13 +32,11 @@ interface VeSumerInterface extends ethers.utils.Interface {
     "PROXY_ADD()": FunctionFragment;
     "PROXY_SLASH()": FunctionFragment;
     "TRANSFER_FROM_APP()": FunctionFragment;
-    "TRANSFER_TO_APP()": FunctionFragment;
     "USER_WITHDRAW()": FunctionFragment;
-    "VOTE_WEIGHT_MULTIPLIER()": FunctionFragment;
     "VOTE_WEIGHT_MULTIPLIER_I128()": FunctionFragment;
     "WEEK()": FunctionFragment;
     "ZERO_ADDRESS()": FunctionFragment;
-    "accept_transfer_ownership()": FunctionFragment;
+    "acceptOwnership()": FunctionFragment;
     "admin()": FunctionFragment;
     "appIncreaseAmountForsEnabled()": FunctionFragment;
     "appTransferFromsEnabled()": FunctionFragment;
@@ -71,13 +69,15 @@ interface VeSumerInterface extends ethers.utils.Interface {
     "locked__end(address)": FunctionFragment;
     "name()": FunctionFragment;
     "next_period_start()": FunctionFragment;
-    "nominate_ownership(address)": FunctionFragment;
+    "owner()": FunctionFragment;
+    "pendingOwner()": FunctionFragment;
     "point_history(uint256)": FunctionFragment;
     "proxyAddsEnabled()": FunctionFragment;
     "proxySlashesEnabled()": FunctionFragment;
     "proxy_add(address,uint256)": FunctionFragment;
     "proxy_slash(address,uint256)": FunctionFragment;
     "recoverERC20(address,uint256)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
     "slope_changes(uint256)": FunctionFragment;
     "smart_wallet_checker()": FunctionFragment;
     "staker_whitelisted_proxy(address)": FunctionFragment;
@@ -86,6 +86,7 @@ interface VeSumerInterface extends ethers.utils.Interface {
     "token()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "totalSupplyAt(uint256)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
     "transfer_from_app(address,address,int128)": FunctionFragment;
     "user_point_epoch(address)": FunctionFragment;
     "user_point_history(address,uint256)": FunctionFragment;
@@ -134,15 +135,7 @@ interface VeSumerInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "TRANSFER_TO_APP",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "USER_WITHDRAW",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "VOTE_WEIGHT_MULTIPLIER",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -155,7 +148,7 @@ interface VeSumerInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "accept_transfer_ownership",
+    functionFragment: "acceptOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "admin", values?: undefined): string;
@@ -268,9 +261,10 @@ interface VeSumerInterface extends ethers.utils.Interface {
     functionFragment: "next_period_start",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "nominate_ownership",
-    values: [string]
+    functionFragment: "pendingOwner",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "point_history",
@@ -297,6 +291,10 @@ interface VeSumerInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "slope_changes",
     values: [BigNumberish]
   ): string;
@@ -318,6 +316,10 @@ interface VeSumerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "totalSupplyAt",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "transfer_from_app",
@@ -378,15 +380,7 @@ interface VeSumerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "TRANSFER_TO_APP",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "USER_WITHDRAW",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "VOTE_WEIGHT_MULTIPLIER",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -399,7 +393,7 @@ interface VeSumerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "accept_transfer_ownership",
+    functionFragment: "acceptOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
@@ -509,8 +503,9 @@ interface VeSumerInterface extends ethers.utils.Interface {
     functionFragment: "next_period_start",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "nominate_ownership",
+    functionFragment: "pendingOwner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -535,6 +530,10 @@ interface VeSumerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "slope_changes",
     data: BytesLike
   ): Result;
@@ -555,6 +554,10 @@ interface VeSumerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "totalSupplyAt",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -584,13 +587,13 @@ interface VeSumerInterface extends ethers.utils.Interface {
     "AcceptOwnership(address)": EventFragment;
     "AppIncreaseAmountForsToggled(bool)": EventFragment;
     "Deposit(address,address,uint256,uint256,int128,uint256)": EventFragment;
-    "EmergencyUnlockToggled(bool)": EventFragment;
     "HistoricalProxyToggled(address,bool)": EventFragment;
     "LendingProxySet(address)": EventFragment;
     "NominateOwnership(address)": EventFragment;
+    "OwnershipTransferStarted(address,address)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
     "ProxyAdd(address,address,uint256)": EventFragment;
     "ProxyAddsToggled(bool)": EventFragment;
-    "ProxySlash(address,address,uint256)": EventFragment;
     "ProxySlashesToggled(bool)": EventFragment;
     "ProxyTransferFromsToggled(bool)": EventFragment;
     "ProxyTransferTosToggled(bool)": EventFragment;
@@ -599,7 +602,6 @@ interface VeSumerInterface extends ethers.utils.Interface {
     "StakerProxySet(address)": EventFragment;
     "Supply(uint256,uint256)": EventFragment;
     "TransferFromApp(address,address,uint256)": EventFragment;
-    "TransferToApp(address,address,uint256)": EventFragment;
     "Withdraw(address,address,uint256,uint256)": EventFragment;
   };
 
@@ -608,13 +610,13 @@ interface VeSumerInterface extends ethers.utils.Interface {
     nameOrSignatureOrTopic: "AppIncreaseAmountForsToggled"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "EmergencyUnlockToggled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "HistoricalProxyToggled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LendingProxySet"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NominateOwnership"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferStarted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProxyAdd"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProxyAddsToggled"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ProxySlash"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProxySlashesToggled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProxyTransferFromsToggled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProxyTransferTosToggled"): EventFragment;
@@ -623,7 +625,6 @@ interface VeSumerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "StakerProxySet"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Supply"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferFromApp"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferToApp"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
 
@@ -644,10 +645,6 @@ export type DepositEvent = TypedEvent<
   }
 >;
 
-export type EmergencyUnlockToggledEvent = TypedEvent<
-  [boolean] & { emergencyUnlockActive: boolean }
->;
-
 export type HistoricalProxyToggledEvent = TypedEvent<
   [string, boolean] & { proxy_address: string; enabled: boolean }
 >;
@@ -657,6 +654,14 @@ export type LendingProxySetEvent = TypedEvent<
 >;
 
 export type NominateOwnershipEvent = TypedEvent<[string] & { admin: string }>;
+
+export type OwnershipTransferStartedEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export type ProxyAddEvent = TypedEvent<
   [string, string, BigNumber] & {
@@ -668,14 +673,6 @@ export type ProxyAddEvent = TypedEvent<
 
 export type ProxyAddsToggledEvent = TypedEvent<
   [boolean] & { proxyAddsEnabled: boolean }
->;
-
-export type ProxySlashEvent = TypedEvent<
-  [string, string, BigNumber] & {
-    staker_addr: string;
-    proxy_addr: string;
-    slash_amt: BigNumber;
-  }
 >;
 
 export type ProxySlashesToggledEvent = TypedEvent<
@@ -710,14 +707,6 @@ export type TransferFromAppEvent = TypedEvent<
   [string, string, BigNumber] & {
     app_addr: string;
     staker_addr: string;
-    transfer_amt: BigNumber;
-  }
->;
-
-export type TransferToAppEvent = TypedEvent<
-  [string, string, BigNumber] & {
-    staker_addr: string;
-    app_addr: string;
     transfer_amt: BigNumber;
   }
 >;
@@ -797,11 +786,7 @@ export class VeSumer extends BaseContract {
 
     TRANSFER_FROM_APP(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    TRANSFER_TO_APP(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     USER_WITHDRAW(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    VOTE_WEIGHT_MULTIPLIER(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     VOTE_WEIGHT_MULTIPLIER_I128(
       overrides?: CallOverrides
@@ -811,7 +796,7 @@ export class VeSumer extends BaseContract {
 
     ZERO_ADDRESS(overrides?: CallOverrides): Promise<[string]>;
 
-    accept_transfer_ownership(
+    acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -960,10 +945,9 @@ export class VeSumer extends BaseContract {
 
     next_period_start(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    nominate_ownership(
-      addr: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<[string]>;
 
     point_history(
       arg0: BigNumberish,
@@ -1000,6 +984,10 @@ export class VeSumer extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     slope_changes(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1029,6 +1017,11 @@ export class VeSumer extends BaseContract {
       _block: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     transfer_from_app(
       _staker_addr: string,
@@ -1096,11 +1089,7 @@ export class VeSumer extends BaseContract {
 
   TRANSFER_FROM_APP(overrides?: CallOverrides): Promise<BigNumber>;
 
-  TRANSFER_TO_APP(overrides?: CallOverrides): Promise<BigNumber>;
-
   USER_WITHDRAW(overrides?: CallOverrides): Promise<BigNumber>;
-
-  VOTE_WEIGHT_MULTIPLIER(overrides?: CallOverrides): Promise<BigNumber>;
 
   VOTE_WEIGHT_MULTIPLIER_I128(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1108,7 +1097,7 @@ export class VeSumer extends BaseContract {
 
   ZERO_ADDRESS(overrides?: CallOverrides): Promise<string>;
 
-  accept_transfer_ownership(
+  acceptOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1247,10 +1236,9 @@ export class VeSumer extends BaseContract {
 
   next_period_start(overrides?: CallOverrides): Promise<BigNumber>;
 
-  nominate_ownership(
-    addr: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  pendingOwner(overrides?: CallOverrides): Promise<string>;
 
   point_history(
     arg0: BigNumberish,
@@ -1287,6 +1275,10 @@ export class VeSumer extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   slope_changes(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -1316,6 +1308,11 @@ export class VeSumer extends BaseContract {
     _block: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   transfer_from_app(
     _staker_addr: string,
@@ -1380,11 +1377,7 @@ export class VeSumer extends BaseContract {
 
     TRANSFER_FROM_APP(overrides?: CallOverrides): Promise<BigNumber>;
 
-    TRANSFER_TO_APP(overrides?: CallOverrides): Promise<BigNumber>;
-
     USER_WITHDRAW(overrides?: CallOverrides): Promise<BigNumber>;
-
-    VOTE_WEIGHT_MULTIPLIER(overrides?: CallOverrides): Promise<BigNumber>;
 
     VOTE_WEIGHT_MULTIPLIER_I128(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1392,7 +1385,7 @@ export class VeSumer extends BaseContract {
 
     ZERO_ADDRESS(overrides?: CallOverrides): Promise<string>;
 
-    accept_transfer_ownership(overrides?: CallOverrides): Promise<void>;
+    acceptOwnership(overrides?: CallOverrides): Promise<void>;
 
     admin(overrides?: CallOverrides): Promise<string>;
 
@@ -1531,7 +1524,9 @@ export class VeSumer extends BaseContract {
 
     next_period_start(overrides?: CallOverrides): Promise<BigNumber>;
 
-    nominate_ownership(addr: string, overrides?: CallOverrides): Promise<void>;
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<string>;
 
     point_history(
       arg0: BigNumberish,
@@ -1568,6 +1563,8 @@ export class VeSumer extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
     slope_changes(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1597,6 +1594,11 @@ export class VeSumer extends BaseContract {
       _block: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     transfer_from_app(
       _staker_addr: string,
@@ -1695,14 +1697,6 @@ export class VeSumer extends BaseContract {
       }
     >;
 
-    "EmergencyUnlockToggled(bool)"(
-      emergencyUnlockActive?: null
-    ): TypedEventFilter<[boolean], { emergencyUnlockActive: boolean }>;
-
-    EmergencyUnlockToggled(
-      emergencyUnlockActive?: null
-    ): TypedEventFilter<[boolean], { emergencyUnlockActive: boolean }>;
-
     "HistoricalProxyToggled(address,bool)"(
       proxy_address?: null,
       enabled?: null
@@ -1735,6 +1729,38 @@ export class VeSumer extends BaseContract {
       admin?: null
     ): TypedEventFilter<[string], { admin: string }>;
 
+    "OwnershipTransferStarted(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferStarted(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     "ProxyAdd(address,address,uint256)"(
       staker_addr?: string | null,
       proxy_addr?: string | null,
@@ -1760,24 +1786,6 @@ export class VeSumer extends BaseContract {
     ProxyAddsToggled(
       proxyAddsEnabled?: null
     ): TypedEventFilter<[boolean], { proxyAddsEnabled: boolean }>;
-
-    "ProxySlash(address,address,uint256)"(
-      staker_addr?: string | null,
-      proxy_addr?: string | null,
-      slash_amt?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber],
-      { staker_addr: string; proxy_addr: string; slash_amt: BigNumber }
-    >;
-
-    ProxySlash(
-      staker_addr?: string | null,
-      proxy_addr?: string | null,
-      slash_amt?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber],
-      { staker_addr: string; proxy_addr: string; slash_amt: BigNumber }
-    >;
 
     "ProxySlashesToggled(bool)"(
       proxySlashesEnabled?: null
@@ -1861,24 +1869,6 @@ export class VeSumer extends BaseContract {
       { app_addr: string; staker_addr: string; transfer_amt: BigNumber }
     >;
 
-    "TransferToApp(address,address,uint256)"(
-      staker_addr?: string | null,
-      app_addr?: string | null,
-      transfer_amt?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber],
-      { staker_addr: string; app_addr: string; transfer_amt: BigNumber }
-    >;
-
-    TransferToApp(
-      staker_addr?: string | null,
-      app_addr?: string | null,
-      transfer_amt?: null
-    ): TypedEventFilter<
-      [string, string, BigNumber],
-      { staker_addr: string; app_addr: string; transfer_amt: BigNumber }
-    >;
-
     "Withdraw(address,address,uint256,uint256)"(
       provider?: string | null,
       to_addr?: string | null,
@@ -1923,11 +1913,7 @@ export class VeSumer extends BaseContract {
 
     TRANSFER_FROM_APP(overrides?: CallOverrides): Promise<BigNumber>;
 
-    TRANSFER_TO_APP(overrides?: CallOverrides): Promise<BigNumber>;
-
     USER_WITHDRAW(overrides?: CallOverrides): Promise<BigNumber>;
-
-    VOTE_WEIGHT_MULTIPLIER(overrides?: CallOverrides): Promise<BigNumber>;
 
     VOTE_WEIGHT_MULTIPLIER_I128(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1935,7 +1921,7 @@ export class VeSumer extends BaseContract {
 
     ZERO_ADDRESS(overrides?: CallOverrides): Promise<BigNumber>;
 
-    accept_transfer_ownership(
+    acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2059,10 +2045,9 @@ export class VeSumer extends BaseContract {
 
     next_period_start(overrides?: CallOverrides): Promise<BigNumber>;
 
-    nominate_ownership(
-      addr: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<BigNumber>;
 
     point_history(
       arg0: BigNumberish,
@@ -2088,6 +2073,10 @@ export class VeSumer extends BaseContract {
     recoverERC20(
       token_addr: string,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2119,6 +2108,11 @@ export class VeSumer extends BaseContract {
     totalSupplyAt(
       _block: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transfer_from_app(
@@ -2184,13 +2178,7 @@ export class VeSumer extends BaseContract {
 
     TRANSFER_FROM_APP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    TRANSFER_TO_APP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     USER_WITHDRAW(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    VOTE_WEIGHT_MULTIPLIER(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     VOTE_WEIGHT_MULTIPLIER_I128(
       overrides?: CallOverrides
@@ -2200,7 +2188,7 @@ export class VeSumer extends BaseContract {
 
     ZERO_ADDRESS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    accept_transfer_ownership(
+    acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2340,10 +2328,9 @@ export class VeSumer extends BaseContract {
 
     next_period_start(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    nominate_ownership(
-      addr: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     point_history(
       arg0: BigNumberish,
@@ -2371,6 +2358,10 @@ export class VeSumer extends BaseContract {
     recoverERC20(
       token_addr: string,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2404,6 +2395,11 @@ export class VeSumer extends BaseContract {
     totalSupplyAt(
       _block: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transfer_from_app(

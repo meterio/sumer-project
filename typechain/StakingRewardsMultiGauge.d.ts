@@ -22,6 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
   functions: {
     "MULTIPLIER_PRECISION()": FunctionFragment;
+    "acceptOwnership()": FunctionFragment;
     "addMigrator(address)": FunctionFragment;
     "calcCurCombinedWeight(address)": FunctionFragment;
     "changeTokenManager(address,address)": FunctionFragment;
@@ -47,6 +48,7 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     "migrator_withdraw_locked(address,bytes32)": FunctionFragment;
     "minVeSumerForMaxBoost(address)": FunctionFragment;
     "owner()": FunctionFragment;
+    "pendingOwner()": FunctionFragment;
     "periodFinish()": FunctionFragment;
     "recoverERC20(address,uint256)": FunctionFragment;
     "removeMigrator(address)": FunctionFragment;
@@ -87,7 +89,6 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     "usd_address()": FunctionFragment;
     "userStakedUsd(address)": FunctionFragment;
     "valid_migrators(address)": FunctionFragment;
-    "veSUMER()": FunctionFragment;
     "veSumerMultiplier(address)": FunctionFragment;
     "veSumer_max_multiplier()": FunctionFragment;
     "veSumer_per_usd_for_max_boost()": FunctionFragment;
@@ -97,6 +98,10 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
 
   encodeFunctionData(
     functionFragment: "MULTIPLIER_PRECISION",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "acceptOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "addMigrator", values: [string]): string;
@@ -184,6 +189,10 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pendingOwner",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "periodFinish",
     values?: undefined
@@ -341,7 +350,6 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     functionFragment: "valid_migrators",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "veSUMER", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "veSumerMultiplier",
     values: [string]
@@ -365,6 +373,10 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "MULTIPLIER_PRECISION",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "acceptOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -455,6 +467,10 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingOwner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "periodFinish",
     data: BytesLike
@@ -612,7 +628,6 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     functionFragment: "valid_migrators",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "veSUMER", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "veSumerMultiplier",
     data: BytesLike
@@ -639,6 +654,7 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     "LockedStakeMinTime(uint256)": EventFragment;
     "LockedStakeTimeForMaxMultiplier(uint256)": EventFragment;
     "MaxVeSumerMultiplier(uint256)": EventFragment;
+    "OwnershipTransferStarted(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Recovered(address,address,uint256)": EventFragment;
     "RewardPaid(address,uint256,address,address)": EventFragment;
@@ -657,6 +673,7 @@ interface StakingRewardsMultiGaugeInterface extends ethers.utils.Interface {
     nameOrSignatureOrTopic: "LockedStakeTimeForMaxMultiplier"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MaxVeSumerMultiplier"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Recovered"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
@@ -683,6 +700,10 @@ export type LockedStakeTimeForMaxMultiplierEvent = TypedEvent<
 
 export type MaxVeSumerMultiplierEvent = TypedEvent<
   [BigNumber] & { multiplier: BigNumber }
+>;
+
+export type OwnershipTransferStartedEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
 >;
 
 export type OwnershipTransferredEvent = TypedEvent<
@@ -782,6 +803,10 @@ export class StakingRewardsMultiGauge extends BaseContract {
 
   functions: {
     MULTIPLIER_PRECISION(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     addMigrator(
       migrator_address: string,
@@ -902,6 +927,8 @@ export class StakingRewardsMultiGauge extends BaseContract {
     ): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<[string]>;
 
     periodFinish(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -1070,8 +1097,6 @@ export class StakingRewardsMultiGauge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    veSUMER(overrides?: CallOverrides): Promise<[string]>;
-
     veSumerMultiplier(
       account: string,
       overrides?: CallOverrides
@@ -1092,6 +1117,10 @@ export class StakingRewardsMultiGauge extends BaseContract {
   };
 
   MULTIPLIER_PRECISION(overrides?: CallOverrides): Promise<BigNumber>;
+
+  acceptOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   addMigrator(
     migrator_address: string,
@@ -1203,6 +1232,8 @@ export class StakingRewardsMultiGauge extends BaseContract {
   ): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
+
+  pendingOwner(overrides?: CallOverrides): Promise<string>;
 
   periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1357,8 +1388,6 @@ export class StakingRewardsMultiGauge extends BaseContract {
 
   valid_migrators(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
-  veSUMER(overrides?: CallOverrides): Promise<string>;
-
   veSumerMultiplier(
     account: string,
     overrides?: CallOverrides
@@ -1377,6 +1406,8 @@ export class StakingRewardsMultiGauge extends BaseContract {
 
   callStatic: {
     MULTIPLIER_PRECISION(overrides?: CallOverrides): Promise<BigNumber>;
+
+    acceptOwnership(overrides?: CallOverrides): Promise<void>;
 
     addMigrator(
       migrator_address: string,
@@ -1483,6 +1514,8 @@ export class StakingRewardsMultiGauge extends BaseContract {
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<string>;
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1632,8 +1665,6 @@ export class StakingRewardsMultiGauge extends BaseContract {
 
     valid_migrators(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
-    veSUMER(overrides?: CallOverrides): Promise<string>;
-
     veSumerMultiplier(
       account: string,
       overrides?: CallOverrides
@@ -1682,6 +1713,22 @@ export class StakingRewardsMultiGauge extends BaseContract {
     MaxVeSumerMultiplier(
       multiplier?: null
     ): TypedEventFilter<[BigNumber], { multiplier: BigNumber }>;
+
+    "OwnershipTransferStarted(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferStarted(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -1839,6 +1886,10 @@ export class StakingRewardsMultiGauge extends BaseContract {
   estimateGas: {
     MULTIPLIER_PRECISION(overrides?: CallOverrides): Promise<BigNumber>;
 
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     addMigrator(
       migrator_address: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1935,6 +1986,8 @@ export class StakingRewardsMultiGauge extends BaseContract {
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<BigNumber>;
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2101,8 +2154,6 @@ export class StakingRewardsMultiGauge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    veSUMER(overrides?: CallOverrides): Promise<BigNumber>;
-
     veSumerMultiplier(
       account: string,
       overrides?: CallOverrides
@@ -2125,6 +2176,10 @@ export class StakingRewardsMultiGauge extends BaseContract {
   populateTransaction: {
     MULTIPLIER_PRECISION(
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     addMigrator(
@@ -2237,6 +2292,8 @@ export class StakingRewardsMultiGauge extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     periodFinish(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2413,8 +2470,6 @@ export class StakingRewardsMultiGauge extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    veSUMER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     veSumerMultiplier(
       account: string,

@@ -21,24 +21,15 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface VotingEscrowInterface extends ethers.utils.Interface {
   functions: {
     "balanceOf(address)": FunctionFragment;
-    "balget_last_user_slopeanceOf(address)": FunctionFragment;
     "locked(address)": FunctionFragment;
     "locked__end(address)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "balget_last_user_slopeanceOf",
-    values: [string]
-  ): string;
   encodeFunctionData(functionFragment: "locked", values: [string]): string;
   encodeFunctionData(functionFragment: "locked__end", values: [string]): string;
 
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "balget_last_user_slopeanceOf",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "locked", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "locked__end",
@@ -94,11 +85,6 @@ export class VotingEscrow extends BaseContract {
   functions: {
     balanceOf(addr: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    balget_last_user_slopeanceOf(
-      addr: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     locked(
       addr: string,
       overrides?: CallOverrides
@@ -111,11 +97,6 @@ export class VotingEscrow extends BaseContract {
 
   balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  balget_last_user_slopeanceOf(
-    addr: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   locked(
     addr: string,
     overrides?: CallOverrides
@@ -125,11 +106,6 @@ export class VotingEscrow extends BaseContract {
 
   callStatic: {
     balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    balget_last_user_slopeanceOf(
-      addr: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     locked(
       addr: string,
@@ -144,11 +120,6 @@ export class VotingEscrow extends BaseContract {
   estimateGas: {
     balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    balget_last_user_slopeanceOf(
-      addr: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     locked(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     locked__end(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -156,11 +127,6 @@ export class VotingEscrow extends BaseContract {
 
   populateTransaction: {
     balanceOf(
-      addr: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    balget_last_user_slopeanceOf(
       addr: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

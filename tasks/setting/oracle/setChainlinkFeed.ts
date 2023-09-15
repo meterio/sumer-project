@@ -38,8 +38,8 @@ task('soc', 'set FeedPriceOracle with chainlink feed')
     for (let i = 0; i < config.cTokens.tokens.length; i++) {
       let ctoken = config.cTokens.tokens[i];
       let oracle = ctoken.oracle;
-      let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals);
-      let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals, {
+      let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr);
+      let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, {
         gasLimit: gas
       });
       console.log('setChainlinkFeed tx:', receipt.hash);
@@ -47,8 +47,8 @@ task('soc', 'set FeedPriceOracle with chainlink feed')
     for (let i = 1; i < config.suTokens.tokens.length; i++) {
       let ctoken = config.suTokens.tokens[i];
       let oracle = ctoken.oracle;
-      let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals);
-      let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, oracle.tokenDecimals, {
+      let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr);
+      let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, {
         gasLimit: gas
       });
       console.log('setChainlinkFeed tx:', receipt.hash);

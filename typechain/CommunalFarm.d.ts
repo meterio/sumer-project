@@ -21,6 +21,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface CommunalFarmInterface extends ethers.utils.Interface {
   functions: {
+    "acceptOwnership()": FunctionFragment;
     "calcCurCombinedWeight(address)": FunctionFragment;
     "changeTokenManager(address,address)": FunctionFragment;
     "combinedWeightOf(address)": FunctionFragment;
@@ -41,6 +42,7 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
     "lockedLiquidityOf(address)": FunctionFragment;
     "lockedStakesOf(address)": FunctionFragment;
     "owner()": FunctionFragment;
+    "pendingOwner()": FunctionFragment;
     "periodFinish()": FunctionFragment;
     "recoverERC20(address,uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -72,6 +74,10 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
     "withdrawalsPaused()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "acceptOwnership",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "calcCurCombinedWeight",
     values: [string]
@@ -140,6 +146,10 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pendingOwner",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "periodFinish",
     values?: undefined
@@ -255,6 +265,10 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "acceptOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "calcCurCombinedWeight",
     data: BytesLike
   ): Result;
@@ -322,6 +336,10 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingOwner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "periodFinish",
     data: BytesLike
@@ -440,6 +458,7 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
     "LockedStakeMaxMultiplierUpdated(uint256)": EventFragment;
     "LockedStakeMinTime(uint256)": EventFragment;
     "LockedStakeTimeForMaxMultiplier(uint256)": EventFragment;
+    "OwnershipTransferStarted(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Recovered(address,address,uint256)": EventFragment;
     "RewardPaid(address,uint256,address,address)": EventFragment;
@@ -456,6 +475,7 @@ interface CommunalFarmInterface extends ethers.utils.Interface {
   getEvent(
     nameOrSignatureOrTopic: "LockedStakeTimeForMaxMultiplier"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Recovered"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
@@ -475,6 +495,10 @@ export type LockedStakeMinTimeEvent = TypedEvent<
 
 export type LockedStakeTimeForMaxMultiplierEvent = TypedEvent<
   [BigNumber] & { secs: BigNumber }
+>;
+
+export type OwnershipTransferStartedEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
 >;
 
 export type OwnershipTransferredEvent = TypedEvent<
@@ -569,6 +593,10 @@ export class CommunalFarm extends BaseContract {
   interface: CommunalFarmInterface;
 
   functions: {
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     calcCurCombinedWeight(
       account: string,
       overrides?: CallOverrides
@@ -658,6 +686,8 @@ export class CommunalFarm extends BaseContract {
     >;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<[string]>;
 
     periodFinish(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -773,6 +803,10 @@ export class CommunalFarm extends BaseContract {
     withdrawalsPaused(overrides?: CallOverrides): Promise<[boolean]>;
   };
 
+  acceptOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   calcCurCombinedWeight(
     account: string,
     overrides?: CallOverrides
@@ -853,6 +887,8 @@ export class CommunalFarm extends BaseContract {
   >;
 
   owner(overrides?: CallOverrides): Promise<string>;
+
+  pendingOwner(overrides?: CallOverrides): Promise<string>;
 
   periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -960,6 +996,8 @@ export class CommunalFarm extends BaseContract {
   withdrawalsPaused(overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    acceptOwnership(overrides?: CallOverrides): Promise<void>;
+
     calcCurCombinedWeight(
       account: string,
       overrides?: CallOverrides
@@ -1035,6 +1073,8 @@ export class CommunalFarm extends BaseContract {
     >;
 
     owner(overrides?: CallOverrides): Promise<string>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<string>;
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1157,6 +1197,22 @@ export class CommunalFarm extends BaseContract {
     LockedStakeTimeForMaxMultiplier(
       secs?: null
     ): TypedEventFilter<[BigNumber], { secs: BigNumber }>;
+
+    "OwnershipTransferStarted(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferStarted(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -1304,6 +1360,10 @@ export class CommunalFarm extends BaseContract {
   };
 
   estimateGas: {
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     calcCurCombinedWeight(
       account: string,
       overrides?: CallOverrides
@@ -1371,6 +1431,8 @@ export class CommunalFarm extends BaseContract {
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<BigNumber>;
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1485,6 +1547,10 @@ export class CommunalFarm extends BaseContract {
   };
 
   populateTransaction: {
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     calcCurCombinedWeight(
       account: string,
       overrides?: CallOverrides
@@ -1566,6 +1632,8 @@ export class CommunalFarm extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingOwner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     periodFinish(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

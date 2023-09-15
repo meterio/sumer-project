@@ -6,14 +6,14 @@
     "supply": "100000000",
     "address": "0xB28c8c2abF17243502eB28885455998e8B984B58"
   },
-  "feedPriceOracle": { "address": "0x186ac52a93699351f0407c47a369c7e2e8B9c666" },
+  "feedPriceOracle": { "address": "0x3C0eFE0c7271F04D1b6aFfA45a55EE591bC8611B" },
   "compoundLens": { "address": "0x1dB99Ae66bf9d40A8d8eB134d7C6a68F61c73fc4" },
   "underwriterAdmin": {
     "implementation": "0xD2c44eD3D10c5307abe015C87731745aF395b77C",
     "address": "0x3c4b1E29Eee4d6fe75e5F71524653a829aF4E447"
   },
   "accountLiquidity": {
-    "implementation": "0x54d342c5fa080f16e764781bb0e8a43edbad3e3f",
+    "implementation": "0x005BA65c092B079c9e8836F01EB07d5DD6B9ecF9",
     "address": "0xA7ab24239A5C48F16790D028755a7e9FCD604C2B"
   },
   "compLogic": {
