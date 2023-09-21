@@ -56,7 +56,9 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     ICompLogic _compLogic,
     IAccountLiquidity _accountLiquidity,
     uint256 _closeFactorMantissa,
-    uint256 _liquidationIncentiveMantissa
+    uint256 _heteroLiquidationIncentiveMantissa,
+    uint256 _homoLiquidationIncentiveMantissa,
+    uint256 _sutokenLiquidationIncentiveMantissa
   ) external initializer {
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
     // Set comptroller's oracle to newOracle
@@ -71,9 +73,18 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     emit NewCloseFactor(0, _closeFactorMantissa);
 
     // Set liquidation incentive to new incentive
-    liquidationIncentiveMantissa = _liquidationIncentiveMantissa;
+    heteroLiquidationIncentiveMantissa = _heteroLiquidationIncentiveMantissa;
+    homoLiquidationIncentiveMantissa = _homoLiquidationIncentiveMantissa;
+    sutokenLiquidationIncentiveMantissa = _sutokenLiquidationIncentiveMantissa;
     // Emit event with old incentive, new incentive
-    emit NewLiquidationIncentive(0, _liquidationIncentiveMantissa);
+    emit NewLiquidationIncentive(
+      0,
+      _heteroLiquidationIncentiveMantissa,
+      0,
+      _homoLiquidationIncentiveMantissa,
+      0,
+      _sutokenLiquidationIncentiveMantissa
+    );
 
     underWriterAdmin = _underWriterAdmin;
   }
@@ -341,7 +352,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       assert(markets[cToken].accountMembership[borrower]);
     }
 
-    require(oracle.getUnderlyingPrice(cToken) > 0, "PRICE_ERROR");
+    require(oracle.getUnderlyingPrice(cToken) > 0, 'PRICE_ERROR');
 
     //uint borrowCap = borrowCaps[cToken];
     uint256 borrowCap = underWriterAdmin._getMarketBorrowCap(cToken);
@@ -553,19 +564,34 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   /**
    * @notice Sets liquidationIncentive
    * @dev Admin function to set liquidationIncentive
-   * @param newLiquidationIncentiveMantissa New liquidationIncentive scaled by 1e18
+   * @param newHeteroLiquidationIncentiveMantissa New liquidationIncentive scaled by 1e18 for hetero assets
+   * @param newHomoLiquidationIncentiveMantissa New liquidationIncentive scaled by 1e18 for homo assets
+   * @param newSutokenLiquidationIncentiveMantissa New liquidationIncentive scaled by 1e18 for sutoken assets
    * @return uint 0=success, otherwise a failure. (See ErrorReporter for details)
    */
   function _setLiquidationIncentive(
-    uint256 newLiquidationIncentiveMantissa
+    uint256 newHeteroLiquidationIncentiveMantissa,
+    uint256 newHomoLiquidationIncentiveMantissa,
+    uint256 newSutokenLiquidationIncentiveMantissa
   ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
     // Check caller is admin
     // Save current value for use in log
-    uint256 oldLiquidationIncentiveMantissa = liquidationIncentiveMantissa;
+    uint256 oldHetero = heteroLiquidationIncentiveMantissa;
+    uint256 oldHomo = homoLiquidationIncentiveMantissa;
+    uint256 oldSutoken = sutokenLiquidationIncentiveMantissa;
     // Set liquidation incentive to new incentive
-    liquidationIncentiveMantissa = newLiquidationIncentiveMantissa;
+    heteroLiquidationIncentiveMantissa = newHeteroLiquidationIncentiveMantissa;
+    homoLiquidationIncentiveMantissa = newHomoLiquidationIncentiveMantissa;
+    sutokenLiquidationIncentiveMantissa = newSutokenLiquidationIncentiveMantissa;
     // Emit event with old incentive, new incentive
-    emit NewLiquidationIncentive(oldLiquidationIncentiveMantissa, newLiquidationIncentiveMantissa);
+    emit NewLiquidationIncentive(
+      oldHetero,
+      newHeteroLiquidationIncentiveMantissa,
+      oldHomo,
+      newHomoLiquidationIncentiveMantissa,
+      oldSutoken,
+      newSutokenLiquidationIncentiveMantissa
+    );
     return uint256(0);
   }
 
@@ -652,5 +678,9 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    */
   function isContract(address account) internal view returns (bool) {
     return account.code.length > 0;
+  }
+
+  function liquidationIncentiveMantissa() public view returns (uint256, uint256, uint256) {
+    return (heteroLiquidationIncentiveMantissa, homoLiquidationIncentiveMantissa, sutokenLiquidationIncentiveMantissa);
   }
 }

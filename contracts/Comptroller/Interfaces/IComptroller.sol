@@ -59,7 +59,7 @@ interface IComptroller {
 
   /*** Liquidity/Liquidation Calculations ***/
 
-  function liquidationIncentiveMantissa() external view returns (uint256);
+  function liquidationIncentiveMantissa() external view returns (uint256, uint256, uint256);
 
   function isListed(address asset) external view returns (bool);
 

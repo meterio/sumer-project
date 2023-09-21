@@ -33,7 +33,9 @@ contract CompoundLens {
     bool isCEther;
     uint256 borrowCap;
     uint256 depositCap;
-    uint256 liquidationIncentive;
+    uint256 heteroLiquidationIncentive;
+    uint256 homoLiquidationIncentive;
+    uint256 sutokenLiquidationIncentive;
     uint8 groupId;
     uint256 intraRate;
     uint256 mintRate;
@@ -75,7 +77,8 @@ contract CompoundLens {
       gi.interRate = group.interSuRateMantissa;
       gi.mintRate = group.intraSuRateMantissa;
     }
-
+    (uint256 heteroIncentiveMantissa, uint256 homoIncentiveMantissa, uint256 sutokenIncentiveMantissa) = comptroller
+      .liquidationIncentiveMantissa();
     return
       CTokenMetadata({
         cToken: address(cToken),
@@ -95,7 +98,9 @@ contract CompoundLens {
         isCEther: cToken.isCEther(),
         borrowCap: ua._getMarketBorrowCap(address(cToken)),
         depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
-        liquidationIncentive: comptroller.liquidationIncentiveMantissa(),
+        heteroLiquidationIncentive: heteroIncentiveMantissa,
+        homoLiquidationIncentive: homoIncentiveMantissa,
+        sutokenLiquidationIncentive: sutokenIncentiveMantissa,
         groupId: assetGroupId,
         intraRate: gi.intraRate,
         interRate: gi.interRate,
@@ -504,9 +509,24 @@ contract CompoundLens {
     Exp memory denominator;
     Exp memory ratio;
 
-    numerator = Exp({mantissa: comptroller.liquidationIncentiveMantissa()}).mul_(
-      Exp({mantissa: priceBorrowedMantissa})
-    );
+    (, uint8 repayTokenGroupId, ) = comptroller.markets(cTokenBorrowed);
+    (, uint8 seizeTokenGroupId, ) = comptroller.markets(cTokenCollateral);
+    (uint256 heteroIncentiveMantissa, uint256 homoIncentiveMantissa, uint256 sutokenIncentiveMantissa) = comptroller
+      .liquidationIncentiveMantissa();
+
+    // default is repaying heterogeneous assets
+    uint256 incentiveMantissa = heteroIncentiveMantissa;
+    if (repayTokenGroupId == seizeTokenGroupId) {
+      if (ICToken(cTokenBorrowed).isCToken() == false) {
+        // repaying sutoken
+        incentiveMantissa = sutokenIncentiveMantissa;
+      } else {
+        // repaying homogeneous assets
+        incentiveMantissa = homoIncentiveMantissa;
+      }
+    }
+
+    numerator = Exp({mantissa: incentiveMantissa}).mul_(Exp({mantissa: priceBorrowedMantissa}));
     denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
     ratio = numerator.div_(denominator);
 

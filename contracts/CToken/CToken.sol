@@ -1139,8 +1139,29 @@ abstract contract CToken is CTokenStorage {
     // EFFECTS & INTERACTIONS
     // (No safe failures beyond this point)
 
+    (, uint8 repayTokenGroupId, ) = IComptroller(comptroller).markets(address(this));
+    (, uint8 seizeTokenGroupId, ) = IComptroller(comptroller).markets(cTokenCollateral);
+
+    (
+      uint256 heteroLiquidationIncentive,
+      uint256 homoLiquidationIncentive,
+      uint256 sutokenLiquidationIncentive
+    ) = IComptroller(comptroller).liquidationIncentiveMantissa();
+
+    // default is repaying heterogeneous assets
+    uint256 incentiveMantissa = heteroLiquidationIncentive;
+    if (repayTokenGroupId == seizeTokenGroupId) {
+      if (CToken(address(this)).isCToken() == false) {
+        // repaying sutoken
+        incentiveMantissa = sutokenLiquidationIncentive;
+      } else {
+        // repaying homogeneous assets
+        incentiveMantissa = homoLiquidationIncentive;
+      }
+    }
+
     /* We calculate the number of collateral tokens that will be seized */
-    (, uint256 seizeTokens) = liquidateCalculateSeizeTokens(cTokenCollateral, actualRepayAmount);
+    (, uint256 seizeTokens) = liquidateCalculateSeizeTokens(cTokenCollateral, actualRepayAmount, incentiveMantissa);
 
     /* Revert if borrower collateral token balance < seizeTokens */
     if (ICToken(cTokenCollateral).balanceOf(borrower) < seizeTokens) {
@@ -1650,7 +1671,8 @@ abstract contract CToken is CTokenStorage {
    */
   function liquidateCalculateSeizeTokens(
     address cTokenCollateral,
-    uint256 actualRepayAmount
+    uint256 actualRepayAmount,
+    uint256 liquidationIncentiveMantissa
   ) public view returns (uint256, uint256) {
     /* Read oracle prices for borrowed and collateral markets */
     address oracle = IComptroller(comptroller).oracle();
@@ -1671,9 +1693,7 @@ abstract contract CToken is CTokenStorage {
     Exp memory denominator;
     Exp memory ratio;
 
-    numerator = Exp({mantissa: IComptroller(comptroller).liquidationIncentiveMantissa()}).mul_(
-      Exp({mantissa: priceBorrowedMantissa})
-    );
+    numerator = Exp({mantissa: liquidationIncentiveMantissa}).mul_(Exp({mantissa: priceBorrowedMantissa}));
     denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
     ratio = numerator.div_(denominator);
 
