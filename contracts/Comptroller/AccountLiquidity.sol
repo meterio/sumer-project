@@ -3,7 +3,6 @@ pragma solidity 0.8.19;
 import '../Exponential/ExponentialNoError.sol';
 import './Interfaces/IComptroller.sol';
 import './Interfaces/ICToken.sol';
-import './Interfaces/IUnderwriterAdmin.sol';
 import './Interfaces/IPriceOracle.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 
@@ -12,7 +11,6 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
   using ExponentialNoError for Exp;
   using ExponentialNoError for Double;
 
-  IUnderwriterAdmin public underWriterAdmin;
   IComptroller public comptroller;
 
   function initialize(address _admin) external initializer {
@@ -21,7 +19,6 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
 
   function setComptroller(IComptroller _comptroller) external onlyRole(DEFAULT_ADMIN_ROLE) {
     comptroller = _comptroller;
-    underWriterAdmin = IUnderwriterAdmin(comptroller.underWriterAdmin());
   }
 
   /**
@@ -82,7 +79,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     AccountLiquidityLocalVars memory vars; // Holds all our calculation results
     uint256 oErr;
 
-    vars.equalAssetsGroupNum = IUnderwriterAdmin(underWriterAdmin).getAssetGroupNum();
+    vars.equalAssetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
 
     if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
@@ -99,8 +96,6 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       vars.tokenBorrowVal = uint256(0);
 
       (, uint8 assetGroupId, ) = comptroller.markets(asset);
-
-      //IUnderwriterAdmin.AssetGroup memory eqAsset = IUnderwriterAdmin(underWriterAdmin).getAssetGroup(asset);
 
       // Read the balances and exchange rate from the cToken
       (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = ICToken(asset).getAccountSnapshot(
@@ -173,9 +168,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      IUnderwriterAdmin.AssetGroup memory equalAssetsGroup = IUnderwriterAdmin(underWriterAdmin).getAssetGroup(
-        groupVars[i].groupId
-      );
+      IComptroller.AssetGroup memory equalAssetsGroup = IComptroller(comptroller).getAssetGroup(groupVars[i].groupId);
 
       vars.intraCRate = Exp({mantissa: equalAssetsGroup.intraCRateMantissa});
       vars.intraMintRate = Exp({mantissa: equalAssetsGroup.intraMintRateMantissa});

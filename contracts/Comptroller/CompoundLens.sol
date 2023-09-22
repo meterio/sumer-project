@@ -6,7 +6,6 @@ import './Interfaces/IPriceOracle.sol';
 import './Interfaces/IGovernorAlpha.sol';
 import './Interfaces/IComptroller.sol';
 import './Interfaces/IGovernorBravo.sol';
-import './Interfaces/IUnderwriterAdmin.sol';
 import '../Exponential/ExponentialNoError.sol';
 import './ComptrollerStorage.sol';
 
@@ -51,7 +50,6 @@ contract CompoundLens {
 
   function cTokenMetadata(ICToken cToken) public returns (CTokenMetadata memory) {
     IComptroller comptroller = IComptroller(address(cToken.comptroller()));
-    IUnderwriterAdmin ua = IUnderwriterAdmin(comptroller.underWriterAdmin());
 
     // get underlying info
     address underlyingAssetAddress;
@@ -66,7 +64,7 @@ contract CompoundLens {
 
     // get group info
     (bool isListed, uint8 assetGroupId, ) = comptroller.markets(address(cToken));
-    IUnderwriterAdmin.AssetGroup memory group = ua.getAssetGroup(assetGroupId);
+    IComptroller.AssetGroup memory group = comptroller.getAssetGroup(assetGroupId);
     GroupInfo memory gi;
     if (cToken.isCToken()) {
       gi.intraRate = group.intraCRateMantissa;
@@ -96,7 +94,7 @@ contract CompoundLens {
         underlyingDecimals: underlyingDecimals,
         isCToken: cToken.isCToken(),
         isCEther: cToken.isCEther(),
-        borrowCap: ua._getMarketBorrowCap(address(cToken)),
+        borrowCap: comptroller._getMarketBorrowCap(address(cToken)),
         depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
         heteroLiquidationIncentive: heteroIncentiveMantissa,
         homoLiquidationIncentive: homoIncentiveMantissa,
@@ -544,7 +542,7 @@ contract CompoundLens {
     return
       comptroller.marketGroupId(cToken) == 0 &&
       //borrowGuardianPaused[cToken] == true &&
-      IUnderwriterAdmin(comptroller.underWriterAdmin())._getBorrowPaused(cToken) &&
+      IComptroller(comptroller)._getBorrowPaused(cToken) &&
       ICToken(cToken).reserveFactorMantissa() == 1e18;
   }
 

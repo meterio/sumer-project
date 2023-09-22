@@ -189,10 +189,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ICompLogic__factory>;
     getContractFactory(
-      name: "ComptrollerErrorReporter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerErrorReporter__factory>;
-    getContractFactory(
       name: "ComptrollerStorage",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ComptrollerStorage__factory>;
@@ -217,21 +213,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPriceOracle__factory>;
     getContractFactory(
-      name: "IUnderwriterAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUnderwriterAdmin__factory>;
-    getContractFactory(
       name: "IUnitroller",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IUnitroller__factory>;
-    getContractFactory(
-      name: "UnderwriterAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.UnderwriterAdmin__factory>;
-    getContractFactory(
-      name: "UnderwriterStorage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.UnderwriterStorage__factory>;
     getContractFactory(
       name: "CErc20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -718,11 +702,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ICompLogic>;
     getContractAt(
-      name: "ComptrollerErrorReporter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerErrorReporter>;
-    getContractAt(
       name: "ComptrollerStorage",
       address: string,
       signer?: ethers.Signer
@@ -753,25 +732,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IPriceOracle>;
     getContractAt(
-      name: "IUnderwriterAdmin",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUnderwriterAdmin>;
-    getContractAt(
       name: "IUnitroller",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IUnitroller>;
-    getContractAt(
-      name: "UnderwriterAdmin",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.UnderwriterAdmin>;
-    getContractAt(
-      name: "UnderwriterStorage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.UnderwriterStorage>;
     getContractAt(
       name: "CErc20",
       address: string,

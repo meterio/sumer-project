@@ -21,32 +21,60 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ComptrollerInterface extends ethers.utils.Interface {
   functions: {
+    "CAPPER_ROLE()": FunctionFragment;
     "COMP_LOGIC()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "PAUSER_ROLE()": FunctionFragment;
+    "_borrowGuardianPaused()": FunctionFragment;
+    "_getBorrowCapGuardian()": FunctionFragment;
+    "_getBorrowPaused(address)": FunctionFragment;
+    "_getMarketBorrowCap(address)": FunctionFragment;
+    "_getMintPaused(address)": FunctionFragment;
+    "_getPauseGuardian()": FunctionFragment;
+    "_getSeizePaused()": FunctionFragment;
+    "_getTransferPaused()": FunctionFragment;
+    "_mintGuardianPaused()": FunctionFragment;
+    "_setBorrowCapGuardian(address)": FunctionFragment;
+    "_setBorrowPaused(address,bool)": FunctionFragment;
     "_setCloseFactor(uint256)": FunctionFragment;
-    "_setLiquidationIncentive(uint256)": FunctionFragment;
+    "_setLiquidationIncentive(uint256,uint256,uint256)": FunctionFragment;
+    "_setMarketBorrowCaps(address[],uint256[])": FunctionFragment;
+    "_setMintPaused(address,bool)": FunctionFragment;
+    "_setPauseGuardian(address)": FunctionFragment;
     "_setPriceOracle(address)": FunctionFragment;
-    "_setUnderWriterAdmin(address)": FunctionFragment;
+    "_setSeizePaused(bool)": FunctionFragment;
+    "_setTransferPaused(bool)": FunctionFragment;
     "_supportMarket(address,uint8)": FunctionFragment;
     "accountAssets(address,uint256)": FunctionFragment;
     "accountLiquidity()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
+    "borrowCapGuardian()": FunctionFragment;
+    "borrowCaps(address)": FunctionFragment;
+    "borrowGuardianPaused(address)": FunctionFragment;
     "checkMembership(address,address)": FunctionFragment;
     "closeFactorMantissa()": FunctionFragment;
     "compLogic()": FunctionFragment;
     "enterMarkets(address[])": FunctionFragment;
+    "eqAssetGroup(uint8)": FunctionFragment;
+    "equalAssetsGroupNum()": FunctionFragment;
     "exitMarket(address)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
     "getAllMarkets()": FunctionFragment;
+    "getAssetGroup(uint8)": FunctionFragment;
+    "getAssetGroupNum()": FunctionFragment;
     "getAssetsIn(address)": FunctionFragment;
+    "getCompAddress()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
+    "governanceToken()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "initialize(address,address,address,address,address,uint256,uint256)": FunctionFragment;
+    "heteroLiquidationIncentiveMantissa()": FunctionFragment;
+    "homoLiquidationIncentiveMantissa()": FunctionFragment;
+    "initialize(address,address,address,address,address,uint256,uint256,uint256,uint256)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isListed(address)": FunctionFragment;
     "liquidationIncentiveMantissa()": FunctionFragment;
@@ -54,24 +82,36 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "markets(address)": FunctionFragment;
     "maxSupply(address)": FunctionFragment;
     "mintAllowed(address,address,uint256)": FunctionFragment;
+    "mintGuardianPaused(address)": FunctionFragment;
     "oracle()": FunctionFragment;
+    "pauseGuardian()": FunctionFragment;
     "redeemAllowed(address,address,uint256)": FunctionFragment;
     "redeemVerify(address,address,uint256,uint256)": FunctionFragment;
+    "removeAssetGroup(uint8)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "repayBorrowAllowed(address,address,address,uint256)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
+    "seizeGuardianPaused()": FunctionFragment;
     "setAccountLiquidity(address)": FunctionFragment;
+    "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "setCompSpeed(address,uint256,uint256)": FunctionFragment;
     "setComptroller(address)": FunctionFragment;
+    "setGovTokenAddress(address)": FunctionFragment;
     "setMaxSupply(address,uint256)": FunctionFragment;
     "setTimelock(address)": FunctionFragment;
+    "suTokenRateMantissa()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "sutokenLiquidationIncentiveMantissa()": FunctionFragment;
     "timelock()": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
-    "underWriterAdmin()": FunctionFragment;
+    "transferGuardianPaused()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "CAPPER_ROLE",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "COMP_LOGIC",
     values?: undefined
@@ -81,20 +121,84 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "PAUSER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_borrowGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getBorrowCapGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getBorrowPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getMarketBorrowCap",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getMintPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getPauseGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getSeizePaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getTransferPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_mintGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setBorrowCapGuardian",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setBorrowPaused",
+    values: [string, boolean]
+  ): string;
+  encodeFunctionData(
     functionFragment: "_setCloseFactor",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "_setLiquidationIncentive",
-    values: [BigNumberish]
+    values: [BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setMarketBorrowCaps",
+    values: [string[], BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setMintPaused",
+    values: [string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setPauseGuardian",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "_setPriceOracle",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "_setUnderWriterAdmin",
-    values: [string]
+    functionFragment: "_setSeizePaused",
+    values: [boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setTransferPaused",
+    values: [boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "_supportMarket",
@@ -117,6 +221,15 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "borrowCapGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "borrowCaps", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "borrowGuardianPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "checkMembership",
     values: [string, string]
   ): string;
@@ -129,6 +242,14 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "enterMarkets",
     values: [string[]]
   ): string;
+  encodeFunctionData(
+    functionFragment: "eqAssetGroup",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "equalAssetsGroupNum",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "exitMarket", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getAccountLiquidity",
@@ -138,7 +259,19 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "getAllMarkets",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "getAssetGroup",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAssetGroupNum",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "getAssetsIn", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "getCompAddress",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
     values: [string, string, BigNumberish, BigNumberish]
@@ -156,6 +289,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "governanceToken",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "grantRole",
     values: [BytesLike, string]
   ): string;
@@ -164,8 +301,26 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "heteroLiquidationIncentiveMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "homoLiquidationIncentiveMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string, string, string, string, BigNumberish, BigNumberish]
+    values: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "isComptroller",
@@ -186,7 +341,15 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "mintAllowed",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "mintGuardianPaused",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pauseGuardian",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "redeemAllowed",
     values: [string, string, BigNumberish]
@@ -194,6 +357,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "redeemVerify",
     values: [string, string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeAssetGroup",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -212,8 +379,24 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [string, string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "seizeGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "setAccountLiquidity",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAssetGroup",
+    values: [
+      BigNumberish,
+      string,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "setCompSpeed",
@@ -224,13 +407,25 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setGovTokenAddress",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setMaxSupply",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "setTimelock", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "suTokenRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sutokenLiquidationIncentiveMantissa",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
@@ -238,13 +433,65 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "underWriterAdmin",
+    functionFragment: "transferGuardianPaused",
     values?: undefined
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "CAPPER_ROLE",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "COMP_LOGIC", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "PAUSER_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getBorrowCapGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getBorrowPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getMarketBorrowCap",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getMintPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getPauseGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getSeizePaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getTransferPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_mintGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_setBorrowCapGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_setBorrowPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -256,11 +503,27 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "_setMarketBorrowCaps",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_setMintPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_setPauseGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "_setPriceOracle",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "_setUnderWriterAdmin",
+    functionFragment: "_setSeizePaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_setTransferPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -281,6 +544,15 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "borrowCapGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "checkMembership",
     data: BytesLike
   ): Result;
@@ -293,6 +565,14 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "enterMarkets",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "eqAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "equalAssetsGroupNum",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getAccountLiquidity",
@@ -303,7 +583,19 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAssetGroupNum",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAssetsIn",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCompAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -322,8 +614,20 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "getRoleMemberCount",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "governanceToken",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "heteroLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "homoLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isComptroller",
@@ -344,13 +648,25 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "mintAllowed",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintGuardianPaused",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "pauseGuardian",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "redeemAllowed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "redeemVerify",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeAssetGroup",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -367,7 +683,15 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "seizeGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setAccountLiquidity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAssetGroup",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -379,6 +703,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setGovTokenAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setMaxSupply",
     data: BytesLike
   ): Result;
@@ -387,7 +715,15 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "suTokenRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sutokenLiquidationIncentiveMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
@@ -396,36 +732,56 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "underWriterAdmin",
+    functionFragment: "transferGuardianPaused",
     data: BytesLike
   ): Result;
 
   events: {
+    "ActionPaused(address,string,bool)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "MarketEntered(address,address)": EventFragment;
     "MarketExited(address,address)": EventFragment;
     "MarketListed(address)": EventFragment;
+    "NewAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256,uint8)": EventFragment;
+    "NewBorrowCap(address,uint256)": EventFragment;
+    "NewBorrowCapGuardian(address,address)": EventFragment;
     "NewCloseFactor(uint256,uint256)": EventFragment;
-    "NewLiquidationIncentive(uint256,uint256)": EventFragment;
+    "NewLiquidationIncentive(uint256,uint256,uint256,uint256,uint256,uint256)": EventFragment;
+    "NewPauseGuardian(address,address)": EventFragment;
     "NewPriceOracle(address,address)": EventFragment;
+    "RemoveAssetGroup(uint8,uint8)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "SetMaxSupply(address,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "ActionPaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketEntered"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketExited"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketListed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewAssetGroup"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewBorrowCap"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewBorrowCapGuardian"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewCloseFactor"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewLiquidationIncentive"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewPauseGuardian"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPriceOracle"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RemoveAssetGroup"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaxSupply"): EventFragment;
 }
+
+export type ActionPausedEvent = TypedEvent<
+  [string, string, boolean] & {
+    cToken: string;
+    action: string;
+    pauseState: boolean;
+  }
+>;
 
 export type InitializedEvent = TypedEvent<[number] & { version: number }>;
 
@@ -439,6 +795,39 @@ export type MarketExitedEvent = TypedEvent<
 
 export type MarketListedEvent = TypedEvent<[string] & { cToken: string }>;
 
+export type NewAssetGroupEvent = TypedEvent<
+  [
+    number,
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number
+  ] & {
+    groupId: number;
+    groupName: string;
+    intraCRateMantissa: BigNumber;
+    intraMintRateMantissa: BigNumber;
+    intraSuRateMantissa: BigNumber;
+    interCRateMantissa: BigNumber;
+    interSuRateMantissa: BigNumber;
+    assetsGroupNum: number;
+  }
+>;
+
+export type NewBorrowCapEvent = TypedEvent<
+  [string, BigNumber] & { cToken: string; newBorrowCap: BigNumber }
+>;
+
+export type NewBorrowCapGuardianEvent = TypedEvent<
+  [string, string] & {
+    oldBorrowCapGuardian: string;
+    newBorrowCapGuardian: string;
+  }
+>;
+
 export type NewCloseFactorEvent = TypedEvent<
   [BigNumber, BigNumber] & {
     oldCloseFactorMantissa: BigNumber;
@@ -447,14 +836,26 @@ export type NewCloseFactorEvent = TypedEvent<
 >;
 
 export type NewLiquidationIncentiveEvent = TypedEvent<
-  [BigNumber, BigNumber] & {
-    oldLiquidationIncentiveMantissa: BigNumber;
-    newLiquidationIncentiveMantissa: BigNumber;
+  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    oldHeteroIncentive: BigNumber;
+    newHeteroIncentive: BigNumber;
+    oldHomoIncentive: BigNumber;
+    newHomoIncentive: BigNumber;
+    oldSutokenIncentive: BigNumber;
+    newSutokenIncentive: BigNumber;
   }
+>;
+
+export type NewPauseGuardianEvent = TypedEvent<
+  [string, string] & { oldPauseGuardian: string; newPauseGuardian: string }
 >;
 
 export type NewPriceOracleEvent = TypedEvent<
   [string, string] & { oldPriceOracle: string; newPriceOracle: string }
+>;
+
+export type RemoveAssetGroupEvent = TypedEvent<
+  [number, number] & { groupId: number; equalAssetsGroupNum: number }
 >;
 
 export type RoleAdminChangedEvent = TypedEvent<
@@ -521,9 +922,51 @@ export class Comptroller extends BaseContract {
   interface: ComptrollerInterface;
 
   functions: {
+    CAPPER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
     COMP_LOGIC(overrides?: CallOverrides): Promise<[string]>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    _getBorrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    _getMintPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    _getPauseGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    _getTransferPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    _setBorrowCapGuardian(
+      newBorrowCapGuardian: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _setBorrowPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     _setCloseFactor(
       newCloseFactorMantissa: BigNumberish,
@@ -531,7 +974,26 @@ export class Comptroller extends BaseContract {
     ): Promise<ContractTransaction>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _setMarketBorrowCaps(
+      cTokens: string[],
+      newBorrowCaps: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _setMintPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _setPauseGuardian(
+      newPauseGuardian: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -540,8 +1002,13 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    _setUnderWriterAdmin(
-      underWriter: string,
+    _setSeizePaused(
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _setTransferPaused(
+      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -571,6 +1038,15 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     checkMembership(
       account: string,
       cToken: string,
@@ -586,6 +1062,31 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
     exitMarket(
       cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -598,10 +1099,39 @@ export class Comptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<[string[]]>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [
+          number,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          groupId: number;
+          groupName: string;
+          intraCRateMantissa: BigNumber;
+          intraMintRateMantissa: BigNumber;
+          intraSuRateMantissa: BigNumber;
+          interCRateMantissa: BigNumber;
+          interSuRateMantissa: BigNumber;
+        }
+      ]
+    >;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
     getAssetsIn(
       account: string,
       overrides?: CallOverrides
     ): Promise<[string[]]>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<[string]>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -624,6 +1154,8 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    governanceToken(overrides?: CallOverrides): Promise<[string]>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -636,14 +1168,24 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     initialize(
       _admin: string,
       _oracle: string,
-      _underWriterAdmin: string,
+      _gov: string,
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -653,7 +1195,7 @@ export class Comptroller extends BaseContract {
 
     liquidationIncentiveMantissa(
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     marketGroupId(asset: string, overrides?: CallOverrides): Promise<[number]>;
 
@@ -677,7 +1219,14 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     oracle(overrides?: CallOverrides): Promise<[string]>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
 
     redeemAllowed(
       cToken: string,
@@ -691,6 +1240,11 @@ export class Comptroller extends BaseContract {
       redeemer: string,
       redeemAmount: BigNumberish,
       redeemTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    removeAssetGroup(
+      groupId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -723,8 +1277,21 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
     setAccountLiquidity(
       _accountLiquidity: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setAssetGroup(
+      groupId: BigNumberish,
+      groupName: string,
+      intraCRateMantissa: BigNumberish,
+      intraMintRateMantissa: BigNumberish,
+      intraSuRateMantissa: BigNumberish,
+      interCRateMantissa: BigNumberish,
+      interSuRateMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -740,6 +1307,11 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setGovTokenAddress(
+      _governanceToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
@@ -751,10 +1323,16 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     timelock(overrides?: CallOverrides): Promise<[string]>;
 
@@ -766,12 +1344,48 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
+    transferGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
   };
+
+  CAPPER_ROLE(overrides?: CallOverrides): Promise<string>;
 
   COMP_LOGIC(overrides?: CallOverrides): Promise<string>;
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+  _getBorrowPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
+
+  _getMarketBorrowCap(
+    cToken: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  _getMintPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
+
+  _getPauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+  _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
+
+  _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  _setBorrowCapGuardian(
+    newBorrowCapGuardian: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _setBorrowPaused(
+    cToken: string,
+    state: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   _setCloseFactor(
     newCloseFactorMantissa: BigNumberish,
@@ -779,7 +1393,26 @@ export class Comptroller extends BaseContract {
   ): Promise<ContractTransaction>;
 
   _setLiquidationIncentive(
-    newLiquidationIncentiveMantissa: BigNumberish,
+    newHeteroLiquidationIncentiveMantissa: BigNumberish,
+    newHomoLiquidationIncentiveMantissa: BigNumberish,
+    newSutokenLiquidationIncentiveMantissa: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _setMarketBorrowCaps(
+    cTokens: string[],
+    newBorrowCaps: BigNumberish[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _setMintPaused(
+    cToken: string,
+    state: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _setPauseGuardian(
+    newPauseGuardian: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -788,8 +1421,13 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  _setUnderWriterAdmin(
-    underWriter: string,
+  _setSeizePaused(
+    state: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _setTransferPaused(
+    state: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -816,6 +1454,15 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+  borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  borrowGuardianPaused(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   checkMembership(
     account: string,
     cToken: string,
@@ -831,6 +1478,23 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  eqAssetGroup(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
+    }
+  >;
+
+  equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
+
   exitMarket(
     cTokenAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -843,7 +1507,26 @@ export class Comptroller extends BaseContract {
 
   getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
+  getAssetGroup(
+    groupId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
+    }
+  >;
+
+  getAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
   getAssetsIn(account: string, overrides?: CallOverrides): Promise<string[]>;
+
+  getCompAddress(overrides?: CallOverrides): Promise<string>;
 
   getHypotheticalAccountLiquidity(
     account: string,
@@ -866,6 +1549,8 @@ export class Comptroller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  governanceToken(overrides?: CallOverrides): Promise<string>;
+
   grantRole(
     role: BytesLike,
     account: string,
@@ -878,14 +1563,24 @@ export class Comptroller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  heteroLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  homoLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   initialize(
     _admin: string,
     _oracle: string,
-    _underWriterAdmin: string,
+    _gov: string,
     _compLogic: string,
     _accountLiquidity: string,
     _closeFactorMantissa: BigNumberish,
-    _liquidationIncentiveMantissa: BigNumberish,
+    _heteroLiquidationIncentiveMantissa: BigNumberish,
+    _homoLiquidationIncentiveMantissa: BigNumberish,
+    _sutokenLiquidationIncentiveMantissa: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -893,7 +1588,9 @@ export class Comptroller extends BaseContract {
 
   isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-  liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+  liquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
@@ -917,7 +1614,11 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  mintGuardianPaused(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
   oracle(overrides?: CallOverrides): Promise<string>;
+
+  pauseGuardian(overrides?: CallOverrides): Promise<string>;
 
   redeemAllowed(
     cToken: string,
@@ -931,6 +1632,11 @@ export class Comptroller extends BaseContract {
     redeemer: string,
     redeemAmount: BigNumberish,
     redeemTokens: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  removeAssetGroup(
+    groupId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -963,8 +1669,21 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
   setAccountLiquidity(
     _accountLiquidity: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setAssetGroup(
+    groupId: BigNumberish,
+    groupName: string,
+    intraCRateMantissa: BigNumberish,
+    intraMintRateMantissa: BigNumberish,
+    intraSuRateMantissa: BigNumberish,
+    interCRateMantissa: BigNumberish,
+    interSuRateMantissa: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -980,6 +1699,11 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setGovTokenAddress(
+    _governanceToken: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setMaxSupply(
     cToken: string,
     amount: BigNumberish,
@@ -991,10 +1715,16 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  sutokenLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   timelock(overrides?: CallOverrides): Promise<string>;
 
@@ -1006,12 +1736,51 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  underWriterAdmin(overrides?: CallOverrides): Promise<string>;
+  transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    CAPPER_ROLE(overrides?: CallOverrides): Promise<string>;
+
     COMP_LOGIC(overrides?: CallOverrides): Promise<string>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    _getBorrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _getMintPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
+
+    _getPauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
+
+    _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    _setBorrowCapGuardian(
+      newBorrowCapGuardian: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    _setBorrowPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     _setCloseFactor(
       newCloseFactorMantissa: BigNumberish,
@@ -1019,7 +1788,26 @@ export class Comptroller extends BaseContract {
     ): Promise<BigNumber>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _setMarketBorrowCaps(
+      cTokens: string[],
+      newBorrowCaps: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    _setMintPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    _setPauseGuardian(
+      newPauseGuardian: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1028,10 +1816,15 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    _setUnderWriterAdmin(
-      underWriter: string,
+    _setSeizePaused(
+      state: boolean,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<boolean>;
+
+    _setTransferPaused(
+      state: boolean,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     _supportMarket(
       cToken: string,
@@ -1056,6 +1849,15 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     checkMembership(
       account: string,
       cToken: string,
@@ -1071,6 +1873,31 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
+
     exitMarket(
       cTokenAddress: string,
       overrides?: CallOverrides
@@ -1083,7 +1910,34 @@ export class Comptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
     getAssetsIn(account: string, overrides?: CallOverrides): Promise<string[]>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<string>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -1106,6 +1960,8 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    governanceToken(overrides?: CallOverrides): Promise<string>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -1118,14 +1974,24 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _admin: string,
       _oracle: string,
-      _underWriterAdmin: string,
+      _gov: string,
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1133,7 +1999,9 @@ export class Comptroller extends BaseContract {
 
     isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-    liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    liquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
@@ -1157,7 +2025,14 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     oracle(overrides?: CallOverrides): Promise<string>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<string>;
 
     redeemAllowed(
       cToken: string,
@@ -1173,6 +2048,11 @@ export class Comptroller extends BaseContract {
       redeemTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    removeAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     renounceRole(
       role: BytesLike,
@@ -1203,10 +2083,23 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
     setAccountLiquidity(
       _accountLiquidity: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    setAssetGroup(
+      groupId: BigNumberish,
+      groupName: string,
+      intraCRateMantissa: BigNumberish,
+      intraMintRateMantissa: BigNumberish,
+      intraSuRateMantissa: BigNumberish,
+      interCRateMantissa: BigNumberish,
+      interSuRateMantissa: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     setCompSpeed(
       cToken: string,
@@ -1220,6 +2113,11 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setGovTokenAddress(
+      _governanceToken: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
@@ -1228,10 +2126,16 @@ export class Comptroller extends BaseContract {
 
     setTimelock(_timelock: string, overrides?: CallOverrides): Promise<void>;
 
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     timelock(overrides?: CallOverrides): Promise<string>;
 
@@ -1243,10 +2147,28 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    underWriterAdmin(overrides?: CallOverrides): Promise<string>;
+    transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {
+    "ActionPaused(address,string,bool)"(
+      cToken?: null,
+      action?: null,
+      pauseState?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { cToken: string; action: string; pauseState: boolean }
+    >;
+
+    ActionPaused(
+      cToken?: null,
+      action?: null,
+      pauseState?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { cToken: string; action: string; pauseState: boolean }
+    >;
+
     "Initialized(uint8)"(
       version?: null
     ): TypedEventFilter<[number], { version: number }>;
@@ -1281,6 +2203,102 @@ export class Comptroller extends BaseContract {
 
     MarketListed(cToken?: null): TypedEventFilter<[string], { cToken: string }>;
 
+    "NewAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256,uint8)"(
+      groupId?: BigNumberish | null,
+      groupName?: string | null,
+      intraCRateMantissa?: null,
+      intraMintRateMantissa?: null,
+      intraSuRateMantissa?: null,
+      interCRateMantissa?: null,
+      interSuRateMantissa?: null,
+      assetsGroupNum?: null
+    ): TypedEventFilter<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number
+      ],
+      {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+        assetsGroupNum: number;
+      }
+    >;
+
+    NewAssetGroup(
+      groupId?: BigNumberish | null,
+      groupName?: string | null,
+      intraCRateMantissa?: null,
+      intraMintRateMantissa?: null,
+      intraSuRateMantissa?: null,
+      interCRateMantissa?: null,
+      interSuRateMantissa?: null,
+      assetsGroupNum?: null
+    ): TypedEventFilter<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number
+      ],
+      {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+        assetsGroupNum: number;
+      }
+    >;
+
+    "NewBorrowCap(address,uint256)"(
+      cToken?: string | null,
+      newBorrowCap?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cToken: string; newBorrowCap: BigNumber }
+    >;
+
+    NewBorrowCap(
+      cToken?: string | null,
+      newBorrowCap?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cToken: string; newBorrowCap: BigNumber }
+    >;
+
+    "NewBorrowCapGuardian(address,address)"(
+      oldBorrowCapGuardian?: null,
+      newBorrowCapGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldBorrowCapGuardian: string; newBorrowCapGuardian: string }
+    >;
+
+    NewBorrowCapGuardian(
+      oldBorrowCapGuardian?: null,
+      newBorrowCapGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldBorrowCapGuardian: string; newBorrowCapGuardian: string }
+    >;
+
     "NewCloseFactor(uint256,uint256)"(
       oldCloseFactorMantissa?: null,
       newCloseFactorMantissa?: null
@@ -1297,26 +2315,58 @@ export class Comptroller extends BaseContract {
       { oldCloseFactorMantissa: BigNumber; newCloseFactorMantissa: BigNumber }
     >;
 
-    "NewLiquidationIncentive(uint256,uint256)"(
-      oldLiquidationIncentiveMantissa?: null,
-      newLiquidationIncentiveMantissa?: null
+    "NewLiquidationIncentive(uint256,uint256,uint256,uint256,uint256,uint256)"(
+      oldHeteroIncentive?: null,
+      newHeteroIncentive?: null,
+      oldHomoIncentive?: null,
+      newHomoIncentive?: null,
+      oldSutokenIncentive?: null,
+      newSutokenIncentive?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
-        oldLiquidationIncentiveMantissa: BigNumber;
-        newLiquidationIncentiveMantissa: BigNumber;
+        oldHeteroIncentive: BigNumber;
+        newHeteroIncentive: BigNumber;
+        oldHomoIncentive: BigNumber;
+        newHomoIncentive: BigNumber;
+        oldSutokenIncentive: BigNumber;
+        newSutokenIncentive: BigNumber;
       }
     >;
 
     NewLiquidationIncentive(
-      oldLiquidationIncentiveMantissa?: null,
-      newLiquidationIncentiveMantissa?: null
+      oldHeteroIncentive?: null,
+      newHeteroIncentive?: null,
+      oldHomoIncentive?: null,
+      newHomoIncentive?: null,
+      oldSutokenIncentive?: null,
+      newSutokenIncentive?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
-        oldLiquidationIncentiveMantissa: BigNumber;
-        newLiquidationIncentiveMantissa: BigNumber;
+        oldHeteroIncentive: BigNumber;
+        newHeteroIncentive: BigNumber;
+        oldHomoIncentive: BigNumber;
+        newHomoIncentive: BigNumber;
+        oldSutokenIncentive: BigNumber;
+        newSutokenIncentive: BigNumber;
       }
+    >;
+
+    "NewPauseGuardian(address,address)"(
+      oldPauseGuardian?: null,
+      newPauseGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldPauseGuardian: string; newPauseGuardian: string }
+    >;
+
+    NewPauseGuardian(
+      oldPauseGuardian?: null,
+      newPauseGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldPauseGuardian: string; newPauseGuardian: string }
     >;
 
     "NewPriceOracle(address,address)"(
@@ -1333,6 +2383,22 @@ export class Comptroller extends BaseContract {
     ): TypedEventFilter<
       [string, string],
       { oldPriceOracle: string; newPriceOracle: string }
+    >;
+
+    "RemoveAssetGroup(uint8,uint8)"(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
+    ): TypedEventFilter<
+      [number, number],
+      { groupId: number; equalAssetsGroupNum: number }
+    >;
+
+    RemoveAssetGroup(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
+    ): TypedEventFilter<
+      [number, number],
+      { groupId: number; equalAssetsGroupNum: number }
     >;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
@@ -1407,9 +2473,51 @@ export class Comptroller extends BaseContract {
   };
 
   estimateGas: {
+    CAPPER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
     COMP_LOGIC(overrides?: CallOverrides): Promise<BigNumber>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _getBorrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _getMintPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _getPauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _getTransferPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _setBorrowCapGuardian(
+      newBorrowCapGuardian: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _setBorrowPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     _setCloseFactor(
       newCloseFactorMantissa: BigNumberish,
@@ -1417,7 +2525,26 @@ export class Comptroller extends BaseContract {
     ): Promise<BigNumber>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _setMarketBorrowCaps(
+      cTokens: string[],
+      newBorrowCaps: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _setMintPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _setPauseGuardian(
+      newPauseGuardian: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1426,8 +2553,13 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    _setUnderWriterAdmin(
-      underWriter: string,
+    _setSeizePaused(
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _setTransferPaused(
+      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1457,6 +2589,15 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     checkMembership(
       account: string,
       cToken: string,
@@ -1472,6 +2613,13 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+
     exitMarket(
       cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1484,7 +2632,16 @@ export class Comptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAssetsIn(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -1510,6 +2667,8 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    governanceToken(overrides?: CallOverrides): Promise<BigNumber>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -1522,14 +2681,24 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _admin: string,
       _oracle: string,
-      _underWriterAdmin: string,
+      _gov: string,
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1552,7 +2721,14 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     oracle(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
 
     redeemAllowed(
       cToken: string,
@@ -1566,6 +2742,11 @@ export class Comptroller extends BaseContract {
       redeemer: string,
       redeemAmount: BigNumberish,
       redeemTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    removeAssetGroup(
+      groupId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1598,8 +2779,21 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
     setAccountLiquidity(
       _accountLiquidity: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setAssetGroup(
+      groupId: BigNumberish,
+      groupName: string,
+      intraCRateMantissa: BigNumberish,
+      intraMintRateMantissa: BigNumberish,
+      intraSuRateMantissa: BigNumberish,
+      interCRateMantissa: BigNumberish,
+      interSuRateMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1615,6 +2809,11 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setGovTokenAddress(
+      _governanceToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
@@ -1626,8 +2825,14 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1641,14 +2846,64 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
+    transferGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    CAPPER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     COMP_LOGIC(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     DEFAULT_ADMIN_ROLE(
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    PAUSER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _borrowGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getBorrowCapGuardian(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getMarketBorrowCap(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getMintPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getPauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _getTransferPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _mintGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _setBorrowCapGuardian(
+      newBorrowCapGuardian: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _setBorrowPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     _setCloseFactor(
@@ -1657,7 +2912,26 @@ export class Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _setMarketBorrowCaps(
+      cTokens: string[],
+      newBorrowCaps: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _setMintPaused(
+      cToken: string,
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _setPauseGuardian(
+      newPauseGuardian: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1666,8 +2940,13 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    _setUnderWriterAdmin(
-      underWriter: string,
+    _setSeizePaused(
+      state: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _setTransferPaused(
+      state: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1697,6 +2976,18 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    borrowCaps(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     checkMembership(
       account: string,
       cToken: string,
@@ -1714,6 +3005,15 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    equalAssetsGroupNum(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     exitMarket(
       cTokenAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1726,10 +3026,19 @@ export class Comptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getAssetsIn(
       account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -1755,6 +3064,8 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    governanceToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -1767,14 +3078,24 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     initialize(
       _admin: string,
       _oracle: string,
-      _underWriterAdmin: string,
+      _gov: string,
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1811,7 +3132,14 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     oracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     redeemAllowed(
       cToken: string,
@@ -1825,6 +3153,11 @@ export class Comptroller extends BaseContract {
       redeemer: string,
       redeemAmount: BigNumberish,
       redeemTokens: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeAssetGroup(
+      groupId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1857,8 +3190,23 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    seizeGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setAccountLiquidity(
       _accountLiquidity: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setAssetGroup(
+      groupId: BigNumberish,
+      groupName: string,
+      intraCRateMantissa: BigNumberish,
+      intraMintRateMantissa: BigNumberish,
+      intraSuRateMantissa: BigNumberish,
+      interCRateMantissa: BigNumberish,
+      interSuRateMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1874,6 +3222,11 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setGovTokenAddress(
+      _governanceToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setMaxSupply(
       cToken: string,
       amount: BigNumberish,
@@ -1885,8 +3238,16 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    suTokenRateMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1900,6 +3261,8 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    underWriterAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    transferGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
   };
 }

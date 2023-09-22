@@ -2,7 +2,6 @@
 pragma solidity 0.8.19;
 
 import '../Comptroller/Interfaces/IComptroller.sol';
-import '../Comptroller/Interfaces/IUnderwriterAdmin.sol';
 import '../Comptroller/Interfaces/IPriceOracle.sol';
 import './Interfaces/IInterestRateModel.sol';
 import './TokenErrorReporter.sol';
@@ -1609,7 +1608,7 @@ abstract contract CToken is CTokenStorage {
     return
       IComptroller(comptroller).marketGroupId(address(this)) == 0 &&
       //borrowGuardianPaused[cToken] == true &&
-      IUnderwriterAdmin(IComptroller(comptroller).underWriterAdmin())._getBorrowPaused(address(this)) &&
+      IComptroller(comptroller)._getBorrowPaused(address(this)) &&
       reserveFactorMantissa == 1e18;
   }
 
@@ -1626,7 +1625,8 @@ abstract contract CToken is CTokenStorage {
     address borrower,
     uint256 repayAmount
   ) public view returns (uint256) {
-    // Shh - currently unused: liquidator;
+    // Shh - currently unused: 
+    liquidator;
     if (!IComptroller(comptroller).isListed(address(this)) || !IComptroller(comptroller).isListed(cTokenCollateral)) {
       Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
     }

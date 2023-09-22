@@ -4,9 +4,9 @@ pragma solidity 0.8.19;
 import './ComptrollerStorage.sol';
 import '../Exponential/ExponentialNoError.sol';
 import './Interfaces/ICToken.sol';
-import './Interfaces/IUnderwriterAdmin.sol';
 import './Interfaces/IPriceOracle.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
+import './Interfaces/IComptroller.sol';
 
 interface ICompLogic {
   function setCompSpeed(address cToken, uint256 supplySpeed, uint256 borrowSpeed) external;
@@ -41,7 +41,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   using ExponentialNoError for Double;
 
   ICompLogic public compLogic;
-  IUnderwriterAdmin public underWriterAdmin;
   IPriceOracle public oracle;
   IAccountLiquidity public accountLiquidity;
 
@@ -49,10 +48,27 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   address public timelock;
 
+  bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
+  bytes32 public constant CAPPER_ROLE = keccak256('CAPPER_ROLE');
+
+  /// @notice Emitted when an action is paused on a market
+  event ActionPaused(address cToken, string action, bool pauseState);
+
+  /// @notice Emitted when borrow cap for a cToken is changed
+  event NewBorrowCap(address indexed cToken, uint256 newBorrowCap);
+
+  /// @notice Emitted when borrow cap guardian is changed
+  event NewBorrowCapGuardian(address oldBorrowCapGuardian, address newBorrowCapGuardian);
+
+  /// @notice Emitted when pause guardian is changed
+  event NewPauseGuardian(address oldPauseGuardian, address newPauseGuardian);
+
+  event RemoveAssetGroup(uint8 indexed groupId, uint8 equalAssetsGroupNum);
+
   function initialize(
     address _admin,
     IPriceOracle _oracle,
-    IUnderwriterAdmin _underWriterAdmin,
+    address _gov,
     ICompLogic _compLogic,
     IAccountLiquidity _accountLiquidity,
     uint256 _closeFactorMantissa,
@@ -61,6 +77,9 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 _sutokenLiquidationIncentiveMantissa
   ) external initializer {
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
+
+    governanceToken = _gov;
+    suTokenRateMantissa = 10 ** 18;
     // Set comptroller's oracle to newOracle
     oracle = _oracle;
     // Emit NewPriceOracle(oldOracle, newOracle)
@@ -85,9 +104,18 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       0,
       _sutokenLiquidationIncentiveMantissa
     );
-
-    underWriterAdmin = _underWriterAdmin;
   }
+
+  event NewAssetGroup(
+    uint8 indexed groupId,
+    string indexed groupName,
+    uint256 intraCRateMantissa,
+    uint256 intraMintRateMantissa,
+    uint256 intraSuRateMantissa,
+    uint256 interCRateMantissa,
+    uint256 interSuRateMantissa,
+    uint8 assetsGroupNum
+  );
 
   /*** Assets You Are In ***/
 
@@ -131,7 +159,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256[] memory results = new uint256[](len);
     for (uint256 i = 0; i < len; ++i) {
       address cToken = cTokens[i];
-      //IUnderwriterAdmin.AssetGroup memory eqAssets = underWriterAdmin.getAssetGroup(cToken);
+      //IIComptroller(address(this))IComptroller.AssetGroup memory eqAssets = IComptroller(address(this))getAssetGroup(cToken);
       //results[i] = uint(addToMarketInternal(cToken, msg.sender, eqAssets.groupName, eqAssets.rateMantissas));
       results[i] = uint256(addToMarketInternal(cToken, msg.sender));
     }
@@ -240,7 +268,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   function mintAllowed(address cToken, address minter, uint256 mintAmount) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!mintGuardianPaused[cToken], "mint is paused");
-    require(!underWriterAdmin._getMintPaused(cToken), 'mint paused');
+    require(!IComptroller(address(this))._getMintPaused(cToken), 'mint paused');
 
     // Shh - currently unused: minter; mintAmount;
 
@@ -337,7 +365,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   function borrowAllowed(address cToken, address borrower, uint256 borrowAmount) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!borrowGuardianPaused[cToken], "borrow is paused");
-    require(!underWriterAdmin._getBorrowPaused(cToken), 'borrow paused');
+    require(!IComptroller(address(this))._getBorrowPaused(cToken), 'borrow paused');
 
     require(markets[cToken].isListed, MARKET_NOT_LISTED);
 
@@ -355,7 +383,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     require(oracle.getUnderlyingPrice(cToken) > 0, 'PRICE_ERROR');
 
     //uint borrowCap = borrowCaps[cToken];
-    uint256 borrowCap = underWriterAdmin._getMarketBorrowCap(cToken);
+    uint256 borrowCap = IComptroller(address(this))._getMarketBorrowCap(cToken);
     // Borrow cap of 0 corresponds to unlimited borrowing
     if (borrowCap != 0) {
       uint256 totalBorrows = ICToken(cToken).totalBorrows();
@@ -417,7 +445,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   ) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!seizeGuardianPaused, "seize is paused");
-    require(!underWriterAdmin._getSeizePaused(), 'seize paused');
+    require(!IComptroller(address(this))._getSeizePaused(), 'seize paused');
 
     // Shh - currently unused: seizeTokens;
 
@@ -449,7 +477,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   ) external returns (uint256) {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!transferGuardianPaused, "transfer is paused");
-    require(!underWriterAdmin._getTransferPaused(), 'transfer paused');
+    require(!IComptroller(address(this))._getTransferPaused(), 'transfer paused');
 
     // Currently the only consideration is whether or not
     //  the src is allowed to redeem this many tokens
@@ -550,15 +578,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     emit NewCloseFactor(oldCloseFactorMantissa, closeFactorMantissa);
 
     return uint256(0);
-  }
-
-  function _setUnderWriterAdmin(
-    IUnderwriterAdmin underWriter
-  ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (IUnderwriterAdmin) {
-    // Check caller is admin
-    require(address(underWriter) != address(0), 'Address is Zero!');
-    underWriterAdmin = underWriter;
-    return underWriter;
   }
 
   /**
@@ -682,5 +701,207 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   function liquidationIncentiveMantissa() public view returns (uint256, uint256, uint256) {
     return (heteroLiquidationIncentiveMantissa, homoLiquidationIncentiveMantissa, sutokenLiquidationIncentiveMantissa);
+  }
+
+  function setAssetGroup(
+    uint8 groupId,
+    string memory groupName,
+    uint256 intraCRateMantissa, // ctoken collateral rate for intra group ctoken liability
+    uint256 intraMintRateMantissa, // ctoken collateral rate for intra group sutoken liability
+    uint256 intraSuRateMantissa, // sutoken collateral rate for intra group ctoken liability
+    uint256 interCRateMantissa, // ctoken collateral rate for inter group ctoken/sutoken liability
+    uint256 interSuRateMantissa // sutoken collateral rate for inter group ctoken/sutoken liability
+  ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    eqAssetGroup[groupId] = IComptroller.AssetGroup(
+      groupId,
+      groupName,
+      intraCRateMantissa,
+      intraMintRateMantissa,
+      intraSuRateMantissa,
+      interCRateMantissa,
+      interSuRateMantissa
+    );
+    equalAssetsGroupNum++;
+    emit NewAssetGroup(
+      groupId,
+      groupName,
+      intraCRateMantissa,
+      intraMintRateMantissa,
+      intraSuRateMantissa,
+      interCRateMantissa,
+      interSuRateMantissa,
+      equalAssetsGroupNum
+    );
+    return uint256(0);
+  }
+
+  function removeAssetGroup(uint8 groupId) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    delete eqAssetGroup[groupId];
+    equalAssetsGroupNum--;
+    emit RemoveAssetGroup(groupId, equalAssetsGroupNum);
+    return uint256(0);
+  }
+
+  function getAssetGroup(uint8 groupId) external view returns (IComptroller.AssetGroup memory) {
+    return eqAssetGroup[groupId];
+  }
+
+  function getAssetGroupNum() external view returns (uint8) {
+    return equalAssetsGroupNum;
+  }
+
+  /**
+   * @notice Admin function to change the Pause Guardian
+   * @param newPauseGuardian The address of the new Pause Guardian
+   * @return uint 0=success, otherwise a failure. (See enum Error for details)
+   */
+  function _setPauseGuardian(address newPauseGuardian) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    require(newPauseGuardian != address(0), 'Address is Zero!');
+
+    // Save current value for inclusion in log
+    address oldPauseGuardian = pauseGuardian;
+    revokeRole(PAUSER_ROLE, oldPauseGuardian);
+
+    // Store pauseGuardian with value newPauseGuardian
+    pauseGuardian = newPauseGuardian;
+    grantRole(PAUSER_ROLE, newPauseGuardian);
+
+    // Emit NewPauseGuardian(OldPauseGuardian, NewPauseGuardian)
+    emit NewPauseGuardian(oldPauseGuardian, pauseGuardian);
+
+    return uint256(0);
+  }
+
+  function _getPauseGuardian() external view returns (address) {
+    return pauseGuardian;
+  }
+
+  modifier onlyAdminOrPauser(bool state) {
+    if (state) {
+      require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), 'only admin can unpause');
+    } else {
+      require(
+        hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(PAUSER_ROLE, msg.sender),
+        'only admin or pauser can pause'
+      );
+    }
+    _;
+  }
+
+  function _setMintPaused(ICToken cToken, bool state) external onlyAdminOrPauser(state) returns (bool) {
+    mintGuardianPaused[address(cToken)] = state;
+    emit ActionPaused(address(cToken), 'Mint', state);
+    return state;
+  }
+
+  function _getMintPaused(address cToken) external view returns (bool) {
+    return mintGuardianPaused[cToken];
+  }
+
+  function _setBorrowPaused(ICToken cToken, bool state) external onlyAdminOrPauser(state) returns (bool) {
+    borrowGuardianPaused[address(cToken)] = state;
+    emit ActionPaused(address(cToken), 'Borrow', state);
+    return state;
+  }
+
+  function _getBorrowPaused(address cToken) external view returns (bool) {
+    return borrowGuardianPaused[cToken];
+  }
+
+  function _setTransferPaused(bool state) external onlyAdminOrPauser(state) returns (bool) {
+    transferGuardianPaused = state;
+    emit ActionPaused(address(0), 'Transfer', state);
+    return state;
+  }
+
+  function _getTransferPaused() external view returns (bool) {
+    return transferGuardianPaused;
+  }
+
+  function _setSeizePaused(bool state) external onlyAdminOrPauser(state) returns (bool) {
+    seizeGuardianPaused = state;
+    emit ActionPaused(address(0), 'Seize', state);
+    return state;
+  }
+
+  function _getSeizePaused() external view returns (bool) {
+    return seizeGuardianPaused;
+  }
+
+  /**
+   * @notice Return the address of the COMP token
+   * @return The address of COMP
+   */
+  function getCompAddress() external view returns (address) {
+    /*
+        return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
+        */
+    return governanceToken;
+  }
+
+  /**
+   * @notice Return the address of the COMP token
+   * @param _governanceToken The address of COMP(governance token)
+   */
+  function setGovTokenAddress(address _governanceToken) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    //require(adminOrInitializing(), "only admin can set governanceToken");
+    require(_governanceToken != address(0), 'Address is Zero!');
+    governanceToken = _governanceToken;
+  }
+
+  modifier onlyAdminOrCapper() {
+    require(
+      hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(CAPPER_ROLE, msg.sender),
+      'only admin or capper can set cap'
+    );
+    _;
+  }
+
+  /**
+   * @notice Set the given borrow caps for the given cToken markets. Borrowing that brings total borrows to or above borrow cap will revert.
+   * @dev Admin or borrowCapGuardian function to set the borrow caps. A borrow cap of 0 corresponds to unlimited borrowing.
+   * @param cTokens The addresses of the markets (tokens) to change the borrow caps for
+   * @param newBorrowCaps The new borrow cap values in underlying to be set. A value of 0 corresponds to unlimited borrowing.
+   */
+  function _setMarketBorrowCaps(
+    ICToken[] calldata cTokens,
+    uint256[] calldata newBorrowCaps
+  ) external onlyAdminOrCapper {
+    uint256 numMarkets = cTokens.length;
+    uint256 numBorrowCaps = newBorrowCaps.length;
+
+    require(numMarkets != 0 && numMarkets == numBorrowCaps, 'invalid input');
+
+    for (uint256 i = 0; i < numMarkets; i++) {
+      borrowCaps[address(cTokens[i])] = newBorrowCaps[i];
+      emit NewBorrowCap(address(cTokens[i]), newBorrowCaps[i]);
+    }
+  }
+
+  function _getMarketBorrowCap(address cToken) external view returns (uint256) {
+    return borrowCaps[cToken];
+  }
+
+  /**
+   * @notice Admin function to change the Borrow Cap Guardian
+   * @param newBorrowCapGuardian The address of the new Borrow Cap Guardian
+   */
+  function _setBorrowCapGuardian(address newBorrowCapGuardian) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    require(newBorrowCapGuardian != address(0), 'Address is Zero!');
+
+    // Save current value for inclusion in log
+    address oldBorrowCapGuardian = borrowCapGuardian;
+    revokeRole(CAPPER_ROLE, oldBorrowCapGuardian);
+
+    // Store borrowCapGuardian with value newBorrowCapGuardian
+    borrowCapGuardian = newBorrowCapGuardian;
+    grantRole(CAPPER_ROLE, newBorrowCapGuardian);
+
+    // Emit NewBorrowCapGuardian(OldBorrowCapGuardian, NewBorrowCapGuardian)
+    emit NewBorrowCapGuardian(oldBorrowCapGuardian, newBorrowCapGuardian);
+  }
+
+  function _getBorrowCapGuardian() external view returns (address) {
+    return borrowCapGuardian;
   }
 }
