@@ -709,6 +709,8 @@ export class CompoundLens extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
+        BigNumber,
+        BigNumber,
         number,
         BigNumber,
         BigNumber,
@@ -732,7 +734,9 @@ export class CompoundLens extends BaseContract {
         isCEther: boolean;
         borrowCap: BigNumber;
         depositCap: BigNumber;
-        liquidationIncentive: BigNumber;
+        heteroLiquidationIncentive: BigNumber;
+        homoLiquidationIncentive: BigNumber;
+        sutokenLiquidationIncentive: BigNumber;
         groupId: number;
         intraRate: BigNumber;
         mintRate: BigNumber;
@@ -764,6 +768,8 @@ export class CompoundLens extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
+        BigNumber,
+        BigNumber,
         number,
         BigNumber,
         BigNumber,
@@ -787,7 +793,9 @@ export class CompoundLens extends BaseContract {
         isCEther: boolean;
         borrowCap: BigNumber;
         depositCap: BigNumber;
-        liquidationIncentive: BigNumber;
+        heteroLiquidationIncentive: BigNumber;
+        homoLiquidationIncentive: BigNumber;
+        sutokenLiquidationIncentive: BigNumber;
         groupId: number;
         intraRate: BigNumber;
         mintRate: BigNumber;

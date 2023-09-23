@@ -1,5 +1,6 @@
 {
   "proxyAdmin": { "address": "" },
+  "contractAdmin": { "address": "" },
   "sumer": {
     "name": "Sumer Token",
     "symbol": "SUMER",
@@ -28,11 +29,7 @@
       "blocksPerYearOnChain": "13140000",
       "baseRatePerYear": "50000000000000000",
       "multiplierPerYear": "450000000000000000",
-      "args":[
-        "13140000",
-        "50000000000000000",
-        "450000000000000000"
-      ]
+      "args": ["13140000", "50000000000000000", "450000000000000000"]
     },
     {
       "tokens": "BTC、ETH、MTR、MTRG",
@@ -43,19 +40,13 @@
       "multiplierPerYear": "150000000000000000",
       "jumpMultiplierPerYear": "3000000000000000000",
       "kink": "600000000000000000",
-      "args":[
-        "13140000",
-        "20000000000000000",
-        "150000000000000000",
-        "3000000000000000000",
-        "600000000000000000"
-      ]
+      "args": ["13140000", "20000000000000000", "150000000000000000", "3000000000000000000", "600000000000000000"]
     },
     {
       "tokens": "suUSD、suETH、suBTC",
       "contract": "ZeroInterestRateModel",
       "address": "",
-      "args":[]
+      "args": []
     }
   ],
   "comptroller": {
@@ -78,7 +69,6 @@
         "oracle": {
           "feedId": "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 6,
           "name": "sdrUSDC"
         },
         "interestRateModelIndex": 0,
@@ -97,7 +87,6 @@
         "oracle": {
           "feedId": "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 6,
           "name": "sdrUSDT"
         },
         "interestRateModelIndex": 0,
@@ -116,7 +105,6 @@
         "oracle": {
           "feedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 18,
           "name": "sdrETH"
         },
         "interestRateModelIndex": 1,
@@ -135,7 +123,6 @@
         "oracle": {
           "feedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 8,
           "name": "sdrBTC"
         },
         "interestRateModelIndex": 1,
@@ -154,7 +141,6 @@
         "oracle": {
           "feedId": "0x06c532524fabd49cc142815502d785e4f34ec3bd035480efb770568d423f46c6",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 18,
           "name": "sdrBUSD"
         },
         "interestRateModelIndex": 0,
@@ -173,7 +159,6 @@
         "oracle": {
           "feedId": "0xa5fd90e292644d5f9b79a1640f464fcae4b8cb925465d197a78185a308603606",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 18,
           "name": "sdrMTRG"
         },
         "interestRateModelIndex": 1,
@@ -192,7 +177,6 @@
         "oracle": {
           "feedId": "0xa5fd90e292644d5f9b79a1640f464fcae4b8cb925465d197a78185a308603606",
           "addr": "0x1fbA4edC30143dc1AD83e0263f51d9Ad3F9f7B7a",
-          "tokenDecimals": 18,
           "name": "sdrWstMTRG"
         },
         "interestRateModelIndex": 1,
@@ -229,7 +213,6 @@
         "oracle": {
           "feedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 18,
           "name": "suETH"
         },
         "interestRateModelIndex": 2,
@@ -247,7 +230,6 @@
         "oracle": {
           "feedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
           "addr": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "tokenDecimals": 18,
           "name": "suBTC"
         },
         "interestRateModelIndex": 2,
@@ -295,7 +277,7 @@
       "interSuRateMantissa": "500000000000000000"
     }
   ],
-  "multicall2": { "address": "0x649e0ce6fc6191d67ea81ba94b105e28d1815d95" },
+  "multicall2": { "address": "" },
   "lzEndpoint": { "chainId": 10156, "address": "0x3De2f3D1Ac59F18159ebCB422322Cb209BA96aAD" },
-  "timelock": { "address": "0xBc6656a7294374fF8b895ebcC839Bf46Daa70A71" }
+  "timelock": { "address": "" }
 }

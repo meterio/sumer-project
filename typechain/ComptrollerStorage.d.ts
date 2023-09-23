@@ -23,10 +23,12 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
     "accountAssets(address,uint256)": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
     "closeFactorMantissa()": FunctionFragment;
+    "heteroLiquidationIncentiveMantissa()": FunctionFragment;
+    "homoLiquidationIncentiveMantissa()": FunctionFragment;
     "isComptroller()": FunctionFragment;
-    "liquidationIncentiveMantissa()": FunctionFragment;
     "markets(address)": FunctionFragment;
     "maxSupply(address)": FunctionFragment;
+    "sutokenLiquidationIncentiveMantissa()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -42,15 +44,23 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "isComptroller",
+    functionFragment: "heteroLiquidationIncentiveMantissa",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "liquidationIncentiveMantissa",
+    functionFragment: "homoLiquidationIncentiveMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isComptroller",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "markets", values: [string]): string;
   encodeFunctionData(functionFragment: "maxSupply", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "sutokenLiquidationIncentiveMantissa",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "accountAssets",
@@ -62,22 +72,30 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "isComptroller",
+    functionFragment: "heteroLiquidationIncentiveMantissa",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "liquidationIncentiveMantissa",
+    functionFragment: "homoLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isComptroller",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "markets", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "maxSupply", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "sutokenLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
 
   events: {
     "MarketEntered(address,address)": EventFragment;
     "MarketExited(address,address)": EventFragment;
     "MarketListed(address)": EventFragment;
     "NewCloseFactor(uint256,uint256)": EventFragment;
-    "NewLiquidationIncentive(uint256,uint256)": EventFragment;
+    "NewLiquidationIncentive(uint256,uint256,uint256,uint256,uint256,uint256)": EventFragment;
     "NewPriceOracle(address,address)": EventFragment;
     "SetMaxSupply(address,uint256)": EventFragment;
   };
@@ -109,9 +127,13 @@ export type NewCloseFactorEvent = TypedEvent<
 >;
 
 export type NewLiquidationIncentiveEvent = TypedEvent<
-  [BigNumber, BigNumber] & {
-    oldLiquidationIncentiveMantissa: BigNumber;
-    newLiquidationIncentiveMantissa: BigNumber;
+  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    oldHeteroIncentive: BigNumber;
+    newHeteroIncentive: BigNumber;
+    oldHomoIncentive: BigNumber;
+    newHomoIncentive: BigNumber;
+    oldSutokenIncentive: BigNumber;
+    newSutokenIncentive: BigNumber;
   }
 >;
 
@@ -180,11 +202,15 @@ export class ComptrollerStorage extends BaseContract {
 
     closeFactorMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
-
-    liquidationIncentiveMantissa(
+    heteroLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    isComptroller(overrides?: CallOverrides): Promise<[boolean]>;
 
     markets(
       arg0: string,
@@ -198,6 +224,10 @@ export class ComptrollerStorage extends BaseContract {
     >;
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
   };
 
   accountAssets(
@@ -210,9 +240,15 @@ export class ComptrollerStorage extends BaseContract {
 
   closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
-  isComptroller(overrides?: CallOverrides): Promise<boolean>;
+  heteroLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+  homoLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
   markets(
     arg0: string,
@@ -227,6 +263,10 @@ export class ComptrollerStorage extends BaseContract {
 
   maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  sutokenLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   callStatic: {
     accountAssets(
       arg0: string,
@@ -238,9 +278,15 @@ export class ComptrollerStorage extends BaseContract {
 
     closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
-    isComptroller(overrides?: CallOverrides): Promise<boolean>;
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isComptroller(overrides?: CallOverrides): Promise<boolean>;
 
     markets(
       arg0: string,
@@ -254,6 +300,10 @@ export class ComptrollerStorage extends BaseContract {
     >;
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   filters: {
@@ -299,25 +349,41 @@ export class ComptrollerStorage extends BaseContract {
       { oldCloseFactorMantissa: BigNumber; newCloseFactorMantissa: BigNumber }
     >;
 
-    "NewLiquidationIncentive(uint256,uint256)"(
-      oldLiquidationIncentiveMantissa?: null,
-      newLiquidationIncentiveMantissa?: null
+    "NewLiquidationIncentive(uint256,uint256,uint256,uint256,uint256,uint256)"(
+      oldHeteroIncentive?: null,
+      newHeteroIncentive?: null,
+      oldHomoIncentive?: null,
+      newHomoIncentive?: null,
+      oldSutokenIncentive?: null,
+      newSutokenIncentive?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
-        oldLiquidationIncentiveMantissa: BigNumber;
-        newLiquidationIncentiveMantissa: BigNumber;
+        oldHeteroIncentive: BigNumber;
+        newHeteroIncentive: BigNumber;
+        oldHomoIncentive: BigNumber;
+        newHomoIncentive: BigNumber;
+        oldSutokenIncentive: BigNumber;
+        newSutokenIncentive: BigNumber;
       }
     >;
 
     NewLiquidationIncentive(
-      oldLiquidationIncentiveMantissa?: null,
-      newLiquidationIncentiveMantissa?: null
+      oldHeteroIncentive?: null,
+      newHeteroIncentive?: null,
+      oldHomoIncentive?: null,
+      newHomoIncentive?: null,
+      oldSutokenIncentive?: null,
+      newSutokenIncentive?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
-        oldLiquidationIncentiveMantissa: BigNumber;
-        newLiquidationIncentiveMantissa: BigNumber;
+        oldHeteroIncentive: BigNumber;
+        newHeteroIncentive: BigNumber;
+        oldHomoIncentive: BigNumber;
+        newHomoIncentive: BigNumber;
+        oldSutokenIncentive: BigNumber;
+        newSutokenIncentive: BigNumber;
       }
     >;
 
@@ -368,13 +434,23 @@ export class ComptrollerStorage extends BaseContract {
 
     closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
 
-    isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isComptroller(overrides?: CallOverrides): Promise<BigNumber>;
 
     markets(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -393,11 +469,15 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    liquidationIncentiveMantissa(
+    heteroLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isComptroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     markets(
       arg0: string,
@@ -406,6 +486,10 @@ export class ComptrollerStorage extends BaseContract {
 
     maxSupply(
       arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

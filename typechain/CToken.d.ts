@@ -54,7 +54,7 @@ interface CTokenInterface extends ethers.utils.Interface {
     "isCToken()": FunctionFragment;
     "isDeprecated()": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
-    "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,uint256,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "protocolSeizeShareMantissa()": FunctionFragment;
@@ -188,7 +188,7 @@ interface CTokenInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
-    values: [string, BigNumberish]
+    values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -728,6 +728,7 @@ export class CToken extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
+      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
@@ -904,6 +905,7 @@ export class CToken extends BaseContract {
   liquidateCalculateSeizeTokens(
     cTokenCollateral: string,
     actualRepayAmount: BigNumberish,
+    liquidationIncentiveMantissa: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
 
@@ -1075,6 +1077,7 @@ export class CToken extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
+      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
@@ -1588,6 +1591,7 @@ export class CToken extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
+      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1774,6 +1778,7 @@ export class CToken extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
+      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -24,7 +24,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "COMP_LOGIC()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "_setCloseFactor(uint256)": FunctionFragment;
-    "_setLiquidationIncentive(uint256)": FunctionFragment;
+    "_setLiquidationIncentive(uint256,uint256,uint256)": FunctionFragment;
     "_setPriceOracle(address)": FunctionFragment;
     "_setUnderWriterAdmin(address)": FunctionFragment;
     "_supportMarket(address,uint8)": FunctionFragment;
@@ -46,7 +46,9 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "getRoleMemberCount(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "initialize(address,address,address,address,address,uint256,uint256)": FunctionFragment;
+    "heteroLiquidationIncentiveMantissa()": FunctionFragment;
+    "homoLiquidationIncentiveMantissa()": FunctionFragment;
+    "initialize(address,address,address,address,address,uint256,uint256,uint256,uint256)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isListed(address)": FunctionFragment;
     "liquidationIncentiveMantissa()": FunctionFragment;
@@ -67,6 +69,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "setMaxSupply(address,uint256)": FunctionFragment;
     "setTimelock(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "sutokenLiquidationIncentiveMantissa()": FunctionFragment;
     "timelock()": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
     "underWriterAdmin()": FunctionFragment;
@@ -86,7 +89,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "_setLiquidationIncentive",
-    values: [BigNumberish]
+    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "_setPriceOracle",
@@ -164,8 +167,26 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "heteroLiquidationIncentiveMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "homoLiquidationIncentiveMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string, string, string, string, BigNumberish, BigNumberish]
+    values: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "isComptroller",
@@ -231,6 +252,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sutokenLiquidationIncentiveMantissa",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
@@ -324,6 +349,14 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "heteroLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "homoLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isComptroller",
@@ -390,6 +423,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "sutokenLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferAllowed",
@@ -406,7 +443,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "MarketExited(address,address)": EventFragment;
     "MarketListed(address)": EventFragment;
     "NewCloseFactor(uint256,uint256)": EventFragment;
-    "NewLiquidationIncentive(uint256,uint256)": EventFragment;
+    "NewLiquidationIncentive(uint256,uint256,uint256,uint256,uint256,uint256)": EventFragment;
     "NewPriceOracle(address,address)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
@@ -447,9 +484,13 @@ export type NewCloseFactorEvent = TypedEvent<
 >;
 
 export type NewLiquidationIncentiveEvent = TypedEvent<
-  [BigNumber, BigNumber] & {
-    oldLiquidationIncentiveMantissa: BigNumber;
-    newLiquidationIncentiveMantissa: BigNumber;
+  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    oldHeteroIncentive: BigNumber;
+    newHeteroIncentive: BigNumber;
+    oldHomoIncentive: BigNumber;
+    newHomoIncentive: BigNumber;
+    oldSutokenIncentive: BigNumber;
+    newSutokenIncentive: BigNumber;
   }
 >;
 
@@ -531,7 +572,9 @@ export class Comptroller extends BaseContract {
     ): Promise<ContractTransaction>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -636,6 +679,14 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     initialize(
       _admin: string,
       _oracle: string,
@@ -643,7 +694,9 @@ export class Comptroller extends BaseContract {
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -653,7 +706,7 @@ export class Comptroller extends BaseContract {
 
     liquidationIncentiveMantissa(
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     marketGroupId(asset: string, overrides?: CallOverrides): Promise<[number]>;
 
@@ -756,6 +809,10 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     timelock(overrides?: CallOverrides): Promise<[string]>;
 
     transferAllowed(
@@ -779,7 +836,9 @@ export class Comptroller extends BaseContract {
   ): Promise<ContractTransaction>;
 
   _setLiquidationIncentive(
-    newLiquidationIncentiveMantissa: BigNumberish,
+    newHeteroLiquidationIncentiveMantissa: BigNumberish,
+    newHomoLiquidationIncentiveMantissa: BigNumberish,
+    newSutokenLiquidationIncentiveMantissa: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -878,6 +937,14 @@ export class Comptroller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  heteroLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  homoLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   initialize(
     _admin: string,
     _oracle: string,
@@ -885,7 +952,9 @@ export class Comptroller extends BaseContract {
     _compLogic: string,
     _accountLiquidity: string,
     _closeFactorMantissa: BigNumberish,
-    _liquidationIncentiveMantissa: BigNumberish,
+    _heteroLiquidationIncentiveMantissa: BigNumberish,
+    _homoLiquidationIncentiveMantissa: BigNumberish,
+    _sutokenLiquidationIncentiveMantissa: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -893,7 +962,9 @@ export class Comptroller extends BaseContract {
 
   isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-  liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+  liquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
@@ -996,6 +1067,10 @@ export class Comptroller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  sutokenLiquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   timelock(overrides?: CallOverrides): Promise<string>;
 
   transferAllowed(
@@ -1019,7 +1094,9 @@ export class Comptroller extends BaseContract {
     ): Promise<BigNumber>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1118,6 +1195,14 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _admin: string,
       _oracle: string,
@@ -1125,7 +1210,9 @@ export class Comptroller extends BaseContract {
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1133,7 +1220,9 @@ export class Comptroller extends BaseContract {
 
     isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-    liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    liquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
@@ -1233,6 +1322,10 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     timelock(overrides?: CallOverrides): Promise<string>;
 
     transferAllowed(
@@ -1297,25 +1390,41 @@ export class Comptroller extends BaseContract {
       { oldCloseFactorMantissa: BigNumber; newCloseFactorMantissa: BigNumber }
     >;
 
-    "NewLiquidationIncentive(uint256,uint256)"(
-      oldLiquidationIncentiveMantissa?: null,
-      newLiquidationIncentiveMantissa?: null
+    "NewLiquidationIncentive(uint256,uint256,uint256,uint256,uint256,uint256)"(
+      oldHeteroIncentive?: null,
+      newHeteroIncentive?: null,
+      oldHomoIncentive?: null,
+      newHomoIncentive?: null,
+      oldSutokenIncentive?: null,
+      newSutokenIncentive?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
-        oldLiquidationIncentiveMantissa: BigNumber;
-        newLiquidationIncentiveMantissa: BigNumber;
+        oldHeteroIncentive: BigNumber;
+        newHeteroIncentive: BigNumber;
+        oldHomoIncentive: BigNumber;
+        newHomoIncentive: BigNumber;
+        oldSutokenIncentive: BigNumber;
+        newSutokenIncentive: BigNumber;
       }
     >;
 
     NewLiquidationIncentive(
-      oldLiquidationIncentiveMantissa?: null,
-      newLiquidationIncentiveMantissa?: null
+      oldHeteroIncentive?: null,
+      newHeteroIncentive?: null,
+      oldHomoIncentive?: null,
+      newHomoIncentive?: null,
+      oldSutokenIncentive?: null,
+      newSutokenIncentive?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
-        oldLiquidationIncentiveMantissa: BigNumber;
-        newLiquidationIncentiveMantissa: BigNumber;
+        oldHeteroIncentive: BigNumber;
+        newHeteroIncentive: BigNumber;
+        oldHomoIncentive: BigNumber;
+        newHomoIncentive: BigNumber;
+        oldSutokenIncentive: BigNumber;
+        newSutokenIncentive: BigNumber;
       }
     >;
 
@@ -1417,7 +1526,9 @@ export class Comptroller extends BaseContract {
     ): Promise<BigNumber>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1522,6 +1633,14 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _admin: string,
       _oracle: string,
@@ -1529,7 +1648,9 @@ export class Comptroller extends BaseContract {
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1631,6 +1752,10 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferAllowed(
@@ -1657,7 +1782,9 @@ export class Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     _setLiquidationIncentive(
-      newLiquidationIncentiveMantissa: BigNumberish,
+      newHeteroLiquidationIncentiveMantissa: BigNumberish,
+      newHomoLiquidationIncentiveMantissa: BigNumberish,
+      newSutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1767,6 +1894,14 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    heteroLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    homoLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     initialize(
       _admin: string,
       _oracle: string,
@@ -1774,7 +1909,9 @@ export class Comptroller extends BaseContract {
       _compLogic: string,
       _accountLiquidity: string,
       _closeFactorMantissa: BigNumberish,
-      _liquidationIncentiveMantissa: BigNumberish,
+      _heteroLiquidationIncentiveMantissa: BigNumberish,
+      _homoLiquidationIncentiveMantissa: BigNumberish,
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1887,6 +2024,10 @@ export class Comptroller extends BaseContract {
 
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

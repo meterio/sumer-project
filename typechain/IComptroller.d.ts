@@ -312,7 +312,7 @@ export class IComptroller extends BaseContract {
 
     liquidationIncentiveMantissa(
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     marketGroupId(asset: string, overrides?: CallOverrides): Promise<[number]>;
 
@@ -427,7 +427,9 @@ export class IComptroller extends BaseContract {
 
   isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-  liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+  liquidationIncentiveMantissa(
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
@@ -536,7 +538,9 @@ export class IComptroller extends BaseContract {
 
     isListed(asset: string, overrides?: CallOverrides): Promise<boolean>;
 
-    liquidationIncentiveMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+    liquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     marketGroupId(asset: string, overrides?: CallOverrides): Promise<number>;
 
