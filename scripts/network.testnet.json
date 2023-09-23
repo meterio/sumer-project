@@ -1,0 +1,34 @@
+[
+  {
+    "name": "ganache1",
+    "rpc": "http://127.0.0.1:7545"
+  },
+  {
+    "name": "ganache2",
+    "rpc": "http://127.0.0.1:8545"
+  },
+  {
+    "name": "goerli",
+    "rpc": "https://ethereum-goerli.publicnode.com"
+  },
+  {
+    "name": "sepolia",
+    "rpc": "https://eth-sepolia-public.unifra.io"
+  },
+  {
+    "name": "Bsc test",
+    "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545"
+  },
+  {
+    "name": "Meter test",
+    "rpc": "https://rpctest.meter.io"
+  },
+  {
+    "name": "Polygon mumbai",
+    "rpc": "https://rpc-mumbai.maticvigil.com"
+  },
+  {
+    "name": "Base test",
+    "rpc": "https://goerli.base.org"
+  }
+]

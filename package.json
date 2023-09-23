@@ -64,6 +64,7 @@
     "hardhat-gas-reporter": "^1.0.4",
     "hardhat-tracer": "^1.0.0-alpha.6",
     "hardhat-typechain": "^0.3.5",
+    "inquirer": "^9.2.11",
     "mocha": "^8.4.0",
     "solc-0.8.13": "npm:solc@^0.8.13",
     "solidity-coverage": "^0.7.17",
