@@ -35,6 +35,7 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     "setBandFeed(address,address,uint8,string)": FunctionFragment;
     "setChainlinkFeed(address,address)": FunctionFragment;
     "setFixedPrice(address,uint256)": FunctionFragment;
+    "setPythFeed(address,bytes32,address,string)": FunctionFragment;
     "setWitnetFeed(address,address,uint8)": FunctionFragment;
   };
 
@@ -75,6 +76,10 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setFixedPrice",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPythFeed",
+    values: [string, BytesLike, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "setWitnetFeed",
@@ -126,20 +131,25 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setPythFeed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setWitnetFeed",
     data: BytesLike
   ): Result;
 
   events: {
-    "SetFeed(address,uint8,address,uint8,string)": EventFragment;
+    "SetFeed(address,bytes32,uint8,address,uint8,string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "SetFeed"): EventFragment;
 }
 
 export type SetFeedEvent = TypedEvent<
-  [string, number, string, number, string] & {
+  [string, string, number, string, number, string] & {
     cToken_: string;
+    feedId: string;
     source: number;
     addr: string;
     feedDecimals: number;
@@ -200,7 +210,8 @@ export class FeedPriceOracle extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, number, string] & {
+      [string, number, string, number, string] & {
+        feedId: string;
         source: number;
         addr: string;
         feedDecimals: number;
@@ -215,7 +226,8 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        [number, string, number, string] & {
+        [string, number, string, number, string] & {
+          feedId: string;
           source: number;
           addr: string;
           feedDecimals: number;
@@ -273,6 +285,14 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setPythFeed(
+      cToken_: string,
+      feedId: BytesLike,
+      addr: string,
+      name: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setWitnetFeed(
       cToken_: string,
       feed_: string,
@@ -290,7 +310,8 @@ export class FeedPriceOracle extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [number, string, number, string] & {
+    [string, number, string, number, string] & {
+      feedId: string;
       source: number;
       addr: string;
       feedDecimals: number;
@@ -304,7 +325,8 @@ export class FeedPriceOracle extends BaseContract {
     cToken_: string,
     overrides?: CallOverrides
   ): Promise<
-    [number, string, number, string] & {
+    [string, number, string, number, string] & {
+      feedId: string;
       source: number;
       addr: string;
       feedDecimals: number;
@@ -358,6 +380,14 @@ export class FeedPriceOracle extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setPythFeed(
+    cToken_: string,
+    feedId: BytesLike,
+    addr: string,
+    name: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setWitnetFeed(
     cToken_: string,
     feed_: string,
@@ -372,7 +402,8 @@ export class FeedPriceOracle extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, number, string] & {
+      [string, number, string, number, string] & {
+        feedId: string;
         source: number;
         addr: string;
         feedDecimals: number;
@@ -386,7 +417,8 @@ export class FeedPriceOracle extends BaseContract {
       cToken_: string,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, number, string] & {
+      [string, number, string, number, string] & {
+        feedId: string;
         source: number;
         addr: string;
         feedDecimals: number;
@@ -437,6 +469,14 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setPythFeed(
+      cToken_: string,
+      feedId: BytesLike,
+      addr: string,
+      name: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setWitnetFeed(
       cToken_: string,
       feed_: string,
@@ -446,16 +486,18 @@ export class FeedPriceOracle extends BaseContract {
   };
 
   filters: {
-    "SetFeed(address,uint8,address,uint8,string)"(
+    "SetFeed(address,bytes32,uint8,address,uint8,string)"(
       cToken_?: string | null,
+      feedId?: null,
       source?: null,
       addr?: null,
       feedDecimals?: null,
       name?: null
     ): TypedEventFilter<
-      [string, number, string, number, string],
+      [string, string, number, string, number, string],
       {
         cToken_: string;
+        feedId: string;
         source: number;
         addr: string;
         feedDecimals: number;
@@ -465,14 +507,16 @@ export class FeedPriceOracle extends BaseContract {
 
     SetFeed(
       cToken_?: string | null,
+      feedId?: null,
       source?: null,
       addr?: null,
       feedDecimals?: null,
       name?: null
     ): TypedEventFilter<
-      [string, number, string, number, string],
+      [string, string, number, string, number, string],
       {
         cToken_: string;
+        feedId: string;
         source: number;
         addr: string;
         feedDecimals: number;
@@ -539,6 +583,14 @@ export class FeedPriceOracle extends BaseContract {
     setFixedPrice(
       cToken_: string,
       price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setPythFeed(
+      cToken_: string,
+      feedId: BytesLike,
+      addr: string,
+      name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -617,6 +669,14 @@ export class FeedPriceOracle extends BaseContract {
     setFixedPrice(
       cToken_: string,
       price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPythFeed(
+      cToken_: string,
+      feedId: BytesLike,
+      addr: string,
+      name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

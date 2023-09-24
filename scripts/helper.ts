@@ -1,8 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs';
-import { Contract, BigNumber, BytesLike, constants, PayableOverrides, Wallet, providers, utils  } from 'ethers';
+import { Contract, BigNumber, BytesLike, constants, PayableOverrides, Wallet, providers, utils } from 'ethers';
 import { HardhatEthersHelpers } from '@nomiclabs/hardhat-ethers/types';
 import * as pathLib from 'path';
-import * as fs from 'fs';
 import { input, select, password } from '@inquirer/prompts';
 import colors from 'colors';
 colors.enable();
@@ -46,26 +45,6 @@ export function getContract(network: string, name: string): string {
   } else {
     return constants.AddressZero;
   }
-}
-
-export function listContracts(network: string) {
-  const deployDir = `./deployments`;
-  const networks = fs.readdirSync(deployDir);
-  let result: { [key: string]: string } = {};
-  if (networks.includes(network)) {
-    const base = pathLib.join(__dirname, '..', 'deployments', network);
-    const files = fs.readdirSync(base);
-    for (const f of files) {
-      if (f.endsWith('.json')) {
-        const name = f.replace('.json', '');
-        const address = JSON.parse(fs.readFileSync(pathLib.join(base, f)).toString()).address;
-        if (name && address) {
-          result[name] = address;
-        }
-      }
-    }
-  }
-  return result;
 }
 
 export function getContractJson(network: string, name: string) {
@@ -186,8 +165,7 @@ export async function sendTransaction(
     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
     validate: (value = '') => value.length > 0 || 'Pass a valid value'
   });
-
-  override.gasLimit = await contract.estimateGas[func](...args, override);
+  override.gasLimit = await contract.estimateGas[func](...args);
   console.log('gasLimit:', green(override.gasLimit.toString()));
   let receipt = await contract[func](...args, override);
   await receipt.wait();
@@ -220,7 +198,196 @@ export async function deployContractV2(
 export async function getContractV2(ethers: HardhatEthersHelpers, rpc: string, contract: string, address: string) {
   const provider = new providers.JsonRpcProvider(rpc);
   const wallet = new Wallet(defaultPrivateKey, provider);
-
   return await ethers.getContractAt(contract, address, wallet);
 }
 
+export function getConfig(netConfigName: string): any {
+  const config_path = `./deployments/${netConfigName}/`;
+  const sample_path = `./scripts/config_sample.json`;
+  const filename = 'config.json';
+  const fullpath = pathLib.join(__dirname, '..', config_path, filename);
+  if (!existsSync(fullpath)) {
+    mkdirSync(config_path, { recursive: true });
+    writeFileSync(fullpath, JSON.stringify(JSON.parse(readFileSync(sample_path).toString())));
+  }
+  return JSON.parse(readFileSync(fullpath).toString());
+}
+
+export function writeConfig(netConfigName: string, config: any) {
+  const config_path = `./deployments/${netConfigName}/`;
+  const filename = 'config.json';
+  const fullpath = pathLib.join(__dirname, '..', config_path, filename);
+  writeFileSync(fullpath, JSON.stringify(config, null, 2));
+}
+
+type Config = {
+  name: string;
+  contract: string;
+  address: string;
+  implementation: string;
+  constructorName: string[];
+  args: string[];
+};
+
+export async function deployOrInput(
+  ethers: HardhatEthersHelpers,
+  network: Network,
+  override: PayableOverrides,
+  config: Config,
+  implementation: boolean = false
+): Promise<Config> {
+  let name = config.name || config.contract;
+  name = implementation ? green(name) + '的' + green('Implementation') : green(name);
+  const answer = await select({
+    message: `选择${name}合约:`,
+    choices: [
+      {
+        name: '部署合约',
+        value: 'deploy'
+      },
+      {
+        name: '输入合约地址',
+        value: 'input'
+      }
+    ]
+  });
+  let address: string;
+
+  if (answer == 'deploy') {
+    let constructorName = config.constructorName || [];
+    let args = config.args || [];
+    if (!implementation) {
+      if (constructorName.length > 0) {
+        args = await getArgs(network, constructorName, args);
+        config.args = args;
+      }
+    }
+    address = (await deployContractV2(ethers, network, config.contract, implementation ? [] : args, override)).address;
+  } else {
+    address = await input({
+      message: `输入${name}合约地址:`,
+      default: implementation ? config.implementation : config.address,
+      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+    });
+  }
+  if (implementation) {
+    config.implementation = address;
+  } else {
+    config.address = address;
+  }
+  return config;
+}
+
+async function getArgs(network: Network, constructorName: string[], args: string[]) {
+  for (let i = 0; i < constructorName.length; i++) {
+    args[i] = await input({
+      message: `输入${green(constructorName[i])}:`,
+      default: await getDefaultValue(network, args[i], constructorName[i]),
+      validate: (value = '') => value.length > 0 || 'Pass a valid value'
+    });
+  }
+  return args;
+}
+
+async function getDefaultValue(network: Network, defaultValue: string, constructorName: string) {
+  const config = getConfig(network.netConfig.name);
+  if (config[constructorName]) {
+    return config[constructorName].address;
+  }
+  if (constructorName == 'owner' || constructorName == 'admin') {
+    return network.wallet.address;
+  }
+  if (constructorName == 'interestRateModel') {
+    let choices = [];
+    for (let i = 0; i < config.InterestRateModel.length; i++) {
+      choices.push({
+        name: `${green(config.InterestRateModel[i].name)} - ${yellow(config.InterestRateModel[i].contract)}${
+          config.InterestRateModel[i].address == defaultValue ? red('(默认)') : ''
+        }`,
+        value: i
+      });
+    }
+    const interestRateModelIndex = await select({
+      message: '选择InterestRateModel',
+      choices: choices
+    });
+    return config.InterestRateModel[interestRateModelIndex].address;
+  }
+  if (constructorName == 'cTokens') {
+    let cTokens: string[] = [];
+    for (let i = 0; i < config.CErc20.proxys.length; i++) {
+      cTokens.push(config.CErc20.proxys[i].address);
+    }
+    for (let i = 0; i < config.suErc20.proxys.length; i++) {
+      cTokens.push(config.suErc20.proxys[i].address);
+    }
+    if (config.CEther) {
+      cTokens.push(config.CEther.address);
+    }
+    return cTokens;
+  }
+  if (defaultValue) {
+    return defaultValue;
+  }
+  return '';
+}
+
+export async function deployProxyOrInput(
+  ethers: HardhatEthersHelpers,
+  network: Network,
+  override: PayableOverrides,
+  config: Config,
+  proxyAdmin: string,
+  implementation: string = ''
+): Promise<Config> {
+  const name = config.name || config.contract;
+  implementation = utils.isAddress(implementation) ? implementation : config.implementation;
+
+  const proxy_answer = await select({
+    message: `选择${green(name)} 的${green('Proxy')}合约:`,
+    choices: [
+      {
+        name: '部署合约',
+        value: 'deploy'
+      },
+      {
+        name: '更新合约',
+        value: 'update'
+      },
+      {
+        name: '输入合约地址',
+        value: 'input'
+      }
+    ]
+  });
+
+  if (proxy_answer == 'deploy') {
+    let constructorName = config.constructorName || [];
+    let args = config.args || [];
+    if (constructorName.length > 0) {
+      args = await getArgs(network, constructorName, args);
+      config.args = args;
+    }
+    const factory = await ethers.getContractFactory(config.contract);
+    const data = factory.interface.encodeFunctionData('initialize', args);
+    config.address = (
+      await deployContractV2(ethers, network, 'SumerProxy', [implementation, proxyAdmin, data], override)
+    ).address;
+  } else if (proxy_answer == 'update') {
+    const proxyAdminContract = await ethers.getContractAt('SumerProxyAdmin', proxyAdmin, network.wallet);
+    await sendTransaction(
+      network,
+      proxyAdminContract,
+      'upgrade(address,address)',
+      [config.address, implementation],
+      override
+    );
+  } else {
+    config.address = await input({
+      message: `输入${green(name)}合约地址:`,
+      default: config.address,
+      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+    });
+  }
+  return config;
+}

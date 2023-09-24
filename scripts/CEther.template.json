@@ -1,0 +1,26 @@
+{
+    "name": "Sumer Ether",
+    "contract": "CEther",
+    "implementation": "",
+    "address": "",
+    "constructorName": [
+      "Comptroller",
+      "interestRateModel",
+      "initialExchangeRateMantissa",
+      "name",
+      "symbol",
+      "decimals",
+      "admin",
+      "discountRateMantissa"
+    ],
+    "args": [
+      "",
+      "",
+      "1000000000000000000",
+      "Sumer ETH",
+      "sdrETH",
+      "18",
+      "",
+      "1000000000000000000"
+    ]
+  }
