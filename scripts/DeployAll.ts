@@ -8,19 +8,12 @@ import {
   deployProxyOrInput,
   sendTransaction,
   DEFAULT_ADMIN_ROLE,
-  BN,
-  MINTER_ROLE,
-  Network,
-  yellow
+  cTokenSetting,
+  interestRateModel_select,
+  InterestRateModel_template
 } from './helper';
-import {
-  AccountLiquidity,
-  CToken,
-  CompLogic,
-  Comptroller,
-  ERC20MinterBurnerPauser,
-  FeedPriceOracle
-} from '../typechain';
+import { AccountLiquidity, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
+import { confirm } from '@inquirer/prompts';
 
 const main = async () => {
   const network = await setNetwork(network_config);
@@ -43,10 +36,25 @@ const main = async () => {
   config.CompoundLens = await deployOrInput(ethers, network, override, config.CompoundLens);
   writeConfig(netConfig.name, config);
 
-  for (let i = 0; i < config.InterestRateModel.length; i++) {
-    config.InterestRateModel[i] = await deployOrInput(ethers, network, override, config.InterestRateModel[i]);
+  let interestRateModel_selected;
+  let InterestRateModel = config.InterestRateModel;
+
+  for (let i = 0; i < InterestRateModel.length; i++) {
+    config.InterestRateModel[i] = await deployOrInput(ethers, network, override, InterestRateModel[i]);
     writeConfig(netConfig.name, config);
   }
+
+  do {
+    interestRateModel_selected = await interestRateModel_select();
+    if (interestRateModel_selected != 'exit') {
+      InterestRateModel.push(
+        await deployOrInput(ethers, network, override, InterestRateModel_template[interestRateModel_selected])
+      );
+    }
+  } while (interestRateModel_selected != 'exit');
+
+  config.InterestRateModel = InterestRateModel;
+  writeConfig(netConfig.name, config);
 
   config.AccountLiquidity = await deployOrInput(ethers, network, override, config.AccountLiquidity, true);
   writeConfig(netConfig.name, config);
@@ -122,8 +130,16 @@ const main = async () => {
   )) as FeedPriceOracle;
 
   for (let i = 0; i < config.Comptroller.settings.length; i++) {
-    let settings = config.Comptroller.settings[i];
-    await sendTransaction(network, comptroller, settings.func, settings.args, override);
+    let setting = config.Comptroller.settings[i];
+    console.log('设置Comptroller合约');
+    console.log(setting.func);
+    console.log(JSON.stringify(setting.args));
+    let confirm_setting = await confirm({
+      message: '是否配置?'
+    });
+    if (confirm_setting) {
+      await sendTransaction(network, comptroller, setting.func, setting.args, override);
+    }
   }
 
   if (config.CEther) {
@@ -132,7 +148,7 @@ const main = async () => {
 
     config.CEther = await deployProxyOrInput(ethers, network, override, config.CEther, config.ProxyAdmin.address);
     writeConfig(netConfig.name, config);
-    await cTokenSetting(comptroller, oracle, network, config.CEther);
+    await cTokenSetting(ethers, comptroller, oracle, network, config.CEther);
   }
   config.CErc20 = await deployOrInput(ethers, network, override, config.CErc20, true);
   writeConfig(netConfig.name, config);
@@ -148,7 +164,7 @@ const main = async () => {
     );
     writeConfig(netConfig.name, config);
     let cTokenConfig = config.CErc20.proxys[i];
-    await cTokenSetting(comptroller, oracle, network, cTokenConfig);
+    await cTokenSetting(ethers, comptroller, oracle, network, cTokenConfig);
   }
 
   config.suErc20 = await deployOrInput(ethers, network, override, config.suErc20, true);
@@ -165,7 +181,7 @@ const main = async () => {
     );
     writeConfig(netConfig.name, config);
     let cTokenConfig = config.suErc20.proxys[i];
-    await cTokenSetting(comptroller, oracle, network, cTokenConfig, true);
+    await cTokenSetting(ethers, comptroller, oracle, network, cTokenConfig, true);
   }
 
   config.Timelock = await deployOrInput(ethers, network, override, config.Timelock);
@@ -183,79 +199,3 @@ const main = async () => {
 };
 
 main();
-async function cTokenSetting(
-  comptroller: Comptroller,
-  oracle: FeedPriceOracle,
-  network: Network,
-  cTokenConfig: any,
-  isSuToken: boolean = false
-) {
-  // supportMarket
-  let market = await comptroller.markets(cTokenConfig.address, network.override);
-  if (!market.isListed) {
-    console.log('设置Comptroller的supportMarket' + yellow(cTokenConfig.address));
-    await sendTransaction(
-      network,
-      comptroller,
-      '_supportMarket(address,uint8)',
-      [cTokenConfig.address, cTokenConfig.settings.groupId],
-      network.override,
-      DEFAULT_ADMIN_ROLE
-    );
-  }
-  if (!isSuToken) {
-    // setReserveFactor
-    let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
-    let reserveFactorMantissa = await cToken.reserveFactorMantissa();
-    if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
-      console.log('设置Comptroller的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
-      await sendTransaction(
-        network,
-        cToken,
-        '_setReserveFactor(uint256)',
-        [cTokenConfig.settings.reserveFactorMantissa],
-        network.override
-      );
-    }
-  }
-  if (isSuToken) {
-    // grantRole
-    let underlying = (await ethers.getContractAt(
-      'ERC20MinterBurnerPauser',
-      cTokenConfig.args[0],
-      network.wallet
-    )) as ERC20MinterBurnerPauser;
-    let hasRole = await underlying.hasRole(MINTER_ROLE, cTokenConfig.address);
-    if (!hasRole) {
-      console.log('设置Underlying' + yellow(cTokenConfig.args[0]) + '的MINTER_ROLE');
-      await sendTransaction(
-        network,
-        underlying,
-        'grantRole(bytes32,address)',
-        [MINTER_ROLE, cTokenConfig.address],
-        network.override,
-        DEFAULT_ADMIN_ROLE
-      );
-    }
-    // changeCtoken
-    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as CToken;
-    let isCToken = await suErc20.isCToken();
-    if (isCToken) {
-      console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
-      await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
-    }
-  }
-  // oracle
-  let feeds = await oracle.feeds(cTokenConfig.address, network.override);
-  if (feeds.source == 0) {
-    cTokenConfig.settings.oracle.args[0] = cTokenConfig.address;
-    console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle');
-    await sendTransaction(
-      network,
-      oracle,
-      cTokenConfig.settings.oracle.func,
-      cTokenConfig.settings.oracle.args,
-      network.override
-    );
-  }
-}

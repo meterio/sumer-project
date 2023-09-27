@@ -4,6 +4,7 @@ import { HardhatEthersHelpers } from '@nomiclabs/hardhat-ethers/types';
 import * as pathLib from 'path';
 import { input, select, password } from '@inquirer/prompts';
 import colors from 'colors';
+import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle } from '../typechain';
 colors.enable();
 
 export const yellow = colors.yellow;
@@ -16,6 +17,9 @@ export const defaultPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed
 
 export const network_json = './scripts/network.testnet.json';
 export const network_config = JSON.parse(readFileSync(network_json).toString());
+
+export const interestRateModel_json = './scripts/InterestRateModel.json';
+export const InterestRateModel_template = JSON.parse(readFileSync(interestRateModel_json).toString());
 
 export function expandTo18Decimals(n: number): BigNumber {
   return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
@@ -128,7 +132,8 @@ export async function setNetwork(config: any[], name: string = ''): Promise<Netw
   });
   const privateKey = await password({
     message: `输入网络${green(name)}的Private Key:`,
-    validate: (value = '') => utils.isBytesLike(value) || 'Pass a valid Private Key value'
+    validate: (value = '') => utils.isBytesLike(value) || 'Pass a valid Private Key value',
+    mask: '*'
   });
 
   const provider = new providers.JsonRpcProvider(config[networkIndex].rpc);
@@ -165,6 +170,7 @@ export async function sendTransaction(
     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
     validate: (value = '') => value.length > 0 || 'Pass a valid value'
   });
+
   override.gasLimit = await contract.estimateGas[func](...args);
   console.log('gasLimit:', green(override.gasLimit.toString()));
   let receipt = await contract[func](...args, override);
@@ -186,7 +192,9 @@ export async function deployContractV2(
   });
 
   const factory = await ethers.getContractFactory(contract, network.wallet);
+
   override.gasLimit = await network.wallet.estimateGas(factory.getDeployTransaction(...args));
+
   console.log('gasLimit:', green(override.gasLimit.toString()));
   const deploy = await factory.deploy(...args, override);
   const deployed = await deploy.deployed();
@@ -390,4 +398,101 @@ export async function deployProxyOrInput(
     });
   }
   return config;
+}
+
+export async function interestRateModel_select(): Promise<string> {
+  let interestRateModel_choice: any[] = [
+    {
+      name: '下一步',
+      value: 'exit'
+    }
+  ];
+  for (let i = 0; i < InterestRateModel_template.length; i++) {
+    interestRateModel_choice.push({
+      name: InterestRateModel_template[i].name,
+      value: i
+    });
+  }
+  return await select({
+    message: `部署新的${green('InterestRateModel')}合约?:`,
+    choices: interestRateModel_choice
+  });
+}
+
+export async function cTokenSetting(
+  ethers: HardhatEthersHelpers,
+  comptroller: Comptroller,
+  oracle: FeedPriceOracle,
+  network: Network,
+  cTokenConfig: any,
+  isSuToken: boolean = false
+) {
+  // supportMarket
+  let market = await comptroller.markets(cTokenConfig.address, network.override);
+  if (!market.isListed) {
+    console.log('设置Comptroller的supportMarket' + yellow(cTokenConfig.address));
+    await sendTransaction(
+      network,
+      comptroller,
+      '_supportMarket(address,uint8)',
+      [cTokenConfig.address, cTokenConfig.settings.groupId],
+      network.override,
+      DEFAULT_ADMIN_ROLE
+    );
+  }
+  if (!isSuToken) {
+    // setReserveFactor
+    let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
+    let reserveFactorMantissa = await cToken.reserveFactorMantissa();
+    if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
+      console.log('设置Comptroller的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
+      await sendTransaction(
+        network,
+        cToken,
+        '_setReserveFactor(uint256)',
+        [cTokenConfig.settings.reserveFactorMantissa],
+        network.override
+      );
+    }
+  }
+  if (isSuToken) {
+    // grantRole
+    let underlying = (await ethers.getContractAt(
+      'ERC20MinterBurnerPauser',
+      cTokenConfig.args[0],
+      network.wallet
+    )) as ERC20MinterBurnerPauser;
+    let hasRole = await underlying.hasRole(MINTER_ROLE, cTokenConfig.address);
+    if (!hasRole) {
+      console.log('设置Underlying' + yellow(cTokenConfig.args[0]) + '的MINTER_ROLE');
+      await sendTransaction(
+        network,
+        underlying,
+        'grantRole(bytes32,address)',
+        [MINTER_ROLE, cTokenConfig.address],
+        network.override,
+        DEFAULT_ADMIN_ROLE
+      );
+    }
+    // changeCtoken
+    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as CToken;
+    let isCToken = await suErc20.isCToken();
+    if (isCToken) {
+      console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
+      await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
+    }
+  }
+  // oracle
+  let feeds = await oracle.feeds(cTokenConfig.address, network.override);
+  if (feeds.source == 0) {
+    cTokenConfig.settings.oracle.args[0] = cTokenConfig.address;
+    console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle');
+    await sendTransaction(
+      network,
+      oracle,
+      cTokenConfig.settings.oracle.func,
+      cTokenConfig.settings.oracle.args,
+      network.override
+    );
+  }
 }
