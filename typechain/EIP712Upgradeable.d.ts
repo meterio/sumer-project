@@ -17,29 +17,19 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface TransparentUpgradeableProxyInterface extends ethers.utils.Interface {
+interface EIP712UpgradeableInterface extends ethers.utils.Interface {
   functions: {};
 
   events: {
-    "AdminChanged(address,address)": EventFragment;
-    "BeaconUpgraded(address)": EventFragment;
-    "Upgraded(address)": EventFragment;
+    "Initialized(uint8)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
 }
 
-export type AdminChangedEvent = TypedEvent<
-  [string, string] & { previousAdmin: string; newAdmin: string }
->;
+export type InitializedEvent = TypedEvent<[number] & { version: number }>;
 
-export type BeaconUpgradedEvent = TypedEvent<[string] & { beacon: string }>;
-
-export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
-
-export class TransparentUpgradeableProxy extends BaseContract {
+export class EIP712Upgradeable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -80,44 +70,20 @@ export class TransparentUpgradeableProxy extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: TransparentUpgradeableProxyInterface;
+  interface: EIP712UpgradeableInterface;
 
   functions: {};
 
   callStatic: {};
 
   filters: {
-    "AdminChanged(address,address)"(
-      previousAdmin?: null,
-      newAdmin?: null
-    ): TypedEventFilter<
-      [string, string],
-      { previousAdmin: string; newAdmin: string }
-    >;
+    "Initialized(uint8)"(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
 
-    AdminChanged(
-      previousAdmin?: null,
-      newAdmin?: null
-    ): TypedEventFilter<
-      [string, string],
-      { previousAdmin: string; newAdmin: string }
-    >;
-
-    "BeaconUpgraded(address)"(
-      beacon?: string | null
-    ): TypedEventFilter<[string], { beacon: string }>;
-
-    BeaconUpgraded(
-      beacon?: string | null
-    ): TypedEventFilter<[string], { beacon: string }>;
-
-    "Upgraded(address)"(
-      implementation?: string | null
-    ): TypedEventFilter<[string], { implementation: string }>;
-
-    Upgraded(
-      implementation?: string | null
-    ): TypedEventFilter<[string], { implementation: string }>;
+    Initialized(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
   };
 
   estimateGas: {};

@@ -17,7 +17,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface TransparentUpgradeableProxyInterface extends ethers.utils.Interface {
+interface IERC1967Interface extends ethers.utils.Interface {
   functions: {};
 
   events: {
@@ -39,7 +39,7 @@ export type BeaconUpgradedEvent = TypedEvent<[string] & { beacon: string }>;
 
 export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
 
-export class TransparentUpgradeableProxy extends BaseContract {
+export class IERC1967 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -80,7 +80,7 @@ export class TransparentUpgradeableProxy extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: TransparentUpgradeableProxyInterface;
+  interface: IERC1967Interface;
 
   functions: {};
 
