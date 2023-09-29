@@ -33,9 +33,29 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Initializable__factory>;
     getContractFactory(
+      name: "PausableUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PausableUpgradeable__factory>;
+    getContractFactory(
+      name: "ERC20Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20Upgradeable__factory>;
+    getContractFactory(
+      name: "IERC20MetadataUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20MetadataUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC20Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20Upgradeable__factory>;
+    getContractFactory(
       name: "ContextUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ContextUpgradeable__factory>;
+    getContractFactory(
+      name: "EIP712Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EIP712Upgradeable__factory>;
     getContractFactory(
       name: "ERC165Upgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -73,6 +93,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC1822Proxiable__factory>;
     getContractFactory(
+      name: "IERC1967",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1967__factory>;
+    getContractFactory(
       name: "IBeacon",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IBeacon__factory>;
@@ -92,6 +116,10 @@ declare module "hardhat/types/runtime" {
       name: "ProxyAdmin",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ProxyAdmin__factory>;
+    getContractFactory(
+      name: "ITransparentUpgradeableProxy",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ITransparentUpgradeableProxy__factory>;
     getContractFactory(
       name: "TransparentUpgradeableProxy",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -120,6 +148,10 @@ declare module "hardhat/types/runtime" {
       name: "IERC20Metadata",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20Metadata__factory>;
+    getContractFactory(
+      name: "IERC20Permit",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20Permit__factory>;
     getContractFactory(
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -169,10 +201,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ICompLogic__factory>;
     getContractFactory(
-      name: "ComptrollerErrorReporter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ComptrollerErrorReporter__factory>;
-    getContractFactory(
       name: "ComptrollerStorage",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ComptrollerStorage__factory>;
@@ -197,21 +225,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPriceOracle__factory>;
     getContractFactory(
-      name: "IUnderwriterAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUnderwriterAdmin__factory>;
-    getContractFactory(
       name: "IUnitroller",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IUnitroller__factory>;
-    getContractFactory(
-      name: "UnderwriterAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.UnderwriterAdmin__factory>;
-    getContractFactory(
-      name: "UnderwriterStorage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.UnderwriterStorage__factory>;
     getContractFactory(
       name: "CErc20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -411,10 +427,35 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Initializable>;
     getContractAt(
+      name: "PausableUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PausableUpgradeable>;
+    getContractAt(
+      name: "ERC20Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC20Upgradeable>;
+    getContractAt(
+      name: "IERC20MetadataUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20MetadataUpgradeable>;
+    getContractAt(
+      name: "IERC20Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20Upgradeable>;
+    getContractAt(
       name: "ContextUpgradeable",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ContextUpgradeable>;
+    getContractAt(
+      name: "EIP712Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.EIP712Upgradeable>;
     getContractAt(
       name: "ERC165Upgradeable",
       address: string,
@@ -461,6 +502,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC1822Proxiable>;
     getContractAt(
+      name: "IERC1967",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1967>;
+    getContractAt(
       name: "IBeacon",
       address: string,
       signer?: ethers.Signer
@@ -485,6 +531,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ProxyAdmin>;
+    getContractAt(
+      name: "ITransparentUpgradeableProxy",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ITransparentUpgradeableProxy>;
     getContractAt(
       name: "TransparentUpgradeableProxy",
       address: string,
@@ -520,6 +571,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20Metadata>;
+    getContractAt(
+      name: "IERC20Permit",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20Permit>;
     getContractAt(
       name: "IERC20",
       address: string,
@@ -581,11 +637,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ICompLogic>;
     getContractAt(
-      name: "ComptrollerErrorReporter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ComptrollerErrorReporter>;
-    getContractAt(
       name: "ComptrollerStorage",
       address: string,
       signer?: ethers.Signer
@@ -616,25 +667,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IPriceOracle>;
     getContractAt(
-      name: "IUnderwriterAdmin",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUnderwriterAdmin>;
-    getContractAt(
       name: "IUnitroller",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IUnitroller>;
-    getContractAt(
-      name: "UnderwriterAdmin",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.UnderwriterAdmin>;
-    getContractAt(
-      name: "UnderwriterStorage",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.UnderwriterStorage>;
     getContractAt(
       name: "CErc20",
       address: string,

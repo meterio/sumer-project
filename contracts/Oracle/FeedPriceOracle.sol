@@ -4,9 +4,11 @@ import './PriceOracle.sol';
 import './Interfaces/IStdReference.sol';
 import './Interfaces/IWitnetFeed.sol';
 import './Interfaces/IChainlinkFeed.sol';
+import '@pythnetwork/pyth-sdk-solidity/IPyth.sol';
 
 contract FeedPriceOracle is PriceOracle {
   struct FeedData {
+    bytes32 feedId; // Pyth price feed ID
     uint8 source; // 1 - chainlink feed, 2 - witnet router, 3 - Band
     address addr; // feed address
     uint8 feedDecimals; // feed decimals (only used in witnet)
@@ -18,7 +20,7 @@ contract FeedPriceOracle is PriceOracle {
   mapping(address => uint256) public fixedPrices; // cToken -> price
   uint8 constant DECIMALS = 18;
 
-  event SetFeed(address indexed cToken_, uint8 source, address addr, uint8 feedDecimals, string name);
+  event SetFeed(address indexed cToken_, bytes32 feedId, uint8 source, address addr, uint8 feedDecimals, string name);
 
   modifier onlyOwner() {
     require(msg.sender == owner, 'ONLY OWNER');
@@ -35,29 +37,46 @@ contract FeedPriceOracle is PriceOracle {
   }
 
   function setChainlinkFeed(address cToken_, address feed_) public onlyOwner {
-    _setFeed(cToken_, uint8(1), feed_, 8, '');
+    _setFeed(cToken_, uint8(1), bytes32(0), feed_, 8, '');
   }
 
   function setWitnetFeed(address cToken_, address feed_, uint8 feedDecimals_) public onlyOwner {
-    _setFeed(cToken_, uint8(2), feed_, feedDecimals_, '');
+    _setFeed(cToken_, uint8(2), bytes32(0), feed_, feedDecimals_, '');
   }
 
   function setBandFeed(address cToken_, address feed_, uint8 feedDecimals_, string memory name) public onlyOwner {
-    _setFeed(cToken_, uint8(3), feed_, feedDecimals_, name);
+    _setFeed(cToken_, uint8(3), bytes32(0), feed_, feedDecimals_, name);
   }
 
   function setFixedPrice(address cToken_, uint256 price) public onlyOwner {
     fixedPrices[cToken_] = price;
   }
 
-  function _setFeed(address cToken_, uint8 source, address addr, uint8 feedDecimals, string memory name) private {
+  function setPythFeed(address cToken_, bytes32 feedId, address addr, string memory name) public onlyOwner {
+    _setFeed(cToken_, uint8(4), feedId, addr, 18, name);
+  }
+
+  function _setFeed(
+    address cToken_,
+    uint8 source,
+    bytes32 feedId,
+    address addr,
+    uint8 feedDecimals,
+    string memory name
+  ) private {
     require(addr != address(0), 'Address is Zero!');
     if (feeds[cToken_].source != 0) {
       delete fixedPrices[cToken_];
     }
-    FeedData memory feedData = FeedData({source: source, addr: addr, feedDecimals: feedDecimals, name: name});
+    FeedData memory feedData = FeedData({
+      feedId: feedId,
+      source: source,
+      addr: addr,
+      feedDecimals: feedDecimals,
+      name: name
+    });
     feeds[cToken_] = feedData;
-    emit SetFeed(cToken_, source, addr, feedDecimals, name);
+    emit SetFeed(cToken_, feedId, source, addr, feedDecimals, name);
   }
 
   function removeFeed(address cToken_) public onlyOwner {
@@ -100,6 +119,12 @@ contract FeedPriceOracle is PriceOracle {
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         IStdReference.ReferenceData memory refData = IStdReference(feed.addr).getReferenceData(feed.name, 'USD');
         return refData.rate * (10 ** decimals);
+      }
+      if (feed.source == uint8(4)) {
+        PythStructs.Price memory price = IPyth(feed.addr).getPriceUnsafe(feed.feedId);
+        uint256 decimals = DECIMALS - uint32(price.expo * -1);
+        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+        return uint64(price.price) * (10 ** decimals);
       }
     }
     return fixedPrices[cToken_];

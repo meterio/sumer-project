@@ -34,7 +34,6 @@ interface AccountLiquidityInterface extends ethers.utils.Interface {
     "revokeRole(bytes32,address)": FunctionFragment;
     "setComptroller(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "underWriterAdmin()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -86,10 +85,6 @@ interface AccountLiquidityInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "underWriterAdmin",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
@@ -129,10 +124,6 @@ interface AccountLiquidityInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "underWriterAdmin",
     data: BytesLike
   ): Result;
 
@@ -274,8 +265,6 @@ export class AccountLiquidity extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
@@ -342,8 +331,6 @@ export class AccountLiquidity extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  underWriterAdmin(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -405,8 +392,6 @@ export class AccountLiquidity extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -540,8 +525,6 @@ export class AccountLiquidity extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -613,7 +596,5 @@ export class AccountLiquidity extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

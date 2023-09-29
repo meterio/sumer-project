@@ -1,0 +1,330 @@
+{
+  "ProxyAdmin": {
+    "contract": "SumerProxyAdmin",
+    "address": ""
+  },
+  "Multicall2": {
+    "contract": "Multicall2",
+    "address": ""
+  },
+  "Sumer": {
+    "name": "Sumer",
+    "contract": "ERC20MinterBurnerPauser",
+    "address": "",
+    "constructorName": ["name", "symbol", "initialSupply"],
+    "args": ["Sumer Token", "SUMER", "0"]
+  },
+  "CompoundLens": {
+    "contract": "CompoundLens",
+    "address": ""
+  },
+  "FeedPriceOracle": {
+    "contract": "FeedPriceOracle",
+    "address": ""
+  },
+  "InterestRateModel": [],
+  "AccountLiquidity": {
+    "contract": "AccountLiquidity",
+    "implementation": "",
+    "address": "",
+    "constructorName": ["admin"],
+    "args": [""]
+  },
+  "CompLogic": {
+    "contract": "CompLogic",
+    "implementation": "",
+    "address": "",
+    "constructorName": ["admin", "Sumer"],
+    "args": ["", ""]
+  },
+  "Comptroller": {
+    "contract": "Comptroller",
+    "implementation": "",
+    "address": "",
+    "settings": [
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          1,
+          "Bitcoin",
+          "900000000000000000",
+          "999700000000000000",
+          "500000000000000000",
+          "800000000000000000",
+          "500000000000000000"
+        ]
+      },
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          2,
+          "Ether",
+          "900000000000000000",
+          "999700000000000000",
+          "500000000000000000",
+          "800000000000000000",
+          "500000000000000000"
+        ]
+      },
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          3,
+          "StableCoin",
+          "900000000000000000",
+          "999700000000000000",
+          "500000000000000000",
+          "800000000000000000",
+          "500000000000000000"
+        ]
+      },
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          4,
+          "MTR",
+          "900000000000000000",
+          "999700000000000000",
+          "500000000000000000",
+          "800000000000000000",
+          "500000000000000000"
+        ]
+      }
+    ],
+    "constructorName": [
+      "admin",
+      "FeedPriceOracle",
+      "gov",
+      "CompLogic",
+      "AccountLiquidity",
+      "closeFactorMantissa",
+      "heteroLiquidationIncentiveMantissa",
+      "homoLiquidationIncentiveMantissa",
+      "sutokenLiquidationIncentiveMantissa"
+    ],
+    "args": ["", "", "", "", "", "5000000000000000000", "100000000000000000", "50000000000000000", "10000000000000000"]
+  },
+  "CErc20": {
+    "contract": "CErc20",
+    "implementation": "",
+    "proxys": [
+      {
+        "contract": "CErc20",
+        "name": "Sumer USD Coin",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setPythFeed(address,bytes32,address,string)",
+            "args": [
+              "address",
+              "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
+              "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+              "sdrUSDC"
+            ]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 3
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "Sumer USD Coin", "sdrUSDC", "6", "", "1000000000000000000"]
+      },
+      {
+        "contract": "CErc20",
+        "name": "Sumer Tether USD",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setPythFeed(address,bytes32,address,string)",
+            "args": [
+              "address",
+              "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
+              "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+              "sdrUSDT"
+            ]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 3
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "Sumer Tether USD", "sdrUSDT", "6", "", "1000000000000000000"]
+      },
+      {
+        "contract": "CErc20",
+        "name": "Sumer MTRG",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setPythFeed(address,bytes32,address,string)",
+            "args": [
+              "address",
+              "0xa5fd90e292644d5f9b79a1640f464fcae4b8cb925465d197a78185a308603606",
+              "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+              "sdrMTRG"
+            ]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 4
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "Sumer MTRG", "sdrMTRG", "18", "", "1000000000000000000"]
+      },
+      {
+        "contract": "CErc20",
+        "name": "Sumer BTCK Token",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setPythFeed(address,bytes32,address,string)",
+            "args": [
+              "address",
+              "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
+              "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+              "sdrBTC"
+            ]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 1
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "Sumer BTCK Token", "sdrBTC", "8", "", "1000000000000000000"]
+      }
+    ]
+  },
+  "suErc20": {
+    "contract": "suErc20",
+    "implementation": "",
+    "proxys": [
+      {
+        "contract": "suErc20",
+        "name": "sdrsuUSD",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setFixedPrice(address,uint256)",
+            "args": ["address", "100000000000000000"]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 3
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "sdrsuUSD", "sdrsuUSD", "18", "", "1000000000000000000"]
+      },
+      {
+        "contract": "suErc20",
+        "name": "sdrsuETH",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setPythFeed(address,bytes32,address,string)",
+            "args": [
+              "address",
+              "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+              "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+              "sdrsuETH"
+            ]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 2
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "sdrsuETH", "sdrsuETH", "18", "", "1000000000000000000"]
+      },
+      {
+        "contract": "suErc20",
+        "name": "sdrsuBTC",
+        "address": "",
+        "settings": {
+          "oracle": {
+            "func": "setPythFeed(address,bytes32,address,string)",
+            "args": [
+              "address",
+              "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
+              "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+              "sdrBTC"
+            ]
+          },
+          "reserveFactorMantissa": "100000000000000000",
+          "groupId": 1
+        },
+        "constructorName": [
+          "underlying",
+          "Comptroller",
+          "interestRateModel",
+          "initialExchangeRateMantissa",
+          "name",
+          "symbol",
+          "decimals",
+          "admin",
+          "discountRateMantissa"
+        ],
+        "args": ["", "", "", "1000000000000000000", "sdrsuBTC", "sdrsuBTC", "18", "", "1000000000000000000"]
+      }
+    ]
+  },
+  "Timelock": {
+    "contract": "Timelock",
+    "address": "",
+    "constructorName": ["cTokens"],
+    "args": []
+  }
+}

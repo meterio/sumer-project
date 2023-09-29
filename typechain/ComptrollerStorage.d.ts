@@ -20,17 +20,38 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ComptrollerStorageInterface extends ethers.utils.Interface {
   functions: {
+    "_borrowGuardianPaused()": FunctionFragment;
+    "_mintGuardianPaused()": FunctionFragment;
     "accountAssets(address,uint256)": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
+    "borrowCapGuardian()": FunctionFragment;
+    "borrowCaps(address)": FunctionFragment;
+    "borrowGuardianPaused(address)": FunctionFragment;
     "closeFactorMantissa()": FunctionFragment;
+    "eqAssetGroup(uint8)": FunctionFragment;
+    "equalAssetsGroupNum()": FunctionFragment;
+    "governanceToken()": FunctionFragment;
     "heteroLiquidationIncentiveMantissa()": FunctionFragment;
     "homoLiquidationIncentiveMantissa()": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "markets(address)": FunctionFragment;
     "maxSupply(address)": FunctionFragment;
+    "mintGuardianPaused(address)": FunctionFragment;
+    "pauseGuardian()": FunctionFragment;
+    "seizeGuardianPaused()": FunctionFragment;
+    "suTokenRateMantissa()": FunctionFragment;
     "sutokenLiquidationIncentiveMantissa()": FunctionFragment;
+    "transferGuardianPaused()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "_borrowGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_mintGuardianPaused",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "accountAssets",
     values: [string, BigNumberish]
@@ -40,7 +61,28 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "borrowCapGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "borrowCaps", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "borrowGuardianPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "closeFactorMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "eqAssetGroup",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "equalAssetsGroupNum",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "governanceToken",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -58,17 +100,66 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "markets", values: [string]): string;
   encodeFunctionData(functionFragment: "maxSupply", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "mintGuardianPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pauseGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "seizeGuardianPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "suTokenRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "sutokenLiquidationIncentiveMantissa",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "transferGuardianPaused",
+    values?: undefined
+  ): string;
 
+  decodeFunctionResult(
+    functionFragment: "_borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_mintGuardianPaused",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "accountAssets",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "allMarkets", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "borrowCapGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "closeFactorMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "eqAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "equalAssetsGroupNum",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "governanceToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -86,7 +177,27 @@ interface ComptrollerStorageInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "markets", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "maxSupply", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "mintGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pauseGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "seizeGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "suTokenRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "sutokenLiquidationIncentiveMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferGuardianPaused",
     data: BytesLike
   ): Result;
 
@@ -189,6 +300,10 @@ export class ComptrollerStorage extends BaseContract {
   interface: ComptrollerStorageInterface;
 
   functions: {
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -200,7 +315,43 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     closeFactorMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
+    governanceToken(overrides?: CallOverrides): Promise<[string]>;
 
     heteroLiquidationIncentiveMantissa(
       overrides?: CallOverrides
@@ -225,10 +376,27 @@ export class ComptrollerStorage extends BaseContract {
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<[string]>;
+
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    transferGuardianPaused(overrides?: CallOverrides): Promise<[boolean]>;
   };
+
+  _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
 
   accountAssets(
     arg0: string,
@@ -238,7 +406,35 @@ export class ComptrollerStorage extends BaseContract {
 
   allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+  borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+  borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  borrowGuardianPaused(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
+  eqAssetGroup(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
+    }
+  >;
+
+  equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
+
+  governanceToken(overrides?: CallOverrides): Promise<string>;
 
   heteroLiquidationIncentiveMantissa(
     overrides?: CallOverrides
@@ -263,11 +459,25 @@ export class ComptrollerStorage extends BaseContract {
 
   maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  mintGuardianPaused(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
+  pauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+  seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+  suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
   sutokenLiquidationIncentiveMantissa(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
   callStatic: {
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -276,7 +486,43 @@ export class ComptrollerStorage extends BaseContract {
 
     allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<string>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
+
+    governanceToken(overrides?: CallOverrides): Promise<string>;
 
     heteroLiquidationIncentiveMantissa(
       overrides?: CallOverrides
@@ -301,9 +547,22 @@ export class ComptrollerStorage extends BaseContract {
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<string>;
+
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
+
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    transferGuardianPaused(overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {
@@ -421,6 +680,10 @@ export class ComptrollerStorage extends BaseContract {
   };
 
   estimateGas: {
+    _borrowGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _mintGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -432,7 +695,25 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowCaps(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     closeFactorMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    equalAssetsGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+
+    governanceToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     heteroLiquidationIncentiveMantissa(
       overrides?: CallOverrides
@@ -448,12 +729,33 @@ export class ComptrollerStorage extends BaseContract {
 
     maxSupply(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    seizeGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    suTokenRateMantissa(overrides?: CallOverrides): Promise<BigNumber>;
+
     sutokenLiquidationIncentiveMantissa(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    transferGuardianPaused(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    _borrowGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _mintGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     accountAssets(
       arg0: string,
       arg1: BigNumberish,
@@ -465,9 +767,32 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    borrowCapGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    borrowCaps(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    borrowGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     closeFactorMantissa(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    eqAssetGroup(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    equalAssetsGroupNum(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    governanceToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     heteroLiquidationIncentiveMantissa(
       overrides?: CallOverrides
@@ -489,7 +814,26 @@ export class ComptrollerStorage extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    mintGuardianPaused(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    pauseGuardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    seizeGuardianPaused(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    suTokenRateMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     sutokenLiquidationIncentiveMantissa(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    transferGuardianPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

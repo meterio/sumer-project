@@ -21,7 +21,11 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IComptrollerInterface extends ethers.utils.Interface {
   functions: {
+    "_getBorrowPaused(address)": FunctionFragment;
     "_getMarketBorrowCap(address)": FunctionFragment;
+    "_getMintPaused(address)": FunctionFragment;
+    "_getSeizePaused()": FunctionFragment;
+    "_getTransferPaused()": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
     "claimComp(address)": FunctionFragment;
     "closeFactorMantissa()": FunctionFragment;
@@ -30,7 +34,10 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     "exitMarket(address)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
     "getAllMarkets()": FunctionFragment;
+    "getAssetGroup(uint8)": FunctionFragment;
+    "getAssetGroupNum()": FunctionFragment;
     "getAssetsIn(address)": FunctionFragment;
+    "getCompAddress()": FunctionFragment;
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
     "isComptroller()": FunctionFragment;
     "isListed(address)": FunctionFragment;
@@ -45,12 +52,27 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     "seizeAllowed(address,address,address,address,uint256)": FunctionFragment;
     "timelock()": FunctionFragment;
     "transferAllowed(address,address,address,uint256)": FunctionFragment;
-    "underWriterAdmin()": FunctionFragment;
   };
 
   encodeFunctionData(
+    functionFragment: "_getBorrowPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "_getMarketBorrowCap",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getMintPaused",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getSeizePaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getTransferPaused",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "borrowAllowed",
@@ -75,7 +97,19 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "getAllMarkets",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "getAssetGroup",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAssetGroupNum",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "getAssetsIn", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "getCompAddress",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
     values: [string, string, BigNumberish, BigNumberish]
@@ -120,13 +154,25 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "transferAllowed",
     values: [string, string, string, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "underWriterAdmin",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
+    functionFragment: "_getBorrowPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "_getMarketBorrowCap",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getMintPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getSeizePaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getTransferPaused",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -156,7 +202,19 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAssetGroupNum",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAssetsIn",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCompAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -203,13 +261,48 @@ interface IComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "transferAllowed",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "underWriterAdmin",
-    data: BytesLike
-  ): Result;
 
-  events: {};
+  events: {
+    "ActionPaused(address,string,bool)": EventFragment;
+    "NewBorrowCap(address,uint256)": EventFragment;
+    "NewBorrowCapGuardian(address,address)": EventFragment;
+    "NewPauseGuardian(address,address)": EventFragment;
+    "RemoveAssetGroup(uint8,uint8)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "ActionPaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewBorrowCap"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewBorrowCapGuardian"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewPauseGuardian"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RemoveAssetGroup"): EventFragment;
 }
+
+export type ActionPausedEvent = TypedEvent<
+  [string, string, boolean] & {
+    cToken: string;
+    action: string;
+    pauseState: boolean;
+  }
+>;
+
+export type NewBorrowCapEvent = TypedEvent<
+  [string, BigNumber] & { cToken: string; newBorrowCap: BigNumber }
+>;
+
+export type NewBorrowCapGuardianEvent = TypedEvent<
+  [string, string] & {
+    oldBorrowCapGuardian: string;
+    newBorrowCapGuardian: string;
+  }
+>;
+
+export type NewPauseGuardianEvent = TypedEvent<
+  [string, string] & { oldPauseGuardian: string; newPauseGuardian: string }
+>;
+
+export type RemoveAssetGroupEvent = TypedEvent<
+  [number, number] & { groupId: number; equalAssetsGroupNum: number }
+>;
 
 export class IComptroller extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -255,10 +348,24 @@ export class IComptroller extends BaseContract {
   interface: IComptrollerInterface;
 
   functions: {
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     _getMarketBorrowCap(
       cToken: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    _getMintPaused(
+      cToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    _getTransferPaused(overrides?: CallOverrides): Promise<[boolean]>;
 
     borrowAllowed(
       cToken: string,
@@ -293,10 +400,39 @@ export class IComptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<[string[]]>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [
+          number,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          groupId: number;
+          groupName: string;
+          intraCRateMantissa: BigNumber;
+          intraMintRateMantissa: BigNumber;
+          intraSuRateMantissa: BigNumber;
+          interCRateMantissa: BigNumber;
+          interSuRateMantissa: BigNumber;
+        }
+      ]
+    >;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<[number]>;
+
     getAssetsIn(
       account: string,
       overrides?: CallOverrides
     ): Promise<[string[]]>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<[string]>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -371,14 +507,23 @@ export class IComptroller extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  _getBorrowPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
 
   _getMarketBorrowCap(
     cToken: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  _getMintPaused(
+    cToken: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
+
+  _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
   borrowAllowed(
     cToken: string,
@@ -413,7 +558,26 @@ export class IComptroller extends BaseContract {
 
   getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
+  getAssetGroup(
+    groupId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
+    }
+  >;
+
+  getAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
   getAssetsIn(account: string, overrides?: CallOverrides): Promise<string[]>;
+
+  getCompAddress(overrides?: CallOverrides): Promise<string>;
 
   getHypotheticalAccountLiquidity(
     account: string,
@@ -489,13 +653,22 @@ export class IComptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  underWriterAdmin(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     _getMarketBorrowCap(
       cToken: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    _getMintPaused(cToken: string, overrides?: CallOverrides): Promise<boolean>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<boolean>;
+
+    _getTransferPaused(overrides?: CallOverrides): Promise<boolean>;
 
     borrowAllowed(
       cToken: string,
@@ -524,7 +697,34 @@ export class IComptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<number>;
+
     getAssetsIn(account: string, overrides?: CallOverrides): Promise<string[]>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<string>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -599,17 +799,111 @@ export class IComptroller extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {};
+  filters: {
+    "ActionPaused(address,string,bool)"(
+      cToken?: null,
+      action?: null,
+      pauseState?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { cToken: string; action: string; pauseState: boolean }
+    >;
+
+    ActionPaused(
+      cToken?: null,
+      action?: null,
+      pauseState?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { cToken: string; action: string; pauseState: boolean }
+    >;
+
+    "NewBorrowCap(address,uint256)"(
+      cToken?: string | null,
+      newBorrowCap?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cToken: string; newBorrowCap: BigNumber }
+    >;
+
+    NewBorrowCap(
+      cToken?: string | null,
+      newBorrowCap?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cToken: string; newBorrowCap: BigNumber }
+    >;
+
+    "NewBorrowCapGuardian(address,address)"(
+      oldBorrowCapGuardian?: null,
+      newBorrowCapGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldBorrowCapGuardian: string; newBorrowCapGuardian: string }
+    >;
+
+    NewBorrowCapGuardian(
+      oldBorrowCapGuardian?: null,
+      newBorrowCapGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldBorrowCapGuardian: string; newBorrowCapGuardian: string }
+    >;
+
+    "NewPauseGuardian(address,address)"(
+      oldPauseGuardian?: null,
+      newPauseGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldPauseGuardian: string; newPauseGuardian: string }
+    >;
+
+    NewPauseGuardian(
+      oldPauseGuardian?: null,
+      newPauseGuardian?: null
+    ): TypedEventFilter<
+      [string, string],
+      { oldPauseGuardian: string; newPauseGuardian: string }
+    >;
+
+    "RemoveAssetGroup(uint8,uint8)"(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
+    ): TypedEventFilter<
+      [number, number],
+      { groupId: number; equalAssetsGroupNum: number }
+    >;
+
+    RemoveAssetGroup(
+      groupId?: BigNumberish | null,
+      equalAssetsGroupNum?: null
+    ): TypedEventFilter<
+      [number, number],
+      { groupId: number; equalAssetsGroupNum: number }
+    >;
+  };
 
   estimateGas: {
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     _getMarketBorrowCap(
       cToken: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    _getMintPaused(
+      cToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _getTransferPaused(overrides?: CallOverrides): Promise<BigNumber>;
 
     borrowAllowed(
       cToken: string,
@@ -644,7 +938,16 @@ export class IComptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAssetsIn(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -714,13 +1017,27 @@ export class IComptroller extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    _getBorrowPaused(
+      cToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     _getMarketBorrowCap(
       cToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getMintPaused(
+      cToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _getSeizePaused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _getTransferPaused(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -762,10 +1079,19 @@ export class IComptroller extends BaseContract {
 
     getAllMarkets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getAssetGroup(
+      groupId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAssetGroupNum(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getAssetsIn(
       account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getCompAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getHypotheticalAccountLiquidity(
       account: string,
@@ -846,7 +1172,5 @@ export class IComptroller extends BaseContract {
       transferTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    underWriterAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

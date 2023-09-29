@@ -8,6 +8,126 @@ import type { IComptroller, IComptrollerInterface } from "../IComptroller";
 
 const _abi = [
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "action",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "pauseState",
+        type: "bool",
+      },
+    ],
+    name: "ActionPaused",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBorrowCap",
+        type: "uint256",
+      },
+    ],
+    name: "NewBorrowCap",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "oldBorrowCapGuardian",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "newBorrowCapGuardian",
+        type: "address",
+      },
+    ],
+    name: "NewBorrowCapGuardian",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "oldPauseGuardian",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "newPauseGuardian",
+        type: "address",
+      },
+    ],
+    name: "NewPauseGuardian",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint8",
+        name: "groupId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "equalAssetsGroupNum",
+        type: "uint8",
+      },
+    ],
+    name: "RemoveAssetGroup",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+    ],
+    name: "_getBorrowPaused",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -21,6 +141,51 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+    ],
+    name: "_getMintPaused",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "_getSeizePaused",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "_getTransferPaused",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -183,6 +348,75 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint8",
+        name: "groupId",
+        type: "uint8",
+      },
+    ],
+    name: "getAssetGroup",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint8",
+            name: "groupId",
+            type: "uint8",
+          },
+          {
+            internalType: "string",
+            name: "groupName",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "intraCRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "intraMintRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "intraSuRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interCRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interSuRateMantissa",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct IComptroller.AssetGroup",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAssetGroupNum",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "account",
         type: "address",
@@ -194,6 +428,19 @@ const _abi = [
         internalType: "address[]",
         name: "",
         type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getCompAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -563,19 +810,6 @@ const _abi = [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "underWriterAdmin",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ];
