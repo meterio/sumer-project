@@ -5,6 +5,7 @@ import * as pathLib from 'path';
 import { input, select, password } from '@inquirer/prompts';
 import colors from 'colors';
 import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle } from '../typechain';
+import { Fragment, FunctionFragment } from 'ethers/lib/utils';
 colors.enable();
 
 export const yellow = colors.yellow;
@@ -20,6 +21,12 @@ export const network_config = JSON.parse(readFileSync(network_json).toString());
 
 export const interestRateModel_json = './scripts/InterestRateModel.json';
 export const InterestRateModel_template = JSON.parse(readFileSync(interestRateModel_json).toString());
+
+export const operation_json = './scripts/Operations.config.json';
+export const Operations_config = JSON.parse(readFileSync(operation_json).toString());
+
+export const contracts_json = './scripts/Contracts.json';
+export const contracts_config = JSON.parse(readFileSync(contracts_json).toString());
 
 export function expandTo18Decimals(n: number): BigNumber {
   return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
@@ -170,7 +177,6 @@ export async function sendTransaction(
     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
     validate: (value = '') => value.length > 0 || 'Pass a valid value'
   });
-
   override.gasLimit = await contract.estimateGas[func](...args);
   console.log('gasLimit:', green(override.gasLimit.toString()));
   let receipt = await contract[func](...args, override);
@@ -495,4 +501,52 @@ export async function cTokenSetting(
       network.override
     );
   }
+}
+
+export async function selectContract() {
+  let choices = [];
+  for (let i = 0; i < contracts_config.length; i++) {
+    choices.push({
+      name: contracts_config[i].contract,
+      value: contracts_config[i].contract
+    });
+  }
+  const result = await select({
+    message: '选择操作合约:',
+    choices: choices
+  });
+
+  return result;
+}
+
+export async function selectFunc(fragment: ReadonlyArray<Fragment>) {
+  let choices = [];
+  for (let i = 0; i < fragment.length; i++) {
+    if (fragment[i].type == 'function') {
+      choices.push({
+        name: fragment[i].name,
+        value: fragment[i].name
+      });
+    }
+  }
+  const result = await select({
+    message: '选择操作函数:',
+    choices: choices
+  });
+
+  return result;
+}
+
+export async function inputArgs(func: FunctionFragment) {
+  let values = [];
+  let inputs = func.inputs;
+  for (let i = 0; i < inputs.length; i++) {
+    let value = await input({
+      message: inputs[i].name,
+      validate: (value = '') => value.length > 0 || 'Pass a valid value'
+    });
+    values.push(value);
+  }
+
+  return values;
 }

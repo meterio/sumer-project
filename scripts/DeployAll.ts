@@ -192,7 +192,7 @@ const main = async () => {
     network,
     comptroller,
     'setTimelock(address)',
-    [config.Comptroller.address],
+    [config.Timelock.address],
     override,
     DEFAULT_ADMIN_ROLE
   );

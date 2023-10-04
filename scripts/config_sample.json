@@ -136,7 +136,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "Sumer USD Coin", "sdrUSDC", "6", "", "1000000000000000000"]
+        "args": ["0x6F2bcb599AF607D746b3b9B63b28A21a175dB357", "", "", "1000000000000000000", "Sumer USD Coin", "sdrUSDC", "6", "", "1000000000000000000"]
       },
       {
         "contract": "CErc20",
@@ -166,7 +166,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "Sumer Tether USD", "sdrUSDT", "6", "", "1000000000000000000"]
+        "args": ["0xceF32fDE0a091900EBebb750402EEF468Bf5d441", "", "", "1000000000000000000", "Sumer Tether USD", "sdrUSDT", "6", "", "1000000000000000000"]
       },
       {
         "contract": "CErc20",
@@ -196,7 +196,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "Sumer MTRG", "sdrMTRG", "18", "", "1000000000000000000"]
+        "args": ["0x965BA703bd9fb851fA7105EAE4b3Fe3e8b3D048D", "", "", "1000000000000000000", "Sumer MTRG", "sdrMTRG", "18", "", "1000000000000000000"]
       },
       {
         "contract": "CErc20",
@@ -226,7 +226,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "Sumer BTCK Token", "sdrBTC", "8", "", "1000000000000000000"]
+        "args": ["0x21f58c4AfF0a9d5b696CF1Fc268871302d62D638", "", "", "1000000000000000000", "Sumer BTCK Token", "sdrBTC", "8", "", "1000000000000000000"]
       }
     ]
   },
@@ -257,7 +257,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "sdrsuUSD", "sdrsuUSD", "18", "", "1000000000000000000"]
+        "args": ["0x2D4D01AaC4d85907006fB03542E8c64ffA1C4846", "", "", "1000000000000000000", "sdrsuUSD", "sdrsuUSD", "18", "", "1000000000000000000"]
       },
       {
         "contract": "suErc20",
@@ -287,7 +287,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "sdrsuETH", "sdrsuETH", "18", "", "1000000000000000000"]
+        "args": ["0x4ad1081833976CA15e8bd581665d0F14989916A9", "", "", "1000000000000000000", "sdrsuETH", "sdrsuETH", "18", "", "1000000000000000000"]
       },
       {
         "contract": "suErc20",
@@ -317,7 +317,7 @@
           "admin",
           "discountRateMantissa"
         ],
-        "args": ["", "", "", "1000000000000000000", "sdrsuBTC", "sdrsuBTC", "18", "", "1000000000000000000"]
+        "args": ["0x00020EA50191BA39da6Eb56892a10A9b12C021B1", "", "", "1000000000000000000", "sdrsuBTC", "sdrsuBTC", "18", "", "1000000000000000000"]
       }
     ]
   },

@@ -17,8 +17,7 @@ contract wstMTRGOracle {
     feedId = _feedId;
   }
 
-  function getPriceUnsafe(bytes32 id) external view returns (PythStructs.Price memory price) {
-    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getPriceUnsafe(feedId);
+  function _price(PythStructs.Price memory mtrgPrice) private view returns (PythStructs.Price memory price) {
     uint256 stMTRGPerToken = IWstMTRG(wstMTRG).stMTRGPerToken();
     return
       PythStructs.Price({
@@ -27,5 +26,39 @@ contract wstMTRGOracle {
         expo: mtrgPrice.expo,
         publishTime: mtrgPrice.publishTime
       });
+  }
+
+  function getPriceUnsafe(bytes32 id) external view returns (PythStructs.Price memory price) {
+    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getPriceUnsafe(feedId);
+    return _price(mtrgPrice);
+  }
+
+  function getValidTimePeriod() external view returns (uint validTimePeriod) {
+    return IPyth(mtrgFeed).getValidTimePeriod();
+  }
+
+  function getPrice(bytes32 id) external view returns (PythStructs.Price memory price) {
+    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getPrice(feedId);
+    return _price(mtrgPrice);
+  }
+
+  function getEmaPrice(bytes32 id) external view returns (PythStructs.Price memory price) {
+    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getEmaPrice(feedId);
+    return _price(mtrgPrice);
+  }
+
+  function getPriceNoOlderThan(bytes32 id, uint age) external view returns (PythStructs.Price memory price) {
+    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getPriceNoOlderThan(feedId, age);
+    return _price(mtrgPrice);
+  }
+
+  function getEmaPriceUnsafe(bytes32 id) external view returns (PythStructs.Price memory price) {
+    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getEmaPriceUnsafe(feedId);
+    return _price(mtrgPrice);
+  }
+
+  function getEmaPriceNoOlderThan(bytes32 id, uint age) external view returns (PythStructs.Price memory price) {
+    PythStructs.Price memory mtrgPrice = IPyth(mtrgFeed).getEmaPriceNoOlderThan(feedId, age);
+    return _price(mtrgPrice);
   }
 }

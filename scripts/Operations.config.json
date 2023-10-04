@@ -1,0 +1,32 @@
+[
+  {
+    "operation": "Approve CTokens",
+    "contracts": ["underlyings"],
+    "func": "approve(address,uint256)",
+    "args": ["CTokens", "MaxUint256"]
+  },
+  {
+    "operation": "Borrow from CToken",
+    "contracts": ["CTokens"],
+    "func": "borrow(uint256)",
+    "args": ["uint256"]
+  },
+  {
+    "operation": "repayBorrow to CToken",
+    "contracts": ["CTokens"],
+    "func": "repayBorrow(uint256)",
+    "args": ["uint256"]
+  },
+  {
+    "operation": "Deposit underlying to CToken",
+    "contracts": ["CTokens"],
+    "func": "mint(uint256)",
+    "args": ["uint256"]
+  },
+  {
+    "operation": "Redeem underlying to CToken",
+    "contracts": ["CTokens"],
+    "func": "redeemUnderlying(uint256)",
+    "args": ["uint256"]
+  }
+]
