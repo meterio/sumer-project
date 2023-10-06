@@ -21,22 +21,70 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface WstMTRGOracleInterface extends ethers.utils.Interface {
   functions: {
     "feedId()": FunctionFragment;
+    "getEmaPrice(bytes32)": FunctionFragment;
+    "getEmaPriceNoOlderThan(bytes32,uint256)": FunctionFragment;
+    "getEmaPriceUnsafe(bytes32)": FunctionFragment;
+    "getPrice(bytes32)": FunctionFragment;
+    "getPriceNoOlderThan(bytes32,uint256)": FunctionFragment;
     "getPriceUnsafe(bytes32)": FunctionFragment;
+    "getValidTimePeriod()": FunctionFragment;
     "mtrgFeed()": FunctionFragment;
     "wstMTRG()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "feedId", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "getEmaPrice",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getEmaPriceNoOlderThan",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getEmaPriceUnsafe",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "getPrice", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "getPriceNoOlderThan",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getPriceUnsafe",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getValidTimePeriod",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "mtrgFeed", values?: undefined): string;
   encodeFunctionData(functionFragment: "wstMTRG", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "feedId", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getEmaPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getEmaPriceNoOlderThan",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getEmaPriceUnsafe",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getPrice", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getPriceNoOlderThan",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getPriceUnsafe",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getValidTimePeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mtrgFeed", data: BytesLike): Result;
@@ -91,6 +139,113 @@ export class WstMTRGOracle extends BaseContract {
   functions: {
     feedId(overrides?: CallOverrides): Promise<[string]>;
 
+    getEmaPrice(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        }
+      ] & {
+        price: [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        };
+      }
+    >;
+
+    getEmaPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        }
+      ] & {
+        price: [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        };
+      }
+    >;
+
+    getEmaPriceUnsafe(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        }
+      ] & {
+        price: [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        };
+      }
+    >;
+
+    getPrice(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        }
+      ] & {
+        price: [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        };
+      }
+    >;
+
+    getPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        }
+      ] & {
+        price: [BigNumber, BigNumber, number, BigNumber] & {
+          price: BigNumber;
+          conf: BigNumber;
+          expo: number;
+          publishTime: BigNumber;
+        };
+      }
+    >;
+
     getPriceUnsafe(
       id: BytesLike,
       overrides?: CallOverrides
@@ -112,12 +267,78 @@ export class WstMTRGOracle extends BaseContract {
       }
     >;
 
+    getValidTimePeriod(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { validTimePeriod: BigNumber }>;
+
     mtrgFeed(overrides?: CallOverrides): Promise<[string]>;
 
     wstMTRG(overrides?: CallOverrides): Promise<[string]>;
   };
 
   feedId(overrides?: CallOverrides): Promise<string>;
+
+  getEmaPrice(
+    id: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, number, BigNumber] & {
+      price: BigNumber;
+      conf: BigNumber;
+      expo: number;
+      publishTime: BigNumber;
+    }
+  >;
+
+  getEmaPriceNoOlderThan(
+    id: BytesLike,
+    age: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, number, BigNumber] & {
+      price: BigNumber;
+      conf: BigNumber;
+      expo: number;
+      publishTime: BigNumber;
+    }
+  >;
+
+  getEmaPriceUnsafe(
+    id: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, number, BigNumber] & {
+      price: BigNumber;
+      conf: BigNumber;
+      expo: number;
+      publishTime: BigNumber;
+    }
+  >;
+
+  getPrice(
+    id: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, number, BigNumber] & {
+      price: BigNumber;
+      conf: BigNumber;
+      expo: number;
+      publishTime: BigNumber;
+    }
+  >;
+
+  getPriceNoOlderThan(
+    id: BytesLike,
+    age: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, number, BigNumber] & {
+      price: BigNumber;
+      conf: BigNumber;
+      expo: number;
+      publishTime: BigNumber;
+    }
+  >;
 
   getPriceUnsafe(
     id: BytesLike,
@@ -131,12 +352,76 @@ export class WstMTRGOracle extends BaseContract {
     }
   >;
 
+  getValidTimePeriod(overrides?: CallOverrides): Promise<BigNumber>;
+
   mtrgFeed(overrides?: CallOverrides): Promise<string>;
 
   wstMTRG(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     feedId(overrides?: CallOverrides): Promise<string>;
+
+    getEmaPrice(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, BigNumber] & {
+        price: BigNumber;
+        conf: BigNumber;
+        expo: number;
+        publishTime: BigNumber;
+      }
+    >;
+
+    getEmaPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, BigNumber] & {
+        price: BigNumber;
+        conf: BigNumber;
+        expo: number;
+        publishTime: BigNumber;
+      }
+    >;
+
+    getEmaPriceUnsafe(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, BigNumber] & {
+        price: BigNumber;
+        conf: BigNumber;
+        expo: number;
+        publishTime: BigNumber;
+      }
+    >;
+
+    getPrice(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, BigNumber] & {
+        price: BigNumber;
+        conf: BigNumber;
+        expo: number;
+        publishTime: BigNumber;
+      }
+    >;
+
+    getPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, BigNumber] & {
+        price: BigNumber;
+        conf: BigNumber;
+        expo: number;
+        publishTime: BigNumber;
+      }
+    >;
 
     getPriceUnsafe(
       id: BytesLike,
@@ -150,6 +435,8 @@ export class WstMTRGOracle extends BaseContract {
       }
     >;
 
+    getValidTimePeriod(overrides?: CallOverrides): Promise<BigNumber>;
+
     mtrgFeed(overrides?: CallOverrides): Promise<string>;
 
     wstMTRG(overrides?: CallOverrides): Promise<string>;
@@ -160,10 +447,33 @@ export class WstMTRGOracle extends BaseContract {
   estimateGas: {
     feedId(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getEmaPrice(id: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getEmaPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getEmaPriceUnsafe(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getPrice(id: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getPriceUnsafe(
       id: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getValidTimePeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     mtrgFeed(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -173,8 +483,39 @@ export class WstMTRGOracle extends BaseContract {
   populateTransaction: {
     feedId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getEmaPrice(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getEmaPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getEmaPriceUnsafe(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPrice(
+      id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPriceNoOlderThan(
+      id: BytesLike,
+      age: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getPriceUnsafe(
       id: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getValidTimePeriod(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

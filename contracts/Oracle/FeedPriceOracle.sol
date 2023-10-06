@@ -4,9 +4,11 @@ import './PriceOracle.sol';
 import './Interfaces/IStdReference.sol';
 import './Interfaces/IWitnetFeed.sol';
 import './Interfaces/IChainlinkFeed.sol';
+import './Interfaces/ILpOracle.sol';
 import '@pythnetwork/pyth-sdk-solidity/IPyth.sol';
+import '@openzeppelin/contracts/access/Ownable2Step.sol';
 
-contract FeedPriceOracle is PriceOracle {
+contract FeedPriceOracle is PriceOracle, Ownable2Step {
   struct FeedData {
     bytes32 feedId; // Pyth price feed ID
     uint8 source; // 1 - chainlink feed, 2 - witnet router, 3 - Band
@@ -15,26 +17,11 @@ contract FeedPriceOracle is PriceOracle {
     string name;
   }
 
-  address public owner;
   mapping(address => FeedData) public feeds; // cToken -> feed data
   mapping(address => uint256) public fixedPrices; // cToken -> price
   uint8 constant DECIMALS = 18;
 
   event SetFeed(address indexed cToken_, bytes32 feedId, uint8 source, address addr, uint8 feedDecimals, string name);
-
-  modifier onlyOwner() {
-    require(msg.sender == owner, 'ONLY OWNER');
-    _;
-  }
-
-  constructor() {
-    owner = msg.sender;
-  }
-
-  function changeOwner(address owner_) public onlyOwner {
-    require(owner_ != address(0), 'Address is Zero!');
-    owner = owner_;
-  }
 
   function setChainlinkFeed(address cToken_, address feed_) public onlyOwner {
     _setFeed(cToken_, uint8(1), bytes32(0), feed_, 8, '');
@@ -52,8 +39,12 @@ contract FeedPriceOracle is PriceOracle {
     fixedPrices[cToken_] = price;
   }
 
-  function setPythFeed(address cToken_, bytes32 feedId, address addr, string memory name) public onlyOwner {
-    _setFeed(cToken_, uint8(4), feedId, addr, 18, name);
+  function setPythFeed(address cToken_, bytes32 feedId, address addr) public onlyOwner {
+    _setFeed(cToken_, uint8(4), feedId, addr, 18, '');
+  }
+
+  function setLpOracle(address cToken_, address lpToken, address addr) public onlyOwner {
+    _setFeed(cToken_, uint8(5), bytes32(uint256(uint160(lpToken))), addr, 18, '');
   }
 
   function _setFeed(
@@ -125,6 +116,9 @@ contract FeedPriceOracle is PriceOracle {
         uint256 decimals = DECIMALS - uint32(price.expo * -1);
         require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
         return uint64(price.price) * (10 ** decimals);
+      }
+      if (feed.source == uint8(5)) {
+        return ILpOracle(feed.addr).getPrice(address(uint160(uint256(feed.feedId))));
       }
     }
     return fixedPrices[cToken_];

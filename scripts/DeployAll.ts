@@ -10,10 +10,13 @@ import {
   DEFAULT_ADMIN_ROLE,
   cTokenSetting,
   interestRateModel_select,
-  InterestRateModel_template
+  InterestRateModel_template,
+  getCTokens,
+  green
 } from './helper';
-import { AccountLiquidity, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
-import { confirm } from '@inquirer/prompts';
+import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
+import { confirm, input } from '@inquirer/prompts';
+import { BigNumber } from 'ethers';
 
 const main = async () => {
   const network = await setNetwork(network_config);
@@ -163,8 +166,8 @@ const main = async () => {
       config.CErc20.implementation
     );
     writeConfig(netConfig.name, config);
-    let cTokenConfig = config.CErc20.proxys[i];
-    await cTokenSetting(ethers, comptroller, oracle, network, cTokenConfig);
+    config.CErc20.proxys[i] = await cTokenSetting(ethers, comptroller, oracle, network, config.CErc20.proxys[i]);
+    writeConfig(netConfig.name, config);
   }
 
   config.suErc20 = await deployOrInput(ethers, network, override, config.suErc20, true);
@@ -180,8 +183,15 @@ const main = async () => {
       config.suErc20.implementation
     );
     writeConfig(netConfig.name, config);
-    let cTokenConfig = config.suErc20.proxys[i];
-    await cTokenSetting(ethers, comptroller, oracle, network, cTokenConfig, true);
+    config.suErc20.proxys[i] = await cTokenSetting(
+      ethers,
+      comptroller,
+      oracle,
+      network,
+      config.suErc20.proxys[i],
+      true
+    );
+    writeConfig(netConfig.name, config);
   }
 
   config.Timelock = await deployOrInput(ethers, network, override, config.Timelock);
@@ -196,6 +206,49 @@ const main = async () => {
     override,
     DEFAULT_ADMIN_ROLE
   );
+  console.log('设置CToken的BorrowCap');
+
+  let cTokens: string[] = [];
+  let borrowCaps: BigNumber[] = [];
+  for (let i = 0; i < config.CErc20.proxys.length; i++) {
+    let proxy = config.CErc20.proxys[i];
+    cTokens.push(proxy.address);
+    borrowCaps.push(proxy.settings.borrowCap);
+    for (let j = 0; j < config.InterestRateModel.length; j++) {
+      if (proxy.args[2] == config.InterestRateModel[j].address) {
+        config.InterestRateModel[j].tokens.push(proxy.address);
+      }
+    }
+  }
+  for (let i = 0; i < config.suErc20.proxys.length; i++) {
+    let proxy = config.suErc20.proxys[i];
+    cTokens.push(proxy.address);
+    borrowCaps.push(proxy.settings.borrowCap);
+    for (let j = 0; j < config.InterestRateModel.length; j++) {
+      if (proxy.args[2] == config.InterestRateModel[j].address) {
+        config.InterestRateModel[j].tokens.push(proxy.address);
+      }
+    }
+  }
+  if (config.CEther) {
+    cTokens.push(config.CEther.address);
+    borrowCaps.push(config.CEther.settings.borrowCap);
+    for (let j = 0; j < config.InterestRateModel.length; j++) {
+      if (config.CEther.args[1] == config.InterestRateModel[j].address) {
+        config.InterestRateModel[j].tokens.push(config.CEther.address);
+      }
+    }
+  }
+
+  await sendTransaction(
+    network,
+    comptroller,
+    '_setMarketBorrowCaps(address[],uint256[])',
+    [cTokens, borrowCaps],
+    override,
+    DEFAULT_ADMIN_ROLE
+  );
+  config.BorrowCaps;
 };
 
 main();

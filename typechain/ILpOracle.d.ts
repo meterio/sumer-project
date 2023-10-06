@@ -11,35 +11,26 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
+  CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface IERC1967Interface extends ethers.utils.Interface {
-  functions: {};
-
-  events: {
-    "AdminChanged(address,address)": EventFragment;
-    "BeaconUpgraded(address)": EventFragment;
-    "Upgraded(address)": EventFragment;
+interface ILpOracleInterface extends ethers.utils.Interface {
+  functions: {
+    "getPrice(address)": FunctionFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
+  encodeFunctionData(functionFragment: "getPrice", values: [string]): string;
+
+  decodeFunctionResult(functionFragment: "getPrice", data: BytesLike): Result;
+
+  events: {};
 }
 
-export type AdminChangedEvent = TypedEvent<
-  [string, string] & { previousAdmin: string; newAdmin: string }
->;
-
-export type BeaconUpgradedEvent = TypedEvent<[string] & { beacon: string }>;
-
-export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
-
-export class IERC1967 extends BaseContract {
+export class ILpOracle extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -80,47 +71,28 @@ export class IERC1967 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: IERC1967Interface;
+  interface: ILpOracleInterface;
 
-  functions: {};
-
-  callStatic: {};
-
-  filters: {
-    "AdminChanged(address,address)"(
-      previousAdmin?: null,
-      newAdmin?: null
-    ): TypedEventFilter<
-      [string, string],
-      { previousAdmin: string; newAdmin: string }
-    >;
-
-    AdminChanged(
-      previousAdmin?: null,
-      newAdmin?: null
-    ): TypedEventFilter<
-      [string, string],
-      { previousAdmin: string; newAdmin: string }
-    >;
-
-    "BeaconUpgraded(address)"(
-      beacon?: string | null
-    ): TypedEventFilter<[string], { beacon: string }>;
-
-    BeaconUpgraded(
-      beacon?: string | null
-    ): TypedEventFilter<[string], { beacon: string }>;
-
-    "Upgraded(address)"(
-      implementation?: string | null
-    ): TypedEventFilter<[string], { implementation: string }>;
-
-    Upgraded(
-      implementation?: string | null
-    ): TypedEventFilter<[string], { implementation: string }>;
+  functions: {
+    getPrice(lpToken: string, overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
-  estimateGas: {};
+  getPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  populateTransaction: {};
+  callStatic: {
+    getPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
+  };
+
+  filters: {};
+
+  estimateGas: {
+    getPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    getPrice(
+      lpToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

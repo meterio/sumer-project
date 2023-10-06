@@ -19,13 +19,14 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface FeedPriceOracleInterface extends ethers.utils.Interface {
+interface LpOracleInterface extends ethers.utils.Interface {
   functions: {
     "acceptOwnership()": FunctionFragment;
     "feeds(address)": FunctionFragment;
     "fixedPrices(address)": FunctionFragment;
     "getFeed(address)": FunctionFragment;
     "getFixedPrice(address)": FunctionFragment;
+    "getPrice(address)": FunctionFragment;
     "getUnderlyingPrice(address)": FunctionFragment;
     "getUnderlyingPrices(address[])": FunctionFragment;
     "isPriceOracle()": FunctionFragment;
@@ -54,6 +55,7 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     functionFragment: "getFixedPrice",
     values: [string]
   ): string;
+  encodeFunctionData(functionFragment: "getPrice", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getUnderlyingPrice",
     values: [string]
@@ -123,6 +125,7 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     functionFragment: "getFixedPrice",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "getPrice", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getUnderlyingPrice",
     data: BytesLike
@@ -208,7 +211,7 @@ export type SetFeedEvent = TypedEvent<
   }
 >;
 
-export class FeedPriceOracle extends BaseContract {
+export class LpOracle extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -249,7 +252,7 @@ export class FeedPriceOracle extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: FeedPriceOracleInterface;
+  interface: LpOracleInterface;
 
   functions: {
     acceptOwnership(
@@ -290,6 +293,8 @@ export class FeedPriceOracle extends BaseContract {
       cToken_: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    getPrice(lpToken: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getUnderlyingPrice(
       cToken_: string,
@@ -402,6 +407,8 @@ export class FeedPriceOracle extends BaseContract {
 
   getFixedPrice(cToken_: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  getPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
+
   getUnderlyingPrice(
     cToken_: string,
     overrides?: CallOverrides
@@ -513,6 +520,8 @@ export class FeedPriceOracle extends BaseContract {
       cToken_: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     getUnderlyingPrice(
       cToken_: string,
@@ -671,6 +680,8 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     getUnderlyingPrice(
       cToken_: string,
       overrides?: CallOverrides
@@ -770,6 +781,11 @@ export class FeedPriceOracle extends BaseContract {
 
     getFixedPrice(
       cToken_: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPrice(
+      lpToken: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

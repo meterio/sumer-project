@@ -321,29 +321,35 @@ async function getDefaultValue(network: Network, defaultValue: string, construct
         value: i
       });
     }
-    const interestRateModelIndex = await select({
+    let interestRateModelIndex = await select({
       message: '选择InterestRateModel',
       choices: choices
     });
     return config.InterestRateModel[interestRateModelIndex].address;
   }
   if (constructorName == 'cTokens') {
-    let cTokens: string[] = [];
-    for (let i = 0; i < config.CErc20.proxys.length; i++) {
-      cTokens.push(config.CErc20.proxys[i].address);
-    }
-    for (let i = 0; i < config.suErc20.proxys.length; i++) {
-      cTokens.push(config.suErc20.proxys[i].address);
-    }
-    if (config.CEther) {
-      cTokens.push(config.CEther.address);
-    }
-    return cTokens;
+    return getCTokens(network);
   }
   if (defaultValue) {
     return defaultValue;
   }
   return '';
+}
+
+export function getCTokens(network: Network) {
+  let cTokens: string[] = [];
+
+  const config = getConfig(network.netConfig.name);
+  for (let i = 0; i < config.CErc20.proxys.length; i++) {
+    cTokens.push(config.CErc20.proxys[i].address);
+  }
+  for (let i = 0; i < config.suErc20.proxys.length; i++) {
+    cTokens.push(config.suErc20.proxys[i].address);
+  }
+  if (config.CEther) {
+    cTokens.push(config.CEther.address);
+  }
+  return cTokens;
 }
 
 export async function deployProxyOrInput(
@@ -501,6 +507,11 @@ export async function cTokenSetting(
       network.override
     );
   }
+  cTokenConfig.settings.borrowCap = await input({
+    message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
+    default: cTokenConfig.settings.borrowCap
+  });
+  return cTokenConfig;
 }
 
 export async function selectContract() {
