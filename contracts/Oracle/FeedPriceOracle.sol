@@ -4,9 +4,10 @@ import './PriceOracle.sol';
 import './Interfaces/IStdReference.sol';
 import './Interfaces/IWitnetFeed.sol';
 import './Interfaces/IChainlinkFeed.sol';
-import './Interfaces/ILpOracle.sol';
+import './Interfaces/IVoltPair.sol';
 import '@pythnetwork/pyth-sdk-solidity/IPyth.sol';
 import '@openzeppelin/contracts/access/Ownable2Step.sol';
+import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 
 contract FeedPriceOracle is PriceOracle, Ownable2Step {
   struct FeedData {
@@ -43,8 +44,8 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
     _setFeed(cToken_, uint8(4), feedId, addr, 18, '');
   }
 
-  function setLpOracle(address cToken_, address lpToken, address addr) public onlyOwner {
-    _setFeed(cToken_, uint8(5), bytes32(uint256(uint160(lpToken))), addr, 18, '');
+  function setLpFeed(address cToken_, address lpToken) public onlyOwner {
+    _setFeed(cToken_, uint8(5), bytes32(0), lpToken, 18, '');
   }
 
   function _setFeed(
@@ -70,6 +71,27 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
     emit SetFeed(cToken_, feedId, source, addr, feedDecimals, name);
   }
 
+  function _getTokenPrice(address lpToken, address token) private view returns (uint256) {
+    uint256 _balance = IERC20(token).balanceOf(lpToken);
+
+    uint8 decimals = IERC20Metadata(token).decimals();
+
+    uint256 _totalSupply = IERC20(lpToken).totalSupply();
+    uint256 amount = (_balance * (10 ** (18 - decimals))) / _totalSupply;
+
+    uint256 price = getUnderlyingPrice(token);
+
+    if (decimals < 18) amount = amount * (10 ** (18 - decimals));
+    return (amount * price) / 1e18;
+  }
+
+  function _getLpPrice(address lpToken) private view returns (uint256) {
+    address token0 = IVoltPair(lpToken).token0();
+    address token1 = IVoltPair(lpToken).token1();
+
+    return _getTokenPrice(lpToken, token0) + _getTokenPrice(lpToken, token1);
+  }
+
   function removeFeed(address cToken_) public onlyOwner {
     delete feeds[cToken_];
   }
@@ -84,6 +106,13 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
 
   function getFixedPrice(address cToken_) public view returns (uint256) {
     return fixedPrices[cToken_];
+  }
+
+  function _getPythPrice(FeedData memory feed) internal view virtual returns (uint256) {
+    PythStructs.Price memory price = IPyth(feed.addr).getPriceUnsafe(feed.feedId);
+    uint256 decimals = DECIMALS - uint32(price.expo * -1);
+    require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+    return uint64(price.price) * (10 ** decimals);
   }
 
   function getUnderlyingPrice(address cToken_) public view override returns (uint256) {
@@ -112,13 +141,10 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
         return refData.rate * (10 ** decimals);
       }
       if (feed.source == uint8(4)) {
-        PythStructs.Price memory price = IPyth(feed.addr).getPriceUnsafe(feed.feedId);
-        uint256 decimals = DECIMALS - uint32(price.expo * -1);
-        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
-        return uint64(price.price) * (10 ** decimals);
+        return _getPythPrice(feed);
       }
       if (feed.source == uint8(5)) {
-        return ILpOracle(feed.addr).getPrice(address(uint160(uint256(feed.feedId))));
+        return _getLpPrice(feed.addr);
       }
     }
     return fixedPrices[cToken_];

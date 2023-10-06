@@ -21,6 +21,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface FeedPriceOracleInterface extends ethers.utils.Interface {
   functions: {
+    "_getLpPrice(address)": FunctionFragment;
     "acceptOwnership()": FunctionFragment;
     "feeds(address)": FunctionFragment;
     "fixedPrices(address)": FunctionFragment;
@@ -37,12 +38,13 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     "setBandFeed(address,address,uint8,string)": FunctionFragment;
     "setChainlinkFeed(address,address)": FunctionFragment;
     "setFixedPrice(address,uint256)": FunctionFragment;
-    "setLpOracle(address,address,address)": FunctionFragment;
+    "setLpFeed(address,address)": FunctionFragment;
     "setPythFeed(address,bytes32,address)": FunctionFragment;
     "setWitnetFeed(address,address,uint8)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "_getLpPrice", values: [string]): string;
   encodeFunctionData(
     functionFragment: "acceptOwnership",
     values?: undefined
@@ -93,8 +95,8 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setLpOracle",
-    values: [string, string, string]
+    functionFragment: "setLpFeed",
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "setPythFeed",
@@ -109,6 +111,10 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "_getLpPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "acceptOwnership",
     data: BytesLike
@@ -161,10 +167,7 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     functionFragment: "setFixedPrice",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setLpOracle",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "setLpFeed", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setPythFeed",
     data: BytesLike
@@ -252,6 +255,11 @@ export class FeedPriceOracle extends BaseContract {
   interface: FeedPriceOracleInterface;
 
   functions: {
+    _getLpPrice(
+      lpToken: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -341,10 +349,9 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLpOracle(
+    setLpFeed(
       cToken_: string,
       lpToken: string,
-      addr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -367,6 +374,8 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  _getLpPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   acceptOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -452,10 +461,9 @@ export class FeedPriceOracle extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLpOracle(
+  setLpFeed(
     cToken_: string,
     lpToken: string,
-    addr: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -479,6 +487,8 @@ export class FeedPriceOracle extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    _getLpPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     acceptOwnership(overrides?: CallOverrides): Promise<void>;
 
     feeds(
@@ -556,10 +566,9 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLpOracle(
+    setLpFeed(
       cToken_: string,
       lpToken: string,
-      addr: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -656,6 +665,8 @@ export class FeedPriceOracle extends BaseContract {
   };
 
   estimateGas: {
+    _getLpPrice(lpToken: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -721,10 +732,9 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLpOracle(
+    setLpFeed(
       cToken_: string,
       lpToken: string,
-      addr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -749,6 +759,11 @@ export class FeedPriceOracle extends BaseContract {
   };
 
   populateTransaction: {
+    _getLpPrice(
+      lpToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -823,10 +838,9 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLpOracle(
+    setLpFeed(
       cToken_: string,
       lpToken: string,
-      addr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

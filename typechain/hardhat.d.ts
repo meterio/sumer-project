@@ -297,6 +297,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IStdReference__factory>;
     getContractFactory(
+      name: "IVoltPair",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IVoltPair__factory>;
+    getContractFactory(
       name: "IWitnetFeed",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWitnetFeed__factory>;
@@ -736,6 +740,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IStdReference>;
+    getContractAt(
+      name: "IVoltPair",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IVoltPair>;
     getContractAt(
       name: "IWitnetFeed",
       address: string,
