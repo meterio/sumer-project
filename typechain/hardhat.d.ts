@@ -285,13 +285,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FeedPriceOracle__factory>;
     getContractFactory(
+      name: "FeedPriceOracleSafe",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FeedPriceOracleSafe__factory>;
+    getContractFactory(
       name: "IChainlinkFeed",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IChainlinkFeed__factory>;
-    getContractFactory(
-      name: "ILpOracle",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ILpOracle__factory>;
     getContractFactory(
       name: "IStdReference",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -304,14 +304,6 @@ declare module "hardhat/types/runtime" {
       name: "IWitnetFeed",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWitnetFeed__factory>;
-    getContractFactory(
-      name: "IVoltPair",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IVoltPair__factory>;
-    getContractFactory(
-      name: "LpOracle",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.LpOracle__factory>;
     getContractFactory(
       name: "PriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -726,15 +718,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.FeedPriceOracle>;
     getContractAt(
+      name: "FeedPriceOracleSafe",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FeedPriceOracleSafe>;
+    getContractAt(
       name: "IChainlinkFeed",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IChainlinkFeed>;
-    getContractAt(
-      name: "ILpOracle",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ILpOracle>;
     getContractAt(
       name: "IStdReference",
       address: string,
@@ -750,16 +742,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IWitnetFeed>;
-    getContractAt(
-      name: "IVoltPair",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IVoltPair>;
-    getContractAt(
-      name: "LpOracle",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.LpOracle>;
     getContractAt(
       name: "PriceOracle",
       address: string,

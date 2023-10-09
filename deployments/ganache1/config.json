@@ -151,6 +151,36 @@
       "10000000000000000"
     ]
   },
+  "CEther": {
+    "name": "Sumer Ether",
+    "contract": "CEther",
+    "implementation": "",
+    "address": "",
+    "constructorName": [
+      "Comptroller",
+      "interestRateModel",
+      "initialExchangeRateMantissa",
+      "name",
+      "symbol",
+      "decimals",
+      "admin",
+      "discountRateMantissa"
+    ],
+    "args": ["", "", "1000000000000000000", "Sumer ETH", "sdrETH", "18", "", "1000000000000000000"],
+    "settings": {
+      "oracle": {
+        "func": "setPythFeed(address,bytes32,address,string)",
+        "args": [
+          "0x5BD400d539363D4065817557aDe00D46631cd378",
+          "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+          "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+          "sdrETH"
+        ]
+      },
+      "reserveFactorMantissa": "100000000000000000",
+      "groupId": 2
+    }
+  },
   "CErc20": {
     "contract": "CErc20",
     "implementation": "0x87bAE3F0AfFebFe75392884e8CfB26F661C8cA7e",

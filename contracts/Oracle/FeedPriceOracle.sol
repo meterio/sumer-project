@@ -77,7 +77,7 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
     uint8 decimals = IERC20Metadata(token).decimals();
 
     uint256 _totalSupply = IERC20(lpToken).totalSupply();
-    uint256 amount = (_balance * (10 ** (18 - decimals))) / _totalSupply;
+    uint256 amount = (_balance * 1e18) / _totalSupply;
 
     uint256 price = getUnderlyingPrice(token);
 

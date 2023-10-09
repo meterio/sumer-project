@@ -19,7 +19,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface FeedPriceOracleInterface extends ethers.utils.Interface {
+interface FeedPriceOracleSafeInterface extends ethers.utils.Interface {
   functions: {
     "acceptOwnership()": FunctionFragment;
     "feeds(address)": FunctionFragment;
@@ -205,7 +205,7 @@ export type SetFeedEvent = TypedEvent<
   }
 >;
 
-export class FeedPriceOracle extends BaseContract {
+export class FeedPriceOracleSafe extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -246,7 +246,7 @@ export class FeedPriceOracle extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: FeedPriceOracleInterface;
+  interface: FeedPriceOracleSafeInterface;
 
   functions: {
     acceptOwnership(
