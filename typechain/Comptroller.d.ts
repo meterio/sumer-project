@@ -39,6 +39,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "_setCloseFactor(uint256)": FunctionFragment;
     "_setLiquidationIncentive(uint256,uint256,uint256)": FunctionFragment;
     "_setMarketBorrowCaps(address[],uint256[])": FunctionFragment;
+    "_setMaxSupply(address[],uint256[])": FunctionFragment;
     "_setMintPaused(address,bool)": FunctionFragment;
     "_setPauseGuardian(address)": FunctionFragment;
     "_setPriceOracle(address)": FunctionFragment;
@@ -98,7 +99,6 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "setCompSpeed(address,uint256,uint256)": FunctionFragment;
     "setComptroller(address)": FunctionFragment;
     "setGovTokenAddress(address)": FunctionFragment;
-    "setMaxSupply(address,uint256)": FunctionFragment;
     "setTimelock(address)": FunctionFragment;
     "suTokenRateMantissa()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -178,6 +178,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "_setMarketBorrowCaps",
+    values: [string[], BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_setMaxSupply",
     values: [string[], BigNumberish[]]
   ): string;
   encodeFunctionData(
@@ -410,10 +414,6 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "setGovTokenAddress",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setMaxSupply",
-    values: [string, BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "setTimelock", values: [string]): string;
   encodeFunctionData(
     functionFragment: "suTokenRateMantissa",
@@ -504,6 +504,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_setMarketBorrowCaps",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_setMaxSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -704,10 +708,6 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setGovTokenAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMaxSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -983,6 +983,12 @@ export class Comptroller extends BaseContract {
     _setMarketBorrowCaps(
       cTokens: string[],
       newBorrowCaps: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _setMaxSupply(
+      cTokens: string[],
+      newMaxSupplys: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1312,12 +1318,6 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setMaxSupply(
-      cToken: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     setTimelock(
       _timelock: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1402,6 +1402,12 @@ export class Comptroller extends BaseContract {
   _setMarketBorrowCaps(
     cTokens: string[],
     newBorrowCaps: BigNumberish[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _setMaxSupply(
+    cTokens: string[],
+    newMaxSupplys: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1704,12 +1710,6 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setMaxSupply(
-    cToken: string,
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   setTimelock(
     _timelock: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1799,6 +1799,12 @@ export class Comptroller extends BaseContract {
       newBorrowCaps: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
+
+    _setMaxSupply(
+      cTokens: string[],
+      newMaxSupplys: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     _setMintPaused(
       cToken: string,
@@ -2117,12 +2123,6 @@ export class Comptroller extends BaseContract {
       _governanceToken: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    setMaxSupply(
-      cToken: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     setTimelock(_timelock: string, overrides?: CallOverrides): Promise<void>;
 
@@ -2537,6 +2537,12 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    _setMaxSupply(
+      cTokens: string[],
+      newMaxSupplys: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     _setMintPaused(
       cToken: string,
       state: boolean,
@@ -2814,12 +2820,6 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setMaxSupply(
-      cToken: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     setTimelock(
       _timelock: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2921,6 +2921,12 @@ export class Comptroller extends BaseContract {
     _setMarketBorrowCaps(
       cTokens: string[],
       newBorrowCaps: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _setMaxSupply(
+      cTokens: string[],
+      newMaxSupplys: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -3224,12 +3230,6 @@ export class Comptroller extends BaseContract {
 
     setGovTokenAddress(
       _governanceToken: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setMaxSupply(
-      cToken: string,
-      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

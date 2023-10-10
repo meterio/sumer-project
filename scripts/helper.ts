@@ -511,6 +511,10 @@ export async function cTokenSetting(
     message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
     default: cTokenConfig.settings.borrowCap
   });
+  cTokenConfig.settings.maxSupply = await input({
+    message: `输入${green(cTokenConfig.name)}的Max Supply:`,
+    default: cTokenConfig.settings.maxSupply
+  });
   return cTokenConfig;
 }
 

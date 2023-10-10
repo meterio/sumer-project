@@ -10,12 +10,10 @@ import {
   DEFAULT_ADMIN_ROLE,
   cTokenSetting,
   interestRateModel_select,
-  InterestRateModel_template,
-  getCTokens,
-  green
+  InterestRateModel_template
 } from './helper';
-import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
-import { confirm, input } from '@inquirer/prompts';
+import { AccountLiquidity, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
+import { confirm } from '@inquirer/prompts';
 import { BigNumber } from 'ethers';
 
 const main = async () => {
@@ -206,14 +204,15 @@ const main = async () => {
     override,
     DEFAULT_ADMIN_ROLE
   );
-  console.log('设置CToken的BorrowCap');
 
   let cTokens: string[] = [];
   let borrowCaps: BigNumber[] = [];
+  let maxSupplys: BigNumber[] = [];
   for (let i = 0; i < config.CErc20.proxys.length; i++) {
     let proxy = config.CErc20.proxys[i];
     cTokens.push(proxy.address);
     borrowCaps.push(proxy.settings.borrowCap);
+    maxSupplys.push(proxy.settings.maxSupply);
     for (let j = 0; j < config.InterestRateModel.length; j++) {
       if (proxy.args[2] == config.InterestRateModel[j].address) {
         config.InterestRateModel[j].tokens.push(proxy.address);
@@ -224,6 +223,7 @@ const main = async () => {
     let proxy = config.suErc20.proxys[i];
     cTokens.push(proxy.address);
     borrowCaps.push(proxy.settings.borrowCap);
+    maxSupplys.push(proxy.settings.maxSupply);
     for (let j = 0; j < config.InterestRateModel.length; j++) {
       if (proxy.args[2] == config.InterestRateModel[j].address) {
         config.InterestRateModel[j].tokens.push(proxy.address);
@@ -233,6 +233,7 @@ const main = async () => {
   if (config.CEther) {
     cTokens.push(config.CEther.address);
     borrowCaps.push(config.CEther.settings.borrowCap);
+    maxSupplys.push(config.CEther.settings.maxSupply);
     for (let j = 0; j < config.InterestRateModel.length; j++) {
       if (config.CEther.args[1] == config.InterestRateModel[j].address) {
         config.InterestRateModel[j].tokens.push(config.CEther.address);
@@ -240,6 +241,7 @@ const main = async () => {
     }
   }
 
+  console.log('设置CToken的BorrowCap');
   await sendTransaction(
     network,
     comptroller,
@@ -248,7 +250,16 @@ const main = async () => {
     override,
     DEFAULT_ADMIN_ROLE
   );
-  config.BorrowCaps;
+  console.log('设置CToken的MaxSupply');
+
+  await sendTransaction(
+    network,
+    comptroller,
+    '_setMaxSupply(address[],uint256[])',
+    [cTokens, maxSupplys],
+    override,
+    DEFAULT_ADMIN_ROLE
+  );
 };
 
 main();

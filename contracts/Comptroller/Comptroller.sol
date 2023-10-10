@@ -537,13 +537,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   /*** Admin Functions ***/
 
-  function setMaxSupply(address cToken, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-    // Check caller is admin
-    maxSupply[cToken] = amount;
-    emit SetMaxSupply(cToken, amount);
-    return uint256(0);
-  }
-
   function setTimelock(address _timelock) public onlyRole(DEFAULT_ADMIN_ROLE) {
     timelock = _timelock;
   }
@@ -876,6 +869,23 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       borrowCaps[address(cTokens[i])] = newBorrowCaps[i];
       emit NewBorrowCap(address(cTokens[i]), newBorrowCaps[i]);
     }
+  }
+
+  function _setMaxSupply(
+    ICToken[] calldata cTokens,
+    uint256[] calldata newMaxSupplys
+  ) external onlyAdminOrCapper returns (uint256) {
+    uint256 numMarkets = cTokens.length;
+    uint256 numMaxSupplys = newMaxSupplys.length;
+
+    require(numMarkets != 0 && numMarkets == numMaxSupplys, 'invalid input');
+
+    for (uint256 i = 0; i < numMarkets; i++) {
+      maxSupply[address(cTokens[i])] = newMaxSupplys[i];
+      emit SetMaxSupply(address(cTokens[i]), newMaxSupplys[i]);
+    }
+
+    return uint256(0);
   }
 
   function _getMarketBorrowCap(address cToken) external view returns (uint256) {
