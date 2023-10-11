@@ -90,6 +90,30 @@
           "500000000000000000"
         ]
       }
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          3,
+          "MTRG",
+          "900000000000000000",
+          "900000000000000000",
+          "500000000000000000",
+          "800000000000000000",
+          "500000000000000000"
+        ]
+      },
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          4,
+          "MTR",
+          "200000000000000000",
+          "200000000000000000",
+          "200000000000000000",
+          "200000000000000000",
+          "200000000000000000"
+        ]
+      }
     ],
     "constructorName": [
       "admin",
@@ -105,7 +129,7 @@
     "args": ["", "", "", "", "", "5000000000000000000", "100000000000000000", "50000000000000000", "5000000000000000"]
   },
   "CEther": {
-    "name": "Sumer Native ETH Deposit",
+    "name": "Sumer MTR Deposit",
     "contract": "CEther",
     "implementation": "",
     "address": "",
@@ -119,19 +143,19 @@
       "admin",
       "discountRateMantissa"
     ],
-    "args": ["", "", "1000000000000000000", "Sumer ETH", "sdrETH", "18", "", "1000000000000000000"],
+    "args": ["", "", "1000000000000000000", "Sumer MTR Deposit", "sdrMTR", "18", "", "1000000000000000000"],
     "settings": {
       "oracle": {
         "func": "setPythFeed(address,bytes32,address,string)",
         "args": [
           "address",
           "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
-          "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
-          "sdrETH"
+          "0x8fece987ff24a0a7ec4d87c29d337e7b54989663536b73883ae8387589cfea2d",
+          "sdrMTR"
         ]
       },
       "reserveFactorMantissa": "100000000000000000",
-      "groupId": 1
+      "groupId": 4
     }
   },
   "CErc20": {
