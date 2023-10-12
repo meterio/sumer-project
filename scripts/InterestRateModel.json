@@ -3,7 +3,7 @@
     "name": "WhitePaperInterestRateModel",
     "contract": "WhitePaperInterestRateModel",
     "constructorName": ["blocksPerYearOnChain", "baseRatePerYear", "multiplierPerYear"],
-    "args": ["13140000", "50000000000000000", "450000000000000000"],
+    "args": ["15768000", "47500000000000000", "450000000000000000"],
     "address": "0xD162adC7b53Fe0b23c212CF98714dBb4D29D63A1",
     "tokens": []
   },
@@ -19,12 +19,12 @@
       "owner"
     ],
     "args": [
-      "13140000",
+      "15768000",
       "20000000000000000",
       "150000000000000000",
       "3000000000000000000",
       "600000000000000000",
-      "0xDdF0033C94Dd6560aa4De3e40dc1322fCAEE5e76"
+      ""
     ],
     "address": "0x3Bf31866F0dC296a1b8284187d87626ADcbfD692",
     "tokens": []
