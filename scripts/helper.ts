@@ -315,7 +315,7 @@ async function getDefaultValue(network: Network, defaultValue: string, construct
     let choices = [];
     for (let i = 0; i < config.InterestRateModel.length; i++) {
       choices.push({
-        name: `${green(config.InterestRateModel[i].name)} - ${yellow(config.InterestRateModel[i].contract)}${
+        name: `${green(config.InterestRateModel[i].name)} - ${yellow(config.InterestRateModel[i].address)}${
           config.InterestRateModel[i].address == defaultValue ? red('(默认)') : ''
         }`,
         value: i
