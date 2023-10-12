@@ -1,5 +1,87 @@
 [
+  { "path": "Comptroller/", "contract": "AccountLiquidity" },
   {
-    "contract": "VoltFactory"
+    "path": "Comptroller/",
+    "contract": "CompLogic"
+  },
+  {
+    "path": "Comptroller/",
+    "contract": "CompoundLens"
+  },
+  {
+    "path": "Comptroller/",
+    "contract": "Comptroller"
+  },
+  {
+    "path": "CToken/",
+    "contract": "CErc20"
+  },
+  {
+    "path": "CToken/",
+    "contract": "CEther"
+  },
+  {
+    "path": "CToken/",
+    "contract": "suErc20"
+  },
+  {
+    "path": "ERC20/",
+    "contract": "ERC20MinterBurnerPauser"
+  },
+  {
+    "path": "InterestRateModel/",
+    "contract": "JumpRateModelV2"
+  },
+  {
+    "path": "InterestRateModel/",
+    "contract": "WhitePaperInterestRateModel"
+  },
+  {
+    "path": "InterestRateModel/",
+    "contract": "ZeroInterestRateModel"
+  },
+  {
+    "path": "Oracle/",
+    "contract": "FeedPriceOracle"
+  },
+  {
+    "path": "Oracle/",
+    "contract": "FeedPriceOracleSafe"
+  },
+  {
+    "path": "proxy/",
+    "contract": "SumerProxyAdmin"
+  },
+  {
+    "path": "proxy/",
+    "contract": "SumerProxy"
+  },
+  {
+    "path": "stake/",
+    "contract": "CommunalFarm"
+  },
+  {
+    "path": "stake/",
+    "contract": "FraxGaugeController"
+  },
+  {
+    "path": "stake/",
+    "contract": "FraxGaugeFXSRewardsDistributor"
+  },
+  {
+    "path": "stake/",
+    "contract": "StakingRewardsMultiGauge"
+  },
+  {
+    "path": "stake/",
+    "contract": "VeSumer"
+  },
+  {
+    "path": "",
+    "contract": "Multicall2"
+  },
+  {
+    "path": "",
+    "contract": "Timelock"
   }
 ]

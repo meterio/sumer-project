@@ -321,13 +321,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.WstMTRGOracle__factory>;
     getContractFactory(
-      name: "SumerProxyAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SumerProxyAdmin__factory>;
-    getContractFactory(
       name: "SumerProxy",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SumerProxy__factory>;
+    getContractFactory(
+      name: "SumerProxyAdmin",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SumerProxyAdmin__factory>;
     getContractFactory(
       name: "CommunalFarm",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -763,15 +763,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.WstMTRGOracle>;
     getContractAt(
-      name: "SumerProxyAdmin",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SumerProxyAdmin>;
-    getContractAt(
       name: "SumerProxy",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SumerProxy>;
+    getContractAt(
+      name: "SumerProxyAdmin",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SumerProxyAdmin>;
     getContractAt(
       name: "CommunalFarm",
       address: string,
