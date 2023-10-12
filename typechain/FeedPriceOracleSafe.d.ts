@@ -39,8 +39,10 @@ interface FeedPriceOracleSafeInterface extends ethers.utils.Interface {
     "setFixedPrice(address,uint256)": FunctionFragment;
     "setLpFeed(address,address)": FunctionFragment;
     "setPythFeed(address,bytes32,address)": FunctionFragment;
+    "setPythValidTimePeriod(uint256)": FunctionFragment;
     "setWitnetFeed(address,address,uint8)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "validTimePeriod()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -101,12 +103,20 @@ interface FeedPriceOracleSafeInterface extends ethers.utils.Interface {
     values: [string, BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setPythValidTimePeriod",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setWitnetFeed",
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "validTimePeriod",
+    values?: undefined
   ): string;
 
   decodeFunctionResult(
@@ -167,11 +177,19 @@ interface FeedPriceOracleSafeInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setPythValidTimePeriod",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setWitnetFeed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "validTimePeriod",
     data: BytesLike
   ): Result;
 
@@ -351,6 +369,11 @@ export class FeedPriceOracleSafe extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setPythValidTimePeriod(
+      _validTimePeriod: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setWitnetFeed(
       cToken_: string,
       feed_: string,
@@ -362,6 +385,8 @@ export class FeedPriceOracleSafe extends BaseContract {
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    validTimePeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   acceptOwnership(
@@ -461,6 +486,11 @@ export class FeedPriceOracleSafe extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setPythValidTimePeriod(
+    _validTimePeriod: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setWitnetFeed(
     cToken_: string,
     feed_: string,
@@ -472,6 +502,8 @@ export class FeedPriceOracleSafe extends BaseContract {
     newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  validTimePeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
     acceptOwnership(overrides?: CallOverrides): Promise<void>;
@@ -564,6 +596,11 @@ export class FeedPriceOracleSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setPythValidTimePeriod(
+      _validTimePeriod: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setWitnetFeed(
       cToken_: string,
       feed_: string,
@@ -575,6 +612,8 @@ export class FeedPriceOracleSafe extends BaseContract {
       newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    validTimePeriod(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
@@ -728,6 +767,11 @@ export class FeedPriceOracleSafe extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setPythValidTimePeriod(
+      _validTimePeriod: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setWitnetFeed(
       cToken_: string,
       feed_: string,
@@ -739,6 +783,8 @@ export class FeedPriceOracleSafe extends BaseContract {
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    validTimePeriod(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -829,6 +875,11 @@ export class FeedPriceOracleSafe extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setPythValidTimePeriod(
+      _validTimePeriod: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setWitnetFeed(
       cToken_: string,
       feed_: string,
@@ -840,5 +891,7 @@ export class FeedPriceOracleSafe extends BaseContract {
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    validTimePeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
