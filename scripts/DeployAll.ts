@@ -38,24 +38,23 @@ const main = async () => {
   writeConfig(netConfig.name, config);
 
   let interestRateModel_selected;
-  let InterestRateModel = config.InterestRateModel;
 
+  let InterestRateModel = config.InterestRateModel;
   for (let i = 0; i < InterestRateModel.length; i++) {
     config.InterestRateModel[i] = await deployOrInput(ethers, network, override, InterestRateModel[i]);
     writeConfig(netConfig.name, config);
   }
 
   do {
+    config = getConfig(netConfig.name);
     interestRateModel_selected = await interestRateModel_select();
     if (interestRateModel_selected != 'exit') {
-      InterestRateModel.push(
+      config.InterestRateModel.push(
         await deployOrInput(ethers, network, override, InterestRateModel_template[interestRateModel_selected])
       );
+      writeConfig(netConfig.name, config);
     }
   } while (interestRateModel_selected != 'exit');
-
-  config.InterestRateModel = InterestRateModel;
-  writeConfig(netConfig.name, config);
 
   config.AccountLiquidity = await deployOrInput(ethers, network, override, config.AccountLiquidity, true);
   writeConfig(netConfig.name, config);

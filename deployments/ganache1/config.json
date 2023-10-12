@@ -11,8 +11,16 @@
     "name": "Sumer",
     "contract": "ERC20MinterBurnerPauser",
     "address": "0xe54B5DE9AfA464A6F7bA1A29A838e9B06698Bc8C",
-    "constructorName": ["name", "symbol", "initialSupply"],
-    "args": ["Sumer Token", "SUMER", "0"]
+    "constructorName": [
+      "name",
+      "symbol",
+      "initialSupply"
+    ],
+    "args": [
+      "Sumer Token",
+      "SUMER",
+      "0"
+    ]
   },
   "CompoundLens": {
     "contract": "CompoundLens",
@@ -26,9 +34,17 @@
     {
       "name": "WhitePaperInterestRateModel",
       "contract": "WhitePaperInterestRateModel",
-      "constructorName": ["blocksPerYearOnChain", "baseRatePerYear", "multiplierPerYear"],
-      "args": ["13140000", "50000000000000000", "450000000000000000"],
-      "address": "0xE44CC216A4BD103138518dd8f2eaae6820776420",
+      "constructorName": [
+        "blocksPerYearOnChain",
+        "baseRatePerYear",
+        "multiplierPerYear"
+      ],
+      "args": [
+        "13140000",
+        "50000000000000000",
+        "450000000000000000"
+      ],
+      "address": "0xddCE940C3DEE911aa8F3305189059FDd3de06C5B",
       "tokens": []
     },
     {
@@ -43,20 +59,36 @@
         "owner"
       ],
       "args": [
-        "13140000",
+        "15768000",
         "20000000000000000",
         "150000000000000000",
         "3000000000000000000",
         "600000000000000000",
-        "0x9b12ba824592aCad3A92187aa1B394079Fe68587"
+        "0xc3cd3BeE04D63C3954310BD456dde6F6774fC7a3"
       ],
-      "address": "0xfCe94782450589056b706D771913fEa85db07D3b",
+      "address": "0x69921Ee3A76Bb027297af512Ed3e1456B69B83A0",
       "tokens": []
     },
     {
-      "name": "ZeroInterestRateModel",
-      "contract": "ZeroInterestRateModel",
-      "address": "0x19D2Cc810887670D74ffACb11172Ba239fAFf516",
+      "name": "JumpRateModelV2",
+      "contract": "JumpRateModelV2",
+      "constructorName": [
+        "blocksPerYearOnChain",
+        "baseRatePerYear",
+        "multiplierPerYear",
+        "jumpMultiplierPerYear",
+        "kink",
+        "owner"
+      ],
+      "args": [
+        "15768000",
+        "20000000000000000",
+        "150000000000000000",
+        "3000000000000000000",
+        "600000000000000000",
+        "0xc3cd3BeE04D63C3954310BD456dde6F6774fC7a3"
+      ],
+      "address": "0x2142915E76D4610a2bbD54844541BD93C69BCF96",
       "tokens": []
     }
   ],
@@ -64,15 +96,25 @@
     "contract": "AccountLiquidity",
     "implementation": "0x26c62b06b60E93Ec40085C4939573449E75c8eE1",
     "address": "0xc666f0d75e8ABfbA94a19437359523084AFe477e",
-    "constructorName": ["admin"],
-    "args": ["0x9b12ba824592aCad3A92187aa1B394079Fe68587"]
+    "constructorName": [
+      "admin"
+    ],
+    "args": [
+      "0x9b12ba824592aCad3A92187aa1B394079Fe68587"
+    ]
   },
   "CompLogic": {
     "contract": "CompLogic",
     "implementation": "0xb580a6F27074923973D0Dd685b096ab460d15FE7",
     "address": "0x04A2C63671056a51CB33928d22b7be5b1eD37a15",
-    "constructorName": ["admin", "Sumer"],
-    "args": ["0x9b12ba824592aCad3A92187aa1B394079Fe68587", "0xe54B5DE9AfA464A6F7bA1A29A838e9B06698Bc8C"]
+    "constructorName": [
+      "admin",
+      "Sumer"
+    ],
+    "args": [
+      "0x9b12ba824592aCad3A92187aa1B394079Fe68587",
+      "0xe54B5DE9AfA464A6F7bA1A29A838e9B06698Bc8C"
+    ]
   },
   "Comptroller": {
     "contract": "Comptroller",
@@ -166,7 +208,16 @@
       "admin",
       "discountRateMantissa"
     ],
-    "args": ["", "", "1000000000000000000", "Sumer ETH", "sdrETH", "18", "", "1000000000000000000"],
+    "args": [
+      "",
+      "",
+      "1000000000000000000",
+      "Sumer ETH",
+      "sdrETH",
+      "18",
+      "",
+      "1000000000000000000"
+    ],
     "settings": {
       "oracle": {
         "func": "setPythFeed(address,bytes32,address,string)",
@@ -358,7 +409,10 @@
         "settings": {
           "oracle": {
             "func": "setFixedPrice(address,uint256)",
-            "args": ["0xf90A9a6D61597361276464aEB282774d7694500a", "100000000000000000"]
+            "args": [
+              "0xf90A9a6D61597361276464aEB282774d7694500a",
+              "100000000000000000"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
@@ -472,7 +526,9 @@
   "Timelock": {
     "contract": "Timelock",
     "address": "0xc0E7EF92075D4bCf5B9cE112a2a7eeb4975893f4",
-    "constructorName": ["cTokens"],
+    "constructorName": [
+      "cTokens"
+    ],
     "args": [
       [
         "0xD367242f65e3358925650ED8f9ec909D5015ED52",
