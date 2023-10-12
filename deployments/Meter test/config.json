@@ -11,24 +11,40 @@
     "name": "Sumer",
     "contract": "ERC20MinterBurnerPauser",
     "address": "0x264b7316b535515db9759a77dc4041c0c2263527",
-    "constructorName": ["name", "symbol", "initialSupply"],
-    "args": ["Sumerian Token", "SUMER", "0"]
+    "constructorName": [
+      "name",
+      "symbol",
+      "initialSupply"
+    ],
+    "args": [
+      "Sumerian Token",
+      "SUMER",
+      "0"
+    ]
   },
   "CompoundLens": {
     "contract": "CompoundLens",
-    "address": "0x4d633e05054a3400744a4342749f7014A744059f"
+    "address": "0x0d148A4b5DFE3E72065745576b840C62DB9F2C38"
   },
   "FeedPriceOracle": {
     "contract": "FeedPriceOracleSafe",
-    "address": "0xe63A3b14B4009c115e09328A8b76043CB88068A8"
+    "address": "0x9308C0f63DCc7188bC085a5A7Cc0b465e1AeA3ff"
   },
   "InterestRateModel": [
     {
       "name": "WhitePaperInterestRateModel",
       "contract": "WhitePaperInterestRateModel",
-      "constructorName": ["blocksPerYearOnChain", "baseRatePerYear", "multiplierPerYear"],
-      "args": ["30617476", "50000000000000000", "450000000000000000"],
-      "address": "0xC85148ae2cE5c77242f7a6d3098596eA31BA2c8b",
+      "constructorName": [
+        "blocksPerYearOnChain",
+        "baseRatePerYear",
+        "multiplierPerYear"
+      ],
+      "args": [
+        "15768000",
+        "47500000000000000",
+        "450000000000000000"
+      ],
+      "address": "0xE9D3e17a6A9a7e4DA7CBb13861531F2f05b35E40",
       "tokens": []
     },
     {
@@ -43,41 +59,73 @@
         "owner"
       ],
       "args": [
-        "30617476",
+        "15768000",
         "20000000000000000",
         "150000000000000000",
         "3000000000000000000",
         "600000000000000000",
         "0x0205c2D862cA051010698b69b54278cbAf945C0b"
       ],
-      "address": "0x6aEE4D1331869c7e3e8Fb470E5E1619495CcE5c7",
+      "address": "0xE115CdCEf7c75B3C5e1bA2d8387d5a2F92d74F93",
+      "tokens": []
+    },
+    {
+      "name": "JumpRateModelV2",
+      "contract": "JumpRateModelV2",
+      "constructorName": [
+        "blocksPerYearOnChain",
+        "baseRatePerYear",
+        "multiplierPerYear",
+        "jumpMultiplierPerYear",
+        "kink",
+        "owner"
+      ],
+      "args": [
+        "15768000",
+        "30000000000000000",
+        "200000000000000000",
+        "4000000000000000000",
+        "600000000000000000",
+        "0x0205c2D862cA051010698b69b54278cbAf945C0b"
+      ],
+      "address": "0x7475aff3F7e68a29008631BDbBD4fa843f4DE10C",
       "tokens": []
     },
     {
       "name": "ZeroInterestRateModel",
       "contract": "ZeroInterestRateModel",
-      "address": "0x1E9f28Bb80415D0DE8721ad6Aa5815F1c996b682",
+      "address": "0x70B2E5897F5cFcd394F989B102578C9Ee94b867E",
       "tokens": []
     }
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0x3756f0a51330663E464aD7aaa4650e8909D88cD3",
-    "address": "0x0260499003B1DEB00ABF4ae5053A1EB1FfDc1C4F",
-    "constructorName": ["admin"],
-    "args": ["0x0205c2D862cA051010698b69b54278cbAf945C0b"]
+    "implementation": "0x58e136354bF4eEDC61Ad50BF0F497009680FCaCE",
+    "address": "0x495A508e8e075378402997103fEbAd76aAC969F2",
+    "constructorName": [
+      "admin"
+    ],
+    "args": [
+      "0x0205c2D862cA051010698b69b54278cbAf945C0b"
+    ]
   },
   "CompLogic": {
     "contract": "CompLogic",
-    "implementation": "0x18120EDC6257674545CEe476027e5F140844e598",
-    "address": "0xC46697772f262957644dd645847CA80f0Fe6B9A2",
-    "constructorName": ["admin", "Sumer"],
-    "args": ["0x0205c2D862cA051010698b69b54278cbAf945C0b", "0x264b7316b535515db9759a77dc4041c0c2263527"]
+    "implementation": "0xE8B46B0a3F6a3B20f6F850ac528Af10808FEcf38",
+    "address": "0x2a74839dd19BEa14C0180467247Bb2781A1F0c25",
+    "constructorName": [
+      "admin",
+      "Sumer"
+    ],
+    "args": [
+      "0x0205c2D862cA051010698b69b54278cbAf945C0b",
+      "0x264b7316b535515db9759a77dc4041c0c2263527"
+    ]
   },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0xA207ce50eB5A06dB172233B8271471979Fd9D283",
-    "address": "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
+    "implementation": "0x897E53689d7E81a838E3E40150cA312EB6E35F9d",
+    "address": "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
     "settings": [
       {
         "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
@@ -107,7 +155,7 @@
         "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
         "args": [
           2,
-          "BTC",
+          "Bitcoin",
           "900000000000000000",
           "999700000000000000",
           "500000000000000000",
@@ -121,10 +169,22 @@
           3,
           "MTRG",
           "900000000000000000",
-          "999700000000000000",
+          "900000000000000000",
           "500000000000000000",
           "800000000000000000",
           "500000000000000000"
+        ]
+      },
+      {
+        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
+        "args": [
+          4,
+          "MTR",
+          "200000000000000000",
+          "200000000000000000",
+          "200000000000000000",
+          "200000000000000000",
+          "200000000000000000"
         ]
       }
     ],
@@ -141,36 +201,77 @@
     ],
     "args": [
       "0x0205c2D862cA051010698b69b54278cbAf945C0b",
-      "0xe63A3b14B4009c115e09328A8b76043CB88068A8",
+      "0x9308C0f63DCc7188bC085a5A7Cc0b465e1AeA3ff",
       "0x264b7316b535515db9759a77dc4041c0c2263527",
-      "0xC46697772f262957644dd645847CA80f0Fe6B9A2",
-      "0x0260499003B1DEB00ABF4ae5053A1EB1FfDc1C4F",
+      "0x2a74839dd19BEa14C0180467247Bb2781A1F0c25",
+      "0x495A508e8e075378402997103fEbAd76aAC969F2",
       "5000000000000000000",
       "100000000000000000",
       "50000000000000000",
-      "10000000000000000"
+      "5000000000000000"
     ]
+  },
+  "CEther": {
+    "name": "Sumer MTR Deposit",
+    "contract": "CEther",
+    "implementation": "0x65CEF136B76ffc80259989b1E4D573735ed6B2A8",
+    "address": "0x6adE6cf11cb89AE6E2118e243aF421A37B1fa438",
+    "constructorName": [
+      "Comptroller",
+      "interestRateModel",
+      "initialExchangeRateMantissa",
+      "name",
+      "symbol",
+      "decimals",
+      "admin",
+      "discountRateMantissa"
+    ],
+    "args": [
+      "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+      "0xE115CdCEf7c75B3C5e1bA2d8387d5a2F92d74F93",
+      "1000000000000000000",
+      "Sumer MTR Deposit",
+      "sdrMTR",
+      "18",
+      "0x0205c2D862cA051010698b69b54278cbAf945C0b",
+      "1000000000000000000"
+    ],
+    "settings": {
+      "oracle": {
+        "func": "setPythFeed(address,bytes32,address)",
+        "args": [
+          "0x6adE6cf11cb89AE6E2118e243aF421A37B1fa438",
+          "0x8fece987ff24a0a7ec4d87c29d337e7b54989663536b73883ae8387589cfea2d",
+          "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
+        ]
+      },
+      "reserveFactorMantissa": "100000000000000000",
+      "groupId": 4,
+      "borrowCap": "100000",
+      "maxSupply": "100000"
+    }
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0x9c0C19F61ED1673eA506c62FeF3C360a03Ab2931",
+    "implementation": "0xA3a7a4B922B5480fBC03F87Af170226be27AD871",
     "proxys": [
       {
         "contract": "CErc20",
         "name": "Sumer USDC Deposit",
-        "address": "0x4c383996509F210f230637945Cd1F6cA72f0aD2C",
+        "address": "0xa246d384431C08Ca7d99781ad78320E94f565592",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0x4c383996509F210f230637945Cd1F6cA72f0aD2C",
+              "0xa246d384431C08Ca7d99781ad78320E94f565592",
               "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 0,
-          "borrowCap": "10000000"
+          "borrowCap": "3000000",
+          "maxSupply": "3000000"
         },
         "constructorName": [
           "underlying",
@@ -185,8 +286,8 @@
         ],
         "args": [
           "0x2b27f5f7f2867ad9d2b7065f81e985c1bd1b7274",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0xC85148ae2cE5c77242f7a6d3098596eA31BA2c8b",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x7475aff3F7e68a29008631BDbBD4fa843f4DE10C",
           "1000000000000000000",
           "Sumer USDC Deposit",
           "sdrUSDC",
@@ -198,19 +299,20 @@
       {
         "contract": "CErc20",
         "name": "Sumer USDT Deposit",
-        "address": "0xD95eE8Bcd896C94CBD300d7998A5FB1F3e9B34fF",
+        "address": "0xE22047e32Cf344042D896Fc4cE7E172bac85c30a",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0xD95eE8Bcd896C94CBD300d7998A5FB1F3e9B34fF",
+              "0xE22047e32Cf344042D896Fc4cE7E172bac85c30a",
               "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 0,
-          "borrowCap": "10000000"
+          "borrowCap": "3000000",
+          "maxSupply": "3000000"
         },
         "constructorName": [
           "underlying",
@@ -225,8 +327,8 @@
         ],
         "args": [
           "0x2398633bee182cad2d0388b41735fd9fb742098d",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0xC85148ae2cE5c77242f7a6d3098596eA31BA2c8b",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x7475aff3F7e68a29008631BDbBD4fa843f4DE10C",
           "1000000000000000000",
           "Sumer USDT Deposit",
           "sdrUSDT",
@@ -238,19 +340,20 @@
       {
         "contract": "CErc20",
         "name": "Sumer MTRG Deposit",
-        "address": "0x764a6862B75F08fECa92ddFD9DD7A54Ec492E823",
+        "address": "0x17D60512c237C381be7B02A25F3a8EcB400847ea",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0x764a6862B75F08fECa92ddFD9DD7A54Ec492E823",
+              "0x17D60512c237C381be7B02A25F3a8EcB400847ea",
               "0xa5fd90e292644d5f9b79a1640f464fcae4b8cb925465d197a78185a308603606",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
-          "borrowCap": "0"
+          "borrowCap": "3000000",
+          "maxSupply": "3000000"
         },
         "constructorName": [
           "underlying",
@@ -265,8 +368,8 @@
         ],
         "args": [
           "0x8a419ef4941355476cf04933e90bf3bbf2f73814",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x6aEE4D1331869c7e3e8Fb470E5E1619495CcE5c7",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0xE115CdCEf7c75B3C5e1bA2d8387d5a2F92d74F93",
           "1000000000000000000",
           "Sumer MTRG Deposit",
           "sdrMTRG",
@@ -278,19 +381,20 @@
       {
         "contract": "CErc20",
         "name": "Sumer wstMTRG Deposit",
-        "address": "0x436A20203794d76051d109f1971b4ef0381Ed6a4",
+        "address": "0xCa9a68B8B2180c8e9555E045f210dE15553Aba12",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0x436A20203794d76051d109f1971b4ef0381Ed6a4",
+              "0xCa9a68B8B2180c8e9555E045f210dE15553Aba12",
               "0xa5fd90e292644d5f9b79a1640f464fcae4b8cb925465d197a78185a308603606",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
-          "borrowCap": "0"
+          "borrowCap": "3000000",
+          "maxSupply": "3000000"
         },
         "constructorName": [
           "underlying",
@@ -305,8 +409,8 @@
         ],
         "args": [
           "0x871497Eb8596d2cBdBE5bb23D552D35bFfbb8CF5",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x6aEE4D1331869c7e3e8Fb470E5E1619495CcE5c7",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0xE115CdCEf7c75B3C5e1bA2d8387d5a2F92d74F93",
           "1000000000000000000",
           "Sumer wstMTRG Deposit",
           "sdrwstMTRG",
@@ -317,20 +421,21 @@
       },
       {
         "contract": "CErc20",
-        "name": "Sumer ETH Deposit",
-        "address": "0x5E5986753B29309AB62f9FcA06c3b52631776d8f",
+        "name": "Sumer ETH Token",
+        "address": "0xa4F8e30cAC2C1B30CcF36Eb90DA27a23086B6ed2",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0x5E5986753B29309AB62f9FcA06c3b52631776d8f",
-              "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+              "0xa4F8e30cAC2C1B30CcF36Eb90DA27a23086B6ed2",
+              "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "1000"
+          "borrowCap": "2000",
+          "maxSupply": "2000"
         },
         "constructorName": [
           "underlying",
@@ -345,10 +450,10 @@
         ],
         "args": [
           "0xe8876830e7cc85dae8ce31b0802313caf856886f",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x6aEE4D1331869c7e3e8Fb470E5E1619495CcE5c7",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x7475aff3F7e68a29008631BDbBD4fa843f4DE10C",
           "1000000000000000000",
-          "Sumer ETH Deposit",
+          "Sumer ETH Token",
           "sdrETH",
           "18",
           "0x0205c2D862cA051010698b69b54278cbAf945C0b",
@@ -357,20 +462,21 @@
       },
       {
         "contract": "CErc20",
-        "name": "Sumer WBTC Deposit",
-        "address": "0xF20Ed711173d73ECC8059a3f19E041E58b41A176",
+        "name": "Sumer WBTC Token",
+        "address": "0x2139c950a8D804bCDEFe2F7E934524df0d4052bf",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0xF20Ed711173d73ECC8059a3f19E041E58b41A176",
+              "0x2139c950a8D804bCDEFe2F7E934524df0d4052bf",
               "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
-          "borrowCap": "200"
+          "borrowCap": "200",
+          "maxSupply": "200"
         },
         "constructorName": [
           "underlying",
@@ -385,10 +491,10 @@
         ],
         "args": [
           "0x7EB9e0Df1C6E6f1E9d3d1EdA09fcF688FE7A710c",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x6aEE4D1331869c7e3e8Fb470E5E1619495CcE5c7",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x7475aff3F7e68a29008631BDbBD4fa843f4DE10C",
           "1000000000000000000",
-          "Sumer WBTC Deposit",
+          "Sumer WBTC Token",
           "sdrBTC",
           "8",
           "0x0205c2D862cA051010698b69b54278cbAf945C0b",
@@ -399,20 +505,24 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0x2DD47f9dE57c2e70757eb640dd10eDEe03403d0A",
+    "implementation": "0xCaFc81438f2F70fAFE7206e0CeB08e83F5A2e4d4",
     "proxys": [
       {
         "contract": "suErc20",
         "name": "Sumer suUSD Deposit",
-        "address": "0x79153904053967bF22b794503ff1f910e336a136",
+        "address": "0xF4A3188C76Eb697D8bC67f8eE5dCE598e54c9663",
         "settings": {
           "oracle": {
             "func": "setFixedPrice(address,uint256)",
-            "args": ["0x79153904053967bF22b794503ff1f910e336a136", "100000000000000000"]
+            "args": [
+              "0xF4A3188C76Eb697D8bC67f8eE5dCE598e54c9663",
+              "100000000000000000"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 0,
-          "borrowCap": "10000000"
+          "borrowCap": "500000",
+          "maxSupply": "500000"
         },
         "constructorName": [
           "underlying",
@@ -427,8 +537,8 @@
         ],
         "args": [
           "0x0d893c092f7ae9d97c13307f2d66cfb59430b4cb",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x1E9f28Bb80415D0DE8721ad6Aa5815F1c996b682",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x70B2E5897F5cFcd394F989B102578C9Ee94b867E",
           "1000000000000000000",
           "Sumer suUSD Deposit",
           "sdrsuUSD",
@@ -440,19 +550,20 @@
       {
         "contract": "suErc20",
         "name": "Sumer suETH Deposit",
-        "address": "0x85046858399540FC19401cc88725bc6ddb1933Bb",
+        "address": "0xC78A0aAd9699b8538c14D0c78f947f81b8e22011",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0x85046858399540FC19401cc88725bc6ddb1933Bb",
+              "0xC78A0aAd9699b8538c14D0c78f947f81b8e22011",
               "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "1000"
+          "borrowCap": "2000",
+          "maxSupply": "2000"
         },
         "constructorName": [
           "underlying",
@@ -467,8 +578,8 @@
         ],
         "args": [
           "0x21351bde0B42b4Cba5c04Fc92917b8c3254b1E88",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x1E9f28Bb80415D0DE8721ad6Aa5815F1c996b682",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x70B2E5897F5cFcd394F989B102578C9Ee94b867E",
           "1000000000000000000",
           "Sumer suETH Deposit",
           "sdrsuETH",
@@ -480,19 +591,20 @@
       {
         "contract": "suErc20",
         "name": "Sumer suBTC Deposit",
-        "address": "0x6F70F3116F682E3D61653601169F32F65c39E666",
+        "address": "0xEdA087e972D19Ea1eC81B431c3c325589F2D67fB",
         "settings": {
           "oracle": {
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
-              "0x6F70F3116F682E3D61653601169F32F65c39E666",
+              "0xEdA087e972D19Ea1eC81B431c3c325589F2D67fB",
               "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
-          "borrowCap": "100"
+          "borrowCap": "200",
+          "maxSupply": "200"
         },
         "constructorName": [
           "underlying",
@@ -507,8 +619,8 @@
         ],
         "args": [
           "0x20B00Df0c1120D2227f87180286E63EDa30f5c4c",
-          "0x56d5Ff058BE5059bc5DaB212Ea0ab07Ae884A327",
-          "0x1E9f28Bb80415D0DE8721ad6Aa5815F1c996b682",
+          "0x0b13D8E0A8042e66496244F7C879D26d2eE954B8",
+          "0x70B2E5897F5cFcd394F989B102578C9Ee94b867E",
           "1000000000000000000",
           "Sumer suBTC Deposit",
           "sdrsuBTC",
@@ -521,19 +633,22 @@
   },
   "Timelock": {
     "contract": "Timelock",
-    "address": "0x813780eC9dfC88703AbcC5A1E6C6ca03D66ccA9b",
-    "constructorName": ["cTokens"],
+    "address": "0xcC6E1B83D870B7aA9EAcb682B0E3eC6328030194",
+    "constructorName": [
+      "cTokens"
+    ],
     "args": [
       [
-        "0x4c383996509F210f230637945Cd1F6cA72f0aD2C",
-        "0xD95eE8Bcd896C94CBD300d7998A5FB1F3e9B34fF",
-        "0x764a6862B75F08fECa92ddFD9DD7A54Ec492E823",
-        "0x436A20203794d76051d109f1971b4ef0381Ed6a4",
-        "0x5E5986753B29309AB62f9FcA06c3b52631776d8f",
-        "0xF20Ed711173d73ECC8059a3f19E041E58b41A176",
-        "0x79153904053967bF22b794503ff1f910e336a136",
-        "0x85046858399540FC19401cc88725bc6ddb1933Bb",
-        "0x6F70F3116F682E3D61653601169F32F65c39E666"
+        "0xa246d384431C08Ca7d99781ad78320E94f565592",
+        "0xE22047e32Cf344042D896Fc4cE7E172bac85c30a",
+        "0x17D60512c237C381be7B02A25F3a8EcB400847ea",
+        "0xCa9a68B8B2180c8e9555E045f210dE15553Aba12",
+        "0xa4F8e30cAC2C1B30CcF36Eb90DA27a23086B6ed2",
+        "0x2139c950a8D804bCDEFe2F7E934524df0d4052bf",
+        "0xF4A3188C76Eb697D8bC67f8eE5dCE598e54c9663",
+        "0xC78A0aAd9699b8538c14D0c78f947f81b8e22011",
+        "0xEdA087e972D19Ea1eC81B431c3c325589F2D67fB",
+        "0x6adE6cf11cb89AE6E2118e243aF421A37B1fa438"
       ]
     ]
   }
