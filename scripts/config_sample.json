@@ -19,7 +19,7 @@
     "address": ""
   },
   "FeedPriceOracle": {
-    "contract": "FeedPriceOracle",
+    "contract": "FeedPriceOracleSafe",
     "address": ""
   },
   "InterestRateModel": [],
@@ -89,18 +89,6 @@
           "800000000000000000",
           "500000000000000000"
         ]
-      }
-      {
-        "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
-        "args": [
-          3,
-          "MTRG",
-          "900000000000000000",
-          "900000000000000000",
-          "500000000000000000",
-          "800000000000000000",
-          "500000000000000000"
-        ]
       },
       {
         "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
@@ -146,12 +134,11 @@
     "args": ["", "", "1000000000000000000", "Sumer MTR Deposit", "sdrMTR", "18", "", "1000000000000000000"],
     "settings": {
       "oracle": {
-        "func": "setPythFeed(address,bytes32,address,string)",
+        "func": "setPythFeed(address,bytes32,address)",
         "args": [
           "address",
-          "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
           "0x8fece987ff24a0a7ec4d87c29d337e7b54989663536b73883ae8387589cfea2d",
-          "sdrMTR"
+          "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
         ]
       },
       "reserveFactorMantissa": "100000000000000000",
