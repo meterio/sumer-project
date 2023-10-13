@@ -452,9 +452,9 @@ export async function cTokenSetting(
       DEFAULT_ADMIN_ROLE
     );
   }
+  let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
   if (!isSuToken) {
     // setReserveFactor
-    let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
     let reserveFactorMantissa = await cToken.reserveFactorMantissa();
     if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
       console.log('设置Comptroller的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
@@ -487,11 +487,10 @@ export async function cTokenSetting(
       );
     }
     // changeCtoken
-    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as CToken;
-    let isCToken = await suErc20.isCToken();
+    let isCToken = await cToken.isCToken();
     if (isCToken) {
       console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
-      await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
+      await sendTransaction(network, cToken, 'changeCtoken()', [], network.override);
     }
   }
   // oracle
@@ -507,14 +506,25 @@ export async function cTokenSetting(
       network.override
     );
   }
-  cTokenConfig.settings.borrowCap = await input({
-    message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
-    default: cTokenConfig.settings.borrowCap
-  });
-  cTokenConfig.settings.maxSupply = await input({
-    message: `输入${green(cTokenConfig.name)}的Max Supply:`,
-    default: cTokenConfig.settings.maxSupply
-  });
+  let decimals = await cToken.decimals();
+  cTokenConfig.settings.borrowCap = utils
+    .parseUnits(
+      await input({
+        message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
+        default: utils.formatUnits(cTokenConfig.settings.borrowCap, decimals).toString()
+      }),
+      decimals
+    )
+    .toString();
+  cTokenConfig.settings.maxSupply = utils
+    .parseUnits(
+      await input({
+        message: `输入${green(cTokenConfig.name)}的Max Supply:`,
+        default: utils.formatUnits(cTokenConfig.settings.maxSupply, decimals).toString()
+      }),
+      decimals
+    )
+    .toString();
   return cTokenConfig;
 }
 
