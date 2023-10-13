@@ -247,8 +247,8 @@
       },
       "reserveFactorMantissa": "100000000000000000",
       "groupId": 4,
-      "borrowCap": "100000",
-      "maxSupply": "100000"
+      "borrowCap": "100000000000000000000000",
+      "maxSupply": "1000000000000000000000000"
     }
   },
   "CErc20": {
@@ -270,8 +270,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 0,
-          "borrowCap": "3000000",
-          "maxSupply": "3000000"
+          "borrowCap": "3000000000000",
+          "maxSupply": "3000000000000"
         },
         "constructorName": [
           "underlying",
@@ -311,8 +311,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 0,
-          "borrowCap": "3000000",
-          "maxSupply": "3000000"
+          "borrowCap": "3000000000000",
+          "maxSupply": "3000000000000"
         },
         "constructorName": [
           "underlying",
@@ -352,8 +352,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
-          "borrowCap": "3000000",
-          "maxSupply": "3000000"
+          "borrowCap": "3000000000000000000000000",
+          "maxSupply": "3000000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -393,8 +393,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
-          "borrowCap": "3000000",
-          "maxSupply": "3000000"
+          "borrowCap": "3000000000000000000000000",
+          "maxSupply": "3000000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -428,14 +428,14 @@
             "func": "setPythFeed(address,bytes32,address)",
             "args": [
               "0xa4F8e30cAC2C1B30CcF36Eb90DA27a23086B6ed2",
-              "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
+              "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
               "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "2000",
-          "maxSupply": "2000"
+          "borrowCap": "2000000000000000000000",
+          "maxSupply": "2000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -475,8 +475,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
-          "borrowCap": "200",
-          "maxSupply": "200"
+          "borrowCap": "20000000000",
+          "maxSupply": "20000000000"
         },
         "constructorName": [
           "underlying",
@@ -516,13 +516,13 @@
             "func": "setFixedPrice(address,uint256)",
             "args": [
               "0xF4A3188C76Eb697D8bC67f8eE5dCE598e54c9663",
-              "100000000000000000"
+              "1000000000000000000"
             ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 0,
-          "borrowCap": "500000",
-          "maxSupply": "500000"
+          "borrowCap": "5000000000000000000000000",
+          "maxSupply": "1000000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -562,8 +562,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "2000",
-          "maxSupply": "2000"
+          "borrowCap": "2000000000000000000000",
+          "maxSupply": "1000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -603,8 +603,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
-          "borrowCap": "200",
-          "maxSupply": "200"
+          "borrowCap": "200000000000000000000",
+          "maxSupply": "100000000000000000000"
         },
         "constructorName": [
           "underlying",
