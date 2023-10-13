@@ -17,7 +17,8 @@ async function main() {
 
   // const factory = await ethers.getContractAt(contract_name, address);
 
-  const contract = await ethers.getContractAtFromArtifact(contract_name, address);
+  // ethers.getContractFactory("CompoundLens")
+  const contract = await ethers.getContractFactory(contract_name, address, wallet);
 
   const fragment = contract.interface.fragments;
 
