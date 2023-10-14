@@ -4,7 +4,7 @@ import { HardhatEthersHelpers } from '@nomiclabs/hardhat-ethers/types';
 import * as pathLib from 'path';
 import { input, select, password } from '@inquirer/prompts';
 import colors from 'colors';
-import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle } from '../typechain';
+import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle, SuErc20 } from '../typechain';
 import { Fragment, FunctionFragment } from 'ethers/lib/utils';
 colors.enable();
 
@@ -487,10 +487,11 @@ export async function cTokenSetting(
       );
     }
     // changeCtoken
+    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as SuErc20;
     let isCToken = await cToken.isCToken();
     if (isCToken) {
       console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
-      await sendTransaction(network, cToken, 'changeCtoken()', [], network.override);
+      await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
     }
   }
   // oracle
