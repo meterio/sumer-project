@@ -142,7 +142,9 @@
         ]
       },
       "reserveFactorMantissa": "100000000000000000",
-      "groupId": 5
+      "groupId": 5,
+      "borrowCap": "0",
+      "maxSupply": "0"
     }
   },
   "CErc20": {

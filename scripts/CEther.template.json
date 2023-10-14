@@ -25,6 +25,8 @@
       ]
     },
     "reserveFactorMantissa": "100000000000000000",
-    "groupId": 2
+    "groupId": 2,
+    "borrowCap": "0",
+    "maxSupply": "0"
   }
 }
