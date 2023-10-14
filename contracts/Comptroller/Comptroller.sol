@@ -615,6 +615,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    */
   function _supportMarket(address cToken, uint8 groupId) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
     require(!markets[cToken].isListed, 'market already listed');
+    require(groupId > 0, 'groupId > 0');
 
     // ICToken(cToken).isCToken(); // Sanity check to make sure its really a address
     (bool success, ) = cToken.call(abi.encodeWithSignature('isCToken()'));
