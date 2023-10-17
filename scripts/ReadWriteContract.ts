@@ -8,7 +8,8 @@ async function main() {
   const network = await setNetwork(network_config);
   let { wallet, override } = network;
 
-  const contract_name = await selectContract();
+  const contract_config = await selectContract();
+  const contract_name = contract_config.contract;
 
   const address = await input({
     message: '输入合约地址:',

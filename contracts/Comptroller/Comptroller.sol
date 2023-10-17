@@ -655,7 +655,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     compLogic.setCompSpeed(cToken, supplySpeed, borrowSpeed);
   }
 
-  function setComptroller(ICompLogic _compLogic) external onlyRole(DEFAULT_ADMIN_ROLE) {
+  function setCompLogic(ICompLogic _compLogic) external onlyRole(DEFAULT_ADMIN_ROLE) {
     compLogic = _compLogic;
   }
 

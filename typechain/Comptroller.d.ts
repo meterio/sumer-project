@@ -96,8 +96,8 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "seizeGuardianPaused()": FunctionFragment;
     "setAccountLiquidity(address)": FunctionFragment;
     "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
+    "setCompLogic(address)": FunctionFragment;
     "setCompSpeed(address,uint256,uint256)": FunctionFragment;
-    "setComptroller(address)": FunctionFragment;
     "setGovTokenAddress(address)": FunctionFragment;
     "setTimelock(address)": FunctionFragment;
     "suTokenRateMantissa()": FunctionFragment;
@@ -403,12 +403,12 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "setCompSpeed",
-    values: [string, BigNumberish, BigNumberish]
+    functionFragment: "setCompLogic",
+    values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "setComptroller",
-    values: [string]
+    functionFragment: "setCompSpeed",
+    values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setGovTokenAddress",
@@ -699,11 +699,11 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setCompSpeed",
+    functionFragment: "setCompLogic",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setComptroller",
+    functionFragment: "setCompSpeed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1301,15 +1301,15 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setCompLogic(
+      _compLogic: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setCompSpeed(
       cToken: string,
       supplySpeed: BigNumberish,
       borrowSpeed: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setComptroller(
-      _compLogic: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1693,15 +1693,15 @@ export class Comptroller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setCompLogic(
+    _compLogic: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setCompSpeed(
     cToken: string,
     supplySpeed: BigNumberish,
     borrowSpeed: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setComptroller(
-    _compLogic: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -2107,15 +2107,12 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    setCompLogic(_compLogic: string, overrides?: CallOverrides): Promise<void>;
+
     setCompSpeed(
       cToken: string,
       supplySpeed: BigNumberish,
       borrowSpeed: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setComptroller(
-      _compLogic: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -2803,15 +2800,15 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setCompLogic(
+      _compLogic: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setCompSpeed(
       cToken: string,
       supplySpeed: BigNumberish,
       borrowSpeed: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setComptroller(
-      _compLogic: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -3216,15 +3213,15 @@ export class Comptroller extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setCompLogic(
+      _compLogic: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setCompSpeed(
       cToken: string,
       supplySpeed: BigNumberish,
       borrowSpeed: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setComptroller(
-      _compLogic: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

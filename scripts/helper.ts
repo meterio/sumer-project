@@ -453,19 +453,17 @@ export async function cTokenSetting(
     );
   }
   let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
-  if (!isSuToken) {
-    // setReserveFactor
-    let reserveFactorMantissa = await cToken.reserveFactorMantissa();
-    if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
-      console.log('设置Comptroller的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
-      await sendTransaction(
-        network,
-        cToken,
-        '_setReserveFactor(uint256)',
-        [cTokenConfig.settings.reserveFactorMantissa],
-        network.override
-      );
-    }
+  // setReserveFactor
+  let reserveFactorMantissa = await cToken.reserveFactorMantissa();
+  if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
+    console.log('设置cToken的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
+    await sendTransaction(
+      network,
+      cToken,
+      '_setReserveFactor(uint256)',
+      [cTokenConfig.settings.reserveFactorMantissa],
+      network.override
+    );
   }
   if (isSuToken) {
     // grantRole
@@ -488,7 +486,7 @@ export async function cTokenSetting(
     }
     // changeCtoken
     let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as SuErc20;
-    let isCToken = await cToken.isCToken();
+    let isCToken = await suErc20.isCToken();
     if (isCToken) {
       console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
       await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
@@ -534,7 +532,7 @@ export async function selectContract() {
   for (let i = 0; i < contracts_config.length; i++) {
     choices.push({
       name: contracts_config[i].contract,
-      value: contracts_config[i].contract
+      value: contracts_config[i]
     });
   }
   const result = await select({

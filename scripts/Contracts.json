@@ -1,8 +1,45 @@
 [
-  { "path": "Comptroller/", "contract": "AccountLiquidity" },
   {
     "path": "Comptroller/",
-    "contract": "CompLogic"
+    "contract": "AccountLiquidity",
+    "adminControl": [
+      {
+        "func": "setComptroller",
+        "argNames": ["Comptroller address"],
+        "args": [""],
+        "sig": "setComptroller(address)"
+      }
+    ]
+  },
+  {
+    "path": "Comptroller/",
+    "contract": "CompLogic",
+    "adminControl": [
+      {
+        "func": "setComptroller",
+        "argNames": ["Comptroller address"],
+        "args": [""],
+        "sig": "setComptroller(address)"
+      },
+      {
+        "func": "grantComp",
+        "argNames": ["recipient", "amount"],
+        "args": ["", ""],
+        "sig": "_grantComp(address,uint256)"
+      },
+      {
+        "func": "setCompSpeeds",
+        "argNames": ["cTokens[]", "supplySpeeds[]", "borrowSpeeds[]"],
+        "args": ["", "", ""],
+        "sig": "_setCompSpeeds(address[],uint256[],uint256[])"
+      },
+      {
+        "func": "setContributorCompSpeed",
+        "argNames": ["contributor", "compSpeed"],
+        "args": ["", ""],
+        "sig": "_setContributorCompSpeed(address,uint256)"
+      }
+    ]
   },
   {
     "path": "Comptroller/",
@@ -10,7 +47,93 @@
   },
   {
     "path": "Comptroller/",
-    "contract": "Comptroller"
+    "contract": "Comptroller",
+    "adminControl": [
+      {
+        "func": "setTimelock",
+        "argNames": ["timelock address"],
+        "args": [""],
+        "sig": "setTimelock(address)"
+      },
+      {
+        "func": "setPriceOracle",
+        "argNames": ["newOracle address"],
+        "args": [""],
+        "sig": "_setPriceOracle(address)"
+      },
+      {
+        "func": "setCloseFactor",
+        "argNames": ["new CloseFactor Mantissa"],
+        "args": [""],
+        "sig": "_setCloseFactor(uint256)"
+      },
+      {
+        "func": "setLiquidationIncentive",
+        "argNames": [
+          "newHeteroLiquidationIncentiveMantissa",
+          "newHomoLiquidationIncentiveMantissa",
+          "newSutokenLiquidationIncentiveMantissa"
+        ],
+        "args": ["", "", ""],
+        "sig": "_setLiquidationIncentive(uint256,uint256,uint256)"
+      },
+      {
+        "func": "supportMarket",
+        "argNames": ["cToken address", "groupId"],
+        "args": ["", ""],
+        "sig": "_supportMarket(address,uint8)"
+      },
+      {
+        "func": "setCompSpeed",
+        "argNames": ["cToken address", "supplySpeed", "borrowSpeed"],
+        "args": ["", "", ""],
+        "sig": "setCompSpeed(address,uint256,uint256)"
+      },
+      {
+        "func": "setCompLogic",
+        "argNames": ["CompLogic address"],
+        "args": [""],
+        "sig": "setCompLogic(address)"
+      },
+      {
+        "func": "setAccountLiquidity",
+        "argNames": ["AccountLiquidity address"],
+        "args": [""],
+        "sig": "setAccountLiquidity(address)"
+      },
+      {
+        "func": "setPauseGuardian",
+        "argNames": ["newPauseGuardian address"],
+        "args": [""],
+        "sig": "_setPauseGuardian(address)"
+      },
+      {
+        "func": "setGovTokenAddress",
+        "argNames": ["governanceToken address"],
+        "args": [""],
+        "sig": "setGovTokenAddress(address)"
+      },
+      {
+        "func": "setBorrowCapGuardian",
+        "argNames": ["newBorrowCapGuardian address"],
+        "args": [""],
+        "sig": "_setBorrowCapGuardian(address)"
+      },
+      {
+        "func": "setAssetGroup",
+        "argNames": [
+          "groupId",
+          "groupName",
+          "intraCRateMantissa",
+          "intraMintRateMantissa",
+          "intraSuRateMantissa",
+          "interCRateMantissa",
+          "interSuRateMantissa"
+        ],
+        "args": ["", "", "", "", "", "", ""],
+        "sig": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)"
+      }
+    ]
   },
   {
     "path": "CToken/",
