@@ -19,6 +19,9 @@ export const defaultPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed
 export const network_json = './scripts/network.testnet.json';
 export const network_config = JSON.parse(readFileSync(network_json).toString());
 
+export const meter_json = './scripts/meter.json';
+export const meter_config = JSON.parse(readFileSync(meter_json).toString());
+
 export const interestRateModel_json = './scripts/InterestRateModel.json';
 export const InterestRateModel_template = JSON.parse(readFileSync(interestRateModel_json).toString());
 
