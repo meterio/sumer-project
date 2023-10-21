@@ -75,6 +75,14 @@
         "args": ["", ""],
         "sig": "renounceRole(bytes32,address)"
       }
+    ],
+    "userControl": [
+      {
+        "func": "claimSumer",
+        "argNames": ["holders[]", "cTokens[]", "borrowers", "suppliers"],
+        "args": ["", "", "", ""],
+        "sig": "claimSumer(address[],address[],bool,bool)"
+      }
     ]
   },
   {
@@ -187,6 +195,20 @@
         "args": ["", ""],
         "sig": "renounceRole(bytes32,address)"
       }
+    ],
+    "userControl": [
+      {
+        "func": "enterMarkets",
+        "argNames": ["cTokens array"],
+        "args": [""],
+        "sig": "enterMarkets(address[])"
+      },
+      {
+        "func": "exitMarket",
+        "argNames": ["cTokenAddress address"],
+        "args": [""],
+        "sig": "exitMarket(address)"
+      }
     ]
   },
   {
@@ -234,6 +256,20 @@
         "argNames": [],
         "args": [],
         "sig": "_syncUnderlyingBalance()"
+      }
+    ],
+    "userControl": [
+      {
+        "func": "transfer",
+        "argNames": ["dst", "amount"],
+        "args": ["", ""],
+        "sig": "transfer(address,uint256)"
+      },
+      {
+        "func": "transferFrom",
+        "argNames": ["src", "dst", "amount"],
+        "args": ["", "", ""],
+        "sig": "transferFrom(address,address,uint256)"
       }
     ]
   },
