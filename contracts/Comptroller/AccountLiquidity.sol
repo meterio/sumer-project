@@ -110,14 +110,14 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
       require(vars.oraclePriceMantissa > 0, 'price error');
       vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
+      uint8 decimals = ICToken(asset).decimals();
+      if (decimals < 18) vars.oraclePrice = vars.oraclePrice.mul_(10 ** (18 - decimals));
 
       // Pre-compute a conversion factor from tokens -> ether (normalized price value)
       // vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePriceMantissa).div_(1e18);
 
       vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePrice);
       vars.tokensToDenom = vars.tokensToDenom.mul_(vars.discountRate);
-      uint8 decimals = ICToken(asset).decimals();
-      if (decimals < 18) vars.tokensToDenom = vars.tokensToDenom.mul_(10 ** (18 - decimals));
 
       uint8 index;
       for (index = 0; index < vars.equalAssetsGroupNum; ++index) {
