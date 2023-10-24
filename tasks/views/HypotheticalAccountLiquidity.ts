@@ -96,10 +96,10 @@ task('hal', 'get Hypothetical Account Liquidity')
       // borrowCollateralRate: BigNumber.from(0),
       isSuToken: false,
       tokenDepositVal: BigNumber.from(0),
-      tokenBorrowVal: BigNumber.from(0)
+      tokenBorrowVal: BigNumber.from(0),
     };
     let groupVars: AccountGroupLocalVars[] = [];
-    
+
     vars.equalAssetsGroupNum = await comptroller.getAssetGroupNum(); // Line 85
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
       groupVars.push({
@@ -107,13 +107,14 @@ task('hal', 'get Hypothetical Account Liquidity')
         cTokenBalanceSum: BigNumber.from(0),
         cTokenBorrowSum: BigNumber.from(0),
         suTokenBalanceSum: BigNumber.from(0),
-        suTokenBorrowSum: BigNumber.from(0)
+        suTokenBorrowSum: BigNumber.from(0),
       });
     }
     if (ctoken != constants.AddressZero) {
       const cToken = (await ethers.getContractAt('CErc20', ctoken, wallet)) as CErc20;
       vars.isSuToken = !(await cToken.isCToken()); // Line 89
       vars.discountRate = await cToken.getDiscountRate(); // Line 111
+      console.log('vars.discourntRate');
     }
     const assets = await comptroller.getAssetsIn(account); // Line 95
     const oracle = (await ethers.getContractAt('PythOracle', config.FeedPriceOracle.address, wallet)) as PythOracle; // Line 114
@@ -133,6 +134,14 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.exchangeRate = exchangeRateMantissa; // Line 110
       vars.oraclePriceMantissa = await oracle.getUnderlyingPrice(asset); // Line 115
       vars.oraclePrice = vars.oraclePriceMantissa; // Line 117
+      const decimals = await assetToken.decimals();
+      let fixDecimals = BigNumber.from(1);
+      if (decimals < 18) {
+        console.log('decimals: ', decimals);
+        fixDecimals = BigNumber.from(BigNumber.from(10).pow(18 - Number(decimals.toString())));
+        vars.oraclePrice = vars.oraclePrice.mul(fixDecimals);
+      }
+
       vars.tokensToDenom = vars.exchangeRate // Line 121
         .mul(vars.oraclePrice)
         .div(expScale)
@@ -141,6 +150,8 @@ task('hal', 'get Hypothetical Account Liquidity')
 
       const symbol = await assetToken.symbol();
       console.log(`asset ${symbol}
+      balance: ${vars.cTokenBalance}
+      tokensToDenom: ${vars.tokensToDenom}
       exchangeRate: ${vars.exchangeRate}
       oraclePrice : ${vars.oraclePrice}
       discountRate : ${vars.discountRate}
@@ -183,9 +194,9 @@ task('hal', 'get Hypothetical Account Liquidity')
         vars.tokenBorrowVal = mul_ScalarTruncateAddUInt(vars.oraclePrice, borrow, vars.tokenBorrowVal); // Line 154
       }
       // const symbol = await assetToken.symbol();
-      //   console.log(`asset ${symbol}
-      //   depositVal: ${vars.tokenDepositVal}
-      //   borrowVal : ${vars.tokenBorrowVal}`);
+      console.log(`asset ${symbol}
+        depositVal: ${vars.tokenDepositVal}
+        borrowVal : ${vars.tokenBorrowVal}`);
       if (await assetToken.isCToken()) {
         // Line 157
         groupVars[index].cTokenBalanceSum = vars.tokenDepositVal.add(groupVars[index].cTokenBalanceSum); // Line 158
@@ -195,13 +206,14 @@ task('hal', 'get Hypothetical Account Liquidity')
         groupVars[index].suTokenBorrowSum = vars.tokenBorrowVal.add(groupVars[index].suTokenBorrowSum); // Line 162
       }
     }
+    console.log('group vars', groupVars);
     // Line 166
     let targetGroup: AccountGroupLocalVars = {
       groupId: 0,
       cTokenBalanceSum: BigNumber.from(0),
       cTokenBorrowSum: BigNumber.from(0),
       suTokenBalanceSum: BigNumber.from(0),
-      suTokenBorrowSum: BigNumber.from(0)
+      suTokenBorrowSum: BigNumber.from(0),
     };
     // Line 167
     let targetVars: AccountLiquidityLocalVars = {
@@ -227,7 +239,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       // borrowCollateralRate: BigNumber.from(0),
       isSuToken: false,
       tokenDepositVal: BigNumber.from(0),
-      tokenBorrowVal: BigNumber.from(0)
+      tokenBorrowVal: BigNumber.from(0),
     };
     // Line 168
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
