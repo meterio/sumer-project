@@ -3,7 +3,7 @@ import { types } from 'hardhat/config';
 import { log } from '../../log_settings';
 import { readFileSync } from 'fs';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { CErc20, Comptroller, FeedPriceOracle, PythOracle, UnderwriterAdmin } from '../../typechain';
+import { CErc20, Comptroller, FeedPriceOracle, PythOracle } from '../../typechain';
 import { type } from 'os';
 import { BigNumber, constants } from 'ethers';
 
@@ -66,8 +66,8 @@ task('hal', 'get Hypothetical Account Liquidity')
     let provider = new ethers.providers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
-    log.info('address: ', config.comptroller.address);
-    const comptroller = (await ethers.getContractAt('Comptroller', config.comptroller.address, wallet)) as Comptroller;
+    log.info('address: ', config.Comptroller.address);
+    const comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
     log.info('created comptroller');
     const accountLiquidity = await comptroller.getHypotheticalAccountLiquidity(account, ctoken, redeem, borrow);
     log.info('accountLiquidity.liquidity:', accountLiquidity[1].toString());
@@ -99,12 +99,8 @@ task('hal', 'get Hypothetical Account Liquidity')
       tokenBorrowVal: BigNumber.from(0)
     };
     let groupVars: AccountGroupLocalVars[] = [];
-    const ua = (await ethers.getContractAt(
-      'UnderwriterAdmin',
-      config.underwriterAdmin.address,
-      wallet
-    )) as UnderwriterAdmin;
-    vars.equalAssetsGroupNum = await ua.getAssetGroupNum(); // Line 85
+    
+    vars.equalAssetsGroupNum = await comptroller.getAssetGroupNum(); // Line 85
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
       groupVars.push({
         groupId: 0,
@@ -120,7 +116,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.discountRate = await cToken.getDiscountRate(); // Line 111
     }
     const assets = await comptroller.getAssetsIn(account); // Line 95
-    const oracle = (await ethers.getContractAt('PythOracle', config.feedPriceOracle.address, wallet)) as PythOracle; // Line 114
+    const oracle = (await ethers.getContractAt('PythOracle', config.FeedPriceOracle.address, wallet)) as PythOracle; // Line 114
 
     for (let i = 0; i < assets.length; i++) {
       // Line 101
@@ -239,7 +235,7 @@ task('hal', 'get Hypothetical Account Liquidity')
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      let equalAssetsGroup = await ua.getAssetGroup(BigNumber.from(groupVars[i].groupId)); // Line 173
+      let equalAssetsGroup = await comptroller.getAssetGroup(BigNumber.from(groupVars[i].groupId)); // Line 173
       vars.intraCRate = equalAssetsGroup.intraCRateMantissa; // Line 177
       vars.intraMintRate = equalAssetsGroup.intraMintRateMantissa; // Line 178
       vars.intraSuRate = equalAssetsGroup.intraSuRateMantissa; // Line 179
