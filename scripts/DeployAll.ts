@@ -4,6 +4,7 @@ import {
   writeConfig,
   network_config,
   setNetwork,
+  getCTokens,
   deployOrInput,
   deployProxyOrInput,
   sendTransaction,
@@ -12,7 +13,7 @@ import {
   interestRateModel_select,
   InterestRateModel_template
 } from './helper';
-import { AccountLiquidity, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
+import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
 import { confirm } from '@inquirer/prompts';
 import { BigNumber } from 'ethers';
 
@@ -21,22 +22,34 @@ const main = async () => {
   let { netConfig, wallet, override } = network;
 
   let config = getConfig(netConfig.name);
-
+  // ProxyAdmin
   config.ProxyAdmin = await deployOrInput(ethers, network, override, config.ProxyAdmin);
   writeConfig(netConfig.name, config);
-
+  // Multicall2
   config.Multicall2 = await deployOrInput(ethers, network, override, config.Multicall2);
   writeConfig(netConfig.name, config);
-
+  // Multicall2
   config.Sumer = await deployOrInput(ethers, network, override, config.Sumer);
   writeConfig(netConfig.name, config);
-
+  // FeedPriceOracle
+  let old_feedPriceOracle = config.FeedPriceOracle.address;
   config.FeedPriceOracle = await deployOrInput(ethers, network, override, config.FeedPriceOracle);
   writeConfig(netConfig.name, config);
-
+  const oracle = (await ethers.getContractAt(
+    'FeedPriceOracle',
+    config.FeedPriceOracle.address,
+    network.wallet
+  )) as FeedPriceOracle;
+  // set FeedPriceOracle
+  if (config.Comptroller.address != '' && old_feedPriceOracle != config.FeedPriceOracle.address) {
+    console.log('更新FeedPriceOracle：');
+    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
+    await sendTransaction(network, comptroller, '_setPriceOracle(address)', [config.FeedPriceOracle.address], override);
+  }
+  // CompoundLens
   config.CompoundLens = await deployOrInput(ethers, network, override, config.CompoundLens);
   writeConfig(netConfig.name, config);
-
+  // InterestRateModel
   let interestRateModel_selected;
 
   let InterestRateModel = config.InterestRateModel;
@@ -55,7 +68,8 @@ const main = async () => {
       writeConfig(netConfig.name, config);
     }
   } while (interestRateModel_selected != 'exit');
-
+  // AccountLiquidity
+  let old_accountLiquidity = config.AccountLiquidity.address;
   config.AccountLiquidity = await deployOrInput(ethers, network, override, config.AccountLiquidity, true);
   writeConfig(netConfig.name, config);
 
@@ -67,13 +81,33 @@ const main = async () => {
     config.ProxyAdmin.address
   );
   writeConfig(netConfig.name, config);
-
+  // set AccountLiquidity
+  if (config.Comptroller.address != '' && old_accountLiquidity != config.AccountLiquidity.address) {
+    console.log('更新AccountLiquidity：');
+    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
+    await sendTransaction(
+      network,
+      comptroller,
+      'setAccountLiquidity(address)',
+      [config.AccountLiquidity.address],
+      override
+    );
+  }
+  // CompLogic
+  let old_compLogic = config.CompLogic.address;
   config.CompLogic = await deployOrInput(ethers, network, override, config.CompLogic, true);
   writeConfig(netConfig.name, config);
 
   config.CompLogic = await deployProxyOrInput(ethers, network, override, config.CompLogic, config.ProxyAdmin.address);
   writeConfig(netConfig.name, config);
-
+  // set CompLogic
+  if (config.Comptroller.address != '' && old_compLogic != config.CompLogic.address) {
+    console.log('更新CompLogic：');
+    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
+    await sendTransaction(network, comptroller, 'setCompLogic(address)', [config.CompLogic.address], override);
+  }
+  // Comptroller
+  let old_comptroller = config.Comptroller.address;
   config.Comptroller = await deployOrInput(ethers, network, override, config.Comptroller, true);
   writeConfig(netConfig.name, config);
 
@@ -85,7 +119,17 @@ const main = async () => {
     config.ProxyAdmin.address
   );
   writeConfig(netConfig.name, config);
-
+  // set Comptroller
+  if (old_comptroller != config.Comptroller.address) {
+    let tokens = getCTokens(network);
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i] != '') {
+        let cToken = (await ethers.getContractAt('CErc20', tokens[i], wallet)) as CErc20;
+        await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
+      }
+    }
+  }
+  // compLogic set comptroller address
   const compLogic = (await ethers.getContractAt('CompLogic', config.CompLogic.address, wallet)) as CompLogic;
   const compLogic_comptroller_address = await compLogic.comptroller(override);
   if (compLogic_comptroller_address.toLocaleLowerCase() != config.Comptroller.address.toLocaleLowerCase()) {
@@ -99,7 +143,7 @@ const main = async () => {
       DEFAULT_ADMIN_ROLE
     );
   }
-
+  // accountLiquidity set comptroller address
   const accountLiquidity = (await ethers.getContractAt(
     'AccountLiquidity',
     config.AccountLiquidity.address,
@@ -117,17 +161,12 @@ const main = async () => {
       DEFAULT_ADMIN_ROLE
     );
   }
+  // comptroller settings
   const comptroller = (await ethers.getContractAt(
     'Comptroller',
     config.Comptroller.address,
     network.wallet
   )) as Comptroller;
-
-  const oracle = (await ethers.getContractAt(
-    'FeedPriceOracle',
-    config.FeedPriceOracle.address,
-    network.wallet
-  )) as FeedPriceOracle;
 
   for (let i = 0; i < config.Comptroller.settings.length; i++) {
     let setting = config.Comptroller.settings[i];
