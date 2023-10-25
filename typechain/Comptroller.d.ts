@@ -49,6 +49,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "accountAssets(address,uint256)": FunctionFragment;
     "accountLiquidity()": FunctionFragment;
     "allMarkets(uint256)": FunctionFragment;
+    "assetGroupIdToIndex(uint8)": FunctionFragment;
     "borrowAllowed(address,address,uint256)": FunctionFragment;
     "borrowCapGuardian()": FunctionFragment;
     "borrowCaps(address)": FunctionFragment;
@@ -58,9 +59,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "compLogic()": FunctionFragment;
     "enterMarkets(address[])": FunctionFragment;
     "eqAssetGroup(uint8)": FunctionFragment;
-    "equalAssetsGroupNum()": FunctionFragment;
     "exitMarket(address)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
+    "getAllAssetGroup()": FunctionFragment;
+    "getAllAssetGroupByIndex(uint8)": FunctionFragment;
     "getAllMarkets()": FunctionFragment;
     "getAssetGroup(uint8)": FunctionFragment;
     "getAssetGroupNum()": FunctionFragment;
@@ -221,6 +223,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "assetGroupIdToIndex",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "borrowAllowed",
     values: [string, string, BigNumberish]
   ): string;
@@ -250,14 +256,18 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "eqAssetGroup",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "equalAssetsGroupNum",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "exitMarket", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getAccountLiquidity",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllAssetGroup",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllAssetGroupByIndex",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getAllMarkets",
@@ -544,6 +554,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "allMarkets", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "assetGroupIdToIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "borrowAllowed",
     data: BytesLike
   ): Result;
@@ -573,13 +587,17 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     functionFragment: "eqAssetGroup",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "equalAssetsGroupNum",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getAccountLiquidity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllAssetGroup",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllAssetGroupByIndex",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1037,6 +1055,11 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    assetGroupIdToIndex(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[number]>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -1069,29 +1092,29 @@ export class Comptroller extends BaseContract {
     ): Promise<ContractTransaction>;
 
     eqAssetGroup(
-      arg0: BigNumberish,
+      groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [
-        number,
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber
-      ] & {
-        groupId: number;
-        groupName: string;
-        intraCRateMantissa: BigNumber;
-        intraMintRateMantissa: BigNumber;
-        intraSuRateMantissa: BigNumber;
-        interCRateMantissa: BigNumber;
-        interSuRateMantissa: BigNumber;
-      }
+        [
+          number,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          groupId: number;
+          groupName: string;
+          intraCRateMantissa: BigNumber;
+          intraMintRateMantissa: BigNumber;
+          intraSuRateMantissa: BigNumber;
+          interCRateMantissa: BigNumber;
+          interSuRateMantissa: BigNumber;
+        }
+      ]
     >;
-
-    equalAssetsGroupNum(overrides?: CallOverrides): Promise<[number]>;
 
     exitMarket(
       cTokenAddress: string,
@@ -1102,6 +1125,55 @@ export class Comptroller extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
+
+    getAllAssetGroup(
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        ([
+          number,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          groupId: number;
+          groupName: string;
+          intraCRateMantissa: BigNumber;
+          intraMintRateMantissa: BigNumber;
+          intraSuRateMantissa: BigNumber;
+          interCRateMantissa: BigNumber;
+          interSuRateMantissa: BigNumber;
+        })[]
+      ]
+    >;
+
+    getAllAssetGroupByIndex(
+      groupIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [
+          number,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          groupId: number;
+          groupName: string;
+          intraCRateMantissa: BigNumber;
+          intraMintRateMantissa: BigNumber;
+          intraSuRateMantissa: BigNumber;
+          interCRateMantissa: BigNumber;
+          interSuRateMantissa: BigNumber;
+        }
+      ]
+    >;
 
     getAllMarkets(overrides?: CallOverrides): Promise<[string[]]>;
 
@@ -1453,6 +1525,11 @@ export class Comptroller extends BaseContract {
 
   allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+  assetGroupIdToIndex(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<number>;
+
   borrowAllowed(
     cToken: string,
     borrower: string,
@@ -1485,7 +1562,7 @@ export class Comptroller extends BaseContract {
   ): Promise<ContractTransaction>;
 
   eqAssetGroup(
-    arg0: BigNumberish,
+    groupId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
     [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
@@ -1499,8 +1576,6 @@ export class Comptroller extends BaseContract {
     }
   >;
 
-  equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
-
   exitMarket(
     cTokenAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1510,6 +1585,35 @@ export class Comptroller extends BaseContract {
     account: string,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
+
+  getAllAssetGroup(
+    overrides?: CallOverrides
+  ): Promise<
+    ([number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
+    })[]
+  >;
+
+  getAllAssetGroupByIndex(
+    groupIndex: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      groupId: number;
+      groupName: string;
+      intraCRateMantissa: BigNumber;
+      intraMintRateMantissa: BigNumber;
+      intraSuRateMantissa: BigNumber;
+      interCRateMantissa: BigNumber;
+      interSuRateMantissa: BigNumber;
+    }
+  >;
 
   getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
@@ -1848,6 +1952,11 @@ export class Comptroller extends BaseContract {
 
     allMarkets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+    assetGroupIdToIndex(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<number>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -1880,7 +1989,7 @@ export class Comptroller extends BaseContract {
     ): Promise<BigNumber[]>;
 
     eqAssetGroup(
-      arg0: BigNumberish,
+      groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [
@@ -1902,8 +2011,6 @@ export class Comptroller extends BaseContract {
       }
     >;
 
-    equalAssetsGroupNum(overrides?: CallOverrides): Promise<number>;
-
     exitMarket(
       cTokenAddress: string,
       overrides?: CallOverrides
@@ -1913,6 +2020,51 @@ export class Comptroller extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
+
+    getAllAssetGroup(
+      overrides?: CallOverrides
+    ): Promise<
+      ([
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      })[]
+    >;
+
+    getAllAssetGroupByIndex(
+      groupIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        number,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        groupId: number;
+        groupName: string;
+        intraCRateMantissa: BigNumber;
+        intraMintRateMantissa: BigNumber;
+        intraSuRateMantissa: BigNumber;
+        interCRateMantissa: BigNumber;
+        interSuRateMantissa: BigNumber;
+      }
+    >;
 
     getAllMarkets(overrides?: CallOverrides): Promise<string[]>;
 
@@ -2585,6 +2737,11 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    assetGroupIdToIndex(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -2617,11 +2774,9 @@ export class Comptroller extends BaseContract {
     ): Promise<BigNumber>;
 
     eqAssetGroup(
-      arg0: BigNumberish,
+      groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    equalAssetsGroupNum(overrides?: CallOverrides): Promise<BigNumber>;
 
     exitMarket(
       cTokenAddress: string,
@@ -2630,6 +2785,13 @@ export class Comptroller extends BaseContract {
 
     getAccountLiquidity(
       account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getAllAssetGroup(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAllAssetGroupByIndex(
+      groupIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -2972,6 +3134,11 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    assetGroupIdToIndex(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     borrowAllowed(
       cToken: string,
       borrower: string,
@@ -3009,11 +3176,7 @@ export class Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     eqAssetGroup(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    equalAssetsGroupNum(
+      groupId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -3024,6 +3187,13 @@ export class Comptroller extends BaseContract {
 
     getAccountLiquidity(
       account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAllAssetGroup(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getAllAssetGroupByIndex(
+      groupIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

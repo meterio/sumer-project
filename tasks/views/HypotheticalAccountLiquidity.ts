@@ -69,9 +69,9 @@ task('hal', 'get Hypothetical Account Liquidity')
     log.info('address: ', config.Comptroller.address);
     const comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
     log.info('created comptroller');
-    const accountLiquidity = await comptroller.getHypotheticalAccountLiquidity(account, ctoken, redeem, borrow);
-    log.info('accountLiquidity.liquidity:', accountLiquidity[1].toString());
-    log.info('accountLiquidity.shortfall:', accountLiquidity[2].toString());
+    // const accountLiquidity = await comptroller.getHypotheticalAccountLiquidity(account, ctoken, redeem, borrow);
+    // log.info('accountLiquidity.liquidity:', accountLiquidity[1].toString());
+    // log.info('accountLiquidity.shortfall:', accountLiquidity[2].toString());
 
     let vars: AccountLiquidityLocalVars = {
       equalAssetsGroupNum: 0,

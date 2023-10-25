@@ -697,6 +697,10 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     return (heteroLiquidationIncentiveMantissa, homoLiquidationIncentiveMantissa, sutokenLiquidationIncentiveMantissa);
   }
 
+  function eqAssetGroup(uint8 groupId) public view returns (IComptroller.AssetGroup memory) {
+    return _eqAssetGroups[assetGroupIdToIndex[groupId] - 1];
+  }
+
   function setAssetGroup(
     uint8 groupId,
     string memory groupName,
@@ -706,42 +710,74 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 interCRateMantissa, // ctoken collateral rate for inter group ctoken/sutoken liability
     uint256 interSuRateMantissa // sutoken collateral rate for inter group ctoken/sutoken liability
   ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-    eqAssetGroup[groupId] = IComptroller.AssetGroup(
-      groupId,
-      groupName,
-      intraCRateMantissa,
-      intraMintRateMantissa,
-      intraSuRateMantissa,
-      interCRateMantissa,
-      interSuRateMantissa
-    );
-    equalAssetsGroupNum++;
-    emit NewAssetGroup(
-      groupId,
-      groupName,
-      intraCRateMantissa,
-      intraMintRateMantissa,
-      intraSuRateMantissa,
-      interCRateMantissa,
-      interSuRateMantissa,
-      equalAssetsGroupNum
-    );
+    if (assetGroupIdToIndex[groupId] == 0) {
+      _eqAssetGroups.push(
+        IComptroller.AssetGroup(
+          groupId,
+          groupName,
+          intraCRateMantissa,
+          intraMintRateMantissa,
+          intraSuRateMantissa,
+          interCRateMantissa,
+          interSuRateMantissa
+        )
+      );
+      uint8 _equalAssetsGroupNum = uint8(_eqAssetGroups.length);
+
+      assetGroupIdToIndex[groupId] = _equalAssetsGroupNum;
+
+      emit NewAssetGroup(
+        groupId,
+        groupName,
+        intraCRateMantissa,
+        intraMintRateMantissa,
+        intraSuRateMantissa,
+        interCRateMantissa,
+        interSuRateMantissa,
+        _equalAssetsGroupNum
+      );
+    } else {
+      _eqAssetGroups[assetGroupIdToIndex[groupId] - 1] = IComptroller.AssetGroup(
+        groupId,
+        groupName,
+        intraCRateMantissa,
+        intraMintRateMantissa,
+        intraSuRateMantissa,
+        interCRateMantissa,
+        interSuRateMantissa
+      );
+    }
     return uint256(0);
   }
 
   function removeAssetGroup(uint8 groupId) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-    delete eqAssetGroup[groupId];
-    equalAssetsGroupNum--;
-    emit RemoveAssetGroup(groupId, equalAssetsGroupNum);
+    uint8 length = uint8(_eqAssetGroups.length);
+    uint8 lastId = _eqAssetGroups[length - 1].groupId;
+    uint8 index = assetGroupIdToIndex[groupId];
+
+    _eqAssetGroups[index - 1] = _eqAssetGroups[length - 1];
+    assetGroupIdToIndex[lastId] = index;
+    _eqAssetGroups.pop();
+    delete assetGroupIdToIndex[groupId];
+
+    emit RemoveAssetGroup(groupId, length);
     return uint256(0);
   }
 
   function getAssetGroup(uint8 groupId) external view returns (IComptroller.AssetGroup memory) {
-    return eqAssetGroup[groupId];
+    return _eqAssetGroups[assetGroupIdToIndex[groupId] - 1];
   }
 
   function getAssetGroupNum() external view returns (uint8) {
-    return equalAssetsGroupNum;
+    return uint8(_eqAssetGroups.length);
+  }
+
+  function getAllAssetGroup() external view returns (IComptroller.AssetGroup[] memory) {
+    return _eqAssetGroups;
+  }
+
+  function getAllAssetGroupByIndex(uint8 groupIndex) external view returns (IComptroller.AssetGroup memory) {
+    return _eqAssetGroups[groupIndex];
   }
 
   /**

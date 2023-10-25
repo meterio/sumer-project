@@ -67,6 +67,10 @@ const main = async () => {
       value: 8
     },
     {
+      name: 'AssetGroup',
+      value: 9
+    },
+    {
       name: '退出',
       value: 'exit'
     }
@@ -841,6 +845,47 @@ const main = async () => {
           } else {
             console.info(0, 0, vars.sumBorrowPlusEffects.sub(vars.sumCollateral).toString());
           }
+          break;
+        case 9:
+          let assetGroupNum = await comptroller.getAssetGroupNum();
+          type AssetGroup = {
+            groupId: number;
+            groupName: string;
+            intraCRateMantissa: string;
+            intraMintRateMantissa: string;
+            intraSuRateMantissa: string;
+            interCRateMantissa: string;
+            interSuRateMantissa: string;
+          };
+
+          let assetGroups: AssetGroup[] = [];
+          for (let i = 0; i < assetGroupNum; i++) {
+            let assetGroup = await comptroller.getAssetGroup(assetGroupNum);
+            assetGroups.push({
+              groupId: assetGroup.groupId,
+              groupName: assetGroup.groupName,
+              intraCRateMantissa: assetGroup.intraCRateMantissa.toString(),
+              intraMintRateMantissa: assetGroup.intraMintRateMantissa.toString(),
+              intraSuRateMantissa: assetGroup.intraSuRateMantissa.toString(),
+              interCRateMantissa: assetGroup.interCRateMantissa.toString(),
+              interSuRateMantissa: assetGroup.interSuRateMantissa.toString()
+            });
+          }
+          console.table(assetGroups);
+          type CtokenDetail = {
+            token: string;
+            groupId: number;
+          };
+          let ctokenDetail: CtokenDetail[] = [];
+
+          for (let i = 0; i < tokens.length; i++) {
+            let market = await comptroller.markets(tokens[i]);
+            ctokenDetail.push({
+              token: tokens[i],
+              groupId: market.assetGroupId
+            });
+          }
+          console.table(ctokenDetail);
           break;
       }
     }
