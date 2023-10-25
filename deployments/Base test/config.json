@@ -24,7 +24,7 @@
   },
   "CompoundLens": {
     "contract": "CompoundLens",
-    "address": "0x20C606e9996312Bf02198dF461E6F705971500d6"
+    "address": "0x26619fbE716334233248d892e8aBdf8d81b464f2"
   },
   "FeedPriceOracle": {
     "contract": "FeedPriceOracleSafe",
@@ -106,8 +106,8 @@
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0x5709dDd0376014202654788466FDd70bda5E69Bb",
-    "address": "0x48487f7dc18F12fA1770e824Df663CE36f214525",
+    "implementation": "0xC2581fc348A1CC935712b9D2475bE72f20458A83",
+    "address": "0xb75fC5194424c86efc49e46DB14c8bC2e3876CF3",
     "constructorName": [
       "admin"
     ],
@@ -117,8 +117,8 @@
   },
   "CompLogic": {
     "contract": "CompLogic",
-    "implementation": "0x64628c9b1372e56CAF694D2f59892a5B00423E14",
-    "address": "0xf26b183F7bE8544Cd1624b2C8034E3681ac8a2eC",
+    "implementation": "0x86B5Ad66Ec1B07Bf57E1d485DaDDB399CD473399",
+    "address": "0x831B93676C7D0a99B0786BCd8e1E9F3dA89d9088",
     "constructorName": [
       "admin",
       "Sumer"
@@ -130,8 +130,8 @@
   },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0xC6b0e737A951D82f0c23FCB4197FfFc40CAF68C5",
-    "address": "0x2129c216276E803eaB6A962F036305183aFceD1B",
+    "implementation": "0x3d361cC7e5C71783b38c3e5A0A015685b5806A77",
+    "address": "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
     "settings": [
       {
         "func": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)",
@@ -185,8 +185,8 @@
       "0x0205c2D862cA051010698b69b54278cbAf945C0b",
       "0xC2A15cDA264837D77345500Da3550066b5eB2EbA",
       "0xBeE85b7b676f9306803B6DFC09F024c30a7A2a1e",
-      "0xf26b183F7bE8544Cd1624b2C8034E3681ac8a2eC",
-      "0x48487f7dc18F12fA1770e824Df663CE36f214525",
+      "0x831B93676C7D0a99B0786BCd8e1E9F3dA89d9088",
+      "0xb75fC5194424c86efc49e46DB14c8bC2e3876CF3",
       "5000000000000000000",
       "100000000000000000",
       "50000000000000000",
@@ -196,8 +196,8 @@
   "CEther": {
     "name": "Sumer ETH Deposit",
     "contract": "CEther",
-    "implementation": "0xD5AA08bDC5CCef223d07AeeCe7033A4C31A66635",
-    "address": "0x4cad35e7A422eF10b668E9b28FdAE167BE1f6976",
+    "implementation": "0x0515703147C18817a0E73339fbA56AB362b0D1D9",
+    "address": "0x138924B369421B87176CfFbA55634E70AE105E98",
     "constructorName": [
       "Comptroller",
       "interestRateModel",
@@ -209,7 +209,7 @@
       "discountRateMantissa"
     ],
     "args": [
-      "0x2129c216276E803eaB6A962F036305183aFceD1B",
+      "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
       "0xB79F1af961dA05a89D810251Af338BBfb98AFDF5",
       "1000000000000000000",
       "Sumer ETH Deposit",
@@ -222,7 +222,7 @@
       "oracle": {
         "func": "setChainlinkFeed(address,address)",
         "args": [
-          "0x4cad35e7A422eF10b668E9b28FdAE167BE1f6976",
+          "0x138924B369421B87176CfFbA55634E70AE105E98",
           "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
         ]
       },
@@ -234,17 +234,17 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0x698b2b9A60B63df6Da1126481Eb059a0840E17eD",
+    "implementation": "0x4dCb66025F8cB55a0D46c8D3BA9f974863e7E0eE",
     "proxys": [
       {
         "contract": "CErc20",
         "name": "Sumer USDC Deposit",
-        "address": "0x3504fE646108cB7AfF6fDb8dE668351E435acc1e",
+        "address": "0x110BBFf32C8fCC6Da86649Ca866fa34A1eC7252f",
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
             "args": [
-              "0x3504fE646108cB7AfF6fDb8dE668351E435acc1e",
+              "0x110BBFf32C8fCC6Da86649Ca866fa34A1eC7252f",
               "0xb85765935B4d9Ab6f841c9a00690Da5F34368bc0"
             ]
           },
@@ -266,7 +266,7 @@
         ],
         "args": [
           "0x93de053520D42B3F74281852Bd56F232A4E643DA",
-          "0x2129c216276E803eaB6A962F036305183aFceD1B",
+          "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
           "0xfdfB839Cc859E863B0a594F3540795E09BD60e76",
           "1000000000000000000",
           "Sumer USDC Deposit",
@@ -279,12 +279,12 @@
       {
         "contract": "CErc20",
         "name": "Sumer USDT Deposit",
-        "address": "0x6A6CdaC0Fa9BB0089984d9AB49Fb171b1E6280DC",
+        "address": "0xf9ADf838fE5131286E12747422F84AA853a5cb93",
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
             "args": [
-              "0x6A6CdaC0Fa9BB0089984d9AB49Fb171b1E6280DC",
+              "0xf9ADf838fE5131286E12747422F84AA853a5cb93",
               "0xd5973EB46D6fE54E82C5337dD9536B35D080912C"
             ]
           },
@@ -306,7 +306,7 @@
         ],
         "args": [
           "0x61E2c1608B1caA59136BCB7845637858d216c3B9",
-          "0x2129c216276E803eaB6A962F036305183aFceD1B",
+          "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
           "0xfdfB839Cc859E863B0a594F3540795E09BD60e76",
           "1000000000000000000",
           "Sumer USDT Deposit",
@@ -319,12 +319,12 @@
       {
         "contract": "CErc20",
         "name": "Sumer BTC Deposit",
-        "address": "0xa855307B995Fc89ca3e128Ab1b064e8CD3Ab8764",
+        "address": "0xE91f13a4Fedc156f4b946E65bFEDCAc0Cd0AE724",
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
             "args": [
-              "0xa855307B995Fc89ca3e128Ab1b064e8CD3Ab8764",
+              "0xE91f13a4Fedc156f4b946E65bFEDCAc0Cd0AE724",
               "0xAC15714c08986DACC0379193e22382736796496f"
             ]
           },
@@ -346,7 +346,7 @@
         ],
         "args": [
           "0x0D0267E89189D73826aeAa1556ac4428c845e68a",
-          "0x2129c216276E803eaB6A962F036305183aFceD1B",
+          "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
           "0xfdfB839Cc859E863B0a594F3540795E09BD60e76",
           "1000000000000000000",
           "Sumer WBTC Deposit",
@@ -360,17 +360,17 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0x21ecdF5FC472437B525263e5545987BeaBC9f2f2",
+    "implementation": "0xAe81f1fF941fc839Bb3aB63EC439f88BC9296864",
     "proxys": [
       {
         "contract": "suErc20",
         "name": "Sumer suUSD Deposit",
-        "address": "0xE525c41f6A4138205484903B55424013a7188340",
+        "address": "0x56F6Ad4a38F013ABdb3f9D2cC2180D8861D0FB35",
         "settings": {
           "oracle": {
             "func": "setFixedPrice(address,uint256)",
             "args": [
-              "0xE525c41f6A4138205484903B55424013a7188340",
+              "0x56F6Ad4a38F013ABdb3f9D2cC2180D8861D0FB35",
               "1000000000000000000"
             ]
           },
@@ -392,7 +392,7 @@
         ],
         "args": [
           "0x875A75e783145328880468C3e6cB791384D72e9d",
-          "0x2129c216276E803eaB6A962F036305183aFceD1B",
+          "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
           "0x07823dD84D58d5B779Daf9E1D3B04B13cB3acAA8",
           "1000000000000000000",
           "Sumer suUSD Deposit",
@@ -405,12 +405,12 @@
       {
         "contract": "suErc20",
         "name": "Sumer suETH Deposit",
-        "address": "0xB1fA5a2D09d3D086536b95B8e95eb00C57BD5a86",
+        "address": "0xbceD65886AF05De6A127EFb12dE897A710a381a3",
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
             "args": [
-              "0xB1fA5a2D09d3D086536b95B8e95eb00C57BD5a86",
+              "0xbceD65886AF05De6A127EFb12dE897A710a381a3",
               "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2"
             ]
           },
@@ -432,7 +432,7 @@
         ],
         "args": [
           "0xEdd794DC7b4dFE58eBFC0f568F9A01F6eeB64563",
-          "0x2129c216276E803eaB6A962F036305183aFceD1B",
+          "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
           "0x07823dD84D58d5B779Daf9E1D3B04B13cB3acAA8",
           "1000000000000000000",
           "Sumer suETH Deposit",
@@ -445,12 +445,12 @@
       {
         "contract": "suErc20",
         "name": "Sumer suBTC Deposit",
-        "address": "0x0fA3176E1478e4730b966A79AdA9a8173AE02f78",
+        "address": "0x16e6516DC3b9c2AeBbA3f7F6E4AEc511Da48dedC",
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
             "args": [
-              "0x0fA3176E1478e4730b966A79AdA9a8173AE02f78",
+              "0x16e6516DC3b9c2AeBbA3f7F6E4AEc511Da48dedC",
               "0xAC15714c08986DACC0379193e22382736796496f"
             ]
           },
@@ -472,7 +472,7 @@
         ],
         "args": [
           "0xd11f348AB72A02ccbb611d4590fF79Ff48a07911",
-          "0x2129c216276E803eaB6A962F036305183aFceD1B",
+          "0x32B9d56d16c3bd08a22Dc24D3eD9114c59bF1362",
           "0x07823dD84D58d5B779Daf9E1D3B04B13cB3acAA8",
           "1000000000000000000",
           "Sumer suBTC Deposit",
@@ -486,19 +486,19 @@
   },
   "Timelock": {
     "contract": "Timelock",
-    "address": "0x22364219Cde3a4915edBa4F03F9Ac38F3e62Ce84",
+    "address": "0x950B2AeA74403f841F98961e407a6D7380d9cCdb",
     "constructorName": [
       "cTokens"
     ],
     "args": [
       [
-        "0x3504fE646108cB7AfF6fDb8dE668351E435acc1e",
-        "0x6A6CdaC0Fa9BB0089984d9AB49Fb171b1E6280DC",
-        "0xa855307B995Fc89ca3e128Ab1b064e8CD3Ab8764",
-        "0xE525c41f6A4138205484903B55424013a7188340",
-        "0xB1fA5a2D09d3D086536b95B8e95eb00C57BD5a86",
-        "0x0fA3176E1478e4730b966A79AdA9a8173AE02f78",
-        "0x4cad35e7A422eF10b668E9b28FdAE167BE1f6976"
+        "0x110BBFf32C8fCC6Da86649Ca866fa34A1eC7252f",
+        "0xf9ADf838fE5131286E12747422F84AA853a5cb93",
+        "0xE91f13a4Fedc156f4b946E65bFEDCAc0Cd0AE724",
+        "0x56F6Ad4a38F013ABdb3f9D2cC2180D8861D0FB35",
+        "0xbceD65886AF05De6A127EFb12dE897A710a381a3",
+        "0x16e6516DC3b9c2AeBbA3f7F6E4AEc511Da48dedC",
+        "0x138924B369421B87176CfFbA55634E70AE105E98"
       ]
     ]
   }
