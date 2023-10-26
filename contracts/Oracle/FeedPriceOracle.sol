@@ -109,10 +109,14 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
   }
 
   function _getPythPrice(FeedData memory feed) internal view virtual returns (uint256) {
-    PythStructs.Price memory price = IPyth(feed.addr).getPriceUnsafe(feed.feedId);
-    uint256 decimals = DECIMALS - uint32(price.expo * -1);
+    (bool success, bytes memory message) = feed.addr.staticcall(
+      abi.encodeWithSelector(IPyth.getPriceUnsafe.selector, feed.feedId)
+    );
+    require(success, 'pyth error!');
+    (int64 price, , int32 expo, ) = (abi.decode(message, (int64, uint64, int32, uint256)));
+    uint256 decimals = DECIMALS - uint32(expo * -1);
     require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
-    return uint64(price.price) * (10 ** decimals);
+    return uint64(price) * (10 ** decimals);
   }
 
   function getUnderlyingPrice(address cToken_) public view override returns (uint256) {

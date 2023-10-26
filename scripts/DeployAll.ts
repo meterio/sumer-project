@@ -121,11 +121,17 @@ const main = async () => {
   writeConfig(netConfig.name, config);
   // set Comptroller
   if (old_comptroller != config.Comptroller.address) {
-    let tokens = getCTokens(network);
-    for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i] != '') {
-        let cToken = (await ethers.getContractAt('CErc20', tokens[i], wallet)) as CErc20;
-        await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
+    let isupdate = await confirm({
+      message: '是否更新cToken的Comptroller？'
+    });
+    if (isupdate) {
+      console.log('更新cToken的Comptroller：');
+      let tokens = getCTokens(network);
+      for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] != '') {
+          let cToken = (await ethers.getContractAt('CErc20', tokens[i], wallet)) as CErc20;
+          await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
+        }
       }
     }
   }

@@ -860,7 +860,7 @@ const main = async () => {
 
           let assetGroups: AssetGroup[] = [];
           for (let i = 0; i < assetGroupNum; i++) {
-            let assetGroup = await comptroller.getAssetGroup(assetGroupNum);
+            let assetGroup = await comptroller.getAssetGroup(i+1);
             assetGroups.push({
               groupId: assetGroup.groupId,
               groupName: assetGroup.groupName,
