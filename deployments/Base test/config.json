@@ -28,7 +28,7 @@
   },
   "FeedPriceOracle": {
     "contract": "FeedPriceOracleSafe",
-    "address": "0xC2A15cDA264837D77345500Da3550066b5eB2EbA"
+    "address": "0xb264Cf6be02f17BF638Cd59F63C68Ec3036b32b5"
   },
   "InterestRateModel": [
     {

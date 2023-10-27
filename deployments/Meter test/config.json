@@ -28,7 +28,7 @@
   },
   "FeedPriceOracle": {
     "contract": "FeedPriceOracleSafe",
-    "address": "0x44ae52a3dC1c46EcCFd84578801BFA8800F4e323"
+    "address": "0x8494bf246D66107E21178582E492dC55f9C6f2a3"
   },
   "InterestRateModel": [
     {
@@ -95,6 +95,12 @@
       "name": "ZeroInterestRateModel",
       "contract": "ZeroInterestRateModel",
       "address": "0xD675BB32eAF79bd9C3414E94EDC66EDD2F83E4B2",
+      "tokens": []
+    },
+    {
+      "name": "ZeroInterestRateModel",
+      "contract": "ZeroInterestRateModel",
+      "address": "0x980E01a29C1c564581Ea21eF698c31d74750be16",
       "tokens": []
     }
   ],
