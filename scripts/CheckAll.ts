@@ -71,6 +71,10 @@ const main = async () => {
       value: 9
     },
     {
+      name: 'Oracle',
+      value: 10
+    },
+    {
       name: '退出',
       value: 'exit'
     }
@@ -860,7 +864,7 @@ const main = async () => {
 
           let assetGroups: AssetGroup[] = [];
           for (let i = 0; i < assetGroupNum; i++) {
-            let assetGroup = await comptroller.getAssetGroup(i+1);
+            let assetGroup = await comptroller.getAssetGroup(i + 1);
             assetGroups.push({
               groupId: assetGroup.groupId,
               groupName: assetGroup.groupName,
@@ -886,6 +890,13 @@ const main = async () => {
             });
           }
           console.table(ctokenDetail);
+          break;
+        case 10:
+          console.log(`检查Oracle underlying price:`);
+          for (let i = 0; i < tokens.length; i++) {
+            let price = await oracle.getUnderlyingPrice(tokens[i]);
+            console.log(tokens[i], ': ', price);
+          }
           break;
       }
     }
