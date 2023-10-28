@@ -1,13 +1,14 @@
 [
   {
-    "name": "USDT、USDC、BUSD InterestRateModel",
+    "name": "WhitePaperInterestRateModel",
     "contract": "WhitePaperInterestRateModel",
     "constructorName": ["blocksPerYearOnChain", "baseRatePerYear", "multiplierPerYear"],
-    "args": ["13140000", "50000000000000000", "450000000000000000"],
-    "address": "0xD162adC7b53Fe0b23c212CF98714dBb4D29D63A1"
+    "args": ["15768000", "47500000000000000", "450000000000000000"],
+    "address": "0xD162adC7b53Fe0b23c212CF98714dBb4D29D63A1",
+    "tokens": []
   },
   {
-    "name": "BTC、ETH、MTR、MTRG InterestRateModel",
+    "name": "JumpRateModelV2",
     "contract": "JumpRateModelV2",
     "constructorName": [
       "blocksPerYearOnChain",
@@ -18,18 +19,20 @@
       "owner"
     ],
     "args": [
-      "13140000",
+      "15768000",
       "20000000000000000",
       "150000000000000000",
       "3000000000000000000",
       "600000000000000000",
-      "0xDdF0033C94Dd6560aa4De3e40dc1322fCAEE5e76"
+      ""
     ],
-    "address": "0x3Bf31866F0dC296a1b8284187d87626ADcbfD692"
+    "address": "0x3Bf31866F0dC296a1b8284187d87626ADcbfD692",
+    "tokens": []
   },
   {
-    "name": "suUSD、suETH、suBTC InterestRateModel",
+    "name": "ZeroInterestRateModel",
     "contract": "ZeroInterestRateModel",
-    "address": "0x980E01a29C1c564581Ea21eF698c31d74750be16"
+    "address": "0x980E01a29C1c564581Ea21eF698c31d74750be16",
+    "tokens": []
   }
 ]

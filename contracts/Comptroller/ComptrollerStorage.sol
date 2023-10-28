@@ -91,11 +91,15 @@ contract ComptrollerStorage {
    * @notice eqAssetGroup, cToken -> equal assets info.
    */
 
-  uint8 public equalAssetsGroupNum;
+  // uint8 public equalAssetsGroupNum;
   /**
    * @notice eqAssetGroup, groupId -> equal assets info.
    */
-  mapping(uint8 => IComptroller.AssetGroup) public eqAssetGroup;
+  // mapping(uint8 => IComptroller.AssetGroup) public eqAssetGroup;
+
+  IComptroller.AssetGroup[] internal _eqAssetGroups;
+
+  mapping(uint8 => uint8) public assetGroupIdToIndex;
 
   /**
    * @notice The Pause Guardian can pause certain actions as a safety mechanism.

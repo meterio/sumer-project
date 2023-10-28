@@ -18,33 +18,25 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface PausableUpgradeableInterface extends ethers.utils.Interface {
+interface IVoltPairInterface extends ethers.utils.Interface {
   functions: {
-    "paused()": FunctionFragment;
+    "metadata()": FunctionFragment;
+    "token0()": FunctionFragment;
+    "token1()": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(functionFragment: "metadata", values?: undefined): string;
+  encodeFunctionData(functionFragment: "token0", values?: undefined): string;
+  encodeFunctionData(functionFragment: "token1", values?: undefined): string;
 
-  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "metadata", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "token0", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "token1", data: BytesLike): Result;
 
-  events: {
-    "Initialized(uint8)": EventFragment;
-    "Paused(address)": EventFragment;
-    "Unpaused(address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
+  events: {};
 }
 
-export type InitializedEvent = TypedEvent<[number] & { version: number }>;
-
-export type PausedEvent = TypedEvent<[string] & { account: string }>;
-
-export type UnpausedEvent = TypedEvent<[string] & { account: string }>;
-
-export class PausableUpgradeable extends BaseContract {
+export class IVoltPair extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -85,45 +77,81 @@ export class PausableUpgradeable extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: PausableUpgradeableInterface;
+  interface: IVoltPairInterface;
 
   functions: {
-    paused(overrides?: CallOverrides): Promise<[boolean]>;
+    metadata(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, boolean, string, string] & {
+        dec0: BigNumber;
+        dec1: BigNumber;
+        r0: BigNumber;
+        r1: BigNumber;
+        st: boolean;
+        t0: string;
+        t1: string;
+      }
+    >;
+
+    token0(overrides?: CallOverrides): Promise<[string]>;
+
+    token1(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  paused(overrides?: CallOverrides): Promise<boolean>;
+  metadata(
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber, boolean, string, string] & {
+      dec0: BigNumber;
+      dec1: BigNumber;
+      r0: BigNumber;
+      r1: BigNumber;
+      st: boolean;
+      t0: string;
+      t1: string;
+    }
+  >;
+
+  token0(overrides?: CallOverrides): Promise<string>;
+
+  token1(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    paused(overrides?: CallOverrides): Promise<boolean>;
+    metadata(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, boolean, string, string] & {
+        dec0: BigNumber;
+        dec1: BigNumber;
+        r0: BigNumber;
+        r1: BigNumber;
+        st: boolean;
+        t0: string;
+        t1: string;
+      }
+    >;
+
+    token0(overrides?: CallOverrides): Promise<string>;
+
+    token1(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {
-    "Initialized(uint8)"(
-      version?: null
-    ): TypedEventFilter<[number], { version: number }>;
-
-    Initialized(
-      version?: null
-    ): TypedEventFilter<[number], { version: number }>;
-
-    "Paused(address)"(
-      account?: null
-    ): TypedEventFilter<[string], { account: string }>;
-
-    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
-
-    "Unpaused(address)"(
-      account?: null
-    ): TypedEventFilter<[string], { account: string }>;
-
-    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
-  };
+  filters: {};
 
   estimateGas: {
-    paused(overrides?: CallOverrides): Promise<BigNumber>;
+    metadata(overrides?: CallOverrides): Promise<BigNumber>;
+
+    token0(overrides?: CallOverrides): Promise<BigNumber>;
+
+    token1(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    metadata(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    token0(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    token1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

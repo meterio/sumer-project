@@ -1,0 +1,541 @@
+[
+  {
+    "path": "Comptroller/",
+    "contract": "AccountLiquidity",
+    "adminControl": [
+      {
+        "func": "setComptroller",
+        "argNames": ["Comptroller address"],
+        "args": [""],
+        "sig": "setComptroller(address)"
+      },
+      {
+        "func": "grantRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "grantRole(bytes32,address)"
+      },
+      {
+        "func": "revokeRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "revokeRole(bytes32,address)"
+      },
+      {
+        "func": "renounceRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "renounceRole(bytes32,address)"
+      }
+    ]
+  },
+  {
+    "path": "Comptroller/",
+    "contract": "CompLogic",
+    "adminControl": [
+      {
+        "func": "setComptroller",
+        "argNames": ["Comptroller address"],
+        "args": [""],
+        "sig": "setComptroller(address)"
+      },
+      {
+        "func": "grantComp",
+        "argNames": ["recipient", "amount"],
+        "args": ["", ""],
+        "sig": "_grantComp(address,uint256)"
+      },
+      {
+        "func": "setCompSpeeds",
+        "argNames": ["cTokens[]", "supplySpeeds[]", "borrowSpeeds[]"],
+        "args": ["", "", ""],
+        "sig": "_setCompSpeeds(address[],uint256[],uint256[])"
+      },
+      {
+        "func": "setContributorCompSpeed",
+        "argNames": ["contributor", "compSpeed"],
+        "args": ["", ""],
+        "sig": "_setContributorCompSpeed(address,uint256)"
+      },
+      {
+        "func": "grantRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "grantRole(bytes32,address)"
+      },
+      {
+        "func": "revokeRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "revokeRole(bytes32,address)"
+      },
+      {
+        "func": "renounceRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "renounceRole(bytes32,address)"
+      }
+    ],
+    "userControl": [
+      {
+        "func": "claimSumer",
+        "argNames": ["holders[]", "cTokens[]", "borrowers", "suppliers"],
+        "args": ["", "", "", ""],
+        "sig": "claimSumer(address[],address[],bool,bool)"
+      }
+    ]
+  },
+  {
+    "path": "Comptroller/",
+    "contract": "CompoundLens"
+  },
+  {
+    "path": "Comptroller/",
+    "contract": "Comptroller",
+    "adminControl": [
+      {
+        "func": "setTimelock",
+        "argNames": ["timelock address"],
+        "args": [""],
+        "sig": "setTimelock(address)"
+      },
+      {
+        "func": "setPriceOracle",
+        "argNames": ["newOracle address"],
+        "args": [""],
+        "sig": "_setPriceOracle(address)"
+      },
+      {
+        "func": "setCloseFactor",
+        "argNames": ["new CloseFactor Mantissa"],
+        "args": [""],
+        "sig": "_setCloseFactor(uint256)"
+      },
+      {
+        "func": "setLiquidationIncentive",
+        "argNames": [
+          "newHeteroLiquidationIncentiveMantissa",
+          "newHomoLiquidationIncentiveMantissa",
+          "newSutokenLiquidationIncentiveMantissa"
+        ],
+        "args": ["", "", ""],
+        "sig": "_setLiquidationIncentive(uint256,uint256,uint256)"
+      },
+      {
+        "func": "supportMarket",
+        "argNames": ["cToken address", "groupId"],
+        "args": ["", ""],
+        "sig": "_supportMarket(address,uint8)"
+      },
+      {
+        "func": "setCompSpeed",
+        "argNames": ["cToken address", "supplySpeed", "borrowSpeed"],
+        "args": ["", "", ""],
+        "sig": "setCompSpeed(address,uint256,uint256)"
+      },
+      {
+        "func": "setCompLogic",
+        "argNames": ["CompLogic address"],
+        "args": [""],
+        "sig": "setCompLogic(address)"
+      },
+      {
+        "func": "setAccountLiquidity",
+        "argNames": ["AccountLiquidity address"],
+        "args": [""],
+        "sig": "setAccountLiquidity(address)"
+      },
+      {
+        "func": "setPauseGuardian",
+        "argNames": ["newPauseGuardian address"],
+        "args": [""],
+        "sig": "_setPauseGuardian(address)"
+      },
+      {
+        "func": "setGovTokenAddress",
+        "argNames": ["governanceToken address"],
+        "args": [""],
+        "sig": "setGovTokenAddress(address)"
+      },
+      {
+        "func": "setBorrowCapGuardian",
+        "argNames": ["newBorrowCapGuardian address"],
+        "args": [""],
+        "sig": "_setBorrowCapGuardian(address)"
+      },
+      {
+        "func": "setAssetGroup",
+        "argNames": [
+          "groupId",
+          "groupName",
+          "intraCRateMantissa",
+          "intraMintRateMantissa",
+          "intraSuRateMantissa",
+          "interCRateMantissa",
+          "interSuRateMantissa"
+        ],
+        "args": ["", "", "", "", "", "", ""],
+        "sig": "setAssetGroup(uint8,string,uint256,uint256,uint256,uint256,uint256)"
+      },
+      {
+        "func": "grantRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "grantRole(bytes32,address)"
+      },
+      {
+        "func": "revokeRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "revokeRole(bytes32,address)"
+      },
+      {
+        "func": "renounceRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "renounceRole(bytes32,address)"
+      }
+    ],
+    "userControl": [
+      {
+        "func": "enterMarkets",
+        "argNames": ["cTokens array"],
+        "args": [""],
+        "sig": "enterMarkets(address[])"
+      },
+      {
+        "func": "exitMarket",
+        "argNames": ["cTokenAddress address"],
+        "args": [""],
+        "sig": "exitMarket(address)"
+      }
+    ]
+  },
+  {
+    "path": "CToken/",
+    "contract": "CErc20",
+    "adminControl": [
+      {
+        "func": "setPendingAdmin",
+        "argNames": ["newPendingAdmin address"],
+        "args": [""],
+        "sig": "_setPendingAdmin(address)"
+      },
+      {
+        "func": "setPendingAdmin",
+        "argNames": [],
+        "args": [],
+        "sig": "_acceptAdmin()"
+      },
+      {
+        "func": "setComptroller",
+        "argNames": ["newComptroller address"],
+        "args": [""],
+        "sig": "_setComptroller(address)"
+      },
+      {
+        "func": "setReserveFactor",
+        "argNames": ["new ReserveFactor Mantissa"],
+        "args": [""],
+        "sig": "_setReserveFactor(uint256)"
+      },
+      {
+        "func": "reduceReserves",
+        "argNames": ["reduceAmount"],
+        "args": [""],
+        "sig": "_reduceReserves(uint256)"
+      },
+      {
+        "func": "setInterestRateModel",
+        "argNames": ["newInterestRateModel"],
+        "args": [""],
+        "sig": "_setInterestRateModel(address)"
+      },
+      {
+        "func": "syncUnderlyingBalance",
+        "argNames": [],
+        "args": [],
+        "sig": "_syncUnderlyingBalance()"
+      }
+    ],
+    "userControl": [
+      {
+        "func": "transfer",
+        "argNames": ["dst", "amount"],
+        "args": ["", ""],
+        "sig": "transfer(address,uint256)"
+      },
+      {
+        "func": "transferFrom",
+        "argNames": ["src", "dst", "amount"],
+        "args": ["", "", ""],
+        "sig": "transferFrom(address,address,uint256)"
+      }
+    ]
+  },
+  {
+    "path": "CToken/",
+    "contract": "CEther",
+    "adminControl": []
+  },
+  {
+    "path": "CToken/",
+    "contract": "suErc20",
+    "adminControl": [
+      {
+        "func": "changeCtoken",
+        "argNames": [],
+        "args": [],
+        "sig": "changeCtoken()"
+      }
+    ]
+  },
+  {
+    "path": "ERC20/",
+    "contract": "ERC20MinterBurnerPauser",
+    "adminControl": [
+      {
+        "func": "grantRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "grantRole(bytes32,address)"
+      },
+      {
+        "func": "revokeRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "revokeRole(bytes32,address)"
+      },
+      {
+        "func": "renounceRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "renounceRole(bytes32,address)"
+      },
+      {
+        "func": "mint",
+        "argNames": ["to", "amount"],
+        "args": ["", ""],
+        "sig": "mint(address,uint256)"
+      },
+      {
+        "func": "pause",
+        "argNames": [],
+        "args": [],
+        "sig": "pause()"
+      },
+      {
+        "func": "unpause",
+        "argNames": [],
+        "args": [],
+        "sig": "unpause()"
+      }
+    ]
+  },
+  {
+    "path": "InterestRateModel/",
+    "contract": "JumpRateModelV2",
+    "adminControl": [
+      {
+        "func": "updateJumpRateModel",
+        "argNames": ["baseRatePerYear", "multiplierPerYear", "jumpMultiplierPerYear", "kink_"],
+        "args": ["", ""],
+        "sig": "updateJumpRateModel(uint256,uint256,uint256,uint256)"
+      }
+    ]
+  },
+  {
+    "path": "InterestRateModel/",
+    "contract": "WhitePaperInterestRateModel",
+    "adminControl": []
+  },
+  {
+    "path": "InterestRateModel/",
+    "contract": "ZeroInterestRateModel",
+    "adminControl": []
+  },
+  {
+    "path": "Oracle/",
+    "contract": "FeedPriceOracle",
+    "adminControl": [
+      {
+        "func": "transferOwnership",
+        "argNames": ["newOwner"],
+        "args": [""],
+        "sig": "transferOwnership(address)"
+      },
+      {
+        "func": "acceptOwnership",
+        "argNames": [],
+        "args": [],
+        "sig": "acceptOwnership()"
+      },
+      {
+        "func": "setChainlinkFeed",
+        "argNames": ["cToken_", "feed_"],
+        "args": ["", ""],
+        "sig": "setChainlinkFeed(address,address)"
+      },
+      {
+        "func": "setWitnetFeed",
+        "argNames": ["cToken_", "feed_", "feedDecimals_"],
+        "args": ["", "", ""],
+        "sig": "setWitnetFeed(address,address,uint8)"
+      },
+      {
+        "func": "setBandFeed",
+        "argNames": ["cToken_", "feed_", "feedDecimals_", "name"],
+        "args": ["", "", "", ""],
+        "sig": "setBandFeed(address,address,uint8,string)"
+      },
+      {
+        "func": "setFixedPrice",
+        "argNames": ["cToken_", "price"],
+        "args": ["", ""],
+        "sig": "setFixedPrice(address,uint256)"
+      },
+      {
+        "func": "setPythFeed",
+        "argNames": ["cToken_", "feedId", "addr"],
+        "args": ["", "", ""],
+        "sig": "setPythFeed(address,bytes32,address)"
+      },
+      {
+        "func": "setLpFeed",
+        "argNames": ["cToken_", "lpToken"],
+        "args": ["", ""],
+        "sig": "setLpFeed(address,address)"
+      },
+      {
+        "func": "removeFeed",
+        "argNames": ["cToken_"],
+        "args": [""],
+        "sig": "removeFeed(address)"
+      },
+      {
+        "func": "removeFixedPrice",
+        "argNames": ["cToken_"],
+        "args": [""],
+        "sig": "removeFixedPrice(address)"
+      }
+    ]
+  },
+  {
+    "path": "Oracle/",
+    "contract": "FeedPriceOracleSafe",
+    "adminControl": []
+  },
+  {
+    "path": "proxy/",
+    "contract": "SumerProxyAdmin",
+    "adminControl": [
+      {
+        "func": "changeProxyAdmin",
+        "argNames": ["proxy", "newAdmin"],
+        "args": ["", ""],
+        "sig": "changeProxyAdmin(address,address)"
+      },
+      {
+        "func": "upgrade",
+        "argNames": ["proxy", "implementation"],
+        "args": ["", ""],
+        "sig": "upgrade(address,address)"
+      }
+    ]
+  },
+  {
+    "path": "proxy/",
+    "contract": "SumerProxy",
+    "adminControl": []
+  },
+  {
+    "path": "stake/",
+    "contract": "CommunalFarm",
+    "adminControl": []
+  },
+  {
+    "path": "stake/",
+    "contract": "FraxGaugeController",
+    "adminControl": []
+  },
+  {
+    "path": "stake/",
+    "contract": "FraxGaugeFXSRewardsDistributor",
+    "adminControl": []
+  },
+  {
+    "path": "stake/",
+    "contract": "StakingRewardsMultiGauge",
+    "adminControl": []
+  },
+  {
+    "path": "stake/",
+    "contract": "VeSumer",
+    "adminControl": []
+  },
+  {
+    "path": "",
+    "contract": "Multicall2",
+    "adminControl": []
+  },
+  {
+    "path": "",
+    "contract": "Timelock",
+    "adminControl": [
+      {
+        "func": "grantRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "grantRole(bytes32,address)"
+      },
+      {
+        "func": "revokeRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "revokeRole(bytes32,address)"
+      },
+      {
+        "func": "renounceRole",
+        "argNames": ["role", "account"],
+        "args": ["", ""],
+        "sig": "renounceRole(bytes32,address)"
+      },
+      {
+        "func": "setUnderly",
+        "argNames": ["cToken", "underlying", "isSupport"],
+        "args": ["", "", ""],
+        "sig": "setUnderly(address,address,bool)"
+      },
+      {
+        "func": "setLockDuration",
+        "argNames": ["cToken", "lockDuration"],
+        "args": ["", ""],
+        "sig": "setLockDuration(address,uint256)"
+      },
+      {
+        "func": "rescueERC20",
+        "argNames": ["token", "to", "amount"],
+        "args": ["", "", ""],
+        "sig": "rescueERC20(address,address,uint256)"
+      },
+      {
+        "func": "freezeAgreement",
+        "argNames": ["agreementId"],
+        "args": [""],
+        "sig": "freezeAgreement(uint256)"
+      },
+      {
+        "func": "freezeAllAgreements",
+        "argNames": [],
+        "args": [],
+        "sig": "freezeAllAgreements()"
+      },
+      {
+        "func": "unfreezeAllAgreements",
+        "argNames": [],
+        "args": [],
+        "sig": "unfreezeAllAgreementss()"
+      }
+    ]
+  }
+]

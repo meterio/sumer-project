@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Meter main",
+    "rpc": "https://rpc.meter.io",
+    "wstMTRG": "0xe2de616fbd8cb9180b26fcfb1b761a232fe56717",
+    "mtrgFeed": "0xbfe3f445653f2136b2fd1e6dddb5676392e3af16",
+    "MTRGFeedId": "0x20d096e088a9b85f8cf09278965b77aeb05c00769e2ddeda5ea2d07ea554b283"
+  },
+  {
+    "name": "Meter test",
+    "rpc": "https://rpctest.meter.io",
+    "wstMTRG": "0x871497eb8596d2cbdbe5bb23d552d35bffbb8cf5",
+    "mtrgFeed": "0x5ff5b9039fbd8256864a4460b7ea77093a65b1b5",
+    "MTRGFeedId": "0xa5fd90e292644d5f9b79a1640f464fcae4b8cb925465d197a78185a308603606"
+  }
+]

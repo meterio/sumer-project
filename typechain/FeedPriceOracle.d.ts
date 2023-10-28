@@ -21,7 +21,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface FeedPriceOracleInterface extends ethers.utils.Interface {
   functions: {
-    "changeOwner(address)": FunctionFragment;
+    "acceptOwnership()": FunctionFragment;
     "feeds(address)": FunctionFragment;
     "fixedPrices(address)": FunctionFragment;
     "getFeed(address)": FunctionFragment;
@@ -30,16 +30,23 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     "getUnderlyingPrices(address[])": FunctionFragment;
     "isPriceOracle()": FunctionFragment;
     "owner()": FunctionFragment;
+    "pendingOwner()": FunctionFragment;
     "removeFeed(address)": FunctionFragment;
     "removeFixedPrice(address)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
     "setBandFeed(address,address,uint8,string)": FunctionFragment;
     "setChainlinkFeed(address,address)": FunctionFragment;
     "setFixedPrice(address,uint256)": FunctionFragment;
-    "setPythFeed(address,bytes32,address,string)": FunctionFragment;
+    "setLpFeed(address,address)": FunctionFragment;
+    "setPythFeed(address,bytes32,address)": FunctionFragment;
     "setWitnetFeed(address,address,uint8)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "changeOwner", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "acceptOwnership",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "feeds", values: [string]): string;
   encodeFunctionData(functionFragment: "fixedPrices", values: [string]): string;
   encodeFunctionData(functionFragment: "getFeed", values: [string]): string;
@@ -60,10 +67,18 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pendingOwner",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "removeFeed", values: [string]): string;
   encodeFunctionData(
     functionFragment: "removeFixedPrice",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setBandFeed",
@@ -78,16 +93,24 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setLpFeed",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setPythFeed",
-    values: [string, BytesLike, string, string]
+    values: [string, BytesLike, string]
   ): string;
   encodeFunctionData(
     functionFragment: "setWitnetFeed",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
 
   decodeFunctionResult(
-    functionFragment: "changeOwner",
+    functionFragment: "acceptOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "feeds", data: BytesLike): Result;
@@ -113,9 +136,17 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingOwner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "removeFeed", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeFixedPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -130,6 +161,7 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     functionFragment: "setFixedPrice",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setLpFeed", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setPythFeed",
     data: BytesLike
@@ -138,13 +170,29 @@ interface FeedPriceOracleInterface extends ethers.utils.Interface {
     functionFragment: "setWitnetFeed",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
 
   events: {
+    "OwnershipTransferStarted(address,address)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
     "SetFeed(address,bytes32,uint8,address,uint8,string)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferStarted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetFeed"): EventFragment;
 }
+
+export type OwnershipTransferStartedEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export type SetFeedEvent = TypedEvent<
   [string, string, number, string, number, string] & {
@@ -201,8 +249,7 @@ export class FeedPriceOracle extends BaseContract {
   interface: FeedPriceOracleInterface;
 
   functions: {
-    changeOwner(
-      owner_: string,
+    acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -255,6 +302,8 @@ export class FeedPriceOracle extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
+    pendingOwner(overrides?: CallOverrides): Promise<[string]>;
+
     removeFeed(
       cToken_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -262,6 +311,10 @@ export class FeedPriceOracle extends BaseContract {
 
     removeFixedPrice(
       cToken_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -285,11 +338,16 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setLpFeed(
+      cToken_: string,
+      lpToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setPythFeed(
       cToken_: string,
       feedId: BytesLike,
       addr: string,
-      name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -299,10 +357,14 @@ export class FeedPriceOracle extends BaseContract {
       feedDecimals_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
-  changeOwner(
-    owner_: string,
+  acceptOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -350,6 +412,8 @@ export class FeedPriceOracle extends BaseContract {
 
   owner(overrides?: CallOverrides): Promise<string>;
 
+  pendingOwner(overrides?: CallOverrides): Promise<string>;
+
   removeFeed(
     cToken_: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -357,6 +421,10 @@ export class FeedPriceOracle extends BaseContract {
 
   removeFixedPrice(
     cToken_: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  renounceOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -380,11 +448,16 @@ export class FeedPriceOracle extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setLpFeed(
+    cToken_: string,
+    lpToken: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setPythFeed(
     cToken_: string,
     feedId: BytesLike,
     addr: string,
-    name: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -395,8 +468,13 @@ export class FeedPriceOracle extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
-    changeOwner(owner_: string, overrides?: CallOverrides): Promise<void>;
+    acceptOwnership(overrides?: CallOverrides): Promise<void>;
 
     feeds(
       arg0: string,
@@ -445,9 +523,13 @@ export class FeedPriceOracle extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<string>;
 
+    pendingOwner(overrides?: CallOverrides): Promise<string>;
+
     removeFeed(cToken_: string, overrides?: CallOverrides): Promise<void>;
 
     removeFixedPrice(cToken_: string, overrides?: CallOverrides): Promise<void>;
+
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     setBandFeed(
       cToken_: string,
@@ -469,11 +551,16 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setLpFeed(
+      cToken_: string,
+      lpToken: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setPythFeed(
       cToken_: string,
       feedId: BytesLike,
       addr: string,
-      name: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -483,9 +570,46 @@ export class FeedPriceOracle extends BaseContract {
       feedDecimals_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
+    "OwnershipTransferStarted(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferStarted(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     "SetFeed(address,bytes32,uint8,address,uint8,string)"(
       cToken_?: string | null,
       feedId?: null,
@@ -526,8 +650,7 @@ export class FeedPriceOracle extends BaseContract {
   };
 
   estimateGas: {
-    changeOwner(
-      owner_: string,
+    acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -556,6 +679,8 @@ export class FeedPriceOracle extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
+    pendingOwner(overrides?: CallOverrides): Promise<BigNumber>;
+
     removeFeed(
       cToken_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -563,6 +688,10 @@ export class FeedPriceOracle extends BaseContract {
 
     removeFixedPrice(
       cToken_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -586,11 +715,16 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setLpFeed(
+      cToken_: string,
+      lpToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setPythFeed(
       cToken_: string,
       feedId: BytesLike,
       addr: string,
-      name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -600,11 +734,15 @@ export class FeedPriceOracle extends BaseContract {
       feedDecimals_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    changeOwner(
-      owner_: string,
+    acceptOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -642,6 +780,8 @@ export class FeedPriceOracle extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    pendingOwner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     removeFeed(
       cToken_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -649,6 +789,10 @@ export class FeedPriceOracle extends BaseContract {
 
     removeFixedPrice(
       cToken_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -672,11 +816,16 @@ export class FeedPriceOracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setLpFeed(
+      cToken_: string,
+      lpToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setPythFeed(
       cToken_: string,
       feedId: BytesLike,
       addr: string,
-      name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -684,6 +833,11 @@ export class FeedPriceOracle extends BaseContract {
       cToken_: string,
       feed_: string,
       feedDecimals_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

@@ -4,7 +4,8 @@ import { HardhatEthersHelpers } from '@nomiclabs/hardhat-ethers/types';
 import * as pathLib from 'path';
 import { input, select, password } from '@inquirer/prompts';
 import colors from 'colors';
-import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle } from '../typechain';
+import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle, SuErc20 } from '../typechain';
+import { Fragment, FunctionFragment } from 'ethers/lib/utils';
 colors.enable();
 
 export const yellow = colors.yellow;
@@ -18,8 +19,17 @@ export const defaultPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed
 export const network_json = './scripts/network.testnet.json';
 export const network_config = JSON.parse(readFileSync(network_json).toString());
 
+export const meter_json = './scripts/meter.json';
+export const meter_config = JSON.parse(readFileSync(meter_json).toString());
+
 export const interestRateModel_json = './scripts/InterestRateModel.json';
 export const InterestRateModel_template = JSON.parse(readFileSync(interestRateModel_json).toString());
+
+export const operation_json = './scripts/Operations.config.json';
+export const Operations_config = JSON.parse(readFileSync(operation_json).toString());
+
+export const contracts_json = './scripts/Contracts.json';
+export const contracts_config = JSON.parse(readFileSync(contracts_json).toString());
 
 export function expandTo18Decimals(n: number): BigNumber {
   return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
@@ -170,7 +180,6 @@ export async function sendTransaction(
     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
     validate: (value = '') => value.length > 0 || 'Pass a valid value'
   });
-
   override.gasLimit = await contract.estimateGas[func](...args);
   console.log('gasLimit:', green(override.gasLimit.toString()));
   let receipt = await contract[func](...args, override);
@@ -309,35 +318,41 @@ async function getDefaultValue(network: Network, defaultValue: string, construct
     let choices = [];
     for (let i = 0; i < config.InterestRateModel.length; i++) {
       choices.push({
-        name: `${green(config.InterestRateModel[i].name)} - ${yellow(config.InterestRateModel[i].contract)}${
+        name: `${green(config.InterestRateModel[i].name)} - ${yellow(config.InterestRateModel[i].address)}${
           config.InterestRateModel[i].address == defaultValue ? red('(默认)') : ''
         }`,
         value: i
       });
     }
-    const interestRateModelIndex = await select({
+    let interestRateModelIndex = await select({
       message: '选择InterestRateModel',
       choices: choices
     });
     return config.InterestRateModel[interestRateModelIndex].address;
   }
   if (constructorName == 'cTokens') {
-    let cTokens: string[] = [];
-    for (let i = 0; i < config.CErc20.proxys.length; i++) {
-      cTokens.push(config.CErc20.proxys[i].address);
-    }
-    for (let i = 0; i < config.suErc20.proxys.length; i++) {
-      cTokens.push(config.suErc20.proxys[i].address);
-    }
-    if (config.CEther) {
-      cTokens.push(config.CEther.address);
-    }
-    return cTokens;
+    return getCTokens(network);
   }
   if (defaultValue) {
     return defaultValue;
   }
   return '';
+}
+
+export function getCTokens(network: Network) {
+  let cTokens: string[] = [];
+
+  const config = getConfig(network.netConfig.name);
+  for (let i = 0; i < config.CErc20.proxys.length; i++) {
+    cTokens.push(config.CErc20.proxys[i].address);
+  }
+  for (let i = 0; i < config.suErc20.proxys.length; i++) {
+    cTokens.push(config.suErc20.proxys[i].address);
+  }
+  if (config.CEther) {
+    cTokens.push(config.CEther.address);
+  }
+  return cTokens;
 }
 
 export async function deployProxyOrInput(
@@ -440,20 +455,18 @@ export async function cTokenSetting(
       DEFAULT_ADMIN_ROLE
     );
   }
-  if (!isSuToken) {
-    // setReserveFactor
-    let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
-    let reserveFactorMantissa = await cToken.reserveFactorMantissa();
-    if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
-      console.log('设置Comptroller的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
-      await sendTransaction(
-        network,
-        cToken,
-        '_setReserveFactor(uint256)',
-        [cTokenConfig.settings.reserveFactorMantissa],
-        network.override
-      );
-    }
+  let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
+  // setReserveFactor
+  let reserveFactorMantissa = await cToken.reserveFactorMantissa();
+  if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
+    console.log('设置cToken的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
+    await sendTransaction(
+      network,
+      cToken,
+      '_setReserveFactor(uint256)',
+      [cTokenConfig.settings.reserveFactorMantissa],
+      network.override
+    );
   }
   if (isSuToken) {
     // grantRole
@@ -475,7 +488,7 @@ export async function cTokenSetting(
       );
     }
     // changeCtoken
-    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as CToken;
+    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as SuErc20;
     let isCToken = await suErc20.isCToken();
     if (isCToken) {
       console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
@@ -495,4 +508,72 @@ export async function cTokenSetting(
       network.override
     );
   }
+  let decimals = await cToken.decimals();
+  cTokenConfig.settings.borrowCap = utils
+    .parseUnits(
+      await input({
+        message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
+        default: utils.formatUnits(cTokenConfig.settings.borrowCap, decimals).toString()
+      }),
+      decimals
+    )
+    .toString();
+  cTokenConfig.settings.maxSupply = utils
+    .parseUnits(
+      await input({
+        message: `输入${green(cTokenConfig.name)}的Max Supply:`,
+        default: utils.formatUnits(cTokenConfig.settings.maxSupply, decimals).toString()
+      }),
+      decimals
+    )
+    .toString();
+  return cTokenConfig;
+}
+
+export async function selectContract() {
+  let choices = [];
+  for (let i = 0; i < contracts_config.length; i++) {
+    choices.push({
+      name: contracts_config[i].contract,
+      value: contracts_config[i]
+    });
+  }
+  const result = await select({
+    message: '选择操作合约:',
+    choices: choices
+  });
+
+  return result;
+}
+
+export async function selectFunc(fragment: ReadonlyArray<Fragment>) {
+  let choices = [];
+  for (let i = 0; i < fragment.length; i++) {
+    if (fragment[i].type == 'function') {
+      choices.push({
+        name: fragment[i].name,
+        value: fragment[i].name
+      });
+    }
+  }
+  const result = await select({
+    message: '选择操作函数:',
+    choices: choices
+  });
+
+  return result;
+}
+
+export async function inputArgs(func: FunctionFragment) {
+  let values = [];
+  let inputs = func.inputs;
+  for (let i = 0; i < inputs.length; i++) {
+    let value = await input({
+      message: inputs[i].name,
+      validate: (value = '') => value.length > 0 || 'Pass a valid value'
+    });
+    values.push(value);
+  }
+
+  return values;
 }

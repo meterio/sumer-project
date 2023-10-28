@@ -32,7 +32,8 @@
   "license": "MIT",
   "homepage": "https://sumer.money/",
   "dependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@inquirer/prompts": "^3.1.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
     "@nomiclabs/hardhat-vyper": "^3.0.3",

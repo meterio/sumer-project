@@ -18,7 +18,7 @@ import './deploy/system/06_DeployTimelock';
 import './deploy/cToken/DeployCToken';
 import './deploy/cToken/DeploySuToken';
 import './deploy/cToken/DeploySuTokenOFT';
-import './deploy/cToken/DeployOFT';
+// import './deploy/cToken/DeployOFT';
 import './deploy/cToken/VeSumer';
 
 import './deploy/interestRateModels/JumpRateModelV2';
