@@ -236,7 +236,11 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
 
       if (groupVars[i].groupId == assetGroupId) {
         targetGroup = groupVars[i];
-        targetVars = vars;
+        targetVars.interCRate = vars.interCRate;
+        targetVars.interSuRate = vars.interSuRate;
+        targetVars.intraCRate = vars.intraCRate;
+        targetVars.intraMintRate = vars.intraMintRate;
+        targetVars.intraSuRate = vars.intraSuRate;
       } else {
         vars.sumCollateral = vars.interCRate.mul_ScalarTruncateAddUInt(
           groupVars[i].cTokenBalanceSum,
