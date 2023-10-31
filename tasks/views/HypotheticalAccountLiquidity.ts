@@ -243,6 +243,7 @@ task('hal', 'get Hypothetical Account Liquidity')
     };
     // Line 168
     for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
+      console.log(`groupVars[${i}].groupId = ${groupVars[i].groupId}`);
       const [isListed, assetGroupId, isComped] = await comptroller.markets(ctoken); // Line 169
       if (groupVars[i].groupId == 0) {
         continue;
@@ -351,10 +352,17 @@ task('hal', 'get Hypothetical Account Liquidity')
       // const targetGroupId = await comptroller.marketGroupId(ctoken);
       //   console.log(`target groupId: ${targetGroupId}`);
       //   console.log(`groupId: ${groupVars[i].groupId}`);
+      console.log('target asset group id', assetGroupId);
       // Line 241
       if (groupVars[i].groupId == assetGroupId) {
         targetGroup = groupVars[i]; // Line 242
-        targetVars = vars; // Line 243
+        targetVars = {} as AccountLiquidityLocalVars; // Line 243
+        targetVars.interCRate = vars.interCRate;
+        targetVars.interSuRate = vars.interSuRate;
+        targetVars.intraCRate = vars.intraCRate;
+        targetVars.intraSuRate = vars.intraSuRate;
+        targetVars.intraMintRate = vars.intraMintRate;
+        console.log(`target vars: ${JSON.stringify(targetVars)}`);
         // console.log(`set target group: ${i} ${targetGroup.cTokenBalanceSum}, ${targetGroup.suTokenBalanceSum}`);
       } else {
         // log.info("=======================");
@@ -385,6 +393,8 @@ task('hal', 'get Hypothetical Account Liquidity')
       vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.add(
         groupVars[i].cTokenBorrowSum.add(groupVars[i].suTokenBorrowSum)
       );
+      console.log('sum collateral: ', vars.sumCollateral);
+      console.log('sum borrow plus effects: ', vars.sumBorrowPlusEffects);
       //   log.info('sumBorrowPlusEffect: ', vars.sumBorrowPlusEffects.toString());
     }
 
@@ -449,11 +459,20 @@ task('hal', 'get Hypothetical Account Liquidity')
         vars.sumCollateral
       );
     } else {
-      vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraCRate, targetGroup.cTokenBalanceSum, vars.sumCollateral); // Line 300
+      console.log(`${JSON.stringify(targetVars)}`);
+      console.log(
+        `intraCRate ${targetVars.intraCRate} target.cTokenBalanceSum ${targetGroup.cTokenBalanceSum}, sumCollateral: ${vars.sumCollateral} `
+      );
+      vars.sumCollateral = mul_ScalarTruncateAddUInt(
+        targetVars.intraCRate,
+        targetGroup.cTokenBalanceSum,
+        vars.sumCollateral
+      ); // Line 300
+      console.log(`after sumCollateral: ${vars.sumCollateral} `);
     }
     vars.sumCollateral = mul_ScalarTruncateAddUInt(vars.intraSuRate, targetGroup.suTokenBalanceSum, vars.sumCollateral); // Line 302
-    // log.info('vars.sumCollateral:', vars.sumCollateral.toString());
-    // log.info('vars.sumBorrowPlusEffects:', vars.sumBorrowPlusEffects.toString());
+    log.info('final vars.sumCollateral:', vars.sumCollateral.toString());
+    log.info('final vars.sumBorrowPlusEffects:', vars.sumBorrowPlusEffects.toString());
     if (vars.sumCollateral.gt(vars.sumBorrowPlusEffects)) {
       log.info(0, vars.sumCollateral.sub(vars.sumBorrowPlusEffects).toString(), 0);
     } else {

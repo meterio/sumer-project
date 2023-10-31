@@ -8,7 +8,7 @@ import {
   ERC20MinterBurnerPauser,
   FeedPriceOracle,
   Multicall2,
-  ProxyAdmin
+  ProxyAdmin,
 } from '../typechain';
 import { input, select } from '@inquirer/prompts';
 import { BigNumber, BytesLike, utils, constants } from 'ethers';
@@ -36,48 +36,48 @@ const main = async () => {
   let choice: any[] = [
     {
       name: 'Proxy Admin',
-      value: 1
+      value: 1,
     },
     {
       name: 'Multicall2',
-      value: 2
+      value: 2,
     },
     {
       name: 'Sumer',
-      value: 3
+      value: 3,
     },
     {
       name: 'CTokenMetadata',
-      value: 4
+      value: 4,
     },
     {
       name: 'CTokenBalances',
-      value: 5
+      value: 5,
     },
     {
       name: 'CTokenUnderlyingPrice',
-      value: 6
+      value: 6,
     },
     {
       name: 'AccountLimits',
-      value: 7
+      value: 7,
     },
     {
       name: 'Hypothetical Account Liquidity',
-      value: 8
+      value: 8,
     },
     {
       name: 'AssetGroup',
-      value: 9
+      value: 9,
     },
     {
       name: 'Oracle',
-      value: 10
+      value: 10,
     },
     {
       name: '退出',
-      value: 'exit'
-    }
+      value: 'exit',
+    },
   ];
 
   let func_select: string | number;
@@ -85,7 +85,7 @@ const main = async () => {
   do {
     func_select = await select({
       message: '选择操作:',
-      choices: choice
+      choices: choice,
     });
     if (func_select != 'exit') {
       switch (func_select) {
@@ -183,7 +183,7 @@ const main = async () => {
               intraRate: cTokenMetadataAll[i].intraRate.toString(),
               mintRate: cTokenMetadataAll[i].mintRate.toString(),
               interRate: cTokenMetadataAll[i].interRate.toString(),
-              discountRate: cTokenMetadataAll[i].discountRate.toString()
+              discountRate: cTokenMetadataAll[i].discountRate.toString(),
             });
           }
           console.table(cTokenMetadata);
@@ -193,7 +193,7 @@ const main = async () => {
           const cTokenBalancesAccount = await input({
             message: '输入查询CTokenBalances的账户地址',
             default: wallet.address,
-            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
           });
           type CTokenBalances = {
             cToken: string;
@@ -216,7 +216,7 @@ const main = async () => {
               borrowBalanceCurrent: cTokenBalancesAll[i].borrowBalanceCurrent.toString(),
               balanceOfUnderlying: cTokenBalancesAll[i].balanceOfUnderlying.toString(),
               tokenBalance: cTokenBalancesAll[i].tokenBalance.toString(),
-              tokenAllowance: cTokenBalancesAll[i].tokenAllowance.toString()
+              tokenAllowance: cTokenBalancesAll[i].tokenAllowance.toString(),
             });
           }
           console.table(cTokenBalances);
@@ -232,7 +232,7 @@ const main = async () => {
           for (let i = 0; i < cTokenUnderlyingPriceAll.length; i++) {
             cCTokenUnderlyingPrice.push({
               cToken: cTokenUnderlyingPriceAll[i].cToken,
-              underlyingPrice: cTokenUnderlyingPriceAll[i].underlyingPrice.toString()
+              underlyingPrice: cTokenUnderlyingPriceAll[i].underlyingPrice.toString(),
             });
           }
           console.table(cCTokenUnderlyingPrice);
@@ -242,7 +242,7 @@ const main = async () => {
           const accountLimitsAccount = await input({
             message: '输入查询AccountLimits的账户地址',
             default: wallet.address,
-            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
           });
           // let accountLimits = await compoundLens.callStatic.getAccountLimits(
           //   config.Comptroller.address,
@@ -311,23 +311,23 @@ const main = async () => {
 
             calls.push({
               target: tokenAddr,
-              callData: snapshotCall
+              callData: snapshotCall,
             });
             calls.push({
               target: tokenAddr,
-              callData: symbolCall
+              callData: symbolCall,
             });
             calls.push({
               target: tokenAddr,
-              callData: decimalsCall
+              callData: decimalsCall,
             });
             calls.push({
               target: tokenAddr,
-              callData: exchangeRateCall
+              callData: exchangeRateCall,
             });
             calls.push({
               target: tokenAddr,
-              callData: borrowBalanceCall
+              callData: borrowBalanceCall,
             });
           }
           const result = await multicall2.callStatic.aggregate(calls);
@@ -354,7 +354,7 @@ const main = async () => {
                 address: tokenAddr,
                 price: price,
                 borrowBalance: BigNumber.from(0),
-                exchangeRate: exchangeRate
+                exchangeRate: exchangeRate,
               });
             }
             let borrowTokens = snapshot[2].mul(exchangeRate).div(expScale);
@@ -368,7 +368,7 @@ const main = async () => {
                 address: tokenAddr,
                 price: price,
                 borrowBalance: borrowBalance,
-                exchangeRate: exchangeRate
+                exchangeRate: exchangeRate,
               });
             }
 
@@ -377,7 +377,7 @@ const main = async () => {
               supply: parseFloat(utils.formatUnits(snapshot[1].toString(), decimals)),
               supplyUSD: parseFloat(utils.formatUnits(supplyUSD, decimals)),
               borrow: parseFloat(utils.formatUnits(snapshot[2].toString(), decimals)),
-              borrowUSD: parseFloat(utils.formatUnits(borrowUSD, decimals))
+              borrowUSD: parseFloat(utils.formatUnits(borrowUSD, decimals)),
             };
             postions.push(postion);
           }
@@ -405,7 +405,7 @@ const main = async () => {
                   collateral: collateral.symbol,
                   seizeTokens: parseFloat(utils.formatUnits(seizeTokens, collateral.decimals)),
                   seizeUSD: parseFloat(utils.formatUnits(sizeUSD)),
-                  porfit: parseFloat(utils.formatUnits(sizeUSD.sub(repayUSD)))
+                  porfit: parseFloat(utils.formatUnits(sizeUSD.sub(repayUSD))),
                 });
               }
             }
@@ -421,11 +421,11 @@ const main = async () => {
           const account = await input({
             message: '输入查询账户地址',
             default: wallet.address,
-            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
           });
           const cToken = await input({
             message: '输入查询CToken地址',
-            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+            validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
           });
           const accountLiquidity = await comptroller.getHypotheticalAccountLiquidity(account, cToken, 0, 0);
           console.info('accountLiquidity.liquidity:', accountLiquidity[1].toString());
@@ -486,7 +486,7 @@ const main = async () => {
             // borrowCollateralRate: BigNumber.from(0),
             isSuToken: false,
             tokenDepositVal: BigNumber.from(0),
-            tokenBorrowVal: BigNumber.from(0)
+            tokenBorrowVal: BigNumber.from(0),
           };
           let groupVars: AccountGroupLocalVars[] = [];
           vars.equalAssetsGroupNum = await comptroller.getAssetGroupNum(); // Line 85
@@ -496,7 +496,7 @@ const main = async () => {
               cTokenBalanceSum: BigNumber.from(0),
               cTokenBorrowSum: BigNumber.from(0),
               suTokenBalanceSum: BigNumber.from(0),
-              suTokenBorrowSum: BigNumber.from(0)
+              suTokenBorrowSum: BigNumber.from(0),
             });
           }
           if (cToken != constants.AddressZero) {
@@ -595,7 +595,7 @@ const main = async () => {
             cTokenBalanceSum: BigNumber.from(0),
             cTokenBorrowSum: BigNumber.from(0),
             suTokenBalanceSum: BigNumber.from(0),
-            suTokenBorrowSum: BigNumber.from(0)
+            suTokenBorrowSum: BigNumber.from(0),
           };
           // Line 167
           let targetVars: AccountLiquidityLocalVars = {
@@ -621,7 +621,7 @@ const main = async () => {
             // borrowCollateralRate: BigNumber.from(0),
             isSuToken: false,
             tokenDepositVal: BigNumber.from(0),
-            tokenBorrowVal: BigNumber.from(0)
+            tokenBorrowVal: BigNumber.from(0),
           };
           // Line 168
           for (let i = 0; i < vars.equalAssetsGroupNum; i++) {
@@ -737,6 +737,13 @@ const main = async () => {
             if (groupVars[i].groupId == assetGroupId) {
               targetGroup = groupVars[i]; // Line 242
               targetVars = vars; // Line 243
+              targetVars = {} as AccountLiquidityLocalVars; // Line 243
+              targetVars.interCRate = vars.interCRate;
+              targetVars.interSuRate = vars.interSuRate;
+              targetVars.intraCRate = vars.intraCRate;
+              targetVars.intraSuRate = vars.intraSuRate;
+              targetVars.intraMintRate = vars.intraMintRate;
+              console.log(`target vars: ${JSON.stringify(targetVars)}`);
               // console.log(`set target group: ${i} ${targetGroup.cTokenBalanceSum}, ${targetGroup.suTokenBalanceSum}`);
             } else {
               // log.info("=======================");
@@ -872,7 +879,7 @@ const main = async () => {
               intraMintRateMantissa: assetGroup.intraMintRateMantissa.toString(),
               intraSuRateMantissa: assetGroup.intraSuRateMantissa.toString(),
               interCRateMantissa: assetGroup.interCRateMantissa.toString(),
-              interSuRateMantissa: assetGroup.interSuRateMantissa.toString()
+              interSuRateMantissa: assetGroup.interSuRateMantissa.toString(),
             });
           }
           console.table(assetGroups);
@@ -886,7 +893,7 @@ const main = async () => {
             let market = await comptroller.markets(tokens[i]);
             ctokenDetail.push({
               token: tokens[i],
-              groupId: market.assetGroupId
+              groupId: market.assetGroupId,
             });
           }
           console.table(ctokenDetail);
