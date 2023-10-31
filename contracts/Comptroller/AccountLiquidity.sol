@@ -292,14 +292,20 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       }
     }
     if (vars.isSuToken) {
-      vars.sumCollateral = vars.intraMintRate.mul_ScalarTruncateAddUInt(
+      vars.sumCollateral = targetVars.intraMintRate.mul_ScalarTruncateAddUInt(
         targetGroup.cTokenBalanceSum,
         vars.sumCollateral
       );
     } else {
-      vars.sumCollateral = vars.intraCRate.mul_ScalarTruncateAddUInt(targetGroup.cTokenBalanceSum, vars.sumCollateral);
+      vars.sumCollateral = targetVars.intraCRate.mul_ScalarTruncateAddUInt(
+        targetGroup.cTokenBalanceSum,
+        vars.sumCollateral
+      );
     }
-    vars.sumCollateral = vars.intraSuRate.mul_ScalarTruncateAddUInt(targetGroup.suTokenBalanceSum, vars.sumCollateral);
+    vars.sumCollateral = targetVars.intraSuRate.mul_ScalarTruncateAddUInt(
+      targetGroup.suTokenBalanceSum,
+      vars.sumCollateral
+    );
 
     if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
       return (0, vars.sumCollateral - vars.sumBorrowPlusEffects, 0);
