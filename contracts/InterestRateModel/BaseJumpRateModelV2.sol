@@ -166,7 +166,7 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
     uint256 kink_
   ) internal {
     baseRatePerBlock = baseRatePerYear.div(blocksPerYearOnChain);
-    multiplierPerBlock = (multiplierPerYear.mul(1e18)).div(blocksPerYearOnChain.mul(kink_));
+    multiplierPerBlock = multiplierPerYear.div(blocksPerYearOnChain);
     jumpMultiplierPerBlock = jumpMultiplierPerYear.div(blocksPerYearOnChain);
     kink = kink_;
 
