@@ -21,41 +21,17 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     comptroller = _comptroller;
   }
 
-  /**
-   * @dev Local vars for avoiding stack-depth limits in calculating account liquidity.
-   *  Note that `cTokenBalance` is the number of cTokens the account owns in the market,
-   *  whereas `borrowBalance` is the amount of underlying that the account has borrowed.
-   */
-  struct AccountLiquidityLocalVars {
-    uint8 equalAssetsGroupNum;
-    uint8 assetGroupId;
-    uint256 sumCollateral;
-    uint256 sumBorrowPlusEffects;
-    uint256 cTokenBalance;
-    uint256 borrowBalance;
-    uint256 exchangeRateMantissa;
-    uint256 oraclePriceMantissa;
-    Exp collateralFactor;
-    Exp exchangeRate;
-    Exp oraclePrice;
-    Exp tokensToDenom;
-    Exp intraCRate;
-    Exp intraMintRate;
-    Exp interCRate;
-    Exp intraSuRate;
-    Exp interSuRate;
-    Exp discountRate;
-    bool isSuToken;
-    uint256 tokenDepositVal;
-    uint256 tokenBorrowVal;
-  }
-
   struct AccountGroupLocalVars {
     uint8 groupId;
-    uint256 cTokenBalanceSum;
-    uint256 cTokenBorrowSum;
-    uint256 suTokenBalanceSum;
-    uint256 suTokenBorrowSum;
+    uint256 cDepositVal;
+    uint256 cBorrowVal;
+    uint256 suDepositVal;
+    uint256 suBorrowVal;
+    Exp intraCRate;
+    Exp intraMintRate;
+    Exp intraSuRate;
+    Exp interCRate;
+    Exp interSuRate;
   }
 
   /**
@@ -76,241 +52,198 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     uint256 redeemTokens,
     uint256 borrowAmount
   ) public view returns (uint256, uint256, uint256) {
-    AccountLiquidityLocalVars memory vars; // Holds all our calculation results
-    uint256 oErr;
+    uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
+    AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](assetsGroupNum);
+    IComptroller.AssetGroup[] memory assetGroups = IComptroller(comptroller).getAllAssetGroup();
 
-    vars.equalAssetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
-    AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](vars.equalAssetsGroupNum);
-
-    if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
-      vars.isSuToken = true;
-    } else {
-      vars.isSuToken = false;
+    uint256 sumCollateral = 0;
+    uint256 sumBorrowPlusEffects = 0;
+    for (uint256 i = 0; i < assetGroups.length; i++) {
+      IComptroller.AssetGroup memory g = assetGroups[i];
+      groupVars[i] = AccountGroupLocalVars(
+        g.groupId,
+        0,
+        0,
+        0,
+        0,
+        Exp({mantissa: g.intraCRateMantissa}),
+        Exp({mantissa: g.intraMintRateMantissa}),
+        Exp({mantissa: g.intraSuRateMantissa}),
+        Exp({mantissa: g.interCRateMantissa}),
+        Exp({mantissa: g.interSuRateMantissa})
+      );
     }
 
     // For each asset the account is in
     address[] memory assets = comptroller.getAssetsIn(account);
+
+    // loop through tokens to add deposit/borrow for ctoken/sutoken in each group
     for (uint256 i = 0; i < assets.length; ++i) {
       address asset = assets[i];
-      vars.tokenDepositVal = uint256(0);
-      vars.tokenBorrowVal = uint256(0);
+      uint256 depositVal = 0;
+      uint256 borrowVal = 0;
 
       (, uint8 assetGroupId, ) = comptroller.markets(asset);
-
-      // Read the balances and exchange rate from the cToken
-      (oErr, vars.cTokenBalance, vars.borrowBalance, vars.exchangeRateMantissa) = ICToken(asset).getAccountSnapshot(
-        account
-      );
+      (uint256 oErr, uint256 depositBalance, uint256 borrowBalance, uint256 exchangeRateMantissa) = ICToken(asset)
+        .getAccountSnapshot(account);
       require(oErr == 0, 'snapshot error');
-      vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
-      vars.discountRate = Exp({mantissa: ICToken(asset).getDiscountRate()});
 
-      // Get the normalized price of the asset
+      // Get price of asset
       IPriceOracle oracle = IPriceOracle(comptroller.oracle());
-      vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
-      require(vars.oraclePriceMantissa > 0, 'price error');
-      vars.oraclePrice = Exp({mantissa: vars.oraclePriceMantissa});
+      uint256 oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
+      require(oraclePriceMantissa > 0, 'price error');
+
+      // normalize price for asset with unit of 1e(36-token decimal)
+      Exp memory oraclePrice = Exp({mantissa: oraclePriceMantissa});
       uint8 decimals = ICToken(asset).decimals();
-      if (decimals < 18) vars.oraclePrice = vars.oraclePrice.mul_(10 ** (18 - decimals));
+      if (decimals < 18) oraclePrice = oraclePrice.mul_(10 ** (18 - decimals));
 
-      // Pre-compute a conversion factor from tokens -> ether (normalized price value)
-      // vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePriceMantissa).div_(1e18);
+      // Pre-compute a conversion factor from tokens -> USD (normalized price value)
+      // tokensToDenom = oraclePrice * exchangeRate * discourntRate
+      Exp memory exchangeRate = Exp({mantissa: exchangeRateMantissa});
+      Exp memory discountRate = Exp({mantissa: ICToken(asset).getDiscountRate()});
+      Exp memory tokensToDenom = exchangeRate.mul_(oraclePrice).mul_(discountRate);
 
-      vars.tokensToDenom = vars.exchangeRate.mul_(vars.oraclePrice);
-      vars.tokensToDenom = vars.tokensToDenom.mul_(vars.discountRate);
-
-      uint8 index;
-      for (index = 0; index < vars.equalAssetsGroupNum; ++index) {
-        if (groupVars[index].groupId > 0) {
-          if (groupVars[index].groupId == assetGroupId) {
-            break;
-          }
-        } else {
-          groupVars[index].groupId = assetGroupId;
-          break;
-        }
-      }
-      // require(index < vars.equalAssetsGroupNum);
-      vars.tokenDepositVal = vars.tokensToDenom.mul_ScalarTruncateAddUInt(vars.cTokenBalance, vars.tokenDepositVal);
-      vars.tokenBorrowVal = vars.oraclePrice.mul_ScalarTruncateAddUInt(vars.borrowBalance, vars.tokenBorrowVal);
+      depositVal = tokensToDenom.mul_ScalarTruncateAddUInt(depositBalance, depositVal);
+      borrowVal = oraclePrice.mul_ScalarTruncateAddUInt(borrowBalance, borrowVal);
       if (asset == cTokenModify) {
-        uint256 redeemVal = vars.tokensToDenom.mul_(redeemTokens).truncate();
-        if (redeemVal <= vars.tokenDepositVal) {
-          // if redeemedVal <= tokenDepositVal
-          // absorb it with deposits
-          // tokenDepositVal -= redeemVal
-          vars.tokenDepositVal = vars.tokenDepositVal.sub_(redeemVal);
+        uint256 redeemVal = tokensToDenom.mul_(redeemTokens).truncate();
+        if (redeemVal <= depositVal) {
+          // if redeemedVal <= depositVal, absorb it with deposits
+          depositVal = depositVal.sub_(redeemVal);
           redeemVal = 0;
         } else {
-          // if redeemVal > tokenDepositVal
-          // redeemVal -= tokenDepositVal
-          redeemVal = redeemVal.sub_(vars.tokenDepositVal);
-          vars.tokenBorrowVal = vars.tokenBorrowVal.add_(redeemVal);
-          vars.tokenDepositVal = 0;
+          // if redeemVal > depositVal
+          redeemVal = redeemVal.sub_(depositVal);
+          borrowVal = borrowVal.add_(redeemVal);
+          depositVal = 0;
         }
 
-        vars.tokenBorrowVal = vars.oraclePrice.mul_ScalarTruncateAddUInt(borrowAmount, vars.tokenBorrowVal);
+        borrowVal = oraclePrice.mul_ScalarTruncateAddUInt(borrowAmount, borrowVal);
       }
+
+      uint8 index = comptroller.assetGroupIdToIndex(assetGroupId);
 
       if (ICToken(asset).isCToken()) {
-        groupVars[index].cTokenBalanceSum = vars.tokenDepositVal.add_(groupVars[index].cTokenBalanceSum);
-        groupVars[index].cTokenBorrowSum = vars.tokenBorrowVal.add_(groupVars[index].cTokenBorrowSum);
+        groupVars[index].cDepositVal = depositVal.add_(groupVars[index].cDepositVal);
+        groupVars[index].cBorrowVal = borrowVal.add_(groupVars[index].cBorrowVal);
       } else {
-        groupVars[index].suTokenBalanceSum = vars.tokenDepositVal.add_(groupVars[index].suTokenBalanceSum);
-        groupVars[index].suTokenBorrowSum = vars.tokenBorrowVal.add_(groupVars[index].suTokenBorrowSum);
+        groupVars[index].suDepositVal = depositVal.add_(groupVars[index].suDepositVal);
+        groupVars[index].suBorrowVal = borrowVal.add_(groupVars[index].suBorrowVal);
       }
     }
+    // end of loop in assets
 
     AccountGroupLocalVars memory targetGroup;
-    AccountLiquidityLocalVars memory targetVars;
-    for (uint8 i = 0; i < vars.equalAssetsGroupNum; ++i) {
-      (, uint8 assetGroupId, ) = comptroller.markets(cTokenModify);
+    // loop in groups to calculate accumulated collateral/liability for two types:
+    // inter-group and intra-group for target token
+    (, uint8 targetGroupId, ) = comptroller.markets(cTokenModify);
+    bool targetIsSuToken = false;
+    if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
+      targetIsSuToken = true;
+    } else {
+      targetIsSuToken = false;
+    }
+
+    for (uint8 i = 0; i < assetsGroupNum; ++i) {
       if (groupVars[i].groupId == 0) {
         continue;
       }
-      IComptroller.AssetGroup memory equalAssetsGroup = IComptroller(comptroller).getAssetGroup(groupVars[i].groupId);
-
-      vars.intraCRate = Exp({mantissa: equalAssetsGroup.intraCRateMantissa});
-      vars.intraMintRate = Exp({mantissa: equalAssetsGroup.intraMintRateMantissa});
-      vars.intraSuRate = Exp({mantissa: equalAssetsGroup.intraSuRateMantissa});
-      vars.interCRate = Exp({mantissa: equalAssetsGroup.interCRateMantissa});
-      vars.interSuRate = Exp({mantissa: equalAssetsGroup.interSuRateMantissa});
+      AccountGroupLocalVars memory g = groupVars[i];
 
       // absorb sutoken loan with ctoken collateral
-      if (groupVars[i].suTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = vars.intraMintRate.mul_ScalarTruncate(groupVars[i].cTokenBalanceSum);
-        if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
-          // collateral could cover the loan
-          uint256 usedCollateral = groupVars[i].suTokenBorrowSum.div_(vars.intraMintRate);
-          groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub_(usedCollateral);
-          groupVars[i].suTokenBorrowSum = 0;
-        } else {
-          // collateral could not cover the loan
-          groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub_(collateralizedLoan);
-          groupVars[i].cTokenBalanceSum = 0;
-        }
+      if (g.suBorrowVal > 0) {
+        (g.cDepositVal, g.suBorrowVal) = absorbLoan(g.cDepositVal, g.suBorrowVal, g.intraMintRate);
       }
 
       // absorb ctoken loan with ctoken collateral
-      if (groupVars[i].cTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = vars.intraCRate.mul_ScalarTruncate(groupVars[i].cTokenBalanceSum);
-        if (groupVars[i].cTokenBorrowSum <= collateralizedLoan) {
-          // collateral could cover the loan
-          uint256 usedCollateral = groupVars[i].cTokenBorrowSum.div_(vars.intraCRate);
-          groupVars[i].cTokenBalanceSum = groupVars[i].cTokenBalanceSum.sub_(usedCollateral);
-          groupVars[i].cTokenBorrowSum = 0;
-        } else {
-          // collateral could not cover the loan
-          groupVars[i].cTokenBalanceSum = 0;
-          groupVars[i].cTokenBorrowSum = groupVars[i].cTokenBorrowSum.sub_(collateralizedLoan);
-        }
+      if (g.cBorrowVal > 0) {
+        (g.cDepositVal, g.cBorrowVal) = absorbLoan(g.cDepositVal, g.cBorrowVal, g.intraCRate);
       }
 
       // absorb sutoken loan with sutoken collateral
-      if (groupVars[i].suTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = vars.intraSuRate.mul_ScalarTruncate(groupVars[i].suTokenBalanceSum);
-        if (groupVars[i].suTokenBorrowSum <= collateralizedLoan) {
-          // collateral could cover the loan
-          uint256 usedCollateral = groupVars[i].suTokenBorrowSum.div_(vars.intraSuRate);
-          groupVars[i].suTokenBalanceSum = groupVars[i].suTokenBalanceSum.sub_(usedCollateral);
-          groupVars[i].suTokenBorrowSum = 0;
-        } else {
-          // collateral could not cover the loan
-          groupVars[i].suTokenBalanceSum = 0;
-          groupVars[i].suTokenBorrowSum = groupVars[i].suTokenBorrowSum.sub_(collateralizedLoan);
-        }
+      if (g.suBorrowVal > 0) {
+        (g.suDepositVal, g.suBorrowVal) = absorbLoan(g.suDepositVal, g.suBorrowVal, g.intraSuRate);
       }
 
       // absorb ctoken loan with sutoken collateral
-      if (groupVars[i].cTokenBorrowSum > 0) {
-        uint256 collateralizedLoan = vars.intraSuRate.mul_ScalarTruncate(groupVars[i].suTokenBalanceSum);
-        if (groupVars[i].cTokenBorrowSum <= collateralizedLoan) {
-          uint256 usedCollateral = groupVars[i].cTokenBorrowSum.div_(vars.intraSuRate);
-          groupVars[i].suTokenBalanceSum = groupVars[i].suTokenBalanceSum.sub_(usedCollateral);
-          groupVars[i].cTokenBorrowSum = 0;
-        } else {
-          groupVars[i].suTokenBalanceSum = 0;
-          groupVars[i].cTokenBorrowSum = groupVars[i].cTokenBorrowSum.sub_(collateralizedLoan);
-        }
+      if (g.cBorrowVal > 0) {
+        (g.suDepositVal, g.cBorrowVal) = absorbLoan(g.suDepositVal, g.cBorrowVal, g.intraSuRate);
       }
 
-      if (groupVars[i].groupId == assetGroupId) {
+      if (g.groupId == targetGroupId) {
         targetGroup = groupVars[i];
-        targetVars.interCRate = vars.interCRate;
-        targetVars.interSuRate = vars.interSuRate;
-        targetVars.intraCRate = vars.intraCRate;
-        targetVars.intraMintRate = vars.intraMintRate;
-        targetVars.intraSuRate = vars.intraSuRate;
       } else {
-        vars.sumCollateral = vars.interCRate.mul_ScalarTruncateAddUInt(
-          groupVars[i].cTokenBalanceSum,
-          vars.sumCollateral
-        );
-        vars.sumCollateral = vars.interSuRate.mul_ScalarTruncateAddUInt(
-          groupVars[i].suTokenBalanceSum,
-          vars.sumCollateral
-        );
+        sumCollateral = g.interCRate.mul_ScalarTruncateAddUInt(g.cDepositVal, sumCollateral);
+        sumCollateral = g.interSuRate.mul_ScalarTruncateAddUInt(g.suDepositVal, sumCollateral);
       }
 
-      vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.add_(
-        groupVars[i].cTokenBorrowSum.add_(groupVars[i].suTokenBorrowSum)
-      );
+      sumBorrowPlusEffects = sumBorrowPlusEffects.add_(g.cBorrowVal).add_(g.suBorrowVal);
     }
+    // end of loop in groups
 
     // These are safe, as the underflow condition is checked first
-    if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
-      vars.sumCollateral = vars.sumCollateral - vars.sumBorrowPlusEffects;
-      vars.sumBorrowPlusEffects = 0;
+    // absorb inter-group loan with inter-group collateral
+    if (sumCollateral > sumBorrowPlusEffects) {
+      sumCollateral = sumCollateral - sumBorrowPlusEffects;
+      sumBorrowPlusEffects = 0;
     } else {
-      vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects - vars.sumCollateral;
-      vars.sumCollateral = 0;
+      sumBorrowPlusEffects = sumBorrowPlusEffects - sumCollateral;
+      sumCollateral = 0;
     }
 
-    if (vars.sumBorrowPlusEffects > 0) {
-      uint256 collateralizedLoan = targetVars.interCRate.mul_ScalarTruncate(targetGroup.cTokenBalanceSum);
-      if (collateralizedLoan > vars.sumBorrowPlusEffects) {
-        targetGroup.cTokenBalanceSum = targetGroup.cTokenBalanceSum.sub_(
-          vars.sumBorrowPlusEffects.div_(targetVars.interCRate)
-        );
-        vars.sumBorrowPlusEffects = 0;
-      } else {
-        vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub_(collateralizedLoan);
-        targetGroup.cTokenBalanceSum = 0;
-      }
-    }
-
-    if (vars.sumBorrowPlusEffects > 0) {
-      uint256 collateralizedLoan = targetVars.interSuRate.mul_ScalarTruncate(targetGroup.suTokenBalanceSum);
-      if (collateralizedLoan > vars.sumBorrowPlusEffects) {
-        targetGroup.suTokenBalanceSum = targetGroup.suTokenBalanceSum.sub_(
-          vars.sumBorrowPlusEffects.div_(targetVars.interSuRate)
-        );
-        vars.sumBorrowPlusEffects = 0;
-      } else {
-        vars.sumBorrowPlusEffects = vars.sumBorrowPlusEffects.sub_(collateralizedLoan);
-        targetGroup.suTokenBalanceSum = 0;
-      }
-    }
-    if (vars.isSuToken) {
-      vars.sumCollateral = targetVars.intraMintRate.mul_ScalarTruncateAddUInt(
-        targetGroup.cTokenBalanceSum,
-        vars.sumCollateral
-      );
-    } else {
-      vars.sumCollateral = targetVars.intraCRate.mul_ScalarTruncateAddUInt(
-        targetGroup.cTokenBalanceSum,
-        vars.sumCollateral
+    // absorb inter group loan with target group ctoken collateral
+    if (sumBorrowPlusEffects > 0) {
+      (targetGroup.cDepositVal, sumBorrowPlusEffects) = absorbLoan(
+        targetGroup.cDepositVal,
+        sumBorrowPlusEffects,
+        targetGroup.interCRate
       );
     }
-    vars.sumCollateral = targetVars.intraSuRate.mul_ScalarTruncateAddUInt(
-      targetGroup.suTokenBalanceSum,
-      vars.sumCollateral
-    );
 
-    if (vars.sumCollateral > vars.sumBorrowPlusEffects) {
-      return (0, vars.sumCollateral - vars.sumBorrowPlusEffects, 0);
-    } else {
-      return (0, 0, vars.sumBorrowPlusEffects - vars.sumCollateral);
+    // absorb inter group loan with target group sutoken collateral
+    if (sumBorrowPlusEffects > 0) {
+      (targetGroup.suDepositVal, sumBorrowPlusEffects) = absorbLoan(
+        targetGroup.suDepositVal,
+        sumBorrowPlusEffects,
+        targetGroup.interSuRate
+      );
     }
+    if (targetIsSuToken) {
+      // if target is sutoken
+      // limit = inter-group limit + intra ctoken collateral * intra mint rate
+      sumCollateral = targetGroup.intraMintRate.mul_ScalarTruncateAddUInt(targetGroup.cDepositVal, sumCollateral);
+    } else {
+      // if target is not sutoken
+      // limit = inter-group limit + intra ctoken collateral * intra c rate
+      sumCollateral = targetGroup.intraCRate.mul_ScalarTruncateAddUInt(targetGroup.cDepositVal, sumCollateral);
+    }
+
+    // limit = inter-group limit + intra-group ctoken limit + intra sutoken collateral * intra su rate
+    sumCollateral = targetGroup.intraSuRate.mul_ScalarTruncateAddUInt(targetGroup.suDepositVal, sumCollateral);
+
+    if (sumCollateral > sumBorrowPlusEffects) {
+      return (0, sumCollateral - sumBorrowPlusEffects, 0);
+    } else {
+      return (0, 0, sumBorrowPlusEffects - sumCollateral);
+    }
+  }
+
+  function absorbLoan(
+    uint256 collateralValue,
+    uint256 borrowValue,
+    Exp memory collateralRate
+  ) internal pure returns (uint256, uint256) {
+    require(collateralRate.mantissa > 0, 'collateral rate is 0');
+    uint256 collateralizedLoan = collateralRate.mul_ScalarTruncate(collateralValue);
+    uint256 usedCollateral = borrowValue.div_(collateralRate);
+    uint256 newCollateralValue = 0;
+    uint256 newBorrowValue = 0;
+    if (collateralizedLoan > borrowValue) {
+      newCollateralValue = collateralValue.sub_(usedCollateral);
+    } else {
+      newBorrowValue = borrowValue.sub_(collateralizedLoan);
+    }
+    return (newCollateralValue, newBorrowValue);
   }
 }

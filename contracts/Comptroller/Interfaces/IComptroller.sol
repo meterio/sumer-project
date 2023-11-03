@@ -101,6 +101,10 @@ interface IComptroller {
 
   function getAssetGroup(uint8 groupId) external view returns (AssetGroup memory);
 
+  function getAllAssetGroup() external view returns (AssetGroup[] memory);
+
+  function assetGroupIdToIndex(uint8) external view returns (uint8);
+
   function _getMintPaused(address cToken) external returns (bool);
 
   function _getTransferPaused() external view returns (bool);

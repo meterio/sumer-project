@@ -194,6 +194,25 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    name: "assetGroupIdToIndex",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "cToken",
         type: "address",
@@ -327,6 +346,56 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllAssetGroup",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint8",
+            name: "groupId",
+            type: "uint8",
+          },
+          {
+            internalType: "string",
+            name: "groupName",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "intraCRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "intraMintRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "intraSuRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interCRateMantissa",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interSuRateMantissa",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct IComptroller.AssetGroup[]",
+        name: "",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
