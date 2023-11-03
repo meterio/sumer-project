@@ -432,7 +432,8 @@ export class IComptroller extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          boolean
         ] & {
           groupId: number;
           groupName: string;
@@ -441,6 +442,7 @@ export class IComptroller extends BaseContract {
           intraSuRateMantissa: BigNumber;
           interCRateMantissa: BigNumber;
           interSuRateMantissa: BigNumber;
+          exist: boolean;
         })[]
       ]
     >;
@@ -459,7 +461,8 @@ export class IComptroller extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          boolean
         ] & {
           groupId: number;
           groupName: string;
@@ -468,6 +471,7 @@ export class IComptroller extends BaseContract {
           intraSuRateMantissa: BigNumber;
           interCRateMantissa: BigNumber;
           interSuRateMantissa: BigNumber;
+          exist: boolean;
         }
       ]
     >;
@@ -611,7 +615,16 @@ export class IComptroller extends BaseContract {
   getAllAssetGroup(
     overrides?: CallOverrides
   ): Promise<
-    ([number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    ([
+      number,
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      boolean
+    ] & {
       groupId: number;
       groupName: string;
       intraCRateMantissa: BigNumber;
@@ -619,6 +632,7 @@ export class IComptroller extends BaseContract {
       intraSuRateMantissa: BigNumber;
       interCRateMantissa: BigNumber;
       interSuRateMantissa: BigNumber;
+      exist: boolean;
     })[]
   >;
 
@@ -628,7 +642,16 @@ export class IComptroller extends BaseContract {
     groupId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [number, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    [
+      number,
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      boolean
+    ] & {
       groupId: number;
       groupName: string;
       intraCRateMantissa: BigNumber;
@@ -636,6 +659,7 @@ export class IComptroller extends BaseContract {
       intraSuRateMantissa: BigNumber;
       interCRateMantissa: BigNumber;
       interSuRateMantissa: BigNumber;
+      exist: boolean;
     }
   >;
 
@@ -776,7 +800,8 @@ export class IComptroller extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        boolean
       ] & {
         groupId: number;
         groupName: string;
@@ -785,6 +810,7 @@ export class IComptroller extends BaseContract {
         intraSuRateMantissa: BigNumber;
         interCRateMantissa: BigNumber;
         interSuRateMantissa: BigNumber;
+        exist: boolean;
       })[]
     >;
 
@@ -801,7 +827,8 @@ export class IComptroller extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        boolean
       ] & {
         groupId: number;
         groupName: string;
@@ -810,6 +837,7 @@ export class IComptroller extends BaseContract {
         intraSuRateMantissa: BigNumber;
         interCRateMantissa: BigNumber;
         interSuRateMantissa: BigNumber;
+        exist: boolean;
       }
     >;
 

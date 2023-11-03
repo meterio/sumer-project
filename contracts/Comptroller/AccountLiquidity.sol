@@ -34,30 +34,16 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     Exp interSuRate;
   }
 
-  /**
-     * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
-     * @param cTokenModify The market to hypothetically redeem/borrow in
-     * @param account The account to determine liquidity for
-     * @param redeemTokens The number of tokens to hypothetically redeem
-     * @param borrowAmount The amount of underlying to hypothetically borrow
-     * @dev Note that we calculate the exchangeRateStored for each collateral cToken using stored data,
-     *  without calculating accumulated interest.
-     * @return (possible error code,
-                hypothetical account liquidity in excess of collateral requirements,
-     *          hypothetical account shortfall below collateral requirements)
-     */
-  function getHypotheticalAccountLiquidity(
+  function getGroupVars(
     address account,
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) public view returns (uint256, uint256, uint256) {
+  ) public view returns (AccountGroupLocalVars[] memory) {
     uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](assetsGroupNum);
     IComptroller.AssetGroup[] memory assetGroups = IComptroller(comptroller).getAllAssetGroup();
 
-    uint256 sumCollateral = 0;
-    uint256 sumBorrowPlusEffects = 0;
     for (uint256 i = 0; i < assetGroups.length; i++) {
       IComptroller.AssetGroup memory g = assetGroups[i];
       groupVars[i] = AccountGroupLocalVars(
@@ -133,17 +119,24 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       }
     }
     // end of loop in assets
+    return groupVars;
+  }
 
+  function getHypotheticalGroupSummary(
+    address account,
+    address cTokenModify,
+    uint256 redeemTokens,
+    uint256 borrowAmount
+  ) public view returns (uint256, uint256, AccountGroupLocalVars memory) {
+    uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
+    AccountGroupLocalVars[] memory groupVars = getGroupVars(account, cTokenModify, redeemTokens, borrowAmount);
     AccountGroupLocalVars memory targetGroup;
     // loop in groups to calculate accumulated collateral/liability for two types:
     // inter-group and intra-group for target token
     (, uint8 targetGroupId, ) = comptroller.markets(cTokenModify);
-    bool targetIsSuToken = false;
-    if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
-      targetIsSuToken = true;
-    } else {
-      targetIsSuToken = false;
-    }
+
+    uint256 sumLiquidity = 0;
+    uint256 sumBorrowPlusEffects = 0;
 
     for (uint8 i = 0; i < assetsGroupNum; ++i) {
       if (groupVars[i].groupId == 0) {
@@ -172,10 +165,10 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       }
 
       if (g.groupId == targetGroupId) {
-        targetGroup = groupVars[i];
+        targetGroup = g;
       } else {
-        sumCollateral = g.interCRate.mul_ScalarTruncateAddUInt(g.cDepositVal, sumCollateral);
-        sumCollateral = g.interSuRate.mul_ScalarTruncateAddUInt(g.suDepositVal, sumCollateral);
+        sumLiquidity = g.interCRate.mul_ScalarTruncateAddUInt(g.cDepositVal, sumLiquidity);
+        sumLiquidity = g.interSuRate.mul_ScalarTruncateAddUInt(g.suDepositVal, sumLiquidity);
       }
 
       sumBorrowPlusEffects = sumBorrowPlusEffects.add_(g.cBorrowVal).add_(g.suBorrowVal);
@@ -184,12 +177,12 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
 
     // These are safe, as the underflow condition is checked first
     // absorb inter-group loan with inter-group collateral
-    if (sumCollateral > sumBorrowPlusEffects) {
-      sumCollateral = sumCollateral - sumBorrowPlusEffects;
+    if (sumLiquidity > sumBorrowPlusEffects) {
+      sumLiquidity = sumLiquidity - sumBorrowPlusEffects;
       sumBorrowPlusEffects = 0;
     } else {
-      sumBorrowPlusEffects = sumBorrowPlusEffects - sumCollateral;
-      sumCollateral = 0;
+      sumBorrowPlusEffects = sumBorrowPlusEffects - sumLiquidity;
+      sumLiquidity = 0;
     }
 
     // absorb inter group loan with target group ctoken collateral
@@ -209,23 +202,102 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
         targetGroup.interSuRate
       );
     }
+    return (sumLiquidity, sumBorrowPlusEffects, targetGroup);
+  }
+
+  function getHypotheticalSafeLimit(
+    address account,
+    address cTokenModify,
+    uint256 intraSafeLimitMantissa,
+    uint256 interSafeLimitMantissa
+  ) public view returns (uint256) {
+    (
+      uint256 sumLiquidity,
+      uint256 sumBorrowPlusEffects,
+      AccountGroupLocalVars memory targetGroup
+    ) = getHypotheticalGroupSummary(account, cTokenModify, uint256(0), uint256(0));
+
+    Exp memory intraSafeLimit = Exp({mantissa: intraSafeLimitMantissa});
+    Exp memory interSafeLimit = Exp({mantissa: interSafeLimitMantissa});
+    bool targetIsSuToken = false;
+    if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
+      targetIsSuToken = true;
+    } else {
+      targetIsSuToken = false;
+    }
+
+    uint256 interGroupLiquidity = sumLiquidity;
+
+    uint256 intraGroupLiquidity = targetGroup.intraSuRate.mul_ScalarTruncate(targetGroup.suDepositVal);
+    if (targetIsSuToken) {
+      intraGroupLiquidity = targetGroup.intraMintRate.mul_ScalarTruncateAddUInt(
+        targetGroup.cDepositVal,
+        intraGroupLiquidity
+      );
+    } else {
+      intraGroupLiquidity = targetGroup.intraCRate.mul_ScalarTruncateAddUInt(
+        targetGroup.cDepositVal,
+        intraGroupLiquidity
+      );
+    }
+
+    sumLiquidity = interGroupLiquidity.add_(intraGroupLiquidity);
+    if (sumLiquidity <= sumBorrowPlusEffects) {
+      return 0;
+    }
+
+    uint256 safeLimit = interSafeLimit.mul_ScalarTruncateAddUInt(interGroupLiquidity, 0);
+    safeLimit = intraSafeLimit.mul_ScalarTruncateAddUInt(intraGroupLiquidity, safeLimit);
+    return safeLimit;
+  }
+
+  /**
+     * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
+     * @param cTokenModify The market to hypothetically redeem/borrow in
+     * @param account The account to determine liquidity for
+     * @param redeemTokens The number of tokens to hypothetically redeem
+     * @param borrowAmount The amount of underlying to hypothetically borrow
+     * @dev Note that we calculate the exchangeRateStored for each collateral cToken using stored data,
+     *  without calculating accumulated interest.
+     * @return (possible error code,
+                hypothetical account liquidity in excess of collateral requirements,
+     *          hypothetical account shortfall below collateral requirements)
+     */
+  function getHypotheticalAccountLiquidity(
+    address account,
+    address cTokenModify,
+    uint256 redeemTokens,
+    uint256 borrowAmount
+  ) public view returns (uint256, uint256, uint256) {
+    (
+      uint256 sumLiquidity,
+      uint256 sumBorrowPlusEffects,
+      AccountGroupLocalVars memory targetGroup
+    ) = getHypotheticalGroupSummary(account, cTokenModify, redeemTokens, borrowAmount);
+    bool targetIsSuToken = false;
+    if ((cTokenModify != address(0)) && !ICToken(cTokenModify).isCToken()) {
+      targetIsSuToken = true;
+    } else {
+      targetIsSuToken = false;
+    }
+
     if (targetIsSuToken) {
       // if target is sutoken
       // limit = inter-group limit + intra ctoken collateral * intra mint rate
-      sumCollateral = targetGroup.intraMintRate.mul_ScalarTruncateAddUInt(targetGroup.cDepositVal, sumCollateral);
+      sumLiquidity = targetGroup.intraMintRate.mul_ScalarTruncateAddUInt(targetGroup.cDepositVal, sumLiquidity);
     } else {
       // if target is not sutoken
       // limit = inter-group limit + intra ctoken collateral * intra c rate
-      sumCollateral = targetGroup.intraCRate.mul_ScalarTruncateAddUInt(targetGroup.cDepositVal, sumCollateral);
+      sumLiquidity = targetGroup.intraCRate.mul_ScalarTruncateAddUInt(targetGroup.cDepositVal, sumLiquidity);
     }
 
     // limit = inter-group limit + intra-group ctoken limit + intra sutoken collateral * intra su rate
-    sumCollateral = targetGroup.intraSuRate.mul_ScalarTruncateAddUInt(targetGroup.suDepositVal, sumCollateral);
+    sumLiquidity = targetGroup.intraSuRate.mul_ScalarTruncateAddUInt(targetGroup.suDepositVal, sumLiquidity);
 
-    if (sumCollateral > sumBorrowPlusEffects) {
-      return (0, sumCollateral - sumBorrowPlusEffects, 0);
+    if (sumLiquidity > sumBorrowPlusEffects) {
+      return (0, sumLiquidity - sumBorrowPlusEffects, 0);
     } else {
-      return (0, 0, sumBorrowPlusEffects - sumCollateral);
+      return (0, 0, sumBorrowPlusEffects - sumLiquidity);
     }
   }
 

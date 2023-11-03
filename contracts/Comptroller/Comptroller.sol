@@ -23,12 +23,46 @@ interface ICompLogic {
 }
 
 interface IAccountLiquidity {
+  struct AccountGroupLocalVars {
+    uint8 groupId;
+    uint256 cDepositVal;
+    uint256 cBorrowVal;
+    uint256 suDepositVal;
+    uint256 suBorrowVal;
+    Exp intraCRate;
+    Exp intraMintRate;
+    Exp intraSuRate;
+    Exp interCRate;
+    Exp interSuRate;
+  }
+
   function getHypotheticalAccountLiquidity(
     address account,
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
   ) external view returns (uint256, uint256, uint256);
+
+  function getHypotheticalSafeLimit(
+    address account,
+    address cTokenModify,
+    uint256 intraSafeLimitMantissa,
+    uint256 interSafeLimitMantissa
+  ) external view returns (uint256);
+
+  function getGroupVars(
+    address account,
+    address cTokenModify,
+    uint256 intraSafeLimitMantissa,
+    uint256 interSafeLimitMantissa
+  ) external view returns (AccountGroupLocalVars[] memory);
+
+  function getHypotheticalGroupSummary(
+    address account,
+    address cTokenModify,
+    uint256 redeemTokens,
+    uint256 borrowAmount
+  ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
 }
 
 /**
@@ -510,6 +544,30 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     return (uint256(err), liquidity, shortfall);
   }
 
+  function getAccountSafeLimit(
+    address account,
+    address cTokenTarget,
+    uint256 intraSafeLimitMantissa,
+    uint256 interSafeLimitMantissa
+  ) public view returns (uint256) {
+    return
+      accountLiquidity.getHypotheticalSafeLimit(account, cTokenTarget, intraSafeLimitMantissa, interSafeLimitMantissa);
+  }
+
+  function getAccountGroupVars(
+    address account,
+    address cTokenTarget
+  ) public view returns (IAccountLiquidity.AccountGroupLocalVars[] memory) {
+    return accountLiquidity.getGroupVars(account, cTokenTarget, 0, 0);
+  }
+
+  function getAccountGroupSummary(
+    address account,
+    address cTokenTarget
+  ) public view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory) {
+    return accountLiquidity.getHypotheticalGroupSummary(account, cTokenTarget, 0, 0);
+  }
+
   /**
      * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
      * @param cTokenModify The market to hypothetically redeem/borrow in
@@ -710,7 +768,9 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 interCRateMantissa, // ctoken collateral rate for inter group ctoken/sutoken liability
     uint256 interSuRateMantissa // sutoken collateral rate for inter group ctoken/sutoken liability
   ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-    if (assetGroupIdToIndex[groupId] == 0) {
+    uint8 index = assetGroupIdToIndex[groupId];
+    if (index >= _eqAssetGroups.length || _eqAssetGroups[index].groupId != groupId) {
+      // append new group
       _eqAssetGroups.push(
         IComptroller.AssetGroup(
           groupId,
@@ -719,12 +779,12 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
           intraMintRateMantissa,
           intraSuRateMantissa,
           interCRateMantissa,
-          interSuRateMantissa
+          interSuRateMantissa,
+          true
         )
       );
-      uint8 _equalAssetsGroupNum = uint8(_eqAssetGroups.length);
-
-      assetGroupIdToIndex[groupId] = _equalAssetsGroupNum;
+      uint8 newIndex = uint8(_eqAssetGroups.length) - 1;
+      assetGroupIdToIndex[groupId] = newIndex;
 
       emit NewAssetGroup(
         groupId,
@@ -734,29 +794,32 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
         intraSuRateMantissa,
         interCRateMantissa,
         interSuRateMantissa,
-        _equalAssetsGroupNum
+        newIndex
       );
     } else {
-      _eqAssetGroups[assetGroupIdToIndex[groupId] - 1] = IComptroller.AssetGroup(
+      require(_eqAssetGroups[index].groupId == groupId, 'groupId mismatch');
+      // update existing group
+      _eqAssetGroups[index] = IComptroller.AssetGroup(
         groupId,
         groupName,
         intraCRateMantissa,
         intraMintRateMantissa,
         intraSuRateMantissa,
         interCRateMantissa,
-        interSuRateMantissa
+        interSuRateMantissa,
+        true
       );
     }
-    return uint256(0);
+    return 0;
   }
 
   function removeAssetGroup(uint8 groupId) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
     uint8 length = uint8(_eqAssetGroups.length);
-    uint8 lastId = _eqAssetGroups[length - 1].groupId;
+    uint8 lastGroupId = _eqAssetGroups[length - 1].groupId;
     uint8 index = assetGroupIdToIndex[groupId];
 
-    _eqAssetGroups[index - 1] = _eqAssetGroups[length - 1];
-    assetGroupIdToIndex[lastId] = index;
+    _eqAssetGroups[index] = _eqAssetGroups[length - 1];
+    assetGroupIdToIndex[lastGroupId] = index;
     _eqAssetGroups.pop();
     delete assetGroupIdToIndex[groupId];
 
@@ -764,8 +827,20 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     return uint256(0);
   }
 
+  function cleanAssetGroup() public {
+    for (uint8 i = 0; i < _eqAssetGroups.length; i++) {
+      uint8 groupId = _eqAssetGroups[i].groupId;
+      delete assetGroupIdToIndex[groupId];
+    }
+
+    uint8 len = uint8(_eqAssetGroups.length);
+    for (uint8 i = 0; i < len; i++) {
+      _eqAssetGroups.pop();
+    }
+  }
+
   function getAssetGroup(uint8 groupId) external view returns (IComptroller.AssetGroup memory) {
-    return _eqAssetGroups[assetGroupIdToIndex[groupId] - 1];
+    return _eqAssetGroups[assetGroupIdToIndex[groupId]];
   }
 
   function getAssetGroupNum() external view returns (uint8) {

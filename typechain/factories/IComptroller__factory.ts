@@ -392,6 +392,11 @@ const _abi = [
             name: "interSuRateMantissa",
             type: "uint256",
           },
+          {
+            internalType: "bool",
+            name: "exist",
+            type: "bool",
+          },
         ],
         internalType: "struct IComptroller.AssetGroup[]",
         name: "",
@@ -460,6 +465,11 @@ const _abi = [
             internalType: "uint256",
             name: "interSuRateMantissa",
             type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "exist",
+            type: "bool",
           },
         ],
         internalType: "struct IComptroller.AssetGroup",

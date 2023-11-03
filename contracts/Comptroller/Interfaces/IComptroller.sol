@@ -95,6 +95,7 @@ interface IComptroller {
     uint256 intraSuRateMantissa;
     uint256 interCRateMantissa;
     uint256 interSuRateMantissa;
+    bool exist;
   }
 
   function getAssetGroupNum() external view returns (uint8);
