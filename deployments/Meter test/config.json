@@ -106,7 +106,7 @@
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0x6F17762570701DeFa4E650E1074654bE668b3929",
+    "implementation": "0x9e1f439cBD47c312E54b5CAC1C9980A71f25C338",
     "address": "0x3bf4C0C591FD6aBc15A4B22F0AEb5A88D7B354c0",
     "constructorName": [
       "admin"
