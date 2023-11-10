@@ -24,6 +24,7 @@ interface IAccountLiquidityInterface extends ethers.utils.Interface {
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
     "getHypotheticalGroupSummary(address,address,uint256,uint256)": FunctionFragment;
     "getHypotheticalSafeLimit(address,address,uint256,uint256)": FunctionFragment;
+    "getIntermediateGroupSummary(address,address,uint256,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -42,6 +43,10 @@ interface IAccountLiquidityInterface extends ethers.utils.Interface {
     functionFragment: "getHypotheticalSafeLimit",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "getIntermediateGroupSummary",
+    values: [string, string, BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "getGroupVars",
@@ -57,6 +62,10 @@ interface IAccountLiquidityInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getHypotheticalSafeLimit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getIntermediateGroupSummary",
     data: BytesLike
   ): Result;
 
@@ -192,6 +201,42 @@ export class IAccountLiquidity extends BaseContract {
       interSafeLimitMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        [
+          number,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber }
+        ] & {
+          groupId: number;
+          cDepositVal: BigNumber;
+          cBorrowVal: BigNumber;
+          suDepositVal: BigNumber;
+          suBorrowVal: BigNumber;
+          intraCRate: [BigNumber] & { mantissa: BigNumber };
+          intraMintRate: [BigNumber] & { mantissa: BigNumber };
+          intraSuRate: [BigNumber] & { mantissa: BigNumber };
+          interCRate: [BigNumber] & { mantissa: BigNumber };
+          interSuRate: [BigNumber] & { mantissa: BigNumber };
+        }
+      ]
+    >;
   };
 
   getGroupVars(
@@ -278,6 +323,42 @@ export class IAccountLiquidity extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getIntermediateGroupSummary(
+    account: string,
+    cTokenModify: string,
+    redeemTokens: BigNumberish,
+    borrowAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      BigNumber,
+      BigNumber,
+      [
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber }
+      ] & {
+        groupId: number;
+        cDepositVal: BigNumber;
+        cBorrowVal: BigNumber;
+        suDepositVal: BigNumber;
+        suBorrowVal: BigNumber;
+        intraCRate: [BigNumber] & { mantissa: BigNumber };
+        intraMintRate: [BigNumber] & { mantissa: BigNumber };
+        intraSuRate: [BigNumber] & { mantissa: BigNumber };
+        interCRate: [BigNumber] & { mantissa: BigNumber };
+        interSuRate: [BigNumber] & { mantissa: BigNumber };
+      }
+    ]
+  >;
+
   callStatic: {
     getGroupVars(
       account: string,
@@ -362,6 +443,42 @@ export class IAccountLiquidity extends BaseContract {
       interSafeLimitMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        [
+          number,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber }
+        ] & {
+          groupId: number;
+          cDepositVal: BigNumber;
+          cBorrowVal: BigNumber;
+          suDepositVal: BigNumber;
+          suBorrowVal: BigNumber;
+          intraCRate: [BigNumber] & { mantissa: BigNumber };
+          intraMintRate: [BigNumber] & { mantissa: BigNumber };
+          intraSuRate: [BigNumber] & { mantissa: BigNumber };
+          interCRate: [BigNumber] & { mantissa: BigNumber };
+          interSuRate: [BigNumber] & { mantissa: BigNumber };
+        }
+      ]
+    >;
   };
 
   filters: {};
@@ -398,6 +515,14 @@ export class IAccountLiquidity extends BaseContract {
       interSafeLimitMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -430,6 +555,14 @@ export class IAccountLiquidity extends BaseContract {
       cTokenModify: string,
       intraSafeLimitMantissa: BigNumberish,
       interSafeLimitMantissa: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

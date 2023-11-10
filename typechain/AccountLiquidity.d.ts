@@ -27,6 +27,7 @@ interface AccountLiquidityInterface extends ethers.utils.Interface {
     "getHypotheticalAccountLiquidity(address,address,uint256,uint256)": FunctionFragment;
     "getHypotheticalGroupSummary(address,address,uint256,uint256)": FunctionFragment;
     "getHypotheticalSafeLimit(address,address,uint256,uint256)": FunctionFragment;
+    "getIntermediateGroupSummary(address,address,uint256,uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
@@ -61,6 +62,10 @@ interface AccountLiquidityInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getHypotheticalSafeLimit",
+    values: [string, string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getIntermediateGroupSummary",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -123,6 +128,10 @@ interface AccountLiquidityInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getHypotheticalSafeLimit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getIntermediateGroupSummary",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -319,6 +328,42 @@ export class AccountLiquidity extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        [
+          number,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber }
+        ] & {
+          groupId: number;
+          cDepositVal: BigNumber;
+          cBorrowVal: BigNumber;
+          suDepositVal: BigNumber;
+          suBorrowVal: BigNumber;
+          intraCRate: [BigNumber] & { mantissa: BigNumber };
+          intraMintRate: [BigNumber] & { mantissa: BigNumber };
+          intraSuRate: [BigNumber] & { mantissa: BigNumber };
+          interCRate: [BigNumber] & { mantissa: BigNumber };
+          interSuRate: [BigNumber] & { mantissa: BigNumber };
+        }
+      ]
+    >;
+
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     getRoleMember(
@@ -460,6 +505,42 @@ export class AccountLiquidity extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getIntermediateGroupSummary(
+    account: string,
+    cTokenModify: string,
+    redeemTokens: BigNumberish,
+    borrowAmount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      BigNumber,
+      BigNumber,
+      [
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber }
+      ] & {
+        groupId: number;
+        cDepositVal: BigNumber;
+        cBorrowVal: BigNumber;
+        suDepositVal: BigNumber;
+        suBorrowVal: BigNumber;
+        intraCRate: [BigNumber] & { mantissa: BigNumber };
+        intraMintRate: [BigNumber] & { mantissa: BigNumber };
+        intraSuRate: [BigNumber] & { mantissa: BigNumber };
+        interCRate: [BigNumber] & { mantissa: BigNumber };
+        interSuRate: [BigNumber] & { mantissa: BigNumber };
+      }
+    ]
+  >;
+
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   getRoleMember(
@@ -600,6 +681,42 @@ export class AccountLiquidity extends BaseContract {
       interSafeLimitMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        [
+          number,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber }
+        ] & {
+          groupId: number;
+          cDepositVal: BigNumber;
+          cBorrowVal: BigNumber;
+          suDepositVal: BigNumber;
+          suBorrowVal: BigNumber;
+          intraCRate: [BigNumber] & { mantissa: BigNumber };
+          intraMintRate: [BigNumber] & { mantissa: BigNumber };
+          intraSuRate: [BigNumber] & { mantissa: BigNumber };
+          interCRate: [BigNumber] & { mantissa: BigNumber };
+          interSuRate: [BigNumber] & { mantissa: BigNumber };
+        }
+      ]
+    >;
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
@@ -752,6 +869,14 @@ export class AccountLiquidity extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -844,6 +969,14 @@ export class AccountLiquidity extends BaseContract {
       cTokenModify: string,
       intraSafeLimitMantissa: BigNumberish,
       interSafeLimitMantissa: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getIntermediateGroupSummary(
+      account: string,
+      cTokenModify: string,
+      redeemTokens: BigNumberish,
+      borrowAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

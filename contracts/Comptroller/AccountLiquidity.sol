@@ -122,7 +122,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     return groupVars;
   }
 
-  function getHypotheticalGroupSummary(
+  function getIntermediateGroupSummary(
     address account,
     address cTokenModify,
     uint256 redeemTokens,
@@ -173,7 +173,20 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
 
       sumBorrowPlusEffects = sumBorrowPlusEffects.add_(g.cBorrowVal).add_(g.suBorrowVal);
     }
-    // end of loop in groups
+    return (sumLiquidity, sumBorrowPlusEffects, targetGroup);
+  }
+
+  function getHypotheticalGroupSummary(
+    address account,
+    address cTokenModify,
+    uint256 redeemTokens,
+    uint256 borrowAmount
+  ) public view returns (uint256, uint256, AccountGroupLocalVars memory) {
+    (
+      uint256 sumLiquidity,
+      uint256 sumBorrowPlusEffects,
+      AccountGroupLocalVars memory targetGroup
+    ) = getIntermediateGroupSummary(account, cTokenModify, redeemTokens, borrowAmount);
 
     // These are safe, as the underflow condition is checked first
     // absorb inter-group loan with inter-group collateral

@@ -340,6 +340,137 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "cTokenModify",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "redeemTokens",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "borrowAmount",
+        type: "uint256",
+      },
+    ],
+    name: "getIntermediateGroupSummary",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        components: [
+          {
+            internalType: "uint8",
+            name: "groupId",
+            type: "uint8",
+          },
+          {
+            internalType: "uint256",
+            name: "cDepositVal",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "cBorrowVal",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "suDepositVal",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "suBorrowVal",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "mantissa",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct Exp",
+            name: "intraCRate",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "mantissa",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct Exp",
+            name: "intraMintRate",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "mantissa",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct Exp",
+            name: "intraSuRate",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "mantissa",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct Exp",
+            name: "interCRate",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "mantissa",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct Exp",
+            name: "interSuRate",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IAccountLiquidity.AccountGroupLocalVars",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 export class IAccountLiquidity__factory {

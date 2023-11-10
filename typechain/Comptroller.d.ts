@@ -63,6 +63,7 @@ interface ComptrollerInterface extends ethers.utils.Interface {
     "exitMarket(address)": FunctionFragment;
     "getAccountGroupSummary(address,address)": FunctionFragment;
     "getAccountGroupVars(address,address)": FunctionFragment;
+    "getAccountIntermediateGroupSummary(address,address)": FunctionFragment;
     "getAccountLiquidity(address)": FunctionFragment;
     "getAccountSafeLimit(address,address,uint256,uint256)": FunctionFragment;
     "getAllAssetGroup()": FunctionFragment;
@@ -271,6 +272,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountGroupVars",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAccountIntermediateGroupSummary",
     values: [string, string]
   ): string;
   encodeFunctionData(
@@ -618,6 +623,10 @@ interface ComptrollerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getAccountGroupVars",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAccountIntermediateGroupSummary",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1229,6 +1238,40 @@ export class Comptroller extends BaseContract {
       ]
     >;
 
+    getAccountIntermediateGroupSummary(
+      account: string,
+      cTokenTarget: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        [
+          number,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber }
+        ] & {
+          groupId: number;
+          cDepositVal: BigNumber;
+          cBorrowVal: BigNumber;
+          suDepositVal: BigNumber;
+          suBorrowVal: BigNumber;
+          intraCRate: [BigNumber] & { mantissa: BigNumber };
+          intraMintRate: [BigNumber] & { mantissa: BigNumber };
+          intraSuRate: [BigNumber] & { mantissa: BigNumber };
+          interCRate: [BigNumber] & { mantissa: BigNumber };
+          interSuRate: [BigNumber] & { mantissa: BigNumber };
+        }
+      ]
+    >;
+
     getAccountLiquidity(
       account: string,
       overrides?: CallOverrides
@@ -1781,6 +1824,40 @@ export class Comptroller extends BaseContract {
     })[]
   >;
 
+  getAccountIntermediateGroupSummary(
+    account: string,
+    cTokenTarget: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      BigNumber,
+      BigNumber,
+      [
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber },
+        [BigNumber] & { mantissa: BigNumber }
+      ] & {
+        groupId: number;
+        cDepositVal: BigNumber;
+        cBorrowVal: BigNumber;
+        suDepositVal: BigNumber;
+        suBorrowVal: BigNumber;
+        intraCRate: [BigNumber] & { mantissa: BigNumber };
+        intraMintRate: [BigNumber] & { mantissa: BigNumber };
+        intraSuRate: [BigNumber] & { mantissa: BigNumber };
+        interCRate: [BigNumber] & { mantissa: BigNumber };
+        interSuRate: [BigNumber] & { mantissa: BigNumber };
+      }
+    ]
+  >;
+
   getAccountLiquidity(
     account: string,
     overrides?: CallOverrides
@@ -2320,6 +2397,40 @@ export class Comptroller extends BaseContract {
         interCRate: [BigNumber] & { mantissa: BigNumber };
         interSuRate: [BigNumber] & { mantissa: BigNumber };
       })[]
+    >;
+
+    getAccountIntermediateGroupSummary(
+      account: string,
+      cTokenTarget: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        [
+          number,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber },
+          [BigNumber] & { mantissa: BigNumber }
+        ] & {
+          groupId: number;
+          cDepositVal: BigNumber;
+          cBorrowVal: BigNumber;
+          suDepositVal: BigNumber;
+          suBorrowVal: BigNumber;
+          intraCRate: [BigNumber] & { mantissa: BigNumber };
+          intraMintRate: [BigNumber] & { mantissa: BigNumber };
+          intraSuRate: [BigNumber] & { mantissa: BigNumber };
+          interCRate: [BigNumber] & { mantissa: BigNumber };
+          interSuRate: [BigNumber] & { mantissa: BigNumber };
+        }
+      ]
     >;
 
     getAccountLiquidity(
@@ -3119,6 +3230,12 @@ export class Comptroller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getAccountIntermediateGroupSummary(
+      account: string,
+      cTokenTarget: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getAccountLiquidity(
       account: string,
       overrides?: CallOverrides
@@ -3540,6 +3657,12 @@ export class Comptroller extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getAccountGroupVars(
+      account: string,
+      cTokenTarget: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAccountIntermediateGroupSummary(
       account: string,
       cTokenTarget: string,
       overrides?: CallOverrides

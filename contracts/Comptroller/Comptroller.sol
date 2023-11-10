@@ -57,6 +57,13 @@ interface IAccountLiquidity {
     uint256 interSafeLimitMantissa
   ) external view returns (AccountGroupLocalVars[] memory);
 
+  function getIntermediateGroupSummary(
+    address account,
+    address cTokenModify,
+    uint256 redeemTokens,
+    uint256 borrowAmount
+  ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
+
   function getHypotheticalGroupSummary(
     address account,
     address cTokenModify,
@@ -559,6 +566,13 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     address cTokenTarget
   ) public view returns (IAccountLiquidity.AccountGroupLocalVars[] memory) {
     return accountLiquidity.getGroupVars(account, cTokenTarget, 0, 0);
+  }
+
+  function getAccountIntermediateGroupSummary(
+    address account,
+    address cTokenTarget
+  ) public view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory) {
+    return accountLiquidity.getIntermediateGroupSummary(account, cTokenTarget, 0, 0);
   }
 
   function getAccountGroupSummary(
