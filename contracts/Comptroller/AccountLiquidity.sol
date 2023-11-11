@@ -319,7 +319,9 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     uint256 borrowValue,
     Exp memory collateralRate
   ) internal pure returns (uint256, uint256) {
-    require(collateralRate.mantissa > 0, 'collateral rate is 0');
+    if (collateralRate.mantissa <= 0) {
+      return (collateralValue, borrowValue);
+    }
     uint256 collateralizedLoan = collateralRate.mul_ScalarTruncate(collateralValue);
     uint256 usedCollateral = borrowValue.div_(collateralRate);
     uint256 newCollateralValue = 0;
