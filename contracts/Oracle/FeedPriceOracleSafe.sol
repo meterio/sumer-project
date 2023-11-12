@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 import './FeedPriceOracle.sol';
 
 contract FeedPriceOracleSafe is FeedPriceOracle {
-  uint256 public validTimePeriod = 1800;
+  uint256 public validTimePeriod = 7200;
 
   function _getPythPrice(FeedData memory feed) internal view override returns (uint256) {
     (bool success, bytes memory message) = feed.addr.staticcall(
