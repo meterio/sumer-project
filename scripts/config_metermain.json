@@ -301,6 +301,7 @@
           "1000000000000000000"
         ]
       }
+    ]
   },
   "suErc20": {
     "contract": "suErc20",
@@ -332,7 +333,7 @@
           "discountRateMantissa"
         ],
         "args": [
-          "",
+          "0x8BF591Eae535f93a242D5A954d3Cde648b48A5A8",
           "",
           "",
           "1000000000000000000",
@@ -373,7 +374,7 @@
           "discountRateMantissa"
         ],
         "args": [
-          "0x21351bde0B42b4Cba5c04Fc92917b8c3254b1E88",
+          "0x1c22531AA9747d76fFF8F0A43b37954ca67d28e0",
           "",
           "",
           "1000000000000000000",
