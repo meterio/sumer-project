@@ -111,8 +111,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "1600000000000",
+          "maxSupply": "2000000000000"
         },
         "constructorName": [
           "underlying",
@@ -130,7 +130,7 @@
           "",
           "",
           "1000000000000000000",
-          "Sumer USDC Deposit",
+          "Sumer USDC.eth Deposit",
           "sdrUSDC",
           "6",
           "",
@@ -152,8 +152,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "1600000000000",
+          "maxSupply": "2000000000000"
         },
         "constructorName": [
           "underlying",
@@ -171,7 +171,7 @@
           "",
           "",
           "1000000000000000000",
-          "Sumer USDT Deposit",
+          "Sumer USDT.eth Deposit",
           "sdrUSDT",
           "6",
           "",
@@ -193,8 +193,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 4,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "300000000000000000000000",
+          "maxSupply": "1000000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -234,8 +234,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 4,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "300000000000000000000000",
+          "maxSupply": "1000000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -275,8 +275,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "480000000000000000000",
+          "maxSupply": "600000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -317,8 +317,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "1000000000000000000000000",
+          "maxSupply": "500000000000000000000000"
         },
         "constructorName": [
           "underlying",
@@ -358,8 +358,8 @@
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
-          "borrowCap": "0",
-          "maxSupply": "0"
+          "borrowCap": "400000000000000000000",
+          "maxSupply": "200000000000000000000"
         },
         "constructorName": [
           "underlying",
