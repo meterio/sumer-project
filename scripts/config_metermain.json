@@ -90,7 +90,7 @@
       "homoLiquidationIncentiveMantissa",
       "sutokenLiquidationIncentiveMantissa"
     ],
-    "args": ["", "", "0x553d713e0fb958932b6c40abaf0b5a1ffae73da2", "", "", "5000000000000000000", "100000000000000000", "25000000000000000", "2500000000000000"]
+    "args": ["", "", "0x553d713e0fb958932b6c40abaf0b5a1ffae73da2", "", "", "500000000000000000", "100000000000000000", "25000000000000000", "2500000000000000"]
   },
   "CErc20": {
     "contract": "CErc20",
