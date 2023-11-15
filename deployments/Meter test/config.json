@@ -102,11 +102,27 @@
       "contract": "ZeroInterestRateModel",
       "address": "0x8098a4Ad4Fc816E576BbBf12A9299Ef3ae8189c7",
       "tokens": []
+    },
+    {
+      "name": "WhitePaperInterestRateModel",
+      "contract": "WhitePaperInterestRateModel",
+      "constructorName": [
+        "blocksPerYearOnChain",
+        "baseRatePerYear",
+        "multiplierPerYear"
+      ],
+      "args": [
+        "15768000",
+        "47500000000000000",
+        "450000000000000000"
+      ],
+      "address": "0xD162adC7b53Fe0b23c212CF98714dBb4D29D63A1",
+      "tokens": []
     }
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0xe169618cAc0542B458984a041d705e1558FEA5A0",
+    "implementation": "0x8Db07E63CfcDcd754d7F90540060ebcB4BfE3DCD",
     "address": "0x20A8794d5BEcBa1B19A35D8CaA2b7e0e0b7CF832",
     "constructorName": [
       "admin"
@@ -130,7 +146,7 @@
   },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0xB7305cEC5EfBd28204aBf8214452F6fc78Dc4E22",
+    "implementation": "0x5D150099E65290ebe174d113B4546d53A7decf96",
     "address": "0xB6bf1515CAA8Be16f2FC3308974645CaEa458Ab1",
     "settings": [
       {
@@ -220,7 +236,7 @@
   "CEther": {
     "name": "Sumer MTR Deposit",
     "contract": "CEther",
-    "implementation": "0x4E29C5A20aA77e4E877F89cfA206f373Fe818a1a",
+    "implementation": "0x49FDce3d17e7d51878e5c96Af18285D1009739cc",
     "address": "0xf9e3459233E08F88Cf7faDdEd8f734d80A04a35d",
     "constructorName": [
       "Comptroller",
@@ -259,7 +275,7 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0x3F004c7D1876E04df9C81614732949A38e6BF83D",
+    "implementation": "0x6d96d3Fbf4c3F4ee1730C0cdf50367425C9D617d",
     "proxys": [
       {
         "contract": "CErc20",
@@ -511,7 +527,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0xCCa0F5782f0Ba2d52E81d4855ddBAD8B528D1bBe",
+    "implementation": "0x4B5229bf62f7B901525192Dc59EcdEdEeE1170cF",
     "proxys": [
       {
         "contract": "suErc20",
