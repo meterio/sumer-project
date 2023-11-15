@@ -8,6 +8,8 @@ import './TokenErrorReporter.sol';
 import './CTokenStorage.sol';
 import '../Exponential/Exponential.sol';
 
+uint256 constant expScale = 1e18;
+
 /**
  * @title Compound's CToken Contract
  * @notice Abstract base for CTokens
@@ -773,7 +775,7 @@ abstract contract CToken is CTokenStorage {
   }
 
   function redeemAndTransferFresh(address payable redeemer, uint256 redeemTokensIn) internal returns (uint256) {
-    if (redeemTokensIn != 0) {
+    if (redeemTokensIn == 0) {
       Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
     }
     RedeemLocalVars memory vars;
@@ -783,7 +785,6 @@ abstract contract CToken is CTokenStorage {
     if (vars.mathErr != MathError.NO_ERROR) {
       Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
     }
-
     /*
      * We calculate the exchange rate and the amount of underlying to be redeemed:
      *  redeemTokens = redeemTokensIn
@@ -1625,7 +1626,7 @@ abstract contract CToken is CTokenStorage {
     address borrower,
     uint256 repayAmount
   ) public view returns (uint256) {
-    // Shh - currently unused: 
+    // Shh - currently unused:
     liquidator;
     if (!IComptroller(comptroller).isListed(address(this)) || !IComptroller(comptroller).isListed(cTokenCollateral)) {
       Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
@@ -1688,13 +1689,23 @@ abstract contract CToken is CTokenStorage {
      *   = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
      */
     uint256 exchangeRateMantissa = ICToken(cTokenCollateral).exchangeRateStored(); // Note: reverts on error
+    uint256 seizeTokenDecimal = CToken(cTokenCollateral).decimals();
+    uint256 repayTokenDecimal = CToken(address(this)).decimals();
+
     uint256 seizeTokens;
     Exp memory numerator;
     Exp memory denominator;
     Exp memory ratio;
 
-    numerator = Exp({mantissa: liquidationIncentiveMantissa}).mul_(Exp({mantissa: priceBorrowedMantissa}));
+    numerator = Exp({mantissa: liquidationIncentiveMantissa + expScale}).mul_(Exp({mantissa: priceBorrowedMantissa}));
+    if (repayTokenDecimal < 18) {
+      numerator = numerator.mul_(10 ** (18 - repayTokenDecimal));
+    }
     denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
+    if (seizeTokenDecimal < 18) {
+      denominator = denominator.mul_(10 ** (18 - seizeTokenDecimal));
+    }
+
     ratio = numerator.div_(denominator);
 
     seizeTokens = ratio.mul_ScalarTruncate(actualRepayAmount);
