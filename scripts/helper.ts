@@ -39,7 +39,7 @@ export function BN(n: number): BigNumber {
   return BigNumber.from(n);
 }
 export const overrides: any = {
-  gasLimit: 8000000
+  gasLimit: 8000000,
 };
 
 export const MINTER_ROLE: BytesLike = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
@@ -96,7 +96,7 @@ export async function saveFile(
           address: contract.address,
           constructorArguments: args,
           libraries: libraries,
-          contract: name
+          contract: name,
         },
         null,
         2
@@ -108,7 +108,7 @@ export async function saveFile(
       JSON.stringify({
         address: contract.address,
         constructorArguments: args,
-        libraries: libraries
+        libraries: libraries,
       })
     );
   }
@@ -119,7 +119,7 @@ export function getChoices(config: any[]) {
   for (let i = 0; i < config.length; i++) {
     result.push({
       name: config[i].name,
-      value: i
+      value: i,
     });
   }
   return result;
@@ -138,12 +138,12 @@ export async function setNetwork(config: any[], name: string = ''): Promise<Netw
   let override: PayableOverrides = {};
   const networkIndex = await select({
     message: `选择网络${green(name)}:`,
-    choices: getChoices(config)
+    choices: getChoices(config),
   });
   const privateKey = await password({
     message: `输入网络${green(name)}的Private Key:`,
     validate: (value = '') => utils.isBytesLike(value) || 'Pass a valid Private Key value',
-    mask: '*'
+    mask: '*',
   });
 
   const provider = new providers.JsonRpcProvider(config[networkIndex].rpc);
@@ -154,7 +154,7 @@ export async function setNetwork(config: any[], name: string = ''): Promise<Netw
   override.gasPrice = await input({
     message: '输入Gas price:',
     default: defaultGasPrice.toString(),
-    validate: (value = '') => value.length > 0 || 'Pass a valid value'
+    validate: (value = '') => value.length > 0 || 'Pass a valid value',
   });
 
   const netConfig = config[networkIndex];
@@ -178,7 +178,7 @@ export async function sendTransaction(
   override.nonce = await input({
     message: '输入nonce:',
     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
-    validate: (value = '') => value.length > 0 || 'Pass a valid value'
+    validate: (value = '') => value.length > 0 || 'Pass a valid value',
   });
   override.gasLimit = await contract.estimateGas[func](...args);
   console.log('gasLimit:', green(override.gasLimit.toString()));
@@ -197,10 +197,11 @@ export async function deployContractV2(
   override.nonce = await input({
     message: '输入nonce:',
     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
-    validate: (value = '') => value.length > 0 || 'Pass a valid value'
+    validate: (value = '') => value.length > 0 || 'Pass a valid value',
   });
 
   const factory = await ethers.getContractFactory(contract, network.wallet);
+  console.log('factory bytecode: ', factory.bytecode);
 
   override.gasLimit = await network.wallet.estimateGas(factory.getDeployTransaction(...args));
 
@@ -255,22 +256,23 @@ export async function deployOrInput(
 ): Promise<Config> {
   let name = config.name || config.contract;
   name = implementation ? green(name) + '的' + green('Implementation') : green(name);
+  let address: string;
+  address = implementation ? config.implementation : config.address;
+  let choices = [
+    { name: '部署合约', value: 'deploy' },
+    { name: '输入新的合约地址', value: 'input' },
+  ];
+  if (address) {
+    choices.unshift({ name: `确认现有配置 ${address}`, value: 'confirm' });
+  }
   const answer = await select({
     message: `选择${name}合约:`,
-    choices: [
-      {
-        name: '部署合约',
-        value: 'deploy'
-      },
-      {
-        name: '输入合约地址',
-        value: 'input'
-      }
-    ]
+    choices,
   });
-  let address: string;
 
-  if (answer == 'deploy') {
+  if (answer == 'confirm') {
+    return config;
+  } else if (answer == 'deploy') {
     let constructorName = config.constructorName || [];
     let args = config.args || [];
     if (!implementation) {
@@ -284,7 +286,7 @@ export async function deployOrInput(
     address = await input({
       message: `输入${name}合约地址:`,
       default: implementation ? config.implementation : config.address,
-      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
     });
   }
   if (implementation) {
@@ -300,7 +302,7 @@ async function getArgs(network: Network, constructorName: string[], args: string
     args[i] = await input({
       message: `输入${green(constructorName[i])}:`,
       default: await getDefaultValue(network, args[i], constructorName[i]),
-      validate: (value = '') => value.length > 0 || 'Pass a valid value'
+      validate: (value = '') => value.length > 0 || 'Pass a valid value',
     });
   }
   return args;
@@ -321,12 +323,12 @@ async function getDefaultValue(network: Network, defaultValue: string, construct
         name: `${green(config.InterestRateModel[i].name)} - ${yellow(config.InterestRateModel[i].address)}${
           config.InterestRateModel[i].address == defaultValue ? red('(默认)') : ''
         }`,
-        value: i
+        value: i,
       });
     }
     let interestRateModelIndex = await select({
       message: '选择InterestRateModel',
-      choices: choices
+      choices: choices,
     });
     return config.InterestRateModel[interestRateModelIndex].address;
   }
@@ -366,25 +368,22 @@ export async function deployProxyOrInput(
   const name = config.name || config.contract;
   implementation = utils.isAddress(implementation) ? implementation : config.implementation;
 
+  const choices = [
+    { name: '更新合约', value: 'update' },
+    { name: '部署合约', value: 'deploy' },
+    { name: '输入合约地址', value: 'input' },
+  ];
+  if (config.address) {
+    choices.unshift({ name: `确认现有配置 ${config.address}`, value: 'confirm' });
+  }
   const proxy_answer = await select({
     message: `选择${green(name)} 的${green('Proxy')}合约:`,
-    choices: [
-      {
-        name: '部署合约',
-        value: 'deploy'
-      },
-      {
-        name: '更新合约',
-        value: 'update'
-      },
-      {
-        name: '输入合约地址',
-        value: 'input'
-      }
-    ]
+    choices,
   });
 
-  if (proxy_answer == 'deploy') {
+  if (proxy_answer == 'confirm') {
+    return config;
+  } else if (proxy_answer == 'deploy') {
     let constructorName = config.constructorName || [];
     let args = config.args || [];
     if (constructorName.length > 0) {
@@ -409,7 +408,7 @@ export async function deployProxyOrInput(
     config.address = await input({
       message: `输入${green(name)}合约地址:`,
       default: config.address,
-      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
     });
   }
   return config;
@@ -419,18 +418,18 @@ export async function interestRateModel_select(): Promise<string> {
   let interestRateModel_choice: any[] = [
     {
       name: '下一步',
-      value: 'exit'
-    }
+      value: 'exit',
+    },
   ];
   for (let i = 0; i < InterestRateModel_template.length; i++) {
     interestRateModel_choice.push({
       name: InterestRateModel_template[i].name,
-      value: i
+      value: i,
     });
   }
   return await select({
     message: `部署新的${green('InterestRateModel')}合约?:`,
-    choices: interestRateModel_choice
+    choices: interestRateModel_choice,
   });
 }
 
@@ -513,7 +512,7 @@ export async function cTokenSetting(
     .parseUnits(
       await input({
         message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
-        default: utils.formatUnits(cTokenConfig.settings.borrowCap, decimals).toString()
+        default: utils.formatUnits(cTokenConfig.settings.borrowCap, decimals).toString(),
       }),
       decimals
     )
@@ -522,7 +521,7 @@ export async function cTokenSetting(
     .parseUnits(
       await input({
         message: `输入${green(cTokenConfig.name)}的Max Supply:`,
-        default: utils.formatUnits(cTokenConfig.settings.maxSupply, decimals).toString()
+        default: utils.formatUnits(cTokenConfig.settings.maxSupply, decimals).toString(),
       }),
       decimals
     )
@@ -535,12 +534,12 @@ export async function selectContract() {
   for (let i = 0; i < contracts_config.length; i++) {
     choices.push({
       name: contracts_config[i].contract,
-      value: contracts_config[i]
+      value: contracts_config[i],
     });
   }
   const result = await select({
     message: '选择操作合约:',
-    choices: choices
+    choices: choices,
   });
 
   return result;
@@ -552,13 +551,13 @@ export async function selectFunc(fragment: ReadonlyArray<Fragment>) {
     if (fragment[i].type == 'function') {
       choices.push({
         name: fragment[i].name,
-        value: fragment[i].name
+        value: fragment[i].name,
       });
     }
   }
   const result = await select({
     message: '选择操作函数:',
-    choices: choices
+    choices: choices,
   });
 
   return result;
@@ -570,7 +569,7 @@ export async function inputArgs(func: FunctionFragment) {
   for (let i = 0; i < inputs.length; i++) {
     let value = await input({
       message: inputs[i].name,
-      validate: (value = '') => value.length > 0 || 'Pass a valid value'
+      validate: (value = '') => value.length > 0 || 'Pass a valid value',
     });
     values.push(value);
   }

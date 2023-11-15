@@ -2,7 +2,7 @@ import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
 import { readFileSync, writeFileSync } from 'fs';
 import { log } from '../../log_settings';
-import { AccountLiquidity, CErc20, CompLogic, Comptroller, PythOracle, UnderwriterAdmin } from '../../typechain';
+import { AccountLiquidity, CErc20, CompLogic, Comptroller, PythOracle } from '../../typechain';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 const MANTISSA_DECIMALS = 18;
@@ -33,7 +33,7 @@ task('all', 'deploy contract')
         name: 'ProxyAdmin',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.proxyAdmin.address = proxyAdmin.address;
       writeFileSync(json, JSON.stringify(config));
@@ -45,7 +45,7 @@ task('all', 'deploy contract')
         name: 'Multicall2',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.multicall2.address = multicall2.address;
       writeFileSync(json, JSON.stringify(config));
@@ -58,7 +58,7 @@ task('all', 'deploy contract')
         supply: config.sumer.supply,
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.sumer.address = sumer.address;
       writeFileSync(json, JSON.stringify(config));
@@ -68,7 +68,7 @@ task('all', 'deploy contract')
       const feedPriceOracle = await run('dpo', {
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.feedPriceOracle.address = feedPriceOracle.address;
       writeFileSync(json, JSON.stringify(config));
@@ -78,7 +78,7 @@ task('all', 'deploy contract')
       const compoundLens = await run('dcl', {
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.compoundLens.address = compoundLens.address;
       writeFileSync(json, JSON.stringify(config));
@@ -90,14 +90,19 @@ task('all', 'deploy contract')
         admin: admin,
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.underwriterAdmin.implementation = impl.address;
       config.underwriterAdmin.address = proxy.address;
       writeFileSync(json, JSON.stringify(config));
-      let uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', proxy.address, wallet)) as UnderwriterAdmin;
+      // let uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', proxy.address, wallet)) as UnderwriterAdmin;
+      const comptroller = (await ethers.getContractAt(
+        'Comptroller',
+        config.comptroller.address,
+        wallet
+      )) as Comptroller;
       for (const group of config.eqAssetGroups) {
-        let gas = await uwAdmin.estimateGas.setAssetGroup(
+        let gas = await comptroller.estimateGas.setAssetGroup(
           group.id,
           group.name,
           group.intraCRateMantissa,
@@ -106,7 +111,7 @@ task('all', 'deploy contract')
           group.interCRateMantissa,
           group.interSuRateMantissa
         );
-        let receipt = await uwAdmin.setAssetGroup(
+        let receipt = await comptroller.setAssetGroup(
           group.id,
           group.name,
           group.intraCRateMantissa,
@@ -129,7 +134,7 @@ task('all', 'deploy contract')
           args: iModel.args,
           rpc: rpc,
           pk: pk,
-          gasprice: gasprice
+          gasprice: gasprice,
         });
         config.InterestRateModel[i].address = iModel_contract.address;
         writeFileSync(json, JSON.stringify(config));
@@ -137,24 +142,18 @@ task('all', 'deploy contract')
     }
 
     if (config.comptroller.address == '') {
-      const {
-        compLogicImpl,
-        compLogic,
-        accountLiquidityImpl,
-        accountLiquidity,
-        comptrollerImpl,
-        comptroller
-      } = await run('dc', {
-        admin: admin,
-        oracle: config.feedPriceOracle.address,
-        ua: config.underwriterAdmin.address,
-        comp: config.sumer.address,
-        cfm: config.comptroller.closeFactorMantissa,
-        lim: config.comptroller.liquidationIncentiveMantissa,
-        rpc: rpc,
-        pk: pk,
-        gasprice: gasprice
-      });
+      const { compLogicImpl, compLogic, accountLiquidityImpl, accountLiquidity, comptrollerImpl, comptroller } =
+        await run('dc', {
+          admin: admin,
+          oracle: config.feedPriceOracle.address,
+          ua: config.underwriterAdmin.address,
+          comp: config.sumer.address,
+          cfm: config.comptroller.closeFactorMantissa,
+          lim: config.comptroller.liquidationIncentiveMantissa,
+          rpc: rpc,
+          pk: pk,
+          gasprice: gasprice,
+        });
       config.compLogic.implementation = compLogicImpl.address;
       config.compLogic.address = compLogic.address;
       config.accountLiquidity.implementation = accountLiquidityImpl.address;
@@ -180,7 +179,7 @@ task('all', 'deploy contract')
         name: 'CErc20',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.cTokens.implementation = cErc20Impl.address;
       writeFileSync(json, JSON.stringify(config));
@@ -202,7 +201,7 @@ task('all', 'deploy contract')
               name: 'CEther',
               rpc: rpc,
               pk: pk,
-              gasprice: gasprice
+              gasprice: gasprice,
             });
             config.cTokens.tokens[i].implementation = cEtherImpl.address;
             writeFileSync(json, JSON.stringify(config));
@@ -216,7 +215,7 @@ task('all', 'deploy contract')
               cToken.cTokenSymbol,
               cToken.decimals,
               wallet.address,
-              cToken.discountRate
+              cToken.discountRate,
             ]);
             impl = config.cTokens.tokens[i].implementation;
           } else {
@@ -229,7 +228,7 @@ task('all', 'deploy contract')
               cToken.cTokenSymbol,
               cToken.decimals,
               wallet.address,
-              cToken.discountRate
+              cToken.discountRate,
             ]);
             impl = config.cTokens.implementation;
           }
@@ -239,7 +238,7 @@ task('all', 'deploy contract')
             data: data,
             rpc: rpc,
             pk: pk,
-            gasprice: gasprice
+            gasprice: gasprice,
           });
           config.cTokens.tokens[i].address = proxy.address;
           writeFileSync(json, JSON.stringify(config));
@@ -268,7 +267,7 @@ task('all', 'deploy contract')
         name: 'suErc20',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.suTokens.implementation = suErc20Impl.address;
       writeFileSync(json, JSON.stringify(config));
@@ -278,7 +277,7 @@ task('all', 'deploy contract')
         name: 'SumerOFTUpgradeable',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.suTokens.underly_implementation = suUnderLyImpl.address;
       writeFileSync(json, JSON.stringify(config));
@@ -291,7 +290,7 @@ task('all', 'deploy contract')
             suToken.name,
             suToken.symbol,
             0,
-            config.lzEndpoint.address
+            config.lzEndpoint.address,
           ]);
           const proxy = await run('p', {
             impl: config.suTokens.underly_implementation,
@@ -299,7 +298,7 @@ task('all', 'deploy contract')
             admin: admin,
             rpc: rpc,
             pk: pk,
-            gasprice: gasprice
+            gasprice: gasprice,
           });
 
           config.suTokens.tokens[i].underly = proxy.address;
@@ -317,7 +316,7 @@ task('all', 'deploy contract')
             suTokenSymbol,
             MANTISSA_DECIMALS,
             wallet.address,
-            suToken.discountRate
+            suToken.discountRate,
           ]);
           const proxy = await run('p', {
             impl: config.suTokens.implementation,
@@ -325,7 +324,7 @@ task('all', 'deploy contract')
             admin: admin,
             rpc: rpc,
             pk: pk,
-            gasprice: gasprice
+            gasprice: gasprice,
           });
           config.suTokens.tokens[i].address = proxy.address;
           writeFileSync(json, JSON.stringify(config));
@@ -362,7 +361,7 @@ task('all', 'deploy contract')
         json: json,
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.timelock.address = timelock.address;
       writeFileSync(json, JSON.stringify(config));
