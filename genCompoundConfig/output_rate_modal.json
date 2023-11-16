@@ -1,0 +1,47 @@
+{
+  "meter": [
+    {
+      "name": "JumpRateModelV2",
+      "address": "0xF1073b7BFf6AD65b4E314AfB513C59aBc2Ad314b",
+      "tokens": [
+        "USDC.eth",
+        "USDT.eth",
+        "ETH"
+      ],
+      "baseRatePerYear": 0.02,
+      "multiplierPerYear": 0.12,
+      "jumpMultiplierPerYear": 1,
+      "kink": 0.75
+    },
+    {
+      "name": "JumpRateModelV2",
+      "address": "0x90C349959304b771d9b76295449447Fde51618A7",
+      "tokens": [
+        "MTRG"
+      ],
+      "baseRatePerYear": 0.01,
+      "multiplierPerYear": 0.12,
+      "jumpMultiplierPerYear": 1.5,
+      "kink": 0.45
+    },
+    {
+      "name": "JumpRateModelV2",
+      "address": "0xc0AD1588A8819d7c48D90aB4b5EfDa2d3571Bab9",
+      "tokens": [
+        "wstMTRG"
+      ],
+      "baseRatePerYear": 0,
+      "multiplierPerYear": 0.06,
+      "jumpMultiplierPerYear": 1.5,
+      "kink": 0.45
+    },
+    {
+      "name": "ZeroInterestRateModel",
+      "address": "0x561f62bd3228B85015CCA2E86C9a709061d96A91",
+      "tokens": [
+        "suUSD",
+        "suETH"
+      ]
+    }
+  ]
+}
