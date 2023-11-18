@@ -11,7 +11,7 @@ import {
   DEFAULT_ADMIN_ROLE,
   cTokenSetting,
   interestRateModel_select,
-  InterestRateModel_template
+  InterestRateModel_template,
 } from './helper';
 import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
 import { confirm } from '@inquirer/prompts';
@@ -122,7 +122,7 @@ const main = async () => {
   // set Comptroller
   if (old_comptroller != config.Comptroller.address) {
     let isupdate = await confirm({
-      message: '是否更新cToken的Comptroller？'
+      message: '是否更新cToken的Comptroller？',
     });
     if (isupdate) {
       console.log('更新cToken的Comptroller：');
@@ -180,7 +180,7 @@ const main = async () => {
     console.log(setting.func);
     console.log(JSON.stringify(setting.args));
     let confirm_setting = await confirm({
-      message: '是否配置?'
+      message: '是否配置?',
     });
     if (confirm_setting) {
       await sendTransaction(network, comptroller, setting.func, setting.args, override);

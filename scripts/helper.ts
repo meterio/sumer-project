@@ -238,7 +238,7 @@ export function writeConfig(netConfigName: string, config: any) {
   writeFileSync(fullpath, JSON.stringify(config, null, 2));
 }
 
-type Config = {
+export type Config = {
   name: string;
   contract: string;
   address: string;
