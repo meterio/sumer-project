@@ -201,7 +201,6 @@ export async function deployContractV2(
   });
 
   const factory = await ethers.getContractFactory(contract, network.wallet);
-  console.log('factory bytecode: ', factory.bytecode);
 
   override.gasLimit = await network.wallet.estimateGas(factory.getDeployTransaction(...args));
 
