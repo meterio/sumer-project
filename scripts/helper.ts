@@ -494,7 +494,7 @@ export async function cTokenSetting(
     }
   }
   // oracle
-  let feeds = await oracle.feeds(cTokenConfig.address, network.override);
+  let feeds = await oracle.callStatic.feeds(cTokenConfig.address, network.override);
   if (feeds.source == 0) {
     cTokenConfig.settings.oracle.args[0] = cTokenConfig.address;
     console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle');
