@@ -1,0 +1,81 @@
+{
+  "arbitrum": [
+    {
+      "ctokenSym": "sdrUSDC",
+      "underlySym": "USDC",
+      "ctokenDecimal": 6,
+      "underlyDecimal": 6,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrUSDT",
+      "underlySym": "USDT",
+      "ctokenDecimal": 6,
+      "underlyDecimal": 6,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrDAI",
+      "underlySym": "DAI",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrwstETH",
+      "underlySym": "wstETH",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrRETH",
+      "underlySym": "RETH",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrWBTC",
+      "underlySym": "WBTC",
+      "ctokenDecimal": 8,
+      "underlyDecimal": 8,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrARB",
+      "underlySym": "ARB",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrsuUSD",
+      "underlySym": "suUSD",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrsuETH",
+      "underlySym": "suETH",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrsuBTC",
+      "underlySym": "suBTC",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": false
+    },
+    {
+      "ctokenSym": "sdrETH",
+      "underlySym": "ETH",
+      "ctokenDecimal": 18,
+      "underlyDecimal": 18,
+      "ctokenIsEther": true
+    }
+  ]
+}

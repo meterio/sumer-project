@@ -1,0 +1,41 @@
+{
+  "arbitrum": [
+    {
+      "name": "JumpRateModelV2",
+      "address": "0x8C38b023Afe895296e2598AE111752223185b35c",
+      "tokens": [
+        "USDC",
+        "USDT",
+        "DAI",
+        "WBTC",
+        "ETH"
+      ],
+      "baseRatePerYear": 0.02,
+      "multiplierPerYear": 0.12,
+      "jumpMultiplierPerYear": 1,
+      "kink": 0.75
+    },
+    {
+      "name": "JumpRateModelV2",
+      "address": "0xb1FdC3f660b0953253141B2509c43014d5d3d733",
+      "tokens": [
+        "wstETH",
+        "RETH",
+        "ARB"
+      ],
+      "baseRatePerYear": 0.02,
+      "multiplierPerYear": 0.15,
+      "jumpMultiplierPerYear": 2,
+      "kink": 0.55
+    },
+    {
+      "name": "ZeroInterestRateModel",
+      "address": "0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc",
+      "tokens": [
+        "suUSD",
+        "suETH",
+        "suBTC"
+      ]
+    }
+  ]
+}
