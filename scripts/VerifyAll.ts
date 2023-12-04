@@ -106,7 +106,7 @@ const verifyImplContract = async (contractMap: { [key: string]: string }, config
   });
 
   if (answer == 'yes') {
-    await hre.run('verify:verify', { address, contract, constructorArguments: [] });
+    await hre.run('verify:verify', { address, contract, constructorArguments: config.args || [] });
   } else {
   }
 };
