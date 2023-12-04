@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path')
 const { ethers } = require('ethers');
 
-const netwokrName = 'meter'
+const netwokrName = 'arbitrum'
 
-const readPath = path.join(__dirname, '../deployments/Meter main', 'config.json')
-const writePath = path.join(__dirname, 'output_address.json')
-const writePath2 = path.join(__dirname, 'output_token_pairs.json')
-const writePath3 = path.join(__dirname, 'output_rate_modal.json')
+const readPath = path.join(__dirname, '../deployments/Abitrum', 'config.json')
+const writePath = path.join(__dirname, `${netwokrName}_output_address.json`)
+const writePath2 = path.join(__dirname, `${netwokrName}_output_token_pairs.json`)
+const writePath3 = path.join(__dirname, `${netwokrName}_output_rate_modal.json`)
 
 // Read the input JSON file
 fs.readFile(readPath, 'utf8', (err, jsonString) => {
