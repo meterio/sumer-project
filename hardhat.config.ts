@@ -146,7 +146,7 @@ export default {
       chainId: 83,
       timeout: 99999,
       gasPrice: 500000000000,
-      accounts: { mnemonic: process.env.MNEMONIC_1 },
+      accounts: [],
       // accounts: [
       //   process.env.PRIVATE_KEY_0,
       //   process.env.PRIVATE_KEY_1,
@@ -178,11 +178,32 @@ export default {
       chainId: 1337,
       accounts: [process.env.PRIVATE_KEY_0, '0x34cd0e9ec7a0ec36a37db424f720de58223f9cd52e0175c7a972a6a864eb86a5'],
     },
+    arbitrum: {
+      url: 'https://arbitrum.llamarpc.com',
+      chainId: 42161,
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
 
-    customChains: [],
+    customChains: [
+      {
+        network: 'metertest',
+        chainId: 83,
+        urls: {
+          apiURL: 'https://api-goerli.etherscan.io/api',
+          browserURL: 'https://scan-warringstakes.meter.io',
+        },
+      },
+      {
+        network: 'arbitrum',
+        chainId: 42161,
+        urls: {
+          apiURL: 'https://api.arbiscan.io/api',
+          browserURL: 'https://arbiscan.io/',
+        },
+      },
+    ],
   },
   sourcify: {
     // Disabled by default
