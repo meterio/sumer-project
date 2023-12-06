@@ -32,6 +32,12 @@
   },
   "InterestRateModel": [
     {
+      "name": "ZeroInterestRateModel",
+      "contract": "ZeroInterestRateModel",
+      "address": "0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc",
+      "tokens": []
+    },
+    {
       "name": "JumpRateModelV2",
       "contract": "JumpRateModelV2",
       "constructorName": [
@@ -43,14 +49,36 @@
         "owner"
       ],
       "args": [
-        "105120000",
+        "2102400",
+        "20000000000000000",
+        "120000000000000000",
+        "1000000000000000000",
+        "750000000000000000",
+        ""
+      ],
+      "address": "0x3Bf31866F0dC296a1b8284187d87626ADcbfD692",
+      "tokens": []
+    },
+    {
+      "name": "JumpRateModelV2",
+      "contract": "JumpRateModelV2",
+      "constructorName": [
+        "blocksPerYearOnChain",
+        "baseRatePerYear",
+        "multiplierPerYear",
+        "jumpMultiplierPerYear",
+        "kink",
+        "owner"
+      ],
+      "args": [
+        "2102400",
         "20000000000000000",
         "120000000000000000",
         "1000000000000000000",
         "750000000000000000",
         "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
       ],
-      "address": "0x8C38b023Afe895296e2598AE111752223185b35c",
+      "address": "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
       "tokens": []
     },
     {
@@ -65,20 +93,14 @@
         "owner"
       ],
       "args": [
-        "105120000",
+        "2102400",
         "20000000000000000",
         "150000000000000000",
         "2000000000000000000",
         "550000000000000000",
         "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
       ],
-      "address": "0xb1FdC3f660b0953253141B2509c43014d5d3d733",
-      "tokens": []
-    },
-    {
-      "name": "ZeroInterestRateModel",
-      "contract": "ZeroInterestRateModel",
-      "address": "0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc",
+      "address": "0xE27496Ec5d6E19521d636e78c127fF2Cf59ee914",
       "tokens": []
     }
   ],
@@ -200,7 +222,7 @@
     ],
     "args": [
       "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-      "0x8C38b023Afe895296e2598AE111752223185b35c",
+      "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
       "1000000000000000000",
       "Sumerian ETH Deposit",
       "sdrETH",
@@ -257,7 +279,7 @@
         "args": [
           "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0x8C38b023Afe895296e2598AE111752223185b35c",
+          "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
           "1000000000000000000",
           "Sumer USDC Deposit",
           "sdrUSDC",
@@ -297,7 +319,7 @@
         "args": [
           "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0x8C38b023Afe895296e2598AE111752223185b35c",
+          "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
           "1000000000000000000",
           "Sumer USDT Deposit",
           "sdrUSDT",
@@ -337,7 +359,7 @@
         "args": [
           "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0x8C38b023Afe895296e2598AE111752223185b35c",
+          "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
           "1000000000000000000",
           "Sumer DAI Deposit",
           "sdrDAI",
@@ -377,7 +399,7 @@
         "args": [
           "0x5979D7b546E38E414F7E9822514be443A4800529",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0xb1FdC3f660b0953253141B2509c43014d5d3d733",
+          "0xE27496Ec5d6E19521d636e78c127fF2Cf59ee914",
           "1000000000000000000",
           "Sumer wstETH Deposit",
           "sdrwstETH",
@@ -417,7 +439,7 @@
         "args": [
           "0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0xb1FdC3f660b0953253141B2509c43014d5d3d733",
+          "0xE27496Ec5d6E19521d636e78c127fF2Cf59ee914",
           "1000000000000000000",
           "Sumer RETH Deposit",
           "sdrRETH",
@@ -457,7 +479,7 @@
         "args": [
           "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0x8C38b023Afe895296e2598AE111752223185b35c",
+          "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
           "1000000000000000000",
           "Sumer WBTC Deposit",
           "sdrWBTC",
@@ -497,7 +519,7 @@
         "args": [
           "0x912CE59144191C1204E64559FE8253a0e49E6548",
           "0xBfb69860C91A22A2287df1Ff3Cdf0476c5aab24A",
-          "0xb1FdC3f660b0953253141B2509c43014d5d3d733",
+          "0xE27496Ec5d6E19521d636e78c127fF2Cf59ee914",
           "1000000000000000000",
           "Sumer ARB Deposit",
           "sdrARB",
