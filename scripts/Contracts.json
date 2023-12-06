@@ -278,10 +278,10 @@
     "contract": "CEther",
     "adminControl": [
       {
-        "func": "_setInterestRateModelFresh",
+        "func": "_setInterestRateModel",
         "argNames": ["newInterestRateModel"],
         "args": [""],
-        "sig": "_setInterestRateModelFresh(address)"
+        "sig": "_setInterestRateModel(address)"
       }
     ]
   },
