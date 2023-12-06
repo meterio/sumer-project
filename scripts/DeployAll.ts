@@ -46,6 +46,31 @@ const main = async () => {
     let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
     await sendTransaction(network, comptroller, '_setPriceOracle(address)', [config.FeedPriceOracle.address], override);
   }
+
+  // adaptor
+  if (config.ChainlinkFeedAdaptor_ETHToUSD) {
+    config.ChainlinkFeedAdaptor_ETHToUSD = await deployOrInput(
+      ethers,
+      network,
+      override,
+      config.ChainlinkFeedAdaptor_ETHToUSD,
+      true
+    );
+    writeConfig(netConfig.name, config);
+
+    for (let i = 0; i < config.ChainlinkFeedAdaptor_ETHToUSD.proxys.length; i++) {
+      config.CErc20.proxys[i] = await deployProxyOrInput(
+        ethers,
+        network,
+        override,
+        config.ChainlinkFeedAdaptor_ETHToUSD.proxys[i],
+        config.ProxyAdmin.address,
+        config.ChainlinkFeedAdaptor_ETHToUSD.implementation
+      );
+      writeConfig(netConfig.name, config);
+    }
+  }
+
   // CompoundLens
   config.CompoundLens = await deployOrInput(ethers, network, override, config.CompoundLens);
   writeConfig(netConfig.name, config);
@@ -167,6 +192,7 @@ const main = async () => {
       DEFAULT_ADMIN_ROLE
     );
   }
+
   // comptroller settings
   const comptroller = (await ethers.getContractAt(
     'Comptroller',

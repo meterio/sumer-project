@@ -46,7 +46,7 @@ const traverseContracts = () => {
   return contracts;
 };
 
-const verifyProxyContract = async (proxyAdmin: string, config: Config) => {
+const verifyProxyContract = async (proxyAdmin: string, config: Config, implAddr?: string) => {
   const address = config.address;
   const name = config.name || config.contract;
   if (!name) {
@@ -56,7 +56,9 @@ const verifyProxyContract = async (proxyAdmin: string, config: Config) => {
     console.log(`跳过开源，请先部署 ${name}`);
     return;
   }
-  if (!config.implementation) {
+  console.log(config);
+  console.log('implAddr: ', implAddr);
+  if (!config.implementation && !implAddr) {
     throw new Error(`could not get impl address for proxy ${name}`);
   }
   const contract = `contracts/proxy/SumerProxy.sol:SumerProxy`;
@@ -72,7 +74,7 @@ const verifyProxyContract = async (proxyAdmin: string, config: Config) => {
   const data = factory.interface.encodeFunctionData('initialize', config.args);
 
   if (answer == 'yes') {
-    console.log({ address, contract, constructorArguments: [config.implementation, proxyAdmin, data] });
+    console.log({ address, contract, constructorArguments: [config.implementation || implAddr, proxyAdmin, data] });
     await hre.run('verify:verify', {
       address,
       contract,
@@ -106,7 +108,8 @@ const verifyImplContract = async (contractMap: { [key: string]: string }, config
   });
 
   if (answer == 'yes') {
-    await hre.run('verify:verify', { address, contract, constructorArguments: config.args || [] });
+    console.log({ address, contract });
+    await hre.run('verify:verify', { address, contract, constructorArguments: [] });
   } else {
   }
 };
@@ -124,6 +127,14 @@ const main = async () => {
   await verifyImplContract(contractMap, config.Multicall2);
   // FeedPriceOracle
   await verifyImplContract(contractMap, config.FeedPriceOracle);
+
+  // ChainlinkFeedAdaptor_ETHToUSD
+  if (config.ChainlinkFeedAdaptor_ETHToUSD) {
+    await verifyImplContract(contractMap, config.ChainlinkFeedAdaptor_ETHToUSD);
+    for (const proxy of config.ChainlinkFeedAdaptor_ETHToUSD.proxys) {
+      await verifyProxyContract(proxyAdmin, proxy, config.ChainlinkFeedAdaptor_ETHToUSD.implementation);
+    }
+  }
 
   // CompoundLens
   await verifyImplContract(contractMap, config.CompoundLens);
@@ -154,7 +165,7 @@ const main = async () => {
   if (config.CErc20) {
     await verifyImplContract(contractMap, config.CErc20);
     for (const proxy of config.CErc20.proxys) {
-      await verifyProxyContract(proxyAdmin, proxy);
+      await verifyProxyContract(proxyAdmin, proxy, config.CErc20.implementation);
     }
   }
 
@@ -162,7 +173,7 @@ const main = async () => {
   if (config.suErc20) {
     await verifyImplContract(contractMap, config.suErc20);
     for (const proxy of config.suErc20.proxys) {
-      await verifyProxyContract(proxyAdmin, proxy);
+      await verifyProxyContract(proxyAdmin, proxy, config.suErc20.implementation);
     }
   }
 

@@ -368,11 +368,11 @@ export async function deployProxyOrInput(
   implementation = utils.isAddress(implementation) ? implementation : config.implementation;
 
   const choices = [
-    { name: '更新合约', value: 'update' },
-    { name: '部署合约', value: 'deploy' },
-    { name: '输入合约地址', value: 'input' },
+    { name: '部署Proxy合约', value: 'deploy' },
+    { name: '输入Proxy合约地址', value: 'input' },
   ];
   if (config.address) {
+    choices.unshift({ name: '更新Proxy合约', value: 'update' });
     choices.unshift({ name: `确认现有配置 ${config.address}`, value: 'confirm' });
   }
   const proxy_answer = await select({
