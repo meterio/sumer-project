@@ -4,7 +4,7 @@ const { ethers } = require('ethers');
 
 const netwokrName = 'arbitrum'
 
-const readPath = path.join(__dirname, '../deployments/Abitrum', 'config.json')
+const readPath = path.join(__dirname, '../deployments/arbitrum', 'config.json')
 const writePath = path.join(__dirname, `${netwokrName}_output_address.json`)
 const writePath2 = path.join(__dirname, `${netwokrName}_output_token_pairs.json`)
 const writePath3 = path.join(__dirname, `${netwokrName}_output_rate_modal.json`)
