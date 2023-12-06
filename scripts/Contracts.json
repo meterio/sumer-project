@@ -276,7 +276,14 @@
   {
     "path": "CToken/",
     "contract": "CEther",
-    "adminControl": []
+    "adminControl": [
+      {
+        "func": "_setInterestRateModelFresh",
+        "argNames": ["newInterestRateModel"],
+        "args": [""],
+        "sig": "_setInterestRateModelFresh(address)"
+      }
+    ]
   },
   {
     "path": "CToken/",
@@ -287,6 +294,12 @@
         "argNames": [],
         "args": [],
         "sig": "changeCtoken()"
+      },
+      {
+        "func": "_setInterestRateModelFresh",
+        "argNames": ["newInterestRateModel"],
+        "args": [""],
+        "sig": "_setInterestRateModelFresh(address)"
       }
     ]
   },
