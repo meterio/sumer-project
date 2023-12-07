@@ -237,6 +237,25 @@ export function writeConfig(netConfigName: string, config: any) {
   writeFileSync(fullpath, JSON.stringify(config, null, 2));
 }
 
+export function getAdapterConfig(netConfigName: string): any {
+  const config_path = `./deployments/${netConfigName}/`;
+  const sample_path = `./scripts/config_sample.json`;
+  const filename = 'adapters.json';
+  const fullpath = pathLib.join(__dirname, '..', config_path, filename);
+  if (!existsSync(fullpath)) {
+    mkdirSync(config_path, { recursive: true });
+    writeFileSync(fullpath, JSON.stringify(JSON.parse(readFileSync(sample_path).toString())));
+  }
+  return JSON.parse(readFileSync(fullpath).toString());
+}
+
+export function writeAdapterConfig(netConfigName: string, config: any) {
+  const config_path = `./deployments/${netConfigName}/`;
+  const filename = 'adapters.json';
+  const fullpath = pathLib.join(__dirname, '..', config_path, filename);
+  writeFileSync(fullpath, JSON.stringify(config, null, 2));
+}
+
 export type Config = {
   name: string;
   contract: string;

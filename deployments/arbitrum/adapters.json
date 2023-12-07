@@ -1,0 +1,29 @@
+{
+  "ProxyAdmin": {
+    "contract": "SumerProxyAdmin",
+    "address": "0xF04B152d2E27b5d975A2eb6b7F39EA42A74841Ac"
+  },
+
+  "ChainlinkFeedAdaptor_ETHToUSD": {
+    "contract": "ChainlinkFeedAdaptor_ETHToUSD",
+    "implementation": "",
+    "proxys": [
+      {
+        "contract": "ChainlinkFeedAdaptor_ETHToUSD",
+        "name": "Sumer rETH feed adaptor",
+        "address": "",
+        "settings": {},
+        "constructorName": ["tokenFeed", "ethFeed"],
+        "args": ["0xf3272cafe65b190e76caaf483db13424a3e23dd2", "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612"]
+      },
+      {
+        "contract": "ChainlinkFeedAdaptor_ETHToUSD",
+        "name": "Sumer wstETH feed adaptor",
+        "address": "",
+        "settings": {},
+        "constructorName": ["tokenFeed", "ethFeed"],
+        "args": ["0xb523ae262d20a936bc152e6023996e46fdc2a95d", "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612"]
+      }
+    ]
+  }
+}
