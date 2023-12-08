@@ -8,10 +8,12 @@ contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
   using SafeMath for uint256;
   address public tokenFeed;
   address public ethFeed;
+  uint256 public outDecimals;
 
   function initialize(address _tokenFeed, address _ethFeed) public initializer {
     tokenFeed = _tokenFeed;
     ethFeed = _ethFeed;
+    outDecimals = 8;
   }
 
   function latestRoundData()
@@ -19,6 +21,7 @@ contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
     view
     returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
   {
+    uint256 tokenDecimals = IChainlinkFeed(tokenFeed).decimals();
     (
       uint80 tokenRoundID,
       int256 tokenAnswer,
@@ -37,13 +40,13 @@ contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
     require(ethAnswer > 0, 'negative price');
     require(block.timestamp <= ethUpdatedAt + 86400, 'timeout');
 
-    int256 usdBasedAnswer = int256((uint256(tokenAnswer) * uint256(ethAnswer)).div(10 ** ethDecimals));
+    int256 usdBasedAnswer = int256((uint256(tokenAnswer) * uint256(ethAnswer)));
+    if (ethDecimals + tokenDecimals > outDecimals) {
+      usdBasedAnswer = int256(uint256(usdBasedAnswer).div(10 ** (ethDecimals + tokenDecimals - outDecimals)));
+    } else if (ethDecimals + tokenDecimals < outDecimals) {
+      usdBasedAnswer = int256(uint256(usdBasedAnswer).mul(10 ** (outDecimals - ethDecimals - tokenDecimals)));
+    }
     return (tokenRoundID, usdBasedAnswer, tokenStartedAt, tokenUpdatedAt, tokenAnsweredInRound);
-  }
-
-  function decimals() public view returns (uint256) {
-    uint256 tokenDecimals = IChainlinkFeed(tokenFeed).decimals();
-    return tokenDecimals;
   }
 
   function latestRoundDataETH()
@@ -68,5 +71,9 @@ contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
     require(answer > 0, 'negative price');
     require(block.timestamp <= updatedAt + 86400, 'timeout');
     return (roundId, answer, startedAt, updatedAt, answeredInRound);
+  }
+
+  function decimals() public view returns (uint256) {
+    return outDecimals;
   }
 }
