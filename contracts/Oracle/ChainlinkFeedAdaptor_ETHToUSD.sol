@@ -4,16 +4,16 @@ import './Interfaces/IChainlinkFeed.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
+contract ChainlinkFeedAdaptor_ETHToUSD {
   using SafeMath for uint256;
-  address public tokenFeed;
-  address public ethFeed;
-  uint256 public outDecimals;
+  address public immutable tokenFeed;
+  address public immutable ethFeed;
+  uint256 public immutable decimals;
 
-  function initialize(address _tokenFeed, address _ethFeed) public initializer {
+  constructor(address _tokenFeed, address _ethFeed, uint256 _decimals) {
     tokenFeed = _tokenFeed;
     ethFeed = _ethFeed;
-    outDecimals = 8;
+    decimals = _decimals;
   }
 
   function latestRoundData()
@@ -41,10 +41,10 @@ contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
     require(block.timestamp <= ethUpdatedAt + 86400, 'timeout');
 
     int256 usdBasedAnswer = int256((uint256(tokenAnswer) * uint256(ethAnswer)));
-    if (ethDecimals + tokenDecimals > outDecimals) {
-      usdBasedAnswer = int256(uint256(usdBasedAnswer).div(10 ** (ethDecimals + tokenDecimals - outDecimals)));
-    } else if (ethDecimals + tokenDecimals < outDecimals) {
-      usdBasedAnswer = int256(uint256(usdBasedAnswer).mul(10 ** (outDecimals - ethDecimals - tokenDecimals)));
+    if (ethDecimals + tokenDecimals > decimals) {
+      usdBasedAnswer = int256(uint256(usdBasedAnswer).div(10 ** (ethDecimals + tokenDecimals - decimals)));
+    } else if (ethDecimals + tokenDecimals < decimals) {
+      usdBasedAnswer = int256(uint256(usdBasedAnswer).mul(10 ** (decimals - ethDecimals - tokenDecimals)));
     }
     return (tokenRoundID, usdBasedAnswer, tokenStartedAt, tokenUpdatedAt, tokenAnsweredInRound);
   }
@@ -71,9 +71,5 @@ contract ChainlinkFeedAdaptor_ETHToUSD is Initializable {
     require(answer > 0, 'negative price');
     require(block.timestamp <= updatedAt + 86400, 'timeout');
     return (roundId, answer, startedAt, updatedAt, answeredInRound);
-  }
-
-  function decimals() public view returns (uint256) {
-    return outDecimals;
   }
 }

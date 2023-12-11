@@ -1,0 +1,10 @@
+{
+  "LINK_Adapter": {
+    "contract": "ChainlinkFeedAdaptor_ETHToUSD",
+    "name": "Sumer LINK feed adaptor",
+    "settings": {},
+    "constructorName": ["tokenFeed", "ethFeed", "decimals"],
+    "args": ["0xb4c4a493AB6356497713A78FFA6c60FB53517c63", "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e", "8"],
+    "address": "0x3449474345C71F866a966aDDC7f879d8d1Ff8a8d"
+  }
+}

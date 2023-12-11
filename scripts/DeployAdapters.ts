@@ -14,28 +14,10 @@ const main = async () => {
   let config = getAdapterConfig(netConfig.name);
 
   // adaptor
-  if (config.ChainlinkFeedAdaptor_ETHToUSD) {
-    config.ChainlinkFeedAdaptor_ETHToUSD = await deployOrInput(
-      ethers,
-      network,
-      override,
-      config.ChainlinkFeedAdaptor_ETHToUSD,
-      true
-    );
-    writeAdapterConfig(netConfig.name, config);
-
-    for (let i = 0; i < config.ChainlinkFeedAdaptor_ETHToUSD.proxys.length; i++) {
-      config.ChainlinkFeedAdaptor_ETHToUSD.proxys[i] = await deployProxyOrInput(
-        ethers,
-        network,
-        override,
-        config.ChainlinkFeedAdaptor_ETHToUSD.proxys[i],
-        config.ProxyAdmin.address,
-        config.ChainlinkFeedAdaptor_ETHToUSD.implementation
-      );
-      writeAdapterConfig(netConfig.name, config);
-    }
+  for (const key in config) {
+    config[key] = await deployOrInput(ethers, network, override, config[key], false);
   }
+  writeAdapterConfig(netConfig.name, config);
 };
 
 main();
