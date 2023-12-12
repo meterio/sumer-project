@@ -11,8 +11,16 @@
     "name": "Sumer",
     "contract": "ERC20MinterBurnerPauser",
     "address": "0x553d713e0fB958932b6C40ABAf0b5A1fFae73Da2",
-    "constructorName": ["name", "symbol", "initialSupply"],
-    "args": ["Sumerian Token", "SUMER", "0"]
+    "constructorName": [
+      "name",
+      "symbol",
+      "initialSupply"
+    ],
+    "args": [
+      "Sumerian Token",
+      "SUMER",
+      "0"
+    ]
   },
   "CompoundLens": {
     "contract": "CompoundLens",
@@ -27,21 +35,6 @@
       "name": "ZeroInterestRateModel",
       "contract": "ZeroInterestRateModel",
       "address": "0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc",
-      "tokens": []
-    },
-    {
-      "name": "JumpRateModelV2",
-      "contract": "JumpRateModelV2",
-      "constructorName": [
-        "blocksPerYearOnChain",
-        "baseRatePerYear",
-        "multiplierPerYear",
-        "jumpMultiplierPerYear",
-        "kink",
-        "owner"
-      ],
-      "args": ["2102400", "20000000000000000", "120000000000000000", "1000000000000000000", "750000000000000000", ""],
-      "address": "0x3Bf31866F0dC296a1b8284187d87626ADcbfD692",
       "tokens": []
     },
     {
@@ -93,15 +86,25 @@
     "contract": "AccountLiquidity",
     "implementation": "0x10A2e256Bed7b3c49C151Ad1Bad01F4936FC9276",
     "address": "0xA2e6B85f9A5C90217054350d7893498B8c892546",
-    "constructorName": ["admin"],
-    "args": ["0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"]
+    "constructorName": [
+      "admin"
+    ],
+    "args": [
+      "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+    ]
   },
   "CompLogic": {
     "contract": "CompLogic",
     "implementation": "0xf902e1925B50ac70285b73FD065af971487c2E4d",
     "address": "0xdb4d020A58e0A1A67823d75437A61044dC02AE4C",
-    "constructorName": ["admin", "Sumer"],
-    "args": ["0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31", "0x553d713e0fB958932b6C40ABAf0b5A1fFae73Da2"]
+    "constructorName": [
+      "admin",
+      "Sumer"
+    ],
+    "args": [
+      "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31",
+      "0x553d713e0fB958932b6C40ABAf0b5A1fFae73Da2"
+    ]
   },
   "Comptroller": {
     "contract": "Comptroller",
@@ -208,7 +211,10 @@
     "settings": {
       "oracle": {
         "func": "setChainlinkFeed(address,address)",
-        "args": ["0x3C752d0D78BbFddA6BF4b6000a01228B732441aE", "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"]
+        "args": [
+          "0x3C752d0D78BbFddA6BF4b6000a01228B732441aE",
+          "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"
+        ]
       },
       "reserveFactorMantissa": "100000000000000000",
       "groupId": 2,
@@ -227,7 +233,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x4DE3741E1676ed14d661b1398196dC221cA4D37A", "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3"]
+            "args": [
+              "0x4DE3741E1676ed14d661b1398196dC221cA4D37A",
+              "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
@@ -264,7 +273,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0xDb7Fe9c415281E383595c262e49568DDc18e8Bd4", "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7"]
+            "args": [
+              "0xDb7Fe9c415281E383595c262e49568DDc18e8Bd4",
+              "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
@@ -301,7 +313,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x873449359d2d99691436E724C6C219a39b159B4a", "0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB"]
+            "args": [
+              "0x873449359d2d99691436E724C6C219a39b159B4a",
+              "0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
@@ -338,7 +353,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x1167e762541374fEBeeA0f6Ed2AD4473AFa1CcEa", "0xb523AE262D20A936BC152e6023996e46FDC2A95D"]
+            "args": [
+              "0x1167e762541374fEBeeA0f6Ed2AD4473AFa1CcEa",
+              "0x35C840655D3a2E77d79f179C34e547726B963314"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
@@ -375,7 +393,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x1a9CFA6c676ebBEd450dB3cef03e399465F1202C", "0xD6aB2298946840262FcC278fF31516D39fF611eF"]
+            "args": [
+              "0x1a9CFA6c676ebBEd450dB3cef03e399465F1202C",
+              "0xad8fB6E4769dc9f3Ca4589163F3F59cd08D394Ff"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
@@ -412,7 +433,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x59aC82d3EfB5dc6c4389ccfF7AB7ab6C72C6AC05", "0xd0C7101eACbB49F3deCcCc166d238410D6D46d57"]
+            "args": [
+              "0x59aC82d3EfB5dc6c4389ccfF7AB7ab6C72C6AC05",
+              "0xd0C7101eACbB49F3deCcCc166d238410D6D46d57"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
@@ -449,7 +473,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x142017b52c99d3dFe55E49d79Df0bAF7F4478c0c", "0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6"]
+            "args": [
+              "0x142017b52c99d3dFe55E49d79Df0bAF7F4478c0c",
+              "0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 4,
@@ -492,7 +519,10 @@
         "settings": {
           "oracle": {
             "func": "setFixedPrice(address,uint256)",
-            "args": ["0xe4B55045ed14815c7c42eeeF8EE431b89422c389", "1000000000000000000"]
+            "args": [
+              "0xe4B55045ed14815c7c42eeeF8EE431b89422c389",
+              "1000000000000000000"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 1,
@@ -529,7 +559,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0x9C93423939C4e3D48d99baD147AD808BE89B2043", "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"]
+            "args": [
+              "0x9C93423939C4e3D48d99baD147AD808BE89B2043",
+              "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 2,
@@ -566,7 +599,10 @@
         "settings": {
           "oracle": {
             "func": "setChainlinkFeed(address,address)",
-            "args": ["0xAc6bAF36B28d19EA10959102158Beb3d933C1fbf", "0x6ce185860a4963106506C203335A2910413708e9"]
+            "args": [
+              "0xAc6bAF36B28d19EA10959102158Beb3d933C1fbf",
+              "0x6ce185860a4963106506C203335A2910413708e9"
+            ]
           },
           "reserveFactorMantissa": "100000000000000000",
           "groupId": 3,
@@ -601,7 +637,9 @@
   "Timelock": {
     "contract": "Timelock",
     "address": "0x42778d0962884510b85d4D1B30DFe9e9Dd270446",
-    "constructorName": ["cTokens"],
+    "constructorName": [
+      "cTokens"
+    ],
     "args": [
       [
         "0x4DE3741E1676ed14d661b1398196dC221cA4D37A",
