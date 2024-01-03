@@ -1,26 +1,9 @@
 import { ethers } from 'hardhat';
-import {
-  getConfig,
-  writeConfig,
-  network_config,
-  setNetwork,
-  getCTokens,
-  deployOrInput,
-  deployProxyOrInput,
-  sendTransaction,
-  DEFAULT_ADMIN_ROLE,
-  cTokenSetting,
-  interestRateModel_select,
-  InterestRateModel_template,
-  Config,
-} from './helper';
-import { AccountLiquidity, CErc20, CompLogic, CompoundLens, Comptroller, FeedPriceOracle } from '../typechain';
-import { confirm } from '@inquirer/prompts';
-import { BigNumber } from 'ethers';
+import { getConfig, Config } from './helper';
 const hre = require('hardhat');
 import * as path from 'path';
 import * as fs from 'fs';
-import { input, select, password } from '@inquirer/prompts';
+import { select } from '@inquirer/prompts';
 
 const traverseContracts = () => {
   const base = path.join(__dirname, '..');

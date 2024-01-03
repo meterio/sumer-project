@@ -21,7 +21,7 @@ task('uul', 'update suToken underly')
   .addOptionalParam('gasprice', 'gas price', 0, types.int)
   .setAction(async ({ impl, json, rpc, pk, gasprice }, { ethers, run, network }) => {
     await run('compile');
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     console.log('account:', wallet.address);
     let config = JSON.parse(readFileSync(json).toString());
@@ -30,7 +30,7 @@ task('uul', 'update suToken underly')
       const sumerOFT = await run('d', {
         name: 'SumerOFTUpgradeable',
         rpc: rpc,
-        pk: pk
+        pk: pk,
       });
       config.suTokens.underly_implementation = sumerOFT.address;
     } else {

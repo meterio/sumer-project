@@ -6,13 +6,13 @@ import {
   sendTransaction,
   green,
   DEFAULT_ADMIN_ROLE,
-  MINTER_ROLE
+  MINTER_ROLE,
 } from './helper';
 import { input, select } from '@inquirer/prompts';
-import { utils } from 'ethers';
+import { AbiCoder, isAddress } from 'ethers';
 
 async function main() {
-  const coder = new utils.AbiCoder();
+  const coder = new AbiCoder();
   console.log('DEFAULT_ADMIN_ROLE', green(DEFAULT_ADMIN_ROLE.toString()));
   console.log('MINTER_ROLE', green(MINTER_ROLE.toString()));
   console.log('PAUSER_ROLE', green('0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a'));
@@ -28,7 +28,7 @@ async function main() {
 
   const address = await input({
     message: '输入合约地址:',
-    validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value'
+    validate: (value = '') => isAddress(value) || 'Pass a valid address value',
   });
 
   const contract = await ethers.getContractAt(contract_name, address, wallet);
@@ -37,12 +37,12 @@ async function main() {
   for (let i = 0; i < contract_config.adminControl.length; i++) {
     func_choices.push({
       name: contract_config.adminControl[i].func,
-      value: i
+      value: i,
     });
   }
   const funcIndex = await select({
     message: '选择操作函数:',
-    choices: func_choices
+    choices: func_choices,
   });
 
   const func = contract_config.adminControl[funcIndex];
@@ -52,7 +52,7 @@ async function main() {
   for (let i = 0; i < func.argNames.length; i++) {
     args.push(
       await input({
-        message: func.argNames[i]
+        message: func.argNames[i],
       })
     );
   }
@@ -61,7 +61,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

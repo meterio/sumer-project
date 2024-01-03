@@ -1,0 +1,1 @@
+{"buildTargets":["certora-clean","spec/certora/Comp/search.cvl","spec/certora/Comp/transfer.cvl"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}

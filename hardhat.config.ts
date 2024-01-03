@@ -1,18 +1,14 @@
 import { config as dotEnvConfig } from 'dotenv';
-import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-ethers';
+import '@nomicfoundation/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
-import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-solhint';
-import '@nomiclabs/hardhat-vyper';
 import '@typechain/hardhat';
 import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
 import 'hardhat-tracer';
-import 'hardhat-etherscan-abi';
 import 'hardhat-contract-sizer';
 
-import './tasks';
+// import './tasks';
 import { compileSetting } from './scripts/deployTool';
 
 const dotenv = require('dotenv');

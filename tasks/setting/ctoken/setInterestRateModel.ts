@@ -21,10 +21,10 @@ task('sir', 'set Reserve Factor')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 

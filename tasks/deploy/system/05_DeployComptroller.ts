@@ -33,7 +33,7 @@ task('dc', 'deploy Comptroller contracts')
       name: 'CompLogic',
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     })) as CompLogic;
 
     const compLogic = await run('p', {
@@ -42,14 +42,14 @@ task('dc', 'deploy Comptroller contracts')
       admin: admin,
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     });
 
     const accountLiquidityImpl = (await run('d', {
       name: 'AccountLiquidity',
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     })) as AccountLiquidity;
 
     const accountLiquidity = await run('p', {
@@ -58,14 +58,14 @@ task('dc', 'deploy Comptroller contracts')
       admin: admin,
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     });
 
     const comptrollerImpl = (await run('d', {
       name: 'Comptroller',
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     })) as Comptroller;
 
     const comptroller = await run('p', {
@@ -76,13 +76,13 @@ task('dc', 'deploy Comptroller contracts')
         ua,
         compLogic.address,
         accountLiquidity.address,
-        ethers.utils.parseUnits(cfm, MANTISSA_DECIMALS),
-        ethers.utils.parseUnits(lim, MANTISSA_DECIMALS)
+        ethers.parseUnits(cfm, MANTISSA_DECIMALS),
+        ethers.parseUnits(lim, MANTISSA_DECIMALS),
       ]),
       admin: admin,
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     });
 
     return {
@@ -91,6 +91,6 @@ task('dc', 'deploy Comptroller contracts')
       accountLiquidityImpl,
       accountLiquidity,
       comptrollerImpl,
-      comptroller
+      comptroller,
     };
   });

@@ -22,7 +22,7 @@ task('str', 'set Reserve Factor')
     let fromConfig = JSON.parse(readFileSync(from).toString());
     let toConfig = JSON.parse(readFileSync(to).toString());
 
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
     let toChainId = toConfig.lzEndpoint.chainId;
@@ -43,7 +43,7 @@ task('str', 'set Reserve Factor')
         )) as SumerOFTUpgradeable;
 
         console.log('from suToken:', await fromSuToken.symbol());
-        // let path = ethers.utils.solidityPack(['address', 'address'], [fromSuTokenJson.underly, remoteAddr]);
+        // let path = ethers.solidityPack(['address', 'address'], [fromSuTokenJson.underly, remoteAddr]);
         // console.log('path:', path);
 
         let gas = await fromSuToken.estimateGas.setTrustedRemoteAddress(toChainId, remoteAddr);

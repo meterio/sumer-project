@@ -32,7 +32,7 @@ task('ap', 'get all positions')
   .addParam('pk', 'proxy admin private key')
   .setAction(async ({ json, rpc, pk }, { ethers, run, network }) => {
     const config = JSON.parse(readFileSync(json).toString());
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 

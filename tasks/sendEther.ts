@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config';
-import '@nomiclabs/hardhat-ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import '@nomicfoundation/hardhat-ethers';
+import { parseUnits } from 'ethers';
 
 task('se', 'Prints the list of accounts', async (taskArgs, bre) => {
   const accounts = await bre.ethers.getSigners();
@@ -10,9 +10,9 @@ task('se', 'Prints the list of accounts', async (taskArgs, bre) => {
     let address = await account.getAddress();
     let receipt = await wallet.sendTransaction({
       to: address,
-      value: parseUnits('10')
+      value: parseUnits('10'),
     });
-    console.log("tx:",receipt.hash);
+    console.log('tx:', receipt.hash);
     await receipt.wait();
     console.log(`(${i})`, address, (await bre.ethers.provider.getBalance(address)).toString());
   }

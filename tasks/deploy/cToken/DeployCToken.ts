@@ -3,6 +3,7 @@ import { types } from 'hardhat/config';
 import { CErc20 } from '../../../typechain';
 import { log } from '../../../log_settings';
 const MANTISSA_DECIMALS = 18;
+import '@nomicfoundation/hardhat-ethers';
 
 /**
 npx hardhat dct \
@@ -40,7 +41,7 @@ task('dct', 'deploy cToken contract')
       //     gasprice: gasprice
       //   });
       //   const contract = impl as CErc20;
-      let impl = (await ethers.getContractAt('CErc20', '0x71Ea933878974B2c02461e3BBC1C08e125ee94f3')) as CErc20;
+      let impl = await ethers.getContractAt('CErc20', '0x71Ea933878974B2c02461e3BBC1C08e125ee94f3');
       let owner = '0x1479F0954dF7c667b1817E4Eb3C0f4723eB054F5';
 
       const proxy = await run('p', {
@@ -49,17 +50,17 @@ task('dct', 'deploy cToken contract')
           underly,
           comptroller,
           irm,
-          ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
+          ethers.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
           name,
           symbol,
           MANTISSA_DECIMALS,
           owner,
-          '1000000000000000000'
+          '1000000000000000000',
         ]),
         admin: admin,
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       log.info(`${symbol} address:`, impl.address);
       return { impl, proxy };

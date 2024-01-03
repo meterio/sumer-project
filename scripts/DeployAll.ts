@@ -15,7 +15,7 @@ import {
 } from './helper';
 import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
 import { confirm } from '@inquirer/prompts';
-import { BigNumber } from 'ethers';
+import { BigNumberish } from 'ethers';
 
 const main = async () => {
   const network = await setNetwork(network_config);
@@ -252,8 +252,8 @@ const main = async () => {
   );
 
   let cTokens: string[] = [];
-  let borrowCaps: BigNumber[] = [];
-  let maxSupplys: BigNumber[] = [];
+  let borrowCaps: BigNumberish[] = [];
+  let maxSupplys: BigNumberish[] = [];
   for (let i = 0; i < config.CErc20.proxys.length; i++) {
     let proxy = config.CErc20.proxys[i];
     cTokens.push(proxy.address);

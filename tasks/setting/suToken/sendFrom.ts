@@ -3,7 +3,7 @@ import { log } from '../../../log_settings';
 import { readFileSync } from 'fs';
 import { SumerOFTUpgradeable } from '../../../typechain';
 import { constants } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers';
 
 /**
 npx hardhat send \
@@ -25,7 +25,7 @@ task('send', 'send oft')
   .setAction(async ({ json, dst, times, rpc, pk, gasprice }, { ethers, run, network }) => {
     let config = JSON.parse(readFileSync(json).toString());
 
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 
@@ -40,7 +40,7 @@ task('send', 'send oft')
         )) as SumerOFTUpgradeable;
 
         console.log('suToken:', await suToken.symbol());
-        // let path = ethers.utils.solidityPack(['address', 'address'], [fromSuTokenJson.underly, remoteAddr]);
+        // let path = ethers.solidityPack(['address', 'address'], [fromSuTokenJson.underly, remoteAddr]);
         // console.log('path:', path);
 
         let gas = await suToken.estimateGas.sendFrom(
@@ -69,5 +69,5 @@ task('send', 'send oft')
   });
 
 async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms * 1000));
+  return new Promise((resolve) => setTimeout(resolve, ms * 1000));
 }

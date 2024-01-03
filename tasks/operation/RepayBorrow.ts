@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
-import { ContractTransaction,constants } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { ContractTransaction, constants } from 'ethers';
+import { parseUnits } from 'ethers';
 import { CErc20 } from '../../typechain';
 
 /**
@@ -24,10 +24,10 @@ task('rp', 'Repay borrow')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let receipt: ContractTransaction;
 
@@ -37,7 +37,7 @@ task('rp', 'Repay borrow')
     const underly = (await ethers.getContractAt('CErc20', await cErc20.underlying(override), wallet)) as CErc20;
     console.log(`find ${sdrSymbol} underly:`, underly.address);
 
-    receipt = await underly.approve(sdr,constants.MaxUint256);
+    receipt = await underly.approve(sdr, constants.MaxUint256);
     console.log('cErc20.approve tx:', receipt.hash);
 
     receipt = await cErc20.repayBorrow(parseUnits(amount, await cErc20.decimals(override)), override);

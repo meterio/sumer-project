@@ -26,7 +26,7 @@ task('gci', 'grantCompInternal')
         gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 
@@ -45,9 +45,9 @@ task('gci', 'grantCompInternal')
       log.info('compBorrowerIndex:', compBorrowerIndex.toString());
       let noOriginalSpeed = compBorrowSpeeds.eq(BigNumber.from(0));
       log.info('noOriginalSpeed:', noOriginalSpeed);
-      let invalidSupply = noOriginalSpeed && (compSupplierIndex.gt(BigNumber.from(0)));
+      let invalidSupply = noOriginalSpeed && compSupplierIndex.gt(BigNumber.from(0));
       log.info('invalidSupply:', invalidSupply);
-      let invalidBorrow = noOriginalSpeed && (compBorrowerIndex.gt(BigNumber.from(0)));
+      let invalidBorrow = noOriginalSpeed && compBorrowerIndex.gt(BigNumber.from(0));
       log.info('invalidBorrow:', invalidBorrow);
     }
   });

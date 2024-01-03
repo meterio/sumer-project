@@ -1,0 +1,10 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/simonzg/workspace/sumer/sumer-project'
+/Users/simonzg/workspace/sumer/sumer-project/script/certora/run.py \
+	spec/certora/contracts/CompCertora.sol \
+	--settings -b=4,-graphDrawLimit=0,-assumeUnwindCond,-depth=100 \
+	--solc_args "'--evm-version istanbul'" \
+	--verify \
+	 CompCertora:spec/certora/Comp/search.cvl
+make: Leaving directory `/Users/simonzg/workspace/sumer/sumer-project'
+ 

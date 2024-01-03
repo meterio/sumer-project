@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
 import { ContractTransaction } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers';
 import { CErc20 } from '../../typechain';
 
 /**
@@ -22,7 +22,7 @@ task('br', 'deposit underly to sdrToken')
   .setAction(async ({ sdr, amount, rpc, pk, gasprice }, { ethers, run, network }) => {
     await run('compile');
 
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let receipt: ContractTransaction;
 
@@ -36,7 +36,7 @@ task('br', 'deposit underly to sdrToken')
 
     let gas = await cErc20.estimateGas.borrow(borrowAmount);
     receipt = await cErc20.borrow(borrowAmount, {
-      gasLimit: gas
+      gasLimit: gas,
     });
     console.log('cErc20.borrow tx:', receipt.hash);
   });

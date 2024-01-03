@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers';
 import { log } from '../../../log_settings';
 import { ERC20MinterBurnerPauser } from '../../../typechain';
 
@@ -29,13 +29,13 @@ task('dt', 'deploy contract')
       args: [name, symbol, decimals],
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     })) as ERC20MinterBurnerPauser;
 
     if (Number(supply) > 0) {
-      const gas = await contract.estimateGas.mint(wallet.address, parseUnits(supply, decimals));
+      const gas = await contract.mint.estimateGas(wallet.address, parseUnits(supply, decimals));
       const receipt = await contract.mint(wallet.address, parseUnits(supply, decimals), {
-        gasLimit: gas
+        gasLimit: gas,
       });
       log.info('Mint:', receipt.hash);
     }

@@ -3,8 +3,7 @@ import { types } from 'hardhat/config';
 import { readFileSync, writeFileSync } from 'fs';
 import { log } from '../../log_settings';
 import { AccountLiquidity, CErc20, CompLogic, Comptroller, PythOracle } from '../../typechain';
-import { BigNumber } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers';
 const MANTISSA_DECIMALS = 18;
 const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
 // 0x0000000000000000000000000000000000000000
@@ -25,7 +24,7 @@ task('all', 'deploy contract')
 
     let config = JSON.parse(readFileSync(json).toString());
     let admin: string;
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
 
     if (config.proxyAdmin.address == '') {
@@ -96,13 +95,9 @@ task('all', 'deploy contract')
       config.underwriterAdmin.address = proxy.address;
       writeFileSync(json, JSON.stringify(config));
       // let uwAdmin = (await ethers.getContractAt('UnderwriterAdmin', proxy.address, wallet)) as UnderwriterAdmin;
-      const comptroller = (await ethers.getContractAt(
-        'Comptroller',
-        config.comptroller.address,
-        wallet
-      )) as Comptroller;
+      const comptroller = await ethers.getContractAt('Comptroller', config.comptroller.address, wallet);
       for (const group of config.eqAssetGroups) {
-        let gas = await comptroller.estimateGas.setAssetGroup(
+        let gas = await comptroller.setAssetGroup.estimateGas(
           group.id,
           group.name,
           group.intraCRateMantissa,
@@ -161,16 +156,12 @@ task('all', 'deploy contract')
       config.comptroller.implementation = comptrollerImpl.address;
       config.comptroller.address = comptroller.address;
       writeFileSync(json, JSON.stringify(config));
-      const compLogicContract = (await ethers.getContractAt('CompLogic', compLogic.address, wallet)) as CompLogic;
-      let gas = await compLogicContract.estimateGas.setComptroller(comptroller.address);
+      const compLogicContract = await ethers.getContractAt('CompLogic', compLogic.address, wallet);
+      let gas = await compLogicContract.setComptroller.estimateGas(comptroller.address);
       let tx = await compLogicContract.setComptroller(comptroller.address, { gasLimit: gas });
       await tx.wait();
-      const accountLiquidityContract = (await ethers.getContractAt(
-        'AccountLiquidity',
-        accountLiquidity.address,
-        wallet
-      )) as AccountLiquidity;
-      gas = await accountLiquidityContract.estimateGas.setComptroller(comptroller.address);
+      const accountLiquidityContract = await ethers.getContractAt('AccountLiquidity', accountLiquidity.address, wallet);
+      gas = await accountLiquidityContract.setComptroller.estimateGas(comptroller.address);
       tx = await accountLiquidityContract.setComptroller(comptroller.address, { gasLimit: gas });
       await tx.wait();
     }
@@ -187,8 +178,8 @@ task('all', 'deploy contract')
     const cErc20 = await ethers.getContractFactory('CErc20');
     const suErc20 = await ethers.getContractFactory('suErc20');
     const sumerOFT = await ethers.getContractFactory('SumerOFTUpgradeable');
-    const comptroller = (await ethers.getContractAt('Comptroller', config.comptroller.address, wallet)) as Comptroller;
-    const oracle = (await ethers.getContractAt('PythOracle', config.feedPriceOracle.address, wallet)) as PythOracle;
+    const comptroller = await ethers.getContractAt('Comptroller', config.comptroller.address, wallet);
+    const oracle = await ethers.getContractAt('PythOracle', config.feedPriceOracle.address, wallet);
     if (config.cTokens.tokens.length > 0) {
       for (let i = 0; i < config.cTokens.tokens.length; i++) {
         let cToken = config.cTokens.tokens[i];
@@ -210,7 +201,7 @@ task('all', 'deploy contract')
             data = cEther.interface.encodeFunctionData('initialize', [
               config.comptroller.address,
               InterestRateModel.address,
-              ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
+              ethers.parseUnits('1', MANTISSA_DECIMALS),
               cToken.cTokenName,
               cToken.cTokenSymbol,
               cToken.decimals,
@@ -223,7 +214,7 @@ task('all', 'deploy contract')
               cToken.underly,
               config.comptroller.address,
               InterestRateModel.address,
-              ethers.utils.parseUnits('1', MANTISSA_DECIMALS),
+              ethers.parseUnits('1', MANTISSA_DECIMALS),
               cToken.cTokenName,
               cToken.cTokenSymbol,
               cToken.decimals,
@@ -243,20 +234,16 @@ task('all', 'deploy contract')
           config.cTokens.tokens[i].address = proxy.address;
           writeFileSync(json, JSON.stringify(config));
         }
-        let gas = await comptroller.estimateGas.markets(cToken.address);
+        let gas = await comptroller.markets.estimateGas(cToken.address);
         const market = await comptroller.markets(cToken.address, { gasLimit: gas });
         if (!market.isListed || market.assetGroupId != cToken.groupId) {
-          let gas = await comptroller.estimateGas._supportMarket(cToken.address, cToken.groupId);
+          let gas = await comptroller._supportMarket.estimateGas(cToken.address, cToken.groupId);
           let receipt = await comptroller._supportMarket(cToken.address, cToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', cToken.cTokenSymbol, receipt.hash);
         }
-        const cTokenContract = (await ethers.getContractAt(
-          'CErc20',
-          config.cTokens.tokens[i].address,
-          wallet
-        )) as CErc20;
+        const cTokenContract = await ethers.getContractAt('CErc20', config.cTokens.tokens[i].address, wallet);
         if (!(await cTokenContract.reserveFactorMantissa()).eq(parseUnits('0.1'))) {
-          let gas = await cTokenContract.estimateGas._setReserveFactor(parseUnits('0.1'));
+          let gas = await cTokenContract._setReserveFactor.estimateGas(parseUnits('0.1'));
           let receipt = await cTokenContract._setReserveFactor(parseUnits('0.1'), { gasLimit: gas });
           log.info('_setReserveFactor:', cToken.cTokenSymbol, receipt.hash);
         }
@@ -311,7 +298,7 @@ task('all', 'deploy contract')
             suToken.underly,
             config.comptroller.address,
             InterestRateModel.address,
-            ethers.utils.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
+            ethers.parseUnits('1', MANTISSA_DECIMALS), // exchange rate
             suTokenSymbol,
             suTokenSymbol,
             MANTISSA_DECIMALS,
@@ -334,14 +321,14 @@ task('all', 'deploy contract')
         suToken.address = config.suTokens.tokens[i].address;
         const hasRole = await underly.hasRole(MINTER_ROLE, suToken.address);
         if (!hasRole) {
-          let gas = await underly.estimateGas.grantRole(MINTER_ROLE, suToken.address);
+          let gas = await underly.grantRole.estimateGas(MINTER_ROLE, suToken.address);
           const receipt = await underly.grantRole(MINTER_ROLE, suToken.address, { gasLimit: gas });
           log.info(`${suTokenSymbol} add minter tx:`, receipt.hash);
         }
 
         const market = await comptroller.markets(suToken.address);
         if (!market.isListed || market.assetGroupId != suToken.groupId) {
-          let gas = await comptroller.estimateGas._supportMarket(suToken.address, suToken.groupId);
+          let gas = await comptroller._supportMarket.estimateGas(suToken.address, suToken.groupId);
           let receipt = await comptroller._supportMarket(suToken.address, suToken.groupId, { gasLimit: gas });
           log.info('_supportMarket:', suToken.symbol, receipt.hash);
         }
@@ -349,7 +336,7 @@ task('all', 'deploy contract')
         const suTokenInst = await ethers.getContractAt('suErc20', config.suTokens.tokens[i].address, wallet);
         const isCToken = await suTokenInst.isCToken();
         if (isCToken) {
-          let gas = await suTokenInst.estimateGas.changeCtoken();
+          let gas = await suTokenInst.changeCtoken.estimateGas();
           let receipt = await suTokenInst.changeCtoken({ gasLimit: gas });
           log.info('changeCtoken:', isCToken, receipt.hash);
         }

@@ -1,0 +1,442 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.81
+# Copyright (C) 2006  Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.
+# There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# This program built for i386-apple-darwin11.3.0
+
+# Make data base, printed on Thu Aug 18 15:17:34 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+LC_CTYPE = 
+# environment
+GREP_COLOR = 1;33
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# makefile
+CURDIR := /Users/simonzg/workspace/sumer/sumer-project
+# environment
+MNEMONIC = aabb
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/bin/make
+# environment
+THETATEST_RPC = https://eth-rpc-api-testnet.thetatoken.org/rpc
+# environment
+SUMER_TEST_PRIVKEY = 0x8b60031cd2ab317ad9c31083439d97ccc245720e3e59fde098c1bd0695ebca78
+# makefile (from `Makefile', line 14)
+CERTORA_RUN = $(CERTORA_BIN)/run.py
+# environment
+GITHUB_TOKEN = 03235e3601cf0d3453772559b5326186f11dc89b
+# makefile (from `Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# environment
+MOON_RPC = https://rpc.moonriver.moonbeam.network
+# environment
+__CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
+# makefile (from `Makefile', line 18)
+CERTORA = $(CERTORA_BIN)
+# environment
+ACCOUNTS_CONFIG = /Users/simonzg/keys/accounts.json
+# environment
+__CFBundleIdentifier = com.microsoft.VSCode
+# environment
+BOB_PRIVKEY = 0x9941d2a0f81d3a5bdc5a027551adfe223ab3012af9304947d23fd9e170d7f181
+# environment
+ETH_RPC = https://mainnet.infura.io/v3/c8bdcb5b2da94f88a5cea5f0699b7ef8
+# environment
+VSCODE_CWD = /
+# environment
+SUMER_TOKEN_DEPLOYER_PRIVKEY = 0x5a0f8191068390a88ee22aa8a6d34c9ac38964f0fa798b4ee942c471d3052361
+# environment
+PROVIDERS_CONFIG = /Users/simonzg/keys/providers.json
+# environment
+PATH = /usr/local/opt/icu4c/sbin:/usr/local/opt/icu4c/bin:/usr/local/lib/node_modules/http-server/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/simonzg/.cargo/bin:/Applications/Unity/MonoDevelop.app/Contents/Frameworks/Mono.framework/Versions/Current/bin:/Users/simonzg/workspace/go//bin:/usr/local/Cellar/node@16/16.14.0/bin:/Users/simonzg/lib/apache-maven-3.6.3/bin
+# environment
+LSCOLORS = exfxcxdxbxegedabagacad
+# environment
+MAINNET_EXECUTOR_PRIVKEY = 0x577d0e114b58d4080c2e5f134c083fcfc5008ae69d6b2b2cf39e40981b7e84d4
+# environment
+BSC_RPC = https://bsc-dataseed.binance.org/
+# environment
+GOPATH = /Users/simonzg/workspace/go/
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# default
+.FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
+# environment
+LS_COLORS = di=34;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:
+# environment
+AVA_RPC = https://api.avax.network/ext/bc/C/rpc
+# environment
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.kIE7KDiDfn/Listeners
+# automatic
+%F = $(notdir $%)
+# environment
+PWD = /Users/simonzg/workspace/sumer/sumer-project
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+DIST_ADMIN_PRIVKEY = 0xf48f48bb276198880cda1c535cd0e88f2a24ec2362293920bddccc691e8ab19c
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /Users/simonzg
+# default
+MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/simonzg/Library/Application Support/Code/CachedData/6d9b74a70ca9c7733b29f0456fd8195364076dda
+# environment
+LOGNAME = simonzg
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# environment
+ZSH = /Users/simonzg/.oh-my-zsh
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+METER_TESTNET_PRIVATE_KEY = 0xf48f48bb276198880cda1c535cd0e88f2a24ec2362293920bddccc691e8ab19c
+# environment
+XPC_FLAGS = 0x0
+# makefile (from `Makefile', line 13)
+CERTORA_BIN = $(abspath script/certora)
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 1
+# environment
+TESTNET_CONTRACT_ADMIN_PRIVKEY = 0xf48f48bb276198880cda1c535cd0e88f2a24ec2362293920bddccc691e8ab19c
+# environment
+LOCAL_TEST_PRIVKEY = 0xe74259ddde1907b0379c59df6ba2e8cc774dd0731c17c69a835ae18e533230cb
+# environment
+TEST_RPC = https://rpctest.meter.io
+# default
+MAKE_VERSION := 3.81
+# environment
+USER = simonzg
+# makefile
+.DEFAULT_GOAL := spec/certora/Comp/search.cvl
+# environment
+PROD_MNEMONIC = test test
+# automatic
+<F = $(notdir $<)
+# environment
+LESS = -R
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# default
+MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
+# default
+.VARIABLES := 
+# environment
+TMPDIR = /var/folders/xr/rs04wg2935z5f16djkp22scr0000gn/T/
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /Users/simonzg/Library/Application Support/Code/1.70.1-main.sock
+# environment
+MallocNanoZone = 0
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.188242189.188242195
+# environment
+INFURA_API_KEY = c8bdcb5b2da94f88a5cea5f0699b7ef8
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# automatic
++F = $(notdir $+)
+# environment
+ROPSTEN_RPC = https://ropsten.infura.io/v3/0267f5d2b242442f80a0ad9e97f6e874
+# environment
+MAINNET_CONTRACT_ADMIN_PRIVKEY = 0xb2a1ade4efaae7f758a51bfaade31cab4781c7d83df07c3c06b23aed57613f59
+# environment
+PK = 
+# makefile (from `Makefile', line 19)
+CERTORA_DISABLE_POPUP = 1
+# environment
+MAIN_RPC = https://rpc.meter.io
+# environment
+COMMAND_MODE = unix2003
+# default
+MAKEFILES := 
+# environment
+BSCTEST_RPC = https://data-seed-prebsc-1-s1.binance.org:8545
+# environment
+SUMER_MAIN_PRIVKEY = 0x91601c28f5096c4163d8908722fa8d0441c1beeddddfa099062a0cd067420c30
+# environment
+MOONTEST_RPC = https://rpc.testnet.moonbeam.network
+# environment
+GOFLAGS = -ldflags=-compressdwarf=false
+# environment
+PAGER = less
+# environment
+LC_ALL = C
+# environment
+LOCAL_DEPLOYER_PRIVKEY = 0xf18972ce9575fc83807ce2deb15409e89c927d2086644d44a51b763dc501a6a3
+# environment
+ANSIBLE_HOST_KEY_CHECKING = false
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# makefile (from `Makefile', line 15)
+CERTORA_CLI = $(CERTORA_BIN)/cli.jar
+# default
+.INCLUDE_DIRS = /usr/local/include
+# environment
+MAKELEVEL := 0
+# environment
+LANG = C
+# makefile (from `Makefile', line 16)
+CERTORA_EMV = $(CERTORA_BIN)/emv.jar
+# environment
+VSCODE_PID = 642
+# variable set hash-table stats:
+# Load=102/1024=10%, Rehash=0, Collisions=4/126=3%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 16777220, inode 138630509): 47 files, no impossibilities.
+
+# 47 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+spec/certora/Math/%.cvl:
+#  commands to execute (from `Makefile', line 22):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/MathCertora.sol \
+	--verify \
+	MathCertora:$@
+	
+
+spec/certora/Governor/%.cvl:
+#  commands to execute (from `Makefile', line 44):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/GovernorAlphaCertora.sol \
+	spec/certora/contracts/TimelockCertora.sol \
+	spec/certora/contracts/CompCertora.sol \
+	--settings -assumeUnwindCond,-enableWildcardInlining=false \
+	--solc_args "'--evm-version istanbul'" \
+	--link \
+	GovernorAlphaCertora:timelock=TimelockCertora \
+	GovernorAlphaCertora:comp=CompCertora \
+	--verify \
+	GovernorAlphaCertora:$@
+	
+
+spec/certora/Comptroller/%.cvl:
+#  commands to execute (from `Makefile', line 57):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/ComptrollerCertora.sol \
+	spec/certora/contracts/PriceOracleModel.sol \
+	--link \
+	ComptrollerCertora:oracle=PriceOracleModel \
+	--verify \
+	ComptrollerCertora:$@
+	
+
+spec/certora/cDAI/%.cvl:
+#  commands to execute (from `Makefile', line 66):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/CDaiDelegateCertora.sol \
+	spec/certora/contracts/UnderlyingModelNonStandard.sol \
+	spec/certora/contracts/mcd/dai.sol:Dai \
+ 
+make: *** No rule to make target `all'.  Stop.
+
+	spec/certora/contracts/mcd/pot.sol:Pot \
+	spec/certora/contracts/mcd/vat.sol:Vat \
+	spec/certora/contracts/mcd/join.sol:DaiJoin \
+	tests/Contracts/BoolComptroller.sol \
+	--link \
+	CDaiDelegateCertora:comptroller=BoolComptroller \
+	CDaiDelegateCertora:underlying=Dai \
+	CDaiDelegateCertora:potAddress=Pot \
+	CDaiDelegateCertora:vatAddress=Vat \
+	CDaiDelegateCertora:daiJoinAddress=DaiJoin \
+	--verify \
+	CDaiDelegateCertora:$@ \
+	--settings -cache=certora-run-cdai
+	
+
+spec/certora/CErc20/%.cvl:
+#  commands to execute (from `Makefile', line 85):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/CErc20ImmutableCertora.sol \
+	spec/certora/contracts/CTokenCollateral.sol \
+	spec/certora/contracts/ComptrollerCertora.sol \
+	spec/certora/contracts/InterestRateModelModel.sol \
+	spec/certora/contracts/UnderlyingModelNonStandard.sol \
+	--link \
+	CErc20ImmutableCertora:otherToken=CTokenCollateral \
+	CErc20ImmutableCertora:comptroller=ComptrollerCertora \
+	CErc20ImmutableCertora:underlying=UnderlyingModelNonStandard \
+	CErc20ImmutableCertora:interestRateModel=InterestRateModelModel \
+	CTokenCollateral:comptroller=ComptrollerCertora \
+	CTokenCollateral:underlying=UnderlyingModelNonStandard \
+	--verify \
+	CErc20ImmutableCertora:$@ \
+	--settings -cache=certora-run-cerc20-immutable
+	
+
+spec/certora/CErc20Delegator/%.cvl:
+#  commands to execute (from `Makefile', line 103):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/CErc20DelegatorCertora.sol \
+	spec/certora/contracts/CErc20DelegateCertora.sol \
+	spec/certora/contracts/CTokenCollateral.sol \
+	spec/certora/contracts/ComptrollerCertora.sol \
+	spec/certora/contracts/InterestRateModelModel.sol \
+	spec/certora/contracts/UnderlyingModelNonStandard.sol \
+	--link \
+	CErc20DelegatorCertora:implementation=CErc20DelegateCertora \
+	CErc20DelegatorCertora:otherToken=CTokenCollateral \
+	CErc20DelegatorCertora:comptroller=ComptrollerCertora \
+	CErc20DelegatorCertora:underlying=UnderlyingModelNonStandard \
+	CErc20DelegatorCertora:interestRateModel=InterestRateModelModel \
+	CTokenCollateral:comptroller=ComptrollerCertora \
+	CTokenCollateral:underlying=UnderlyingModelNonStandard \
+	--verify \
+	CErc20DelegatorCertora:$@ \
+	--settings -assumeUnwindCond \
+	--settings -cache=certora-run-cerc20-delegator
+	
+
+spec/certora/Maximillion/%.cvl:
+#  commands to execute (from `Makefile', line 124):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/MaximillionCertora.sol \
+	spec/certora/contracts/CEtherCertora.sol \
+	--link \
+	MaximillionCertora:cEther=CEtherCertora \
+	--verify \
+	MaximillionCertora:$@
+	
+
+spec/certora/Timelock/%.cvl:
+#  commands to execute (from `Makefile', line 133):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/TimelockCertora.sol \
+	--verify \
+	TimelockCertora:$@
+	
+
+# 8 implicit rules, 0 (0.0%) terminal.
+
+# Files
+
+# Not a target:
+all:
+#  Command-line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+.PHONY: certora-clean
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-18 13:18:49
+#  File has been updated.
+#  Successfully updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+spec/certora/Comp/transfer.cvl:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 36):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/CompCertora.sol \
+	--settings -graphDrawLimit=0,-assumeUnwindCond,-depth=100 \
+	--solc_args "'--evm-version istanbul'" \
+	--verify \
+	CompCertora:$@
+	
+
+certora-clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 139):
+	rm -rf .certora_build.json .certora_config certora_verify.json emv-*
+	
+
+spec/certora/Comp/search.cvl:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 28):
+	$(CERTORA_RUN) \
+	spec/certora/contracts/CompCertora.sol \
+	--settings -b=4,-graphDrawLimit=0,-assumeUnwindCond,-depth=100 \
+	--solc_args "'--evm-version istanbul'" \
+	--verify \
+	CompCertora:$@
+	
+
+# files hash-table stats:
+# Load=8/1024=1%, Rehash=0, Collisions=0/21=0%
+# VPATH Search Paths
+
+# No `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 1
+# # of strcache buffers: 1
+# strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
+# strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
+
+# Finished Make data base on Thu Aug 18 15:17:34 2022
+
+ 

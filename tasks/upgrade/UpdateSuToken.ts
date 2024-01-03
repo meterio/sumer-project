@@ -21,7 +21,7 @@ task('ust', 'deploy cToken contract')
   .addOptionalParam('gasprice', 'gas price', 0, types.int)
   .setAction(async ({ impl, json, rpc, pk, gasprice }, { ethers, run, network }) => {
     await run('compile');
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     console.log('account:', wallet.address);
     let config = JSON.parse(readFileSync(json).toString());
@@ -29,7 +29,7 @@ task('ust', 'deploy cToken contract')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
     if (impl == constants.AddressZero) {
@@ -37,7 +37,7 @@ task('ust', 'deploy cToken contract')
         name: 'suErc20',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       config.suTokens.implementation = suErc20Impl.address;
     } else {
@@ -52,7 +52,7 @@ task('ust', 'deploy cToken contract')
         config.suTokens.implementation
       );
       let receipt = await proxyContract.upgrade(config.suTokens.tokens[i].address, config.suTokens.implementation, {
-        gasLimit: gas
+        gasLimit: gas,
       });
       log.info('proxyContract.upgradeTo tx:', receipt.hash);
     }

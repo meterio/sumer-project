@@ -23,10 +23,10 @@ task('sof', 'set FeedPriceOracle with fix price')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let receipt: ContractTransaction;
     let config = JSON.parse(readFileSync(json).toString());

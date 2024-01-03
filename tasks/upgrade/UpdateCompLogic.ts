@@ -19,7 +19,7 @@ task('ucl', 'deploy cToken contract')
   .addOptionalParam('gasprice', 'gas price', 0, types.int)
   .setAction(async ({ json, rpc, pk, gasprice }, { ethers, run, network }) => {
     await run('compile');
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let config = JSON.parse(readFileSync(json).toString());
 
@@ -31,7 +31,7 @@ task('ucl', 'deploy cToken contract')
       name: 'CompLogic',
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     });
 
     const proxyContract = (await ethers.getContractAt('ProxyAdmin', config.proxyAdmin.address, wallet)) as ProxyAdmin;

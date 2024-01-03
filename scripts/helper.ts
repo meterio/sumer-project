@@ -1,11 +1,25 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs';
-import { Contract, BigNumber, BytesLike, constants, PayableOverrides, Wallet, providers, utils } from 'ethers';
-import { HardhatEthersHelpers } from '@nomiclabs/hardhat-ethers/types';
+import {
+  BaseContract,
+  Contract,
+  BytesLike,
+  Wallet,
+  NamedFragment,
+  JsonRpcProvider,
+  Overrides,
+  isBytesLike,
+  isAddress,
+  parseUnits,
+  formatUnits,
+  ZeroAddress,
+} from 'ethers';
+import { HardhatEthersHelpers } from '@nomicfoundation/hardhat-ethers/types';
 import * as pathLib from 'path';
 import { input, select, password } from '@inquirer/prompts';
 import colors from 'colors';
 import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle, SuErc20 } from '../typechain';
-import { Fragment, FunctionFragment } from 'ethers/lib/utils';
+import { Fragment, FunctionFragment } from 'ethers';
+import { BigNumber } from 'bignumber.js';
 colors.enable();
 
 export const yellow = colors.yellow;
@@ -32,11 +46,11 @@ export const contracts_json = './scripts/Contracts.json';
 export const contracts_config = JSON.parse(readFileSync(contracts_json).toString());
 
 export function expandTo18Decimals(n: number): BigNumber {
-  return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
+  return new BigNumber(n).times(new BigNumber(10).pow(18));
 }
 
 export function BN(n: number): BigNumber {
-  return BigNumber.from(n);
+  return new BigNumber(n);
 }
 export const overrides: any = {
   gasLimit: 8000000,
@@ -57,7 +71,7 @@ export function getContract(network: string, name: string): string {
     let json = JSON.parse(readFileSync(fullpath).toString());
     return json.address;
   } else {
-    return constants.AddressZero;
+    return ZeroAddress;
   }
 }
 
@@ -127,33 +141,32 @@ export function getChoices(config: any[]) {
 
 export type Network = {
   name: string;
-  provider: providers.JsonRpcProvider;
+  provider: JsonRpcProvider;
   wallet: Wallet;
-  override: PayableOverrides;
+  override: Overrides;
   netConfig: any;
   networkIndex: number;
 };
 
 export async function setNetwork(config: any[], name: string = ''): Promise<Network> {
-  let override: PayableOverrides = {};
+  let override: Overrides = {};
   const networkIndex = await select({
     message: `选择网络${green(name)}:`,
     choices: getChoices(config),
   });
   const privateKey = await password({
     message: `输入网络${green(name)}的Private Key:`,
-    validate: (value = '') => utils.isBytesLike(value) || 'Pass a valid Private Key value',
+    validate: (value = '') => isBytesLike(value) || 'Pass a valid Private Key value',
     mask: '*',
   });
 
-  const provider = new providers.JsonRpcProvider(config[networkIndex].rpc);
+  const provider = new JsonRpcProvider(config[networkIndex].rpc);
   const wallet = new Wallet(privateKey, provider);
   console.log('Signer:', yellow(wallet.address));
-
-  const defaultGasPrice = await wallet.provider.getGasPrice();
+  const defaultGasPrice = (await provider.getFeeData()).gasPrice;
   override.gasPrice = await input({
     message: '输入Gas price:',
-    default: defaultGasPrice.toString(),
+    default: String(defaultGasPrice),
     validate: (value = '') => value.length > 0 || 'Pass a valid value',
   });
 
@@ -163,10 +176,10 @@ export async function setNetwork(config: any[], name: string = ''): Promise<Netw
 
 export async function sendTransaction(
   network: Network,
-  contract: Contract,
+  contract: BaseContract & any,
   func: string,
   args: any[],
-  override: PayableOverrides = {},
+  override: Overrides = {},
   checkRole: BytesLike = '0x'
 ) {
   if (checkRole != '0x') {
@@ -175,14 +188,17 @@ export async function sendTransaction(
       throw new Error(red('签名人不具有DEFAULT_ADMIN_ROLE权限!'));
     }
   }
-  override.nonce = await input({
-    message: '输入nonce:',
-    default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
-    validate: (value = '') => value.length > 0 || 'Pass a valid value',
-  });
-  override.gasLimit = await contract.estimateGas[func](...args);
-  console.log('gasLimit:', green(override.gasLimit.toString()));
-  let receipt = await contract[func](...args, override);
+  override.nonce = Number(
+    await input({
+      message: '输入nonce:',
+      default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
+      validate: (value = '') => value.length > 0 || 'Pass a valid value',
+    })
+  );
+  override.gasLimit = await contract.getFunction(func).estimateGas(...args);
+
+  console.log('gasLimit:', green(override.gasLimit!.toString()));
+  let receipt = await contract.getFunction(func)(...args, override);
   await receipt.wait();
   console.log(`${blue(func)} tx:`, yellow(receipt.hash));
 }
@@ -192,17 +208,19 @@ export async function deployContractV2(
   network: Network,
   contract: string,
   args: any[],
-  override: PayableOverrides = {}
+  override: Overrides = {}
 ): Promise<Contract> {
-  override.nonce = await input({
-    message: '输入nonce:',
-    default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
-    validate: (value = '') => value.length > 0 || 'Pass a valid value',
-  });
+  override.nonce = Number(
+    await input({
+      message: '输入nonce:',
+      default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
+      validate: (value = '') => value.length > 0 || 'Pass a valid value',
+    })
+  );
 
   const factory = await ethers.getContractFactory(contract, network.wallet);
 
-  override.gasLimit = await network.wallet.estimateGas(factory.getDeployTransaction(...args));
+  override.gasLimit = await network.wallet.estimateGas(await factory.getDeployTransaction(...args));
 
   console.log('gasLimit:', green(override.gasLimit.toString()));
   const deploy = await factory.deploy(...args, override);
@@ -213,7 +231,7 @@ export async function deployContractV2(
 }
 
 export async function getContractV2(ethers: HardhatEthersHelpers, rpc: string, contract: string, address: string) {
-  const provider = new providers.JsonRpcProvider(rpc);
+  const provider = new JsonRpcProvider(rpc);
   const wallet = new Wallet(defaultPrivateKey, provider);
   return await ethers.getContractAt(contract, address, wallet);
 }
@@ -268,7 +286,7 @@ export type Config = {
 export async function deployOrInput(
   ethers: HardhatEthersHelpers,
   network: Network,
-  override: PayableOverrides,
+  override: Overrides,
   config: Config,
   implementation: boolean = false
 ): Promise<Config> {
@@ -299,12 +317,13 @@ export async function deployOrInput(
         config.args = args;
       }
     }
-    address = (await deployContractV2(ethers, network, config.contract, implementation ? [] : args, override)).address;
+    const inst = await deployContractV2(ethers, network, config.contract, implementation ? [] : args, override);
+    address = await inst.getAddress();
   } else {
     address = await input({
       message: `输入${name}合约地址:`,
       default: implementation ? config.implementation : config.address,
-      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
+      validate: (value = '') => isAddress(value) || 'Pass a valid address value',
     });
   }
   if (implementation) {
@@ -378,13 +397,13 @@ export function getCTokens(network: Network) {
 export async function deployProxyOrInput(
   ethers: HardhatEthersHelpers,
   network: Network,
-  override: PayableOverrides,
+  override: Overrides,
   config: Config,
   proxyAdmin: string,
   implementation: string = ''
 ): Promise<Config> {
   const name = config.name || config.contract;
-  implementation = utils.isAddress(implementation) ? implementation : config.implementation;
+  implementation = isAddress(implementation) ? implementation : config.implementation;
 
   const choices = [
     { name: '部署Proxy合约', value: 'deploy' },
@@ -410,9 +429,9 @@ export async function deployProxyOrInput(
     }
     const factory = await ethers.getContractFactory(config.contract);
     const data = factory.interface.encodeFunctionData('initialize', args);
-    config.address = (
+    config.address = await (
       await deployContractV2(ethers, network, 'SumerProxy', [implementation, proxyAdmin, data], override)
-    ).address;
+    ).getAddress();
   } else if (proxy_answer == 'update') {
     const proxyAdminContract = await ethers.getContractAt('SumerProxyAdmin', proxyAdmin, network.wallet);
     await sendTransaction(
@@ -426,7 +445,7 @@ export async function deployProxyOrInput(
     config.address = await input({
       message: `输入${green(name)}合约地址:`,
       default: config.address,
-      validate: (value = '') => utils.isAddress(value) || 'Pass a valid address value',
+      validate: (value = '') => isAddress(value) || 'Pass a valid address value',
     });
   }
   return config;
@@ -472,7 +491,7 @@ export async function cTokenSetting(
       DEFAULT_ADMIN_ROLE
     );
   }
-  let cToken = (await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet)) as CToken;
+  let cToken = await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet);
   // setReserveFactor
   let reserveFactorMantissa = await cToken.reserveFactorMantissa();
   if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
@@ -487,11 +506,7 @@ export async function cTokenSetting(
   }
   if (isSuToken) {
     // grantRole
-    let underlying = (await ethers.getContractAt(
-      'ERC20MinterBurnerPauser',
-      cTokenConfig.args[0],
-      network.wallet
-    )) as ERC20MinterBurnerPauser;
+    let underlying = await ethers.getContractAt('ERC20MinterBurnerPauser', cTokenConfig.args[0], network.wallet);
     let hasRole = await underlying.hasRole(MINTER_ROLE, cTokenConfig.address);
     if (!hasRole) {
       console.log('设置Underlying' + yellow(cTokenConfig.args[0]) + '的MINTER_ROLE');
@@ -505,7 +520,7 @@ export async function cTokenSetting(
       );
     }
     // changeCtoken
-    let suErc20 = (await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet)) as SuErc20;
+    let suErc20 = await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet);
     let isCToken = await suErc20.isCToken();
     if (isCToken) {
       console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
@@ -513,8 +528,8 @@ export async function cTokenSetting(
     }
   }
   // oracle
-  let feeds = await oracle.callStatic.feeds(cTokenConfig.address, network.override);
-  if (feeds.source == 0) {
+  let feeds = await oracle.feeds(cTokenConfig.address, network.override);
+  if (Number(feeds.source) == 0) {
     cTokenConfig.settings.oracle.args[0] = cTokenConfig.address;
     console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle');
     await sendTransaction(
@@ -526,24 +541,20 @@ export async function cTokenSetting(
     );
   }
   let decimals = await cToken.decimals();
-  cTokenConfig.settings.borrowCap = utils
-    .parseUnits(
-      await input({
-        message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
-        default: utils.formatUnits(cTokenConfig.settings.borrowCap, decimals).toString(),
-      }),
-      decimals
-    )
-    .toString();
-  cTokenConfig.settings.maxSupply = utils
-    .parseUnits(
-      await input({
-        message: `输入${green(cTokenConfig.name)}的Max Supply:`,
-        default: utils.formatUnits(cTokenConfig.settings.maxSupply, decimals).toString(),
-      }),
-      decimals
-    )
-    .toString();
+  cTokenConfig.settings.borrowCap = parseUnits(
+    await input({
+      message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
+      default: formatUnits(cTokenConfig.settings.borrowCap, decimals).toString(),
+    }),
+    decimals
+  ).toString();
+  cTokenConfig.settings.maxSupply = parseUnits(
+    await input({
+      message: `输入${green(cTokenConfig.name)}的Max Supply:`,
+      default: formatUnits(cTokenConfig.settings.maxSupply, decimals).toString(),
+    }),
+    decimals
+  ).toString();
   return cTokenConfig;
 }
 
@@ -563,7 +574,7 @@ export async function selectContract() {
   return result;
 }
 
-export async function selectFunc(fragment: ReadonlyArray<Fragment>) {
+export async function selectFunc(fragment: ReadonlyArray<NamedFragment>) {
   let choices = [];
   for (let i = 0; i < fragment.length; i++) {
     if (fragment[i].type == 'function') {

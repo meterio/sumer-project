@@ -19,7 +19,7 @@ task('aa', 'approve all sdrToken contract')
     await run('compile');
 
     let config = JSON.parse(readFileSync(json).toString());
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
 
     if (config.cTokens.tokens.length > 0) {
@@ -29,7 +29,7 @@ task('aa', 'approve all sdrToken contract')
           let underly = (await ethers.getContractAt('IERC20', cToken.underly, wallet)) as IERC20;
           let gas = await underly.estimateGas.approve(cToken.address, constants.MaxUint256);
           let receipt = await underly.approve(cToken.address, constants.MaxUint256, {
-            gasLimit: gas
+            gasLimit: gas,
           });
           log.info(`${cToken.cTokenSymbol} approve tx:`, receipt.hash);
         }
@@ -41,7 +41,7 @@ task('aa', 'approve all sdrToken contract')
         let underly = (await ethers.getContractAt('IERC20', suToken.underly, wallet)) as IERC20;
         let gas = await underly.estimateGas.approve(suToken.address, constants.MaxUint256);
         let receipt = await underly.approve(suToken.address, constants.MaxUint256, {
-          gasLimit: gas
+          gasLimit: gas,
         });
         log.info(`${suToken.symbol} approve tx:`, receipt.hash);
       }

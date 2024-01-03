@@ -21,10 +21,10 @@ task('soc', 'set FeedPriceOracle with chainlink feed')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let config = JSON.parse(readFileSync(json).toString());
 
@@ -40,7 +40,7 @@ task('soc', 'set FeedPriceOracle with chainlink feed')
       let oracle = ctoken.oracle;
       let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr);
       let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, {
-        gasLimit: gas
+        gasLimit: gas,
       });
       console.log('setChainlinkFeed tx:', receipt.hash);
     }
@@ -49,7 +49,7 @@ task('soc', 'set FeedPriceOracle with chainlink feed')
       let oracle = ctoken.oracle;
       let gas = await feedPriceOracle.estimateGas.setChainlinkFeed(ctoken.address, oracle.addr);
       let receipt = await feedPriceOracle.setChainlinkFeed(ctoken.address, oracle.addr, {
-        gasLimit: gas
+        gasLimit: gas,
       });
       console.log('setChainlinkFeed tx:', receipt.hash);
     }

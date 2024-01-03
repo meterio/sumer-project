@@ -23,15 +23,15 @@ task('p', 'deploy cToken contract')
     if (gasprice > 0) {
       override = {
         gasPrice: gasprice,
-        gasLimit: 1000000
+        gasLimit: 1000000,
       };
     } else {
       override = {
-        gasLimit: 1000000
+        gasLimit: 1000000,
       };
     }
 
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
 
     const proxy_factory = await ethers.getContractFactory('SumerProxy', wallet);

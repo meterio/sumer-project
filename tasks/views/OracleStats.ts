@@ -25,10 +25,14 @@ task('os', 'Oracle stats')
         gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
-    const oracle = (await ethers.getContractAt('FeedPriceOracle', config.feedPriceOracle.address, wallet)) as FeedPriceOracle;
+    const oracle = (await ethers.getContractAt(
+      'FeedPriceOracle',
+      config.feedPriceOracle.address,
+      wallet
+    )) as FeedPriceOracle;
 
     const cTokens = config.cTokens.tokens;
     for (let i = 0; i < cTokens.length; i++) {

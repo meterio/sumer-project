@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { log } from '../../log_settings';
 import { IERC20, SumerOFTUpgradeable } from '../../typechain';
 import { ContractTransaction, constants } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers';
 
 /**
 npx hardhat sf \
@@ -25,7 +25,7 @@ task('sf', 'approve all sdrToken contract')
   .setAction(async ({ address, amount, dst, rpc, pk, gasprice }, { ethers, run, network }) => {
     // await run('compile');
 
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let receipt: ContractTransaction;
 

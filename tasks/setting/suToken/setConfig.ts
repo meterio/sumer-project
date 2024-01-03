@@ -21,7 +21,7 @@ task('scf', 'set Oracle config')
   .setAction(async ({ from, dst, rpc, pk, gasprice }, { ethers, run, network }) => {
     let fromConfig = JSON.parse(readFileSync(from).toString());
 
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 

@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config';
-import { types } from "hardhat/config";
+import { types } from 'hardhat/config';
 import { ContractTransaction } from 'ethers';
-import { parseUnits } from "ethers/lib/utils";
+import { parseUnits } from 'ethers';
 import { CErc20 } from '../../typechain';
 
 /**
@@ -14,30 +14,29 @@ npx hardhat re \
  */
 
 task('re', 'redeem all underly token')
-    .addParam("sdr", "sdrToken address")
-    .addParam("amount", "deposit amount")
-    .addParam("rpc", "rpc connect")
-    .addParam("pk", "proxy admin private key")
-    .addOptionalParam("gasprice", "gas price", 0, types.int)
-    .setAction(async ({ sdr, amount, rpc, pk, gasprice }, { ethers, run, network }) => {
-        await run('compile');
-        let override = {}
-        if (gasprice > 0) {
-            override = {
-                gasPrice: gasprice
-            }
-        }
-        let provider = new ethers.providers.JsonRpcProvider(rpc);
-        const wallet = new ethers.Wallet(pk, provider);
-        let receipt: ContractTransaction;
+  .addParam('sdr', 'sdrToken address')
+  .addParam('amount', 'deposit amount')
+  .addParam('rpc', 'rpc connect')
+  .addParam('pk', 'proxy admin private key')
+  .addOptionalParam('gasprice', 'gas price', 0, types.int)
+  .setAction(async ({ sdr, amount, rpc, pk, gasprice }, { ethers, run, network }) => {
+    await run('compile');
+    let override = {};
+    if (gasprice > 0) {
+      override = {
+        gasPrice: gasprice,
+      };
+    }
+    let provider = new ethers.JsonRpcProvider(rpc);
+    const wallet = new ethers.Wallet(pk, provider);
+    let receipt: ContractTransaction;
 
-        const cErc20 = await ethers.getContractAt("CErc20", sdr, wallet) as CErc20;
-        const sdrSymbol = await cErc20.symbol(override);
-        console.log(`find ${sdrSymbol}:`, cErc20.address);
-        const underly = await cErc20.underlying(override);
-        console.log(`find ${sdrSymbol} underly:`, underly);
+    const cErc20 = (await ethers.getContractAt('CErc20', sdr, wallet)) as CErc20;
+    const sdrSymbol = await cErc20.symbol(override);
+    console.log(`find ${sdrSymbol}:`, cErc20.address);
+    const underly = await cErc20.underlying(override);
+    console.log(`find ${sdrSymbol} underly:`, underly);
 
-        receipt = await cErc20.redeemUnderlying(parseUnits(amount, await cErc20.decimals(override)), override);
-        console.log("cErc20.redeemUnderlying tx:", receipt.hash);
-
-    });
+    receipt = await cErc20.redeemUnderlying(parseUnits(amount, await cErc20.decimals(override)), override);
+    console.log('cErc20.redeemUnderlying tx:', receipt.hash);
+  });

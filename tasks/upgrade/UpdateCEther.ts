@@ -21,14 +21,14 @@ task('uce', 'deploy cToken contract')
   .addOptionalParam('gasprice', 'gas price', 0, types.int)
   .setAction(async ({ impl, json, rpc, pk, gasprice }, { ethers, run, network }) => {
     await run('compile');
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     let config = JSON.parse(readFileSync(json).toString());
 
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
     if (impl == constants.AddressZero) {
@@ -36,7 +36,7 @@ task('uce', 'deploy cToken contract')
         name: 'CEther',
         rpc: rpc,
         pk: pk,
-        gasprice: gasprice
+        gasprice: gasprice,
       });
       impl = cEtherImpl.address;
     }

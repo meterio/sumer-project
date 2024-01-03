@@ -2,7 +2,7 @@ import { task } from 'hardhat/config';
 import { types } from 'hardhat/config';
 import { log } from '../../log_settings';
 import { readFileSync } from 'fs';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers';
 import { CErc20, Comptroller, FeedPriceOracle, PythOracle } from '../../typechain';
 import { type } from 'os';
 import { BigNumber, constants } from 'ethers';
@@ -63,7 +63,7 @@ task('hal', 'get Hypothetical Account Liquidity')
     let config = JSON.parse(readFileSync(json).toString());
 
     log.info('RPC: ', rpc);
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
     log.info('address: ', config.Comptroller.address);

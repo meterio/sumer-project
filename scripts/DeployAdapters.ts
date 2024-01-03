@@ -1,12 +1,5 @@
 import { ethers } from 'hardhat';
-import {
-  getAdapterConfig,
-  writeAdapterConfig,
-  network_config,
-  setNetwork,
-  deployOrInput,
-  deployProxyOrInput,
-} from './helper';
+import { getAdapterConfig, writeAdapterConfig, network_config, setNetwork, deployOrInput } from './helper';
 const main = async () => {
   const network = await setNetwork(network_config);
   let { netConfig, wallet, override } = network;

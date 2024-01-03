@@ -4,7 +4,7 @@ import { log } from '../../log_settings';
 import { readFileSync } from 'fs';
 import { CErc20, CompLogic, Multicall2 } from '../../typechain';
 import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits } from 'ethers';
 
 /**
 npx hardhat comp \
@@ -28,10 +28,10 @@ task('comp', 'deposit underly to sdrToken')
     let override = {};
     if (gasprice > 0) {
       override = {
-        gasPrice: gasprice
+        gasPrice: gasprice,
       };
     }
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 

@@ -56,7 +56,7 @@ task('al', 'get AccountLimits')
   .addParam('pk', 'proxy admin private key')
   .setAction(async ({ account, json, rpc, pk }, { ethers, run, network }) => {
     const config = JSON.parse(readFileSync(json).toString());
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
     log.info('wallet:', wallet.address);
 

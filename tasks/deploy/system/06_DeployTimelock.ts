@@ -18,7 +18,7 @@ task('dtl', 'deploy Timelock contracts')
   .setAction(async ({ json, rpc, pk, gasprice }, { ethers, run, network }) => {
     let config = JSON.parse(readFileSync(json).toString());
     let admin: string;
-    let provider = new ethers.providers.JsonRpcProvider(rpc);
+    let provider = new ethers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(pk, provider);
 
     let cTokens: string[] = [];
@@ -36,7 +36,7 @@ task('dtl', 'deploy Timelock contracts')
       args: [cTokens],
       rpc: rpc,
       pk: pk,
-      gasprice: gasprice
+      gasprice: gasprice,
     });
 
     return timelock;

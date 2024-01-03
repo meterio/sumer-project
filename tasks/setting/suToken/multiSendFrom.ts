@@ -3,7 +3,7 @@ import { log } from '../../../log_settings';
 import { readFileSync } from 'fs';
 import { SumerOFTUpgradeable } from '../../../typechain';
 import { constants } from 'ethers';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers';
 
 /**
 npx hardhat send \
@@ -83,5 +83,5 @@ task('msend', 'send oft')
   });
 
 async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms * 1000));
+  return new Promise((resolve) => setTimeout(resolve, ms * 1000));
 }
