@@ -1,5 +1,4 @@
 import hre from 'hardhat';
-import { Logger } from 'tslog';
 import { log } from '../../log_settings';
 import { config as dotEnvConfig } from 'dotenv';
 
