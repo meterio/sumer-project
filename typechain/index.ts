@@ -69,6 +69,7 @@ export type { WhitePaperInterestRateModel } from "./WhitePaperInterestRateModel"
 export type { ZeroInterestRateModel } from "./ZeroInterestRateModel";
 export type { ITimelock } from "./ITimelock";
 export type { Multicall2 } from "./Multicall2";
+export type { ChainlinkFeedAdaptorETHToUSD } from "./ChainlinkFeedAdaptorETHToUSD";
 export type { FeedPriceOracle } from "./FeedPriceOracle";
 export type { FeedPriceOracleSafe } from "./FeedPriceOracleSafe";
 export type { IChainlinkFeed } from "./IChainlinkFeed";
@@ -161,6 +162,7 @@ export { WhitePaperInterestRateModel__factory } from "./factories/WhitePaperInte
 export { ZeroInterestRateModel__factory } from "./factories/ZeroInterestRateModel__factory";
 export { ITimelock__factory } from "./factories/ITimelock__factory";
 export { Multicall2__factory } from "./factories/Multicall2__factory";
+export { ChainlinkFeedAdaptorETHToUSD__factory } from "./factories/ChainlinkFeedAdaptorETHToUSD__factory";
 export { FeedPriceOracle__factory } from "./factories/FeedPriceOracle__factory";
 export { FeedPriceOracleSafe__factory } from "./factories/FeedPriceOracleSafe__factory";
 export { IChainlinkFeed__factory } from "./factories/IChainlinkFeed__factory";

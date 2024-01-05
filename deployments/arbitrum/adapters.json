@@ -1,34 +1,18 @@
 {
   "rETH_Adapter": {
-    "contract": "ChainlinkFeedAdaptor_ETHToUSD",
+    "contract": "ChainlinkFeedAdaptorETHToUSD",
     "name": "Sumer rETH feed adaptor",
     "address": "0xad8fB6E4769dc9f3Ca4589163F3F59cd08D394Ff",
     "settings": {},
-    "constructorName": [
-      "tokenFeed",
-      "ethFeed",
-      "decimals"
-    ],
-    "args": [
-      "0xD6aB2298946840262FcC278fF31516D39fF611eF",
-      "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
-      "8"
-    ]
+    "constructorName": ["tokenFeed", "ethFeed", "decimals"],
+    "args": ["0xD6aB2298946840262FcC278fF31516D39fF611eF", "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612", "8"]
   },
   "wstETH_Adapter": {
-    "contract": "ChainlinkFeedAdaptor_ETHToUSD",
+    "contract": "ChainlinkFeedAdaptorETHToUSD",
     "name": "Sumer wstETH feed adaptor",
     "address": "0x35C840655D3a2E77d79f179C34e547726B963314",
     "settings": {},
-    "constructorName": [
-      "tokenFeed",
-      "ethFeed",
-      "decimals"
-    ],
-    "args": [
-      "0xb523AE262D20A936BC152e6023996e46FDC2A95D",
-      "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
-      "8"
-    ]
+    "constructorName": ["tokenFeed", "ethFeed", "decimals"],
+    "args": ["0xb523AE262D20A936BC152e6023996e46FDC2A95D", "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612", "8"]
   }
 }

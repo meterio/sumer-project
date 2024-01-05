@@ -289,6 +289,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Multicall2__factory>;
     getContractFactory(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD__factory>;
+    getContractFactory(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD__factory>;
+    getContractFactory(
       name: "FeedPriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FeedPriceOracle__factory>;
@@ -730,6 +738,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Multicall2>;
+    getContractAt(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
+    getContractAt(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
     getContractAt(
       name: "FeedPriceOracle",
       address: string,

@@ -4,7 +4,7 @@ import './Interfaces/IChainlinkFeed.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract ChainlinkFeedAdaptor_ETHToUSD {
+contract ChainlinkFeedAdaptorETHToUSD {
   using SafeMath for uint256;
   address public immutable tokenFeed;
   address public immutable ethFeed;
