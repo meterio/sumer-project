@@ -16,7 +16,7 @@ export const bgWhite = colors.bgWhite;
 export const bgYellow = colors.bgYellow;
 export const defaultPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'; // mnemonic:test test test test test test test test test test test junk
 
-export const network_json = './scripts/network.testnet.json';
+export const network_json = './scripts/network.json';
 export const network_config = JSON.parse(readFileSync(network_json).toString());
 
 export const meter_json = './scripts/meter.json';
