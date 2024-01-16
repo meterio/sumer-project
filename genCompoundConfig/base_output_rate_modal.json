@@ -1,0 +1,38 @@
+{
+  "base": [
+    {
+      "name": "JumpRateModelV2",
+      "address": "0xd16D4BbE76C873d8a1e499Bf2aAc91710165E3C9",
+      "tokens": [
+        "USDC",
+        "USDbc",
+        "DAI",
+        "ETH"
+      ],
+      "baseRatePerYear": 0.02,
+      "multiplierPerYear": 0.12,
+      "jumpMultiplierPerYear": 1,
+      "kink": 0.75
+    },
+    {
+      "name": "JumpRateModelV2",
+      "address": "0x04C13c475223CaEb3F23f4F4A69707D82C47dA50",
+      "tokens": [
+        "wstETH",
+        "cbETH"
+      ],
+      "baseRatePerYear": 0.02,
+      "multiplierPerYear": 0.15,
+      "jumpMultiplierPerYear": 2,
+      "kink": 0.55
+    },
+    {
+      "name": "ZeroInterestRateModel",
+      "address": "0x341fDb6532154Cec491Aca3D3BB404C2d4cc042E",
+      "tokens": [
+        "suUSD",
+        "suETH"
+      ]
+    }
+  ]
+}

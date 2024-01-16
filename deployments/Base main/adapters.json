@@ -1,0 +1,18 @@
+{
+  "wstETH_Adapter": {
+    "contract": "ChainlinkFeedAdaptorETHToUSD",
+    "name": "Sumer wstETH feed adaptor",
+    "address": "0xF4DB30E806609516D14cDB53D9bc306c99505451",
+    "settings": {},
+    "constructorName": [
+      "tokenFeed",
+      "ethFeed",
+      "decimals"
+    ],
+    "args": [
+      "0xa669E5272E60f78299F4824495cE01a3923f4380",
+      "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+      "8"
+    ]
+  }
+}
