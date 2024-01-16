@@ -998,14 +998,14 @@ const _abi = [
         name: "actualRepayAmount",
         type: "uint256",
       },
-      {
-        internalType: "uint256",
-        name: "liquidationIncentiveMantissa",
-        type: "uint256",
-      },
     ],
     name: "liquidateCalculateSeizeTokens",
     outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
       {
         internalType: "uint256",
         name: "",
@@ -1087,6 +1087,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "seizeTokens",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "seizeProfitTokens",
         type: "uint256",
       },
     ],

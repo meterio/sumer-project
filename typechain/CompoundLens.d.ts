@@ -37,7 +37,7 @@ interface CompoundLensInterface extends ethers.utils.Interface {
     "getGovReceipts(address,address,uint256[])": FunctionFragment;
     "isDeprecated(address,address)": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,address,uint256,address)": FunctionFragment;
-    "liquidateCalculateSeizeTokens(address,address,uint256,address)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -106,7 +106,7 @@ interface CompoundLensInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
-    values: [string, string, BigNumberish, string]
+    values: [string, string, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -432,9 +432,8 @@ export class CompoundLens extends BaseContract {
       cTokenBorrowed: string,
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      comptroller: string,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
   };
 
   cTokenBalances(
@@ -629,9 +628,8 @@ export class CompoundLens extends BaseContract {
     cTokenBorrowed: string,
     cTokenCollateral: string,
     actualRepayAmount: BigNumberish,
-    comptroller: string,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   callStatic: {
     cTokenBalances(
@@ -987,9 +985,8 @@ export class CompoundLens extends BaseContract {
       cTokenBorrowed: string,
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      comptroller: string,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
   };
 
   filters: {};
@@ -1099,7 +1096,6 @@ export class CompoundLens extends BaseContract {
       cTokenBorrowed: string,
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      comptroller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -1209,7 +1205,6 @@ export class CompoundLens extends BaseContract {
       cTokenBorrowed: string,
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      comptroller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

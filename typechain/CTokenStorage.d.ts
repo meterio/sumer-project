@@ -54,7 +54,7 @@ interface CTokenStorageInterface extends ethers.utils.Interface {
     "pendingAdmin()": FunctionFragment;
     "protocolSeizeShareMantissa()": FunctionFragment;
     "reserveFactorMantissa()": FunctionFragment;
-    "seize(address,address,uint256)": FunctionFragment;
+    "seize(address,address,uint256,uint256)": FunctionFragment;
     "supplyRatePerBlock()": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalBorrows()": FunctionFragment;
@@ -180,7 +180,7 @@ interface CTokenStorageInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "seize",
-    values: [string, string, BigNumberish]
+    values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supplyRatePerBlock",
@@ -668,6 +668,7 @@ export class CTokenStorage extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -817,6 +818,7 @@ export class CTokenStorage extends BaseContract {
     liquidator: string,
     borrower: string,
     seizeTokens: BigNumberish,
+    seizeProfitTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -960,6 +962,7 @@ export class CTokenStorage extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1448,6 +1451,7 @@ export class CTokenStorage extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1613,6 +1617,7 @@ export class CTokenStorage extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

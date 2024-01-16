@@ -956,6 +956,11 @@ const _abi = [
         name: "seizeTokens",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "seizeProfitTokens",
+        type: "uint256",
+      },
     ],
     name: "seize",
     outputs: [

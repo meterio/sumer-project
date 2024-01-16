@@ -58,7 +58,7 @@ interface CErc20Interface extends ethers.utils.Interface {
     "isDeprecated()": FunctionFragment;
     "liquidateBorrow(address,uint256,address)": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
-    "liquidateCalculateSeizeTokens(address,uint256,uint256)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
@@ -68,7 +68,7 @@ interface CErc20Interface extends ethers.utils.Interface {
     "repayBorrow(uint256)": FunctionFragment;
     "repayBorrowBehalf(address,uint256)": FunctionFragment;
     "reserveFactorMantissa()": FunctionFragment;
-    "seize(address,address,uint256)": FunctionFragment;
+    "seize(address,address,uint256,uint256)": FunctionFragment;
     "supplyRatePerBlock()": FunctionFragment;
     "sweepToken(address)": FunctionFragment;
     "symbol()": FunctionFragment;
@@ -224,7 +224,7 @@ interface CErc20Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
-    values: [string, BigNumberish, BigNumberish]
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -258,7 +258,7 @@ interface CErc20Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "seize",
-    values: [string, string, BigNumberish]
+    values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supplyRatePerBlock",
@@ -841,9 +841,8 @@ export class CErc20 extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     mint(
       mintAmount: BigNumberish,
@@ -883,6 +882,7 @@ export class CErc20 extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1079,9 +1079,8 @@ export class CErc20 extends BaseContract {
   liquidateCalculateSeizeTokens(
     cTokenCollateral: string,
     actualRepayAmount: BigNumberish,
-    liquidationIncentiveMantissa: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   mint(
     mintAmount: BigNumberish,
@@ -1121,6 +1120,7 @@ export class CErc20 extends BaseContract {
     liquidator: string,
     borrower: string,
     seizeTokens: BigNumberish,
+    seizeProfitTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1312,9 +1312,8 @@ export class CErc20 extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     mint(
       mintAmount: BigNumberish,
@@ -1354,6 +1353,7 @@ export class CErc20 extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1892,7 +1892,6 @@ export class CErc20 extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1934,6 +1933,7 @@ export class CErc20 extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2140,7 +2140,6 @@ export class CErc20 extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2186,6 +2185,7 @@ export class CErc20 extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -59,7 +59,7 @@ interface CEtherInterface extends ethers.utils.Interface {
     "isDeprecated()": FunctionFragment;
     "liquidateBorrow(address,address)": FunctionFragment;
     "liquidateBorrowAllowed(address,address,address,uint256)": FunctionFragment;
-    "liquidateCalculateSeizeTokens(address,uint256,uint256)": FunctionFragment;
+    "liquidateCalculateSeizeTokens(address,uint256)": FunctionFragment;
     "mint()": FunctionFragment;
     "name()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
@@ -69,7 +69,7 @@ interface CEtherInterface extends ethers.utils.Interface {
     "repayBorrow()": FunctionFragment;
     "repayBorrowBehalf(address)": FunctionFragment;
     "reserveFactorMantissa()": FunctionFragment;
-    "seize(address,address,uint256)": FunctionFragment;
+    "seize(address,address,uint256,uint256)": FunctionFragment;
     "supplyRatePerBlock()": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalBorrows()": FunctionFragment;
@@ -223,7 +223,7 @@ interface CEtherInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
-    values: [string, BigNumberish, BigNumberish]
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "mint", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -257,7 +257,7 @@ interface CEtherInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "seize",
-    values: [string, string, BigNumberish]
+    values: [string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supplyRatePerBlock",
@@ -835,9 +835,8 @@ export class CEther extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     mint(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
@@ -874,6 +873,7 @@ export class CEther extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1062,9 +1062,8 @@ export class CEther extends BaseContract {
   liquidateCalculateSeizeTokens(
     cTokenCollateral: string,
     actualRepayAmount: BigNumberish,
-    liquidationIncentiveMantissa: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
+  ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
   mint(
     overrides?: PayableOverrides & { from?: string | Promise<string> }
@@ -1101,6 +1100,7 @@ export class CEther extends BaseContract {
     liquidator: string,
     borrower: string,
     seizeTokens: BigNumberish,
+    seizeProfitTokens: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1282,9 +1282,8 @@ export class CEther extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<[BigNumber, BigNumber, BigNumber]>;
 
     mint(overrides?: CallOverrides): Promise<void>;
 
@@ -1317,6 +1316,7 @@ export class CEther extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1850,7 +1850,6 @@ export class CEther extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1889,6 +1888,7 @@ export class CEther extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2087,7 +2087,6 @@ export class CEther extends BaseContract {
     liquidateCalculateSeizeTokens(
       cTokenCollateral: string,
       actualRepayAmount: BigNumberish,
-      liquidationIncentiveMantissa: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2130,6 +2129,7 @@ export class CEther extends BaseContract {
       liquidator: string,
       borrower: string,
       seizeTokens: BigNumberish,
+      seizeProfitTokens: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
