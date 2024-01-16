@@ -1139,29 +1139,11 @@ abstract contract CToken is CTokenStorage {
     // EFFECTS & INTERACTIONS
     // (No safe failures beyond this point)
 
-    (, uint8 repayTokenGroupId, ) = IComptroller(comptroller).markets(address(this));
-    (, uint8 seizeTokenGroupId, ) = IComptroller(comptroller).markets(cTokenCollateral);
-
-    (
-      uint256 heteroLiquidationIncentive,
-      uint256 homoLiquidationIncentive,
-      uint256 sutokenLiquidationIncentive
-    ) = IComptroller(comptroller).liquidationIncentiveMantissa();
-
-    // default is repaying heterogeneous assets
-    uint256 incentiveMantissa = heteroLiquidationIncentive;
-    if (repayTokenGroupId == seizeTokenGroupId) {
-      if (CToken(address(this)).isCToken() == false) {
-        // repaying sutoken
-        incentiveMantissa = sutokenLiquidationIncentive;
-      } else {
-        // repaying homogeneous assets
-        incentiveMantissa = homoLiquidationIncentive;
-      }
-    }
-
     /* We calculate the number of collateral tokens that will be seized */
-    (, uint256 seizeTokens) = liquidateCalculateSeizeTokens(cTokenCollateral, actualRepayAmount, incentiveMantissa);
+    (, uint256 seizeTokens, uint256 seizeProfitTokens) = liquidateCalculateSeizeTokens(
+      cTokenCollateral,
+      actualRepayAmount
+    );
 
     /* Revert if borrower collateral token balance < seizeTokens */
     if (ICToken(cTokenCollateral).balanceOf(borrower) < seizeTokens) {
@@ -1170,9 +1152,9 @@ abstract contract CToken is CTokenStorage {
 
     // If this is also the collateral, run seizeInternal to avoid re-entrancy, otherwise make an external call
     if (cTokenCollateral == address(this)) {
-      seizeInternal(address(this), liquidator, borrower, seizeTokens);
+      seizeInternal(address(this), liquidator, borrower, seizeTokens, seizeProfitTokens);
     } else {
-      ICToken(cTokenCollateral).seize(liquidator, borrower, seizeTokens);
+      ICToken(cTokenCollateral).seize(liquidator, borrower, seizeTokens, seizeProfitTokens);
     }
 
     /* We emit a LiquidateBorrow event */
@@ -1192,14 +1174,16 @@ abstract contract CToken is CTokenStorage {
    * @param liquidator The account receiving seized collateral
    * @param borrower The account having collateral seized
    * @param seizeTokens The number of cTokens to seize
+   * @param seizeProfitTokens The number of cToken to seize as profit
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function seize(
     address liquidator,
     address borrower,
-    uint256 seizeTokens
+    uint256 seizeTokens,
+    uint256 seizeProfitTokens
   ) external override nonReentrant returns (uint256) {
-    return seizeInternal(msg.sender, liquidator, borrower, seizeTokens);
+    return seizeInternal(msg.sender, liquidator, borrower, seizeTokens, seizeProfitTokens);
   }
 
   struct SeizeInternalLocalVars {
@@ -1228,7 +1212,8 @@ abstract contract CToken is CTokenStorage {
     address seizerToken,
     address liquidator,
     address borrower,
-    uint256 seizeTokens
+    uint256 seizeTokens,
+    uint256 seizeProfitTokens
   ) internal returns (uint256) {
     /* Fail if seize not allowed */
     uint256 allowed = IComptroller(comptroller).seizeAllowed(
@@ -1259,7 +1244,7 @@ abstract contract CToken is CTokenStorage {
       Error.MATH_ERROR.failOpaque(FailureInfo.LIQUIDATE_SEIZE_BALANCE_DECREMENT_FAILED, uint256(vars.mathErr));
     }
 
-    vars.protocolSeizeTokens = seizeTokens.mul_(Exp({mantissa: protocolSeizeShareMantissa}));
+    vars.protocolSeizeTokens = seizeProfitTokens.mul_(Exp({mantissa: protocolSeizeShareMantissa}));
     vars.liquidatorSeizeTokens = seizeTokens.sub_(vars.protocolSeizeTokens);
 
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
@@ -1668,13 +1653,35 @@ abstract contract CToken is CTokenStorage {
    * @dev Used in liquidation (called in ICToken(cToken).liquidateBorrowFresh)
    * @param cTokenCollateral The address of the collateral cToken
    * @param actualRepayAmount The amount of cTokenBorrowed underlying to convert into cTokenCollateral tokens
-   * @return (errorCode, number of cTokenCollateral tokens to be seized in a liquidation)
+   * @return (errorCode, number of cTokenCollateral tokens to be seized in a liquidation, number of cTokenCollateral tokens to be seized as profit in a liquidation)
    */
   function liquidateCalculateSeizeTokens(
     address cTokenCollateral,
-    uint256 actualRepayAmount,
-    uint256 liquidationIncentiveMantissa
-  ) public view returns (uint256, uint256) {
+    uint256 actualRepayAmount
+  ) public view returns (uint256, uint256, uint256) {
+    (bool repayListed, uint8 repayTokenGroupId, ) = IComptroller(comptroller).markets(address(this));
+    require(repayListed, 'repay token not listed');
+    (bool seizeListed, uint8 seizeTokenGroupId, ) = IComptroller(comptroller).markets(cTokenCollateral);
+    require(seizeListed, 'seize token not listed');
+
+    (
+      uint256 heteroLiquidationIncentive,
+      uint256 homoLiquidationIncentive,
+      uint256 sutokenLiquidationIncentive
+    ) = IComptroller(comptroller).liquidationIncentiveMantissa();
+
+    // default is repaying heterogeneous assets
+    uint256 liquidationIncentiveMantissa = heteroLiquidationIncentive;
+    if (repayTokenGroupId == seizeTokenGroupId) {
+      if (CToken(address(this)).isCToken() == false) {
+        // repaying sutoken
+        liquidationIncentiveMantissa = sutokenLiquidationIncentive;
+      } else {
+        // repaying homogeneous assets
+        liquidationIncentiveMantissa = homoLiquidationIncentive;
+      }
+    }
+
     /* Read oracle prices for borrowed and collateral markets */
     address oracle = IComptroller(comptroller).oracle();
     uint256 priceBorrowedMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(address(this)));
@@ -1697,20 +1704,32 @@ abstract contract CToken is CTokenStorage {
     Exp memory denominator;
     Exp memory ratio;
 
+    uint256 seizeProfitTokens;
+    Exp memory profitRatio;
+    Exp memory profitNumerator;
+
     numerator = Exp({mantissa: liquidationIncentiveMantissa + expScale}).mul_(Exp({mantissa: priceBorrowedMantissa}));
     if (repayTokenDecimal < 18) {
       numerator = numerator.mul_(10 ** (18 - repayTokenDecimal));
     }
+
+    profitNumerator = Exp({mantissa: liquidationIncentiveMantissa}).mul_(Exp({mantissa: priceBorrowedMantissa}));
+    if (repayTokenDecimal < 18) {
+      profitNumerator = profitNumerator.mul_(10 ** (18 - repayTokenDecimal));
+    }
+
     denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
     if (seizeTokenDecimal < 18) {
       denominator = denominator.mul_(10 ** (18 - seizeTokenDecimal));
     }
 
     ratio = numerator.div_(denominator);
+    profitRatio = profitNumerator.div_(denominator);
 
     seizeTokens = ratio.mul_ScalarTruncate(actualRepayAmount);
+    seizeProfitTokens = profitRatio.mul_ScalarTruncate(actualRepayAmount);
 
-    return (uint256(0), seizeTokens);
+    return (uint256(0), seizeTokens, seizeProfitTokens);
   }
 
   function getAccountBorrows(address account) public view returns (uint256 principal, uint256 interestIndex) {

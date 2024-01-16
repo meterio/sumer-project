@@ -87,18 +87,13 @@ interface ICToken {
    */
   event Approval(address indexed owner, address indexed spender, uint256 amount);
 
-
   event NewDiscountRate(uint256 oldDiscountRateMantissa, uint256 newDiscountRateMantissa);
 
   /*** User Interface ***/
 
   function transfer(address dst, uint256 amount) external returns (bool);
 
-  function transferFrom(
-    address src,
-    address dst,
-    uint256 amount
-  ) external returns (bool);
+  function transferFrom(address src, address dst, uint256 amount) external returns (bool);
 
   function approve(address spender, uint256 amount) external returns (bool);
 
@@ -110,15 +105,7 @@ interface ICToken {
 
   function balanceOfUnderlying(address owner) external returns (uint256);
 
-  function getAccountSnapshot(address account)
-    external
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256
-    );
+  function getAccountSnapshot(address account) external view returns (uint256, uint256, uint256, uint256);
 
   function borrowRatePerBlock() external view returns (uint256);
 
@@ -143,7 +130,8 @@ interface ICToken {
   function seize(
     address liquidator,
     address borrower,
-    uint256 seizeTokens
+    uint256 seizeTokens,
+    uint256 seizeProfitTokens
   ) external returns (uint256);
 
   /*** Admin Functions ***/

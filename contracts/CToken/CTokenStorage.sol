@@ -77,7 +77,7 @@ abstract contract CTokenStorage is ICToken {
   mapping(address => BorrowSnapshot) internal accountBorrows;
 
   /// @notice Share of seized collateral that is added to reserves
-  uint256 public constant protocolSeizeShareMantissa = 2.8e16; //2.8%
+  uint256 public constant protocolSeizeShareMantissa = 30e16; //30% of profit
 
   uint256 public discountRateMantissa = 1e18;
 

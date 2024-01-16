@@ -475,62 +475,22 @@ contract CompoundLens {
     return c;
   }
 
+  uint256 constant expScale = 1e18;
+
   /**
    * @notice Calculate number of tokens of collateral asset to seize given an underlying amount
    * @dev Used in liquidation (called in ICToken(cToken).liquidateBorrowFresh)
    * @param cTokenBorrowed The address of the borrowed cToken
    * @param cTokenCollateral The address of the collateral cToken
    * @param actualRepayAmount The amount of cTokenBorrowed underlying to convert into cTokenCollateral tokens
-   * @return (errorCode, number of cTokenCollateral tokens to be seized in a liquidation)
+   * @return (errorCode, number of cTokenCollateral tokens to be seized in a liquidation, number of cTokenCollateral tokens to be seized as profit during liquidation)
    */
   function liquidateCalculateSeizeTokens(
     address cTokenBorrowed,
     address cTokenCollateral,
-    uint256 actualRepayAmount,
-    IComptroller comptroller
-  ) external view returns (uint256, uint256) {
-    /* Read oracle prices for borrowed and collateral markets */
-    address oracle = comptroller.oracle();
-    uint256 priceBorrowedMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenBorrowed));
-    uint256 priceCollateralMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenCollateral));
-    require(priceBorrowedMantissa > 0 && priceCollateralMantissa > 0, 'PRICE_ERROR');
-
-    /*
-     * Get the exchange rate and calculate the number of collateral tokens to seize:
-     *  seizeAmount = actualRepayAmount * liquidationIncentive * priceBorrowed / priceCollateral
-     *  seizeTokens = seizeAmount / exchangeRate
-     *   = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-     */
-    uint256 exchangeRateMantissa = ICToken(cTokenCollateral).exchangeRateStored(); // Note: reverts on error
-    uint256 seizeTokens;
-    Exp memory numerator;
-    Exp memory denominator;
-    Exp memory ratio;
-
-    (, uint8 repayTokenGroupId, ) = comptroller.markets(cTokenBorrowed);
-    (, uint8 seizeTokenGroupId, ) = comptroller.markets(cTokenCollateral);
-    (uint256 heteroIncentiveMantissa, uint256 homoIncentiveMantissa, uint256 sutokenIncentiveMantissa) = comptroller
-      .liquidationIncentiveMantissa();
-
-    // default is repaying heterogeneous assets
-    uint256 incentiveMantissa = heteroIncentiveMantissa;
-    if (repayTokenGroupId == seizeTokenGroupId) {
-      if (ICToken(cTokenBorrowed).isCToken() == false) {
-        // repaying sutoken
-        incentiveMantissa = sutokenIncentiveMantissa;
-      } else {
-        // repaying homogeneous assets
-        incentiveMantissa = homoIncentiveMantissa;
-      }
-    }
-
-    numerator = Exp({mantissa: incentiveMantissa}).mul_(Exp({mantissa: priceBorrowedMantissa}));
-    denominator = Exp({mantissa: priceCollateralMantissa}).mul_(Exp({mantissa: exchangeRateMantissa}));
-    ratio = numerator.div_(denominator);
-
-    seizeTokens = ratio.mul_ScalarTruncate(actualRepayAmount);
-
-    return (uint256(0), seizeTokens);
+    uint256 actualRepayAmount
+  ) public view returns (uint256, uint256, uint256) {
+    return ICToken(cTokenBorrowed).liquidateCalculateSeizeTokens(cTokenCollateral, actualRepayAmount);
   }
 
   /**
