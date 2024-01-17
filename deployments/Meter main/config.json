@@ -195,7 +195,7 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0xe5d95b7A3d506e95D9eEF552a3D14fCe5BC15E1F",
+    "implementation": "0x126B4Aa6F80C536D54Ee1fE0BF3d386937204E88",
     "proxys": [
       {
         "contract": "CErc20",
@@ -406,7 +406,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0x5B211A21123840E7a5B007997C351AF4968D2406",
+    "implementation": "0x76E72Fd435f9f93452ACBb7682553bABBDB4Cf77",
     "proxys": [
       {
         "contract": "suErc20",

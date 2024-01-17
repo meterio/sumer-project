@@ -186,7 +186,7 @@
   "CEther": {
     "name": "Sumerian ETH Deposit",
     "contract": "CEther",
-    "implementation": "0x52f3BdFB5e2b0fa3269842159C0D624262708600",
+    "implementation": "0xE056fAB1AD20bf21CB4642B24427F3492c0f1a38",
     "address": "0x3C752d0D78BbFddA6BF4b6000a01228B732441aE",
     "constructorName": [
       "Comptroller",
@@ -224,7 +224,7 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0xf70B2473e7808eDAeA4A5Cea95996A9B1843D96C",
+    "implementation": "0x14Ff7d53274E7f4c88A7b5186893b0A2C5b5Dc09",
     "proxys": [
       {
         "contract": "CErc20",
@@ -510,7 +510,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0x3389eD4dd777b03B95deb2994ACaF6807cf24c2E",
+    "implementation": "0x7e0691C6C7075fB99dbbc030bbEd92d9A7709C35",
     "proxys": [
       {
         "contract": "suErc20",
