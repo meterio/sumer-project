@@ -59,6 +59,7 @@ const argv = require('yargs/yargs')()
       type: 'string',
       default: 'https://goerli.base.org',
     },
+    baseMainRpcUrl: { type: 'string', default: 'https://base.llamarpc.com' },
     networkScanKey: {
       type: 'string',
       default: '',
@@ -166,6 +167,11 @@ export default {
       chainId: 84531,
       accounts: [process.env.PRIVATE_KET_BASE],
     },
+    basemain: {
+      url: argv.baseMainRpcUrl,
+      chainId: 8453,
+      accounts: [process.env.PRIVATE_KET_BASE],
+    },
     zkTestnet: {
       url: 'https://testnet.era.zksync.dev', // URL of the zkSync network RPC
       accounts: { mnemonic: process.env.MNEMONIC_1 },
@@ -184,7 +190,7 @@ export default {
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.BASESCAN_API_KEY,
 
     customChains: [
       {
@@ -203,6 +209,14 @@ export default {
           browserURL: 'https://arbiscan.io/',
         },
       },
+      {
+        network: 'basemain',
+        chainId: 8453,
+        urls: {
+          apiURL: 'https://api.basescan.org/api',
+          browserURL: 'https://basescan.org/',
+        },
+      },
     ],
   },
   sourcify: {
@@ -212,9 +226,6 @@ export default {
   },
   solidity: {
     compilers: [compileSetting('0.8.19', 200)],
-    overrides: {
-      'contracts/CToken/CErc20.sol': compileSetting('0.8.19', 10),
-    },
   },
   paths: {
     sources: './contracts',
