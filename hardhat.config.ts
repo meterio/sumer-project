@@ -175,12 +175,20 @@ export default {
       accounts: [process.env.PRIVATE_KEY_0, '0x34cd0e9ec7a0ec36a37db424f720de58223f9cd52e0175c7a972a6a864eb86a5'],
     },
     arbitrum: {
-      url: 'https://arbitrum.llamarpc.com',
+      url: 'https://arbitrum.blockpi.network/v1/rpc/public	',
       chainId: 42161,
+    },
+    basemain: {
+      url: 'https://base.blockpi.network/v1/rpc/public',
+      chainId: 8453,
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      arbitrum: process.env.ARBISCAN_API_KEY,
+      ethereum: process.env.ETHERSCAN_API_KEY,
+      basemain: process.env.BASESCAN_API_KEY,
+    },
 
     customChains: [
       {
@@ -198,6 +206,11 @@ export default {
           apiURL: 'https://api.arbiscan.io/api',
           browserURL: 'https://arbiscan.io/',
         },
+      },
+      {
+        network: 'basemain',
+        chainId: 8453,
+        urls: { apiURL: 'https://api.basescan.org/api', browserURL: 'https://basescan.org' },
       },
     ],
   },

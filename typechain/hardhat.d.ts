@@ -294,6 +294,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD__factory>;
     getContractFactory(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD__factory>;
+    getContractFactory(
       name: "FeedPriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FeedPriceOracle__factory>;
@@ -741,6 +745,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD>;
     getContractAt(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
+    getContractAt(
       name: "FeedPriceOracle",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -1142,6 +1151,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD>;
     deployContract(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
+    deployContract(
       name: "FeedPriceOracle",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.FeedPriceOracle>;
@@ -1588,6 +1601,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD>;
+    deployContract(
+      name: "ChainlinkFeedAdaptorETHToUSD",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
     deployContract(
       name: "FeedPriceOracle",
       args: any[],

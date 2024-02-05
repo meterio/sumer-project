@@ -5,6 +5,7 @@ import type * as interfaces from "./Interfaces";
 export type { interfaces };
 import type * as wstMtrgOracleSol from "./wstMTRGOracle.sol";
 export type { wstMtrgOracleSol };
+export type { ChainlinkFeedAdaptorETHToUSD } from "./ChainlinkFeedAdaptorETHToUSD";
 export type { ChainlinkFeedAdaptor_ETHToUSD } from "./ChainlinkFeedAdaptor_ETHToUSD";
 export type { FeedPriceOracle } from "./FeedPriceOracle";
 export type { FeedPriceOracleSafe } from "./FeedPriceOracleSafe";

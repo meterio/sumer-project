@@ -146,6 +146,8 @@ export type { Multicall2 } from "./contracts/Multicall2";
 export { Multicall2__factory } from "./factories/contracts/Multicall2__factory";
 export type { ChainlinkFeedAdaptor_ETHToUSD } from "./contracts/Oracle/ChainlinkFeedAdaptor_ETHToUSD";
 export { ChainlinkFeedAdaptor_ETHToUSD__factory } from "./factories/contracts/Oracle/ChainlinkFeedAdaptor_ETHToUSD__factory";
+export type { ChainlinkFeedAdaptorETHToUSD } from "./contracts/Oracle/ChainlinkFeedAdaptorETHToUSD";
+export { ChainlinkFeedAdaptorETHToUSD__factory } from "./factories/contracts/Oracle/ChainlinkFeedAdaptorETHToUSD__factory";
 export type { FeedPriceOracle } from "./contracts/Oracle/FeedPriceOracle";
 export { FeedPriceOracle__factory } from "./factories/contracts/Oracle/FeedPriceOracle__factory";
 export type { FeedPriceOracleSafe } from "./contracts/Oracle/FeedPriceOracleSafe";
