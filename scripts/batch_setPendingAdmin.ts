@@ -58,6 +58,7 @@ const main = async () => {
     validate: (value = '') => isBytesLike(value) || 'Pass a valid Private Key value',
     mask: '*',
   });
+
   const newAdmin = await input({
     message: '输入新Admin地址:',
     validate: (value = '') => isAddress(value) || 'Pass a valid address value',
@@ -93,7 +94,7 @@ const main = async () => {
   }
   console.log('-- 完成设置 Access Update List');
 
-  console.log('-- 设置 Admin Update List');
+  console.log('-- 设置 Access Update List');
   for (const c of accessUpdateList) {
     const confirmed = await confirm({ message: `设置${c.name} ${c.address} 的admin为 ${newAdmin} (grantRole)` });
     if (!confirmed) {
