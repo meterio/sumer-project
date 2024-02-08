@@ -69,25 +69,17 @@ const main = async () => {
 
   console.log('-- 设置 Admin Update List');
   for (const c of adminUpdateList) {
-    const confirmed = await confirm({
-      message: `设置 ${c.name} ${c.address} 的admin为 ${newAdmin} (_setPendingAdmin)`,
-    });
-    if (!confirmed) {
-      continue;
-    }
-    const nonce = await input({
-      message: '输入nonce:',
-      default: (await provider.getTransactionCount(wallet.address)).toString(),
-      validate: (value) => !isNaN(Number(value)) || 'Pass a valid value',
-    });
+    const nonce = await provider.getTransactionCount(wallet.address);
+    console.log(`设置 ${c.name} ${c.address} 的admin为 ${newAdmin} (_setPendingAdmin) nonce: ${nonce}`);
     try {
       const tx = await wallet.sendTransaction({
         to: c.address,
         value: 0,
         data: _interface.encodeFunctionData('_setPendingAdmin', [newAdmin]),
-        nonce: Number(nonce),
+        nonce: nonce,
       });
-      console.log(`tx sent: ${tx.hash}`);
+      console.log(`tx sent: ${tx.hash}, wait for 3 confirmations`);
+      await tx.wait(3);
     } catch (e) {
       console.log(`发生错误: ${e}`);
     }
@@ -96,16 +88,8 @@ const main = async () => {
 
   console.log('-- 设置 Access Update List');
   for (const c of accessUpdateList) {
-    const confirmed = await confirm({ message: `设置${c.name} ${c.address} 的admin为 ${newAdmin} (grantRole)` });
-    if (!confirmed) {
-      continue;
-    }
-
-    const nonce = await input({
-      message: '输入nonce:',
-      default: (await provider.getTransactionCount(wallet.address)).toString(),
-      validate: (value) => !isNaN(Number(value)) || 'Pass a valid value',
-    });
+    const nonce = await provider.getTransactionCount(wallet.address);
+    console.log(`设置${c.name} ${c.address} 的admin为 ${newAdmin} (grantRole) nonce: ${nonce}`);
     try {
       const tx = await wallet.sendTransaction({
         to: c.address,
@@ -114,9 +98,10 @@ const main = async () => {
           '0x0000000000000000000000000000000000000000000000000000000000000000',
           newAdmin,
         ]),
-        nonce: Number(nonce),
+        nonce,
       });
-      console.log(`tx sent: ${tx.hash}`);
+      console.log(`tx sent: ${tx.hash}, wait for 3 confirmations`);
+      await tx.wait(3);
     } catch (e) {
       console.log(`发生错误: ${e}`);
     }
@@ -125,15 +110,8 @@ const main = async () => {
 
   console.log('-- 设置 Owner Update List');
   for (const c of ownerUpdateList) {
-    const confirmed = confirm({ message: `设置 ${c.address} 的owner为 ${newAdmin} (transferOwnership)` });
-    if (!confirmed) {
-      continue;
-    }
-    const nonce = await input({
-      message: '输入nonce:',
-      default: (await provider.getTransactionCount(wallet.address)).toString(),
-      validate: (value) => !isNaN(Number(value)) || 'Pass a valid value',
-    });
+    const nonce = await provider.getTransactionCount(wallet.address);
+    console.log(`设置 ${c.address} 的owner为 ${newAdmin} (transferOwnership) nonce: ${nonce}`);
     try {
       const tx = await wallet.sendTransaction({
         to: c.address,
@@ -141,7 +119,8 @@ const main = async () => {
         data: _interface.encodeFunctionData('transferOwnership', [newAdmin]),
         nonce: Number(nonce),
       });
-      console.log(`tx sent: ${tx.hash}`);
+      console.log(`tx sent: ${tx.hash}, wait for 3 confirmations`);
+      await tx.wait(3);
     } catch (e) {
       console.log(`发生错误: ${e}`);
     }
