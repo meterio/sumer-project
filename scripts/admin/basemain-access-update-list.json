@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Sumer",
+    "address": "0x553d713e0fB958932b6C40ABAf0b5A1fFae73Da2",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "AccountLiquidity",
+    "address": "0x36C379883c9A293e7DdF76031c4a0AD053eB4bfF",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "CompLogic",
+    "address": "0x5EA97142b444c6eC5791a5f1C24A1265Aa1FA40C",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Comptroller",
+    "address": "0x611375907733D9576907E125Fb29704712F0BAfA",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Timelock",
+    "address": "0x549D0CdC753601fbE29f9DE186868429a8558E07",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  }
+]

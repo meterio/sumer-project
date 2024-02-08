@@ -1,0 +1,22 @@
+[
+  {
+    "name": "ProxyAdmin",
+    "address": "0xF04B152d2E27b5d975A2eb6b7F39EA42A74841Ac",
+    "currentOwner": "0x612EDfd49d0cF4D6eCc89E4cAd8F3C0612Cf345C"
+  },
+  {
+    "name": "FeedPriceOracle",
+    "address": "0x7465fedB29023d11effe8C74E82A7ecEBf15E947",
+    "currentOwner": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "JumpRateModelV2",
+    "address": "0x5096E5cf4f151052ACD615b2635E7FdB6Db0763C",
+    "currentOwner": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "JumpRateModelV2",
+    "address": "0xE27496Ec5d6E19521d636e78c127fF2Cf59ee914",
+    "currentOwner": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  }
+]

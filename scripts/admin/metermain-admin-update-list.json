@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Sumer USDC.eth Deposit",
+    "address": "0xC211a250FC30122ee107aC9Acf6686110339520f",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Sumer USDT.eth Deposit",
+    "address": "0xaCEDC263FF6De824B38cAeAAC1FD877b1a7344a1",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Sumer MTRG Deposit",
+    "address": "0x6Ff2fB3F8F175df0A39C344de81A4aaaB05c49eB",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Sumer wstMTRG Deposit",
+    "address": "0x318F6863a8c516dF9C5941AEb328A40f15f525F9",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Sumer ETH Deposit",
+    "address": "0x52e245606Dd37A9addcD2Bb523d319596eB4b851",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Sumer suUSD Deposit",
+    "address": "0x755A39999FE536Ec327Cb84110383BFc30fd0F4D",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  },
+  {
+    "name": "Sumer suETH Deposit",
+    "address": "0x21c4123f62CA28c9ceF3dDd1c8ae71EE9a5003aE",
+    "currentAdmin": "0x5C85A7Ae2B6d29C38cdF360553F8aCBC4e684c31"
+  }
+]
