@@ -50,8 +50,8 @@ const main = async () => {
   }
 
   const adminUpdateList = JSON.parse(fs.readFileSync(adminUpdateListFile).toString());
-  const accessUpdateList = JSON.parse(fs.readFileSync(adminUpdateListFile).toString());
-  const ownerUpdateList = JSON.parse(fs.readFileSync(adminUpdateListFile).toString());
+  const accessUpdateList = JSON.parse(fs.readFileSync(accessUpdateListFile).toString());
+  const ownerUpdateList = JSON.parse(fs.readFileSync(ownerUpdateListFile).toString());
 
   const privateKey = await password({
     message: `输入网络${green(hre.network.name)}的Private Key:`,
@@ -66,6 +66,7 @@ const main = async () => {
   const provider = new JsonRpcProvider(hre.network.config.url);
   const wallet = new Wallet(privateKey, provider);
 
+  console.log('-- 设置 Admin Update List');
   for (const c of adminUpdateList) {
     console.log(`设置 ${c.address} 的admin为 ${newAdmin}`);
     try {
@@ -79,7 +80,9 @@ const main = async () => {
       console.log(`发生错误: ${e}`);
     }
   }
+  console.log('-- 完成设置 Admin Update List');
 
+  console.log('-- 设置 Admin Update List');
   for (const c of accessUpdateList) {
     console.log(`设置 ${c.address} 的admin为 ${newAdmin}`);
     try {
@@ -96,7 +99,9 @@ const main = async () => {
       console.log(`发生错误: ${e}`);
     }
   }
+  console.log('-- 完成设置 Admin Update List');
 
+  console.log('-- 设置 Owner Update List');
   for (const c of ownerUpdateList) {
     console.log(`设置 ${c.address} 的owner为 ${newAdmin}`);
     try {
@@ -110,6 +115,7 @@ const main = async () => {
       console.log(`发生错误: ${e}`);
     }
   }
+  console.log('-- 完成设置 Owner Update List');
 };
 
 main();
