@@ -108,7 +108,7 @@ abstract contract CToken is CTokenStorage {
     /* Get the allowance, infinite for the account owner */
     uint256 startingAllowance = 0;
     if (spender == src) {
-      startingAllowance = uint256(0);
+      startingAllowance = ~uint256(0);
     } else {
       startingAllowance = transferAllowances[src][spender];
     }
@@ -142,7 +142,7 @@ abstract contract CToken is CTokenStorage {
     accountTokens[dst] = dstTokensNew;
 
     /* Eat some of the allowance (if necessary) */
-    if (startingAllowance != uint256(0)) {
+    if (startingAllowance != ~uint256(0)) {
       transferAllowances[src][spender] = allowanceNew;
     }
 
