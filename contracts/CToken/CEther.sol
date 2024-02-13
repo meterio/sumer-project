@@ -151,9 +151,10 @@ contract CEther is CToken, Initializable {
    * @return The quantity of Ether owned by this contract
    */
   function getCashPrior() internal view override returns (uint256) {
-    (MathError err, uint256 startingBalance) = address(this).balance.subUInt(msg.value);
-    require(err == MathError.NO_ERROR);
-    return startingBalance;
+    // (MathError err, uint256 startingBalance) = address(this).balance.subUInt(msg.value);
+    // require(err == MathError.NO_ERROR);
+    // return startingBalance;
+    return underlyingBalance;
   }
 
   /**
@@ -166,6 +167,7 @@ contract CEther is CToken, Initializable {
     // Sanity checks
     require(msg.sender == from, 'sender mismatch');
     require(msg.value >= amount, 'value mismatch');
+    underlyingBalance+=amount;
     return amount;
   }
 
@@ -174,6 +176,7 @@ contract CEther is CToken, Initializable {
     // to.transfer(amount);
     (bool success, ) = to.call{value: amount}('');
     require(success, 'Address: unable to send value, recipient may have reverted');
+    underlyingBalance-= amount;
   }
 
   function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
