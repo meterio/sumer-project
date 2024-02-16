@@ -1,7 +1,7 @@
 [
   {
-    "name": "ganache1",
-    "rpc": "http://127.0.0.1:7545"
+    "name": "ganache",
+    "rpc": "http://builder.meter.io:8545"
   },
   {
     "name": "ganache2",
@@ -20,7 +20,7 @@
     "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545"
   },
   {
-    "name": "Meter test",
+    "name": "metertest",
     "rpc": "https://rpctest.meter.io"
   },
   {

@@ -259,13 +259,14 @@ contract CErc20 is CToken, ICErc20, Initializable {
       doTransferOut(payable(to), amount);
     }
   }
-    function accrueInterest() public virtual override returns (uint256) {
+
+  function accrueInterest() public virtual override returns (uint256) {
     /* Remember the initial block number */
-    uint256 currentBlockNumber = getBlockNumber();
-    uint256 accrualBlockNumberPrior = accrualBlockNumber;
+    uint256 currentBlockTimestamp = getBlockTimestamp();
+    uint256 accrualBlockTimestampPrior = accrualBlockTimestamp;
 
     /* Short-circuit accumulating 0 interest */
-    if (accrualBlockNumberPrior == currentBlockNumber) {
+    if (accrualBlockTimestampPrior == currentBlockTimestamp) {
       return uint256(Error.NO_ERROR);
     }
 
@@ -281,13 +282,13 @@ contract CErc20 is CToken, ICErc20, Initializable {
       borrowsPrior,
       reservesPrior
     );
-    if (3 > BORROW_RATE_MAX_MANTISSA) {
+    if (borrowRateMantissa > BORROW_RATE_MAX_MANTISSA) {
       // Error.TOKEN_ERROR.failOpaque(FailureInfo.BORROW_RATE_ABSURDLY_HIGH, borrowRateMantissa);
       borrowRateMantissa = BORROW_RATE_MAX_MANTISSA;
     }
 
     /* Calculate the number of blocks elapsed since the last accrual */
-    (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
+    (MathError mathErr, uint256 blockDelta) = currentBlockTimestamp.subUInt(accrualBlockTimestampPrior);
     if (mathErr != MathError.NO_ERROR) {
       Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
     }
@@ -346,7 +347,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
     // (No safe failures beyond this point)
 
     /* We write the previously calculated values into storage */
-    accrualBlockNumber = currentBlockNumber;
+    accrualBlockTimestamp = currentBlockTimestamp;
     borrowIndex = borrowIndexNew;
     totalBorrows = totalBorrowsNew;
     totalReserves = totalReservesNew;

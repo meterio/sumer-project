@@ -30,7 +30,7 @@ export interface ICTokenInterface extends Interface {
       | "borrowBalanceCurrent"
       | "borrowBalanceStored"
       | "borrowIndex"
-      | "borrowRatePerBlock"
+      | "borrowRatePerTimestamp"
       | "comptroller"
       | "decimals"
       | "delegates"
@@ -44,7 +44,7 @@ export interface ICTokenInterface extends Interface {
       | "isCEther"
       | "isCToken"
       | "reserveFactorMantissa"
-      | "supplyRatePerBlock"
+      | "supplyRatePerTimestamp"
       | "totalBorrows"
       | "totalReserves"
       | "totalSupply"
@@ -76,7 +76,7 @@ export interface ICTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "borrowRatePerBlock",
+    functionFragment: "borrowRatePerTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -120,7 +120,7 @@ export interface ICTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "supplyRatePerBlock",
+    functionFragment: "supplyRatePerTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -159,7 +159,7 @@ export interface ICTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "borrowRatePerBlock",
+    functionFragment: "borrowRatePerTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -200,7 +200,7 @@ export interface ICTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "supplyRatePerBlock",
+    functionFragment: "supplyRatePerTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -289,7 +289,7 @@ export interface ICToken extends BaseContract {
 
   borrowIndex: TypedContractMethod<[], [bigint], "view">;
 
-  borrowRatePerBlock: TypedContractMethod<[], [bigint], "view">;
+  borrowRatePerTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   comptroller: TypedContractMethod<[], [string], "view">;
 
@@ -329,7 +329,7 @@ export interface ICToken extends BaseContract {
 
   reserveFactorMantissa: TypedContractMethod<[], [bigint], "view">;
 
-  supplyRatePerBlock: TypedContractMethod<[], [bigint], "view">;
+  supplyRatePerTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   totalBorrows: TypedContractMethod<[], [bigint], "view">;
 
@@ -366,7 +366,7 @@ export interface ICToken extends BaseContract {
     nameOrSignature: "borrowIndex"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "borrowRatePerBlock"
+    nameOrSignature: "borrowRatePerTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "comptroller"
@@ -416,7 +416,7 @@ export interface ICToken extends BaseContract {
     nameOrSignature: "reserveFactorMantissa"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "supplyRatePerBlock"
+    nameOrSignature: "supplyRatePerTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "totalBorrows"

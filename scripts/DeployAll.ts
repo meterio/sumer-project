@@ -22,6 +22,7 @@ const main = async () => {
   let { netConfig, wallet, override } = network;
 
   let config = getConfig(netConfig.name);
+  console.log(config);
   // ProxyAdmin
   config.ProxyAdmin = await deployOrInput(ethers, network, override, config.ProxyAdmin);
   writeConfig(netConfig.name, config);

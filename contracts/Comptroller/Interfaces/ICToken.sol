@@ -36,9 +36,9 @@ interface ICToken {
 
   function isCEther() external view returns (bool);
 
-  function supplyRatePerBlock() external view returns (uint256);
+  function supplyRatePerTimestamp() external view returns (uint256);
 
-  function borrowRatePerBlock() external view returns (uint256);
+  function borrowRatePerTimestamp() external view returns (uint256);
 
   function totalReserves() external view returns (uint256);
 

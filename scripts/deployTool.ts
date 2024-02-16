@@ -14,7 +14,7 @@ export const allowVerifyChain = [
   'maticmain',
   'ftmtest',
   'ftmmain',
-  'hoomain'
+  'hoomain',
 ];
 
 type AddressMap = { [name: string]: string };
@@ -26,15 +26,15 @@ export function compileSetting(version: string, runs: number) {
       viaIR: true,
       optimizer: {
         enabled: true,
-        runs: runs
+        runs: runs,
       },
       outputSelection: {
         '*': {
           '*': ['abi', 'evm.bytecode', 'evm.deployedBytecode', 'evm.methodIdentifiers', 'metadata', 'storageLayout'],
-          '': ['ast']
-        }
-      }
-    }
+          '': ['ast'],
+        },
+      },
+    },
   };
 }
 
@@ -48,7 +48,7 @@ export async function deployContract(
 ): Promise<Contract> {
   const factory = await getContractFactory(name, {
     signer: signer,
-    libraries: libraries
+    libraries: libraries,
   });
   const contract = await factory.deploy(...args);
   console.log('Deploying', name);
@@ -56,7 +56,7 @@ export async function deployContract(
   console.log('  in', contract.deployTransaction.hash);
   console.log('  receipt', await contract.deployTransaction.wait());
   await saveFile(network, name, contract, args, libraries);
-  return contract.deployed();
+  return contract.waitForDeployment();
 }
 
 export function getContract(network: string, name: string) {
@@ -93,7 +93,7 @@ export async function saveFile(
         address: contract.address,
         constructorArguments: args,
         libraries: libraries,
-        contract: name
+        contract: name,
       })
     );
   } else {
@@ -102,7 +102,7 @@ export async function saveFile(
       JSON.stringify({
         address: contract.address,
         constructorArguments: args,
-        libraries: libraries
+        libraries: libraries,
       })
     );
   }

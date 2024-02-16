@@ -6,5 +6,7 @@ export { BaseJumpRateModelV2__factory } from "./BaseJumpRateModelV2__factory";
 export { InterestRateModel__factory } from "./InterestRateModel__factory";
 export { JumpRateModel__factory } from "./JumpRateModel__factory";
 export { JumpRateModelV2__factory } from "./JumpRateModelV2__factory";
+export { TimeBasedJumpRateModel__factory } from "./TimeBasedJumpRateModel__factory";
+export { TimeBasedWhitePaperInterestRateModel__factory } from "./TimeBasedWhitePaperInterestRateModel__factory";
 export { WhitePaperInterestRateModel__factory } from "./WhitePaperInterestRateModel__factory";
 export { ZeroInterestRateModel__factory } from "./ZeroInterestRateModel__factory";

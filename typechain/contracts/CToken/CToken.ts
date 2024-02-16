@@ -34,7 +34,7 @@ export interface CTokenInterface extends Interface {
       | "_setPendingAdmin"
       | "_setReserveFactor"
       | "_syncUnderlyingBalance"
-      | "accrualBlockNumber"
+      | "accrualBlockTimestamp"
       | "accrueInterest"
       | "admin"
       | "allowance"
@@ -44,7 +44,7 @@ export interface CTokenInterface extends Interface {
       | "borrowBalanceCurrent"
       | "borrowBalanceStored"
       | "borrowIndex"
-      | "borrowRatePerBlock"
+      | "borrowRatePerTimestamp"
       | "comptroller"
       | "decimals"
       | "discountRateMantissa"
@@ -65,7 +65,7 @@ export interface CTokenInterface extends Interface {
       | "protocolSeizeShareMantissa"
       | "reserveFactorMantissa"
       | "seize"
-      | "supplyRatePerBlock"
+      | "supplyRatePerTimestamp"
       | "symbol"
       | "totalBorrows"
       | "totalBorrowsCurrent"
@@ -130,7 +130,7 @@ export interface CTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "accrualBlockNumber",
+    functionFragment: "accrualBlockTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -167,7 +167,7 @@ export interface CTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "borrowRatePerBlock",
+    functionFragment: "borrowRatePerTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -236,7 +236,7 @@ export interface CTokenInterface extends Interface {
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "supplyRatePerBlock",
+    functionFragment: "supplyRatePerTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
@@ -306,7 +306,7 @@ export interface CTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "accrualBlockNumber",
+    functionFragment: "accrualBlockTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -334,7 +334,7 @@ export interface CTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "borrowRatePerBlock",
+    functionFragment: "borrowRatePerTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -400,7 +400,7 @@ export interface CTokenInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "seize", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "supplyRatePerBlock",
+    functionFragment: "supplyRatePerTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
@@ -847,7 +847,7 @@ export interface CToken extends BaseContract {
 
   _syncUnderlyingBalance: TypedContractMethod<[], [void], "nonpayable">;
 
-  accrualBlockNumber: TypedContractMethod<[], [bigint], "view">;
+  accrualBlockTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   accrueInterest: TypedContractMethod<[], [bigint], "nonpayable">;
 
@@ -887,7 +887,7 @@ export interface CToken extends BaseContract {
 
   borrowIndex: TypedContractMethod<[], [bigint], "view">;
 
-  borrowRatePerBlock: TypedContractMethod<[], [bigint], "view">;
+  borrowRatePerTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   comptroller: TypedContractMethod<[], [string], "view">;
 
@@ -958,7 +958,7 @@ export interface CToken extends BaseContract {
     "nonpayable"
   >;
 
-  supplyRatePerBlock: TypedContractMethod<[], [bigint], "view">;
+  supplyRatePerTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   symbol: TypedContractMethod<[], [string], "view">;
 
@@ -1031,7 +1031,7 @@ export interface CToken extends BaseContract {
     nameOrSignature: "_syncUnderlyingBalance"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "accrualBlockNumber"
+    nameOrSignature: "accrualBlockTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "accrueInterest"
@@ -1069,7 +1069,7 @@ export interface CToken extends BaseContract {
     nameOrSignature: "borrowIndex"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "borrowRatePerBlock"
+    nameOrSignature: "borrowRatePerTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "comptroller"
@@ -1161,7 +1161,7 @@ export interface CToken extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "supplyRatePerBlock"
+    nameOrSignature: "supplyRatePerTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "symbol"

@@ -7,5 +7,7 @@ export type { BaseJumpRateModelV2 } from "./BaseJumpRateModelV2";
 export type { InterestRateModel } from "./InterestRateModel";
 export type { JumpRateModel } from "./JumpRateModel";
 export type { JumpRateModelV2 } from "./JumpRateModelV2";
+export type { TimeBasedJumpRateModel } from "./TimeBasedJumpRateModel";
+export type { TimeBasedWhitePaperInterestRateModel } from "./TimeBasedWhitePaperInterestRateModel";
 export type { WhitePaperInterestRateModel } from "./WhitePaperInterestRateModel";
 export type { ZeroInterestRateModel } from "./ZeroInterestRateModel";

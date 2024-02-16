@@ -50,7 +50,7 @@ abstract contract CToken is CTokenStorage {
     uint256 discountRateMantissa_
   ) internal {
     admin = _admin;
-    require(accrualBlockNumber == 0 && borrowIndex == 0, 'MMOB'); // market may only be initialized once
+    require(accrualBlockTimestamp == 0 && borrowIndex == 0, 'MMOB'); // market may only be initialized once
 
     isCToken = isCToken_;
 
@@ -69,7 +69,7 @@ abstract contract CToken is CTokenStorage {
     emit NewComptroller(address(0), comptroller_);
 
     // Initialize block number and borrow index (block number mocks depend on comptroller being set)
-    accrualBlockNumber = getBlockNumber();
+    accrualBlockTimestamp = getBlockTimestamp();
     borrowIndex = 1e18;
 
     // Set the interest rate model (depends on block number / borrow index)
@@ -251,35 +251,30 @@ abstract contract CToken is CTokenStorage {
     return (uint256(Error.NO_ERROR), cTokenBalance, borrowBalance, exchangeRateMantissa);
   }
 
-  /**
-   * @dev Function to simply retrieve block number
-   *  This exists mainly for inheriting test contracts to stub this result.
-   */
-  function getBlockNumber() internal view returns (uint256) {
-    return block.number;
-  }
+    /**
+     * @dev Function to simply retrieve block timestamp
+     *  This exists mainly for inheriting test contracts to stub this result.
+     */
+    function getBlockTimestamp() virtual internal view returns (uint) {
+        return block.timestamp;
+    }
 
-  /**
-   * @notice Returns the current per-block borrow interest rate for this cToken
-   * @return The borrow interest rate per block, scaled by 1e18
-   */
-  function borrowRatePerBlock() external view override returns (uint256) {
-    return IInterestRateModel(interestRateModel).getBorrowRate(getCashPrior(), totalBorrows, totalReserves);
-  }
+    /**
+     * @notice Returns the current per-timestamp borrow interest rate for this mToken
+     * @return The borrow interest rate per timestamp, scaled by 1e18
+     */
+    function borrowRatePerTimestamp() external view returns (uint) {
+        return IInterestRateModel(interestRateModel).getBorrowRate(getCashPrior(), totalBorrows, totalReserves);
+    }
 
-  /**
-   * @notice Returns the current per-block supply interest rate for this cToken
-   * @return The supply interest rate per block, scaled by 1e18
-   */
-  function supplyRatePerBlock() external view override returns (uint256) {
-    return
-      IInterestRateModel(interestRateModel).getSupplyRate(
-        getCashPrior(),
-        totalBorrows,
-        totalReserves,
-        reserveFactorMantissa
-      );
-  }
+    /**
+     * @notice Returns the current per-timestamp supply interest rate for this mToken
+     * @return The supply interest rate per timestamp, scaled by 1e18
+     */
+    function supplyRatePerTimestamp() external view returns (uint) {
+        return IInterestRateModel(interestRateModel).getSupplyRate(getCashPrior(), totalBorrows, totalReserves, reserveFactorMantissa);
+    }
+
 
   /**
    * @notice Returns the current total borrows plus accrued interest
@@ -427,14 +422,16 @@ abstract contract CToken is CTokenStorage {
    *   up to the current block and writes new checkpoint to storage.
    */
   function accrueInterest() public virtual override returns (uint256) {
-    /* Remember the initial block number */
-    uint256 currentBlockNumber = getBlockNumber();
-    uint256 accrualBlockNumberPrior = accrualBlockNumber;
+            /* Remember the initial block timestamp */
+        uint currentBlockTimestamp = getBlockTimestamp();
+        uint accrualBlockTimestampPrior = accrualBlockTimestamp;
 
-    /* Short-circuit accumulating 0 interest */
-    if (accrualBlockNumberPrior == currentBlockNumber) {
-      return uint256(Error.NO_ERROR);
-    }
+        /* Short-circuit accumulating 0 interest */
+        if (accrualBlockTimestampPrior == currentBlockTimestamp) {
+            return uint(Error.NO_ERROR);
+        }
+
+
 
     /* Read the previous values out of storage */
     uint256 cashPrior = getCashPrior();
@@ -454,7 +451,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Calculate the number of blocks elapsed since the last accrual */
-    (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
+    (MathError mathErr, uint256 blockDelta) = currentBlockTimestamp.subUInt(accrualBlockTimestamp);
     if (mathErr != MathError.NO_ERROR) {
       Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
     }
@@ -513,7 +510,7 @@ abstract contract CToken is CTokenStorage {
     // (No safe failures beyond this point)
 
     /* We write the previously calculated values into storage */
-    accrualBlockNumber = currentBlockNumber;
+    accrualBlockTimestamp = currentBlockTimestamp;
     borrowIndex = borrowIndexNew;
     totalBorrows = totalBorrowsNew;
     totalReserves = totalReservesNew;
@@ -561,7 +558,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Verify market's block number equals current block number */
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.MINT_FRESHNESS_CHECK);
     }
 
@@ -723,7 +720,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Verify market's block number equals current block number */
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
     }
 
@@ -804,7 +801,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Verify market's block number equals current block number */
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
     }
 
@@ -885,7 +882,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Verify market's block number equals current block number */
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.BORROW_FRESHNESS_CHECK);
     }
 
@@ -999,7 +996,7 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Verify market's block number equals current block number */
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.REPAY_BORROW_FRESHNESS_CHECK);
     }
 
@@ -1109,12 +1106,12 @@ abstract contract CToken is CTokenStorage {
     }
 
     /* Verify market's block number equals current block number */
-    if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_FRESHNESS_CHECK);
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
+          Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_FRESHNESS_CHECK);
     }
 
     /* Verify cTokenCollateral market's block number equals current block number */
-    if (ICToken(cTokenCollateral).accrualBlockNumber() != getBlockNumber()) {
+    if (ICToken(cTokenCollateral).accrualBlockTimestamp() != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_COLLATERAL_FRESHNESS_CHECK);
     }
 
@@ -1387,7 +1384,7 @@ abstract contract CToken is CTokenStorage {
    */
   function _setReserveFactorFresh(uint256 newReserveFactorMantissa) internal onlyAdmin returns (uint256) {
     // Verify market's block number equals current block number
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_RESERVE_FACTOR_FRESH_CHECK);
     }
 
@@ -1428,7 +1425,7 @@ abstract contract CToken is CTokenStorage {
     uint256 actualAddAmount;
 
     // We fail gracefully unless market's block number equals current block number
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.ADD_RESERVES_FRESH_CHECK);
     }
 
@@ -1485,7 +1482,7 @@ abstract contract CToken is CTokenStorage {
     uint256 totalReservesNew;
 
     // We fail gracefully unless market's block number equals current block number
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.REDUCE_RESERVES_FRESH_CHECK);
     }
 
@@ -1542,7 +1539,7 @@ abstract contract CToken is CTokenStorage {
     // Used to store old model for use in the event that is emitted on success
     address oldInterestRateModel;
     // We fail gracefully unless market's block number equals current block number
-    if (accrualBlockNumber != getBlockNumber()) {
+    if (accrualBlockTimestamp != getBlockTimestamp()) {
       Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
     }
 

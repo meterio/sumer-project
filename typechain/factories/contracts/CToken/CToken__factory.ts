@@ -563,7 +563,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "accrualBlockNumber",
+    name: "accrualBlockTimestamp",
     outputs: [
       {
         internalType: "uint256",
@@ -739,7 +739,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "borrowRatePerBlock",
+    name: "borrowRatePerTimestamp",
     outputs: [
       {
         internalType: "uint256",
@@ -1102,7 +1102,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "supplyRatePerBlock",
+    name: "supplyRatePerTimestamp",
     outputs: [
       {
         internalType: "uint256",

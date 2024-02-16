@@ -33,7 +33,7 @@ export interface ICTokenInterface extends Interface {
       | "_setInterestRateModel"
       | "_setPendingAdmin"
       | "_setReserveFactor"
-      | "accrualBlockNumber"
+      | "accrualBlockTimestamp"
       | "accrueInterest"
       | "allowance"
       | "approve"
@@ -41,14 +41,14 @@ export interface ICTokenInterface extends Interface {
       | "balanceOfUnderlying"
       | "borrowBalanceCurrent"
       | "borrowBalanceStored"
-      | "borrowRatePerBlock"
+      | "borrowRatePerTimestamp"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
       | "getAccountSnapshot"
       | "getCash"
       | "getDiscountRate"
       | "seize"
-      | "supplyRatePerBlock"
+      | "supplyRatePerTimestamp"
       | "totalBorrowsCurrent"
       | "totalSupply"
       | "transfer"
@@ -104,7 +104,7 @@ export interface ICTokenInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "accrualBlockNumber",
+    functionFragment: "accrualBlockTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -136,7 +136,7 @@ export interface ICTokenInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "borrowRatePerBlock",
+    functionFragment: "borrowRatePerTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -161,7 +161,7 @@ export interface ICTokenInterface extends Interface {
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "supplyRatePerBlock",
+    functionFragment: "supplyRatePerTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -210,7 +210,7 @@ export interface ICTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "accrualBlockNumber",
+    functionFragment: "accrualBlockTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -233,7 +233,7 @@ export interface ICTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "borrowRatePerBlock",
+    functionFragment: "borrowRatePerTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -255,7 +255,7 @@ export interface ICTokenInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "seize", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "supplyRatePerBlock",
+    functionFragment: "supplyRatePerTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -686,7 +686,7 @@ export interface ICToken extends BaseContract {
     "nonpayable"
   >;
 
-  accrualBlockNumber: TypedContractMethod<[], [bigint], "nonpayable">;
+  accrualBlockTimestamp: TypedContractMethod<[], [bigint], "nonpayable">;
 
   accrueInterest: TypedContractMethod<[], [bigint], "nonpayable">;
 
@@ -722,7 +722,7 @@ export interface ICToken extends BaseContract {
     "view"
   >;
 
-  borrowRatePerBlock: TypedContractMethod<[], [bigint], "view">;
+  borrowRatePerTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   exchangeRateCurrent: TypedContractMethod<[], [bigint], "nonpayable">;
 
@@ -744,7 +744,7 @@ export interface ICToken extends BaseContract {
     "nonpayable"
   >;
 
-  supplyRatePerBlock: TypedContractMethod<[], [bigint], "view">;
+  supplyRatePerTimestamp: TypedContractMethod<[], [bigint], "view">;
 
   totalBorrowsCurrent: TypedContractMethod<[], [bigint], "nonpayable">;
 
@@ -804,7 +804,7 @@ export interface ICToken extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "accrualBlockNumber"
+    nameOrSignature: "accrualBlockTimestamp"
   ): TypedContractMethod<[], [bigint], "nonpayable">;
   getFunction(
     nameOrSignature: "accrueInterest"
@@ -836,7 +836,7 @@ export interface ICToken extends BaseContract {
     nameOrSignature: "borrowBalanceStored"
   ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
   getFunction(
-    nameOrSignature: "borrowRatePerBlock"
+    nameOrSignature: "borrowRatePerTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "exchangeRateCurrent"
@@ -865,7 +865,7 @@ export interface ICToken extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "supplyRatePerBlock"
+    nameOrSignature: "supplyRatePerTimestamp"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "totalBorrowsCurrent"

@@ -56,8 +56,8 @@ export declare namespace CompoundLens {
   export type CTokenMetadataStruct = {
     cToken: AddressLike;
     exchangeRateCurrent: BigNumberish;
-    supplyRatePerBlock: BigNumberish;
-    borrowRatePerBlock: BigNumberish;
+    supplyRatePerTimestamp: BigNumberish;
+    borrowRatePerTimestamp: BigNumberish;
     reserveFactorMantissa: BigNumberish;
     totalBorrows: BigNumberish;
     totalReserves: BigNumberish;
@@ -84,8 +84,8 @@ export declare namespace CompoundLens {
   export type CTokenMetadataStructOutput = [
     cToken: string,
     exchangeRateCurrent: bigint,
-    supplyRatePerBlock: bigint,
-    borrowRatePerBlock: bigint,
+    supplyRatePerTimestamp: bigint,
+    borrowRatePerTimestamp: bigint,
     reserveFactorMantissa: bigint,
     totalBorrows: bigint,
     totalReserves: bigint,
@@ -110,8 +110,8 @@ export declare namespace CompoundLens {
   ] & {
     cToken: string;
     exchangeRateCurrent: bigint;
-    supplyRatePerBlock: bigint;
-    borrowRatePerBlock: bigint;
+    supplyRatePerTimestamp: bigint;
+    borrowRatePerTimestamp: bigint;
     reserveFactorMantissa: bigint;
     totalBorrows: bigint;
     totalReserves: bigint;

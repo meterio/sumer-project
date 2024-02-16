@@ -224,9 +224,10 @@ export async function deployContractV2(
 
   console.log('gasLimit:', green(override.gasLimit.toString()));
   const deploy = await factory.deploy(...args, override);
-  const deployed = await deploy.deployed();
+  const deployed = await deploy.waitForDeployment();
 
-  console.log(`${contract} deployed:`, yellow(deployed.address));
+  const address = await deployed.getAddress();
+  console.log(`${contract} deployed:`, yellow(address));
   return deployed;
 }
 

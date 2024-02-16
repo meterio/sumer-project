@@ -170,9 +170,9 @@ export default {
       url: 'https://ethereum-goerli.publicnode.com	',
     },
     ganache: {
-      url: argv.ganacheRpc,
+      url: 'http://builder.meter.io:8545',
       chainId: 1337,
-      accounts: [process.env.PRIVATE_KEY_0, '0x34cd0e9ec7a0ec36a37db424f720de58223f9cd52e0175c7a972a6a864eb86a5'],
+      accounts: ['0x4db9cc93a91687976b518a8e2ad869a4fc28df490335f938706fff2af2af3418'],
     },
     arbitrum: {
       url: 'https://arbitrum.blockpi.network/v1/rpc/public	',
@@ -188,6 +188,7 @@ export default {
       arbitrum: process.env.ARBISCAN_API_KEY,
       ethereum: process.env.ETHERSCAN_API_KEY,
       basemain: process.env.BASESCAN_API_KEY,
+      sepolia: process.env.ETHERSCAN_API_KEY,
     },
 
     customChains: [

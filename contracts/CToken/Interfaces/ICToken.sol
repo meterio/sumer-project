@@ -120,9 +120,9 @@ interface ICToken {
       uint256
     );
 
-  function borrowRatePerBlock() external view returns (uint256);
+  function borrowRatePerTimestamp() external view returns (uint256);
 
-  function supplyRatePerBlock() external view returns (uint256);
+  function supplyRatePerTimestamp() external view returns (uint256);
 
   function totalBorrowsCurrent() external returns (uint256);
 
@@ -138,7 +138,7 @@ interface ICToken {
 
   function accrueInterest() external returns (uint256);
 
-  function accrualBlockNumber() external returns (uint256);
+  function accrualBlockTimestamp() external returns (uint256);
 
   function seize(
     address liquidator,

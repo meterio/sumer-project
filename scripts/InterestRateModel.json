@@ -1,5 +1,21 @@
 [
   {
+    "name": "TimeBasedJumpRateModel",
+    "contract": "TimeBasedJumpRateModel",
+    "constructorName": ["baseRatePerYear", "multiplierPerYear", "jumpMultiplierPerYear", "kink"],
+    "args": ["20000000000000000", "120000000000000000", "1000000000000000000", "750000000000000000"],
+    "address": "",
+    "tokens": []
+  },
+  {
+    "name": "TimeBasedWhitePaperInterestRateModel",
+    "contract": "TimeBasedWhitePaperInterestRateModel",
+    "constructorName": ["baseRatePerYear", "multiplierPerYear"],
+    "args": ["47500000000000000", "450000000000000000"],
+    "address": "",
+    "tokens": []
+  },
+  {
     "name": "WhitePaperInterestRateModel",
     "contract": "WhitePaperInterestRateModel",
     "constructorName": ["blocksPerYearOnChain", "baseRatePerYear", "multiplierPerYear"],
@@ -18,17 +34,11 @@
       "kink",
       "owner"
     ],
-    "args": [
-      "2102400",
-      "20000000000000000",
-      "120000000000000000",
-      "1000000000000000000",
-      "750000000000000000",
-      ""
-    ],
+    "args": ["2102400", "20000000000000000", "120000000000000000", "1000000000000000000", "750000000000000000", ""],
     "address": "0x3Bf31866F0dC296a1b8284187d87626ADcbfD692",
     "tokens": []
   },
+
   {
     "name": "ZeroInterestRateModel",
     "contract": "ZeroInterestRateModel",

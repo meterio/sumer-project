@@ -114,6 +114,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20__factory>;
     getContractFactory(
+      name: "IERC20Permit",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20Permit__factory>;
+    getContractFactory(
       name: "ERC20Burnable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Burnable__factory>;
@@ -274,6 +278,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SuTokenRateModel__factory>;
     getContractFactory(
+      name: "TimeBasedJumpRateModel",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TimeBasedJumpRateModel__factory>;
+    getContractFactory(
+      name: "TimeBasedWhitePaperInterestRateModel",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TimeBasedWhitePaperInterestRateModel__factory>;
+    getContractFactory(
       name: "WhitePaperInterestRateModel",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.WhitePaperInterestRateModel__factory>;
@@ -293,10 +305,6 @@ declare module "hardhat/types/runtime" {
       name: "ChainlinkFeedAdaptor_ETHToUSD",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD__factory>;
-    getContractFactory(
-      name: "ChainlinkFeedAdaptorETHToUSD",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD__factory>;
     getContractFactory(
       name: "FeedPriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -520,6 +528,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ERC20>;
     getContractAt(
+      name: "IERC20Permit",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20Permit>;
+    getContractAt(
       name: "ERC20Burnable",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -720,6 +733,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.SuTokenRateModel>;
     getContractAt(
+      name: "TimeBasedJumpRateModel",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TimeBasedJumpRateModel>;
+    getContractAt(
+      name: "TimeBasedWhitePaperInterestRateModel",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TimeBasedWhitePaperInterestRateModel>;
+    getContractAt(
       name: "WhitePaperInterestRateModel",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -744,11 +767,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD>;
-    getContractAt(
-      name: "ChainlinkFeedAdaptorETHToUSD",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
     getContractAt(
       name: "FeedPriceOracle",
       address: string | ethers.Addressable,
@@ -971,6 +989,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20>;
     deployContract(
+      name: "IERC20Permit",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC20Permit>;
+    deployContract(
       name: "ERC20Burnable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20Burnable>;
@@ -1131,6 +1153,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SuTokenRateModel>;
     deployContract(
+      name: "TimeBasedJumpRateModel",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.TimeBasedJumpRateModel>;
+    deployContract(
+      name: "TimeBasedWhitePaperInterestRateModel",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.TimeBasedWhitePaperInterestRateModel>;
+    deployContract(
       name: "WhitePaperInterestRateModel",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.WhitePaperInterestRateModel>;
@@ -1150,10 +1180,6 @@ declare module "hardhat/types/runtime" {
       name: "ChainlinkFeedAdaptor_ETHToUSD",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD>;
-    deployContract(
-      name: "ChainlinkFeedAdaptorETHToUSD",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
     deployContract(
       name: "FeedPriceOracle",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1377,6 +1403,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20>;
     deployContract(
+      name: "IERC20Permit",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC20Permit>;
+    deployContract(
       name: "ERC20Burnable",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1577,6 +1608,16 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SuTokenRateModel>;
     deployContract(
+      name: "TimeBasedJumpRateModel",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.TimeBasedJumpRateModel>;
+    deployContract(
+      name: "TimeBasedWhitePaperInterestRateModel",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.TimeBasedWhitePaperInterestRateModel>;
+    deployContract(
       name: "WhitePaperInterestRateModel",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1601,11 +1642,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ChainlinkFeedAdaptor_ETHToUSD>;
-    deployContract(
-      name: "ChainlinkFeedAdaptorETHToUSD",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ChainlinkFeedAdaptorETHToUSD>;
     deployContract(
       name: "FeedPriceOracle",
       args: any[],
