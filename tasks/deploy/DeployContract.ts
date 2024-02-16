@@ -36,7 +36,7 @@ task('d', 'deploy contract')
 
     const contract = await (
       await (await ethers.getContractFactory(name, wallet)).deploy(...args, _override)
-    ).deployed();
+    ).waitForDeployment();
     log.info(`deploy ${name} at:`, contract.address);
     return contract;
   });

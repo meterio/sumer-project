@@ -35,7 +35,7 @@ task('p', 'deploy cToken contract')
     const wallet = new ethers.Wallet(pk, provider);
 
     const proxy_factory = await ethers.getContractFactory('SumerProxy', wallet);
-    const proxy = await (await proxy_factory.deploy(impl, admin, data, override)).deployed();
+    const proxy = await (await proxy_factory.deploy(impl, admin, data, override)).waitForDeployment();
     log.info('Proxy:', proxy.address);
     return proxy;
   });
