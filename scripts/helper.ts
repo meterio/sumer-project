@@ -226,7 +226,7 @@ export async function deployContractV2(
   const deploy = await factory.deploy(...args, override);
   const deployed = await deploy.waitForDeployment();
 
-  console.log(`${contract} deployed:`, yellow(deployed.address));
+  console.log(`${contract} deployed:`, yellow(await deployed.getAddress()));
   return deployed;
 }
 
@@ -494,7 +494,7 @@ export async function cTokenSetting(
   let cToken = await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet);
   // setReserveFactor
   let reserveFactorMantissa = await cToken.reserveFactorMantissa();
-  if (!reserveFactorMantissa.eq(BN(cTokenConfig.settings.reserveFactorMantissa))) {
+  if (reserveFactorMantissa != BigInt(cTokenConfig.settings.reserveFactorMantissa)) {
     console.log('设置cToken的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
     await sendTransaction(
       network,
