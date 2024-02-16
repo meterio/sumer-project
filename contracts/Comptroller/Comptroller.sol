@@ -685,7 +685,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param cToken The address of the market (token) to list
    * @return uint 0=success, otherwise a failure. (See enum uint256 for details)
    */
-  function _supportMarket(address cToken, uint8 groupId) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+  function _supportMarket(address cToken, uint8 groupId, uint256 borrowCap, uint256 supplyCap) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
     require(!markets[cToken].isListed, 'market already listed');
     require(groupId > 0, 'groupId > 0');
 
@@ -703,6 +703,12 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     _initializeMarket(cToken);
 
     emit MarketListed(cToken);
+
+    borrowCaps[cToken] = borrowCap;
+    emit NewBorrowCap(cToken, borrowCap);
+
+    maxSupply[cToken] = supplyCap;
+    emit SetMaxSupply(cToken, supplyCap);
 
     return uint256(0);
   }

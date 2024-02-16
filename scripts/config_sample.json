@@ -1,7 +1,7 @@
 {
   "ProxyAdmin": {
     "contract": "SumerProxyAdmin",
-    "address": "0x76A866328b857B6db868C6D087dE2249A0a713ad"
+    "address": "0x809b6caa5A68A63b526f6085c628a5366077195b"
   },
   "Multicall2": {
     "contract": "Multicall2",
@@ -114,7 +114,17 @@
       "homoLiquidationIncentiveMantissa",
       "sutokenLiquidationIncentiveMantissa"
     ],
-    "args": ["", "", "0x264b7316b535515db9759a77dc4041c0c2263527", "", "", "500000000000000000", "100000000000000000", "25000000000000000", "2500000000000000"]
+    "args": [
+      "",
+      "",
+      "0x264b7316b535515db9759a77dc4041c0c2263527",
+      "",
+      "",
+      "500000000000000000",
+      "100000000000000000",
+      "25000000000000000",
+      "2500000000000000"
+    ]
   },
   "CEther": {
     "name": "Sumer MTR Deposit",

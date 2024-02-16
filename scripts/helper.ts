@@ -188,12 +188,7 @@ export async function sendTransaction(
       throw new Error(red('签名人不具有DEFAULT_ADMIN_ROLE权限!'));
     }
   }
-  const defaultGasPrice = (await network.provider.getFeeData()).gasPrice;
-  override.gasPrice = await input({
-    message: '输入Gas price:',
-    default: String(defaultGasPrice),
-    validate: (value = '') => value.length > 0 || 'Pass a valid value',
-  });
+
   override.nonce = Number(
     await input({
       message: '输入nonce:',
@@ -202,7 +197,8 @@ export async function sendTransaction(
     })
   );
   override.gasLimit = await contract.getFunction(func).estimateGas(...args);
-
+  const defaultGasPrice = (await network.provider.getFeeData()).gasPrice;
+  override.gasPrice = defaultGasPrice;
   console.log('gasLimit:', green(override.gasLimit!.toString()));
   let receipt = await contract.getFunction(func)(...args, override);
   await receipt.wait();
@@ -231,8 +227,9 @@ export async function deployContractV2(
   console.log('gasLimit:', green(override.gasLimit.toString()));
   const deploy = await factory.deploy(...args, override);
   const deployed = await deploy.waitForDeployment();
+  const tx = deploy.deploymentTransaction();
 
-  console.log(`${contract} deployed:`, yellow(await deployed.getAddress()));
+  console.log(`${contract} deployed:`, yellow(await deployed.getAddress()), `at ${tx?.hash}`);
   return deployed;
 }
 
@@ -484,32 +481,53 @@ export async function cTokenSetting(
   cTokenConfig: any,
   isSuToken: boolean = false
 ) {
+  let cToken = await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet);
+  let decimals = await cToken.decimals();
+  cTokenConfig.settings.borrowCap = parseUnits(
+    await input({
+      message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
+      default: formatUnits(cTokenConfig.settings.borrowCap, decimals).toString(),
+    }),
+    decimals
+  ).toString();
+  cTokenConfig.settings.maxSupply = parseUnits(
+    await input({
+      message: `输入${green(cTokenConfig.name)}的Supply Cap:`,
+      default: formatUnits(cTokenConfig.settings.maxSupply, decimals).toString(),
+    }),
+    decimals
+  ).toString();
+
   // supportMarket
   let market = await comptroller.markets(cTokenConfig.address);
   if (!market.isListed) {
-    console.log('设置Comptroller的supportMarket' + yellow(cTokenConfig.address));
+    console.log('调用 Comptroller._supportMarket' + yellow(cTokenConfig.address));
     await sendTransaction(
       network,
       comptroller,
-      '_supportMarket(address,uint8)',
-      [cTokenConfig.address, cTokenConfig.settings.groupId],
+      '_supportMarket(address,uint8,uint256,uint256)',
+      [
+        cTokenConfig.address,
+        cTokenConfig.settings.groupId,
+        cTokenConfig.settings.borrowCap,
+        cTokenConfig.settings.maxSupply,
+      ],
       network.override,
       DEFAULT_ADMIN_ROLE
     );
   }
-  let cToken = await ethers.getContractAt('CToken', cTokenConfig.address, network.wallet);
   // setReserveFactor
-  let reserveFactorMantissa = await cToken.reserveFactorMantissa();
-  if (reserveFactorMantissa != BigInt(cTokenConfig.settings.reserveFactorMantissa)) {
-    console.log('设置cToken的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
-    await sendTransaction(
-      network,
-      cToken,
-      '_setReserveFactor(uint256)',
-      [cTokenConfig.settings.reserveFactorMantissa],
-      network.override
-    );
-  }
+  // let reserveFactorMantissa = await cToken.reserveFactorMantissa();
+  // if (reserveFactorMantissa != BigInt(cTokenConfig.settings.reserveFactorMantissa)) {
+  //   console.log('设置cToken的reserveFactorMantissa' + yellow(cTokenConfig.settings.reserveFactorMantissa));
+  //   await sendTransaction(
+  //     network,
+  //     cToken,
+  //     '_setReserveFactor(uint256)',
+  //     [cTokenConfig.settings.reserveFactorMantissa],
+  //     network.override
+  //   );
+  // }
   if (isSuToken) {
     // grantRole
     let underlying = await ethers.getContractAt('ERC20MinterBurnerPauser', cTokenConfig.args[0], network.wallet);
@@ -533,11 +551,11 @@ export async function cTokenSetting(
       await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
     }
   }
-  // oracle
+  // oracle feed
   let feeds = await oracle.feeds(cTokenConfig.address);
   if (Number(feeds.source) == 0) {
     cTokenConfig.settings.oracle.args[0] = cTokenConfig.address;
-    console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle');
+    console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle feed');
     await sendTransaction(
       network,
       oracle,
@@ -546,21 +564,7 @@ export async function cTokenSetting(
       network.override
     );
   }
-  let decimals = await cToken.decimals();
-  cTokenConfig.settings.borrowCap = parseUnits(
-    await input({
-      message: `输入${green(cTokenConfig.name)}的Borrow Cap:`,
-      default: formatUnits(cTokenConfig.settings.borrowCap, decimals).toString(),
-    }),
-    decimals
-  ).toString();
-  cTokenConfig.settings.maxSupply = parseUnits(
-    await input({
-      message: `输入${green(cTokenConfig.name)}的Max Supply:`,
-      default: formatUnits(cTokenConfig.settings.maxSupply, decimals).toString(),
-    }),
-    decimals
-  ).toString();
+
   return cTokenConfig;
 }
 

@@ -25,12 +25,15 @@ const main = async () => {
   // ProxyAdmin
   config.ProxyAdmin = await deployOrInput(ethers, network, override, config.ProxyAdmin);
   writeConfig(netConfig.name, config);
+
   // Multicall2
   config.Multicall2 = await deployOrInput(ethers, network, override, config.Multicall2);
   writeConfig(netConfig.name, config);
-  // Multicall2
+
+  // Sumer
   config.Sumer = await deployOrInput(ethers, network, override, config.Sumer);
   writeConfig(netConfig.name, config);
+
   // FeedPriceOracle
   let old_feedPriceOracle = config.FeedPriceOracle.address;
   config.FeedPriceOracle = await deployOrInput(ethers, network, override, config.FeedPriceOracle);
@@ -40,16 +43,28 @@ const main = async () => {
     config.FeedPriceOracle.address,
     network.wallet
   )) as FeedPriceOracle;
-  // set FeedPriceOracle
+
+  // set oracle on comptroller
   if (config.Comptroller.address != '' && old_feedPriceOracle != config.FeedPriceOracle.address) {
-    console.log('更新FeedPriceOracle：');
     let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    await sendTransaction(network, comptroller, '_setPriceOracle(address)', [config.FeedPriceOracle.address], override);
+    const oracleOnChain = await comptroller.oracle();
+
+    if (oracleOnChain.toLowerCase() != config.FeedPriceOracle.address.toLowerCase()) {
+      console.log(`更新Comptroller.oracle: ${oracleOnChain} -> ${config.FeedPriceOracle.address}`);
+      await sendTransaction(
+        network,
+        comptroller,
+        '_setPriceOracle(address)',
+        [config.FeedPriceOracle.address],
+        override
+      );
+    }
   }
 
   // CompoundLens
   config.CompoundLens = await deployOrInput(ethers, network, override, config.CompoundLens);
   writeConfig(netConfig.name, config);
+
   // InterestRateModel
   let interestRateModel_selected;
 
@@ -69,6 +84,7 @@ const main = async () => {
       writeConfig(netConfig.name, config);
     }
   } while (interestRateModel_selected != 'exit');
+
   // AccountLiquidity
   let old_accountLiquidity = config.AccountLiquidity.address;
   config.AccountLiquidity = await deployOrInput(ethers, network, override, config.AccountLiquidity, true);
@@ -82,18 +98,23 @@ const main = async () => {
     config.ProxyAdmin.address
   );
   writeConfig(netConfig.name, config);
-  // set AccountLiquidity
+
+  // set accountLiquidity on Comptroller
   if (config.Comptroller.address != '' && old_accountLiquidity != config.AccountLiquidity.address) {
-    console.log('更新AccountLiquidity：');
     let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    await sendTransaction(
-      network,
-      comptroller,
-      'setAccountLiquidity(address)',
-      [config.AccountLiquidity.address],
-      override
-    );
+    const alOnChain = await comptroller.accountLiquidity();
+    if (alOnChain.toLowerCase() != config.AccountLiquidity.address.toLowerCase()) {
+      console.log(`更新Comptroller.accountLiquidity: ${alOnChain} -> ${config.AccountLiquidity.address}`);
+      await sendTransaction(
+        network,
+        comptroller,
+        'setAccountLiquidity(address)',
+        [config.AccountLiquidity.address],
+        override
+      );
+    }
   }
+
   // CompLogic
   let old_compLogic = config.CompLogic.address;
   config.CompLogic = await deployOrInput(ethers, network, override, config.CompLogic, true);
@@ -101,12 +122,17 @@ const main = async () => {
 
   config.CompLogic = await deployProxyOrInput(ethers, network, override, config.CompLogic, config.ProxyAdmin.address);
   writeConfig(netConfig.name, config);
-  // set CompLogic
+
+  // set compLogic on Comptroller
   if (config.Comptroller.address != '' && old_compLogic != config.CompLogic.address) {
-    console.log('更新CompLogic：');
     let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    await sendTransaction(network, comptroller, 'setCompLogic(address)', [config.CompLogic.address], override);
+    const clOnChain = await comptroller.compLogic();
+    if (clOnChain.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+      console.log(`更新Comptroller.compLogic：${clOnChain} -> ${config.Comptroller.address}`);
+      await sendTransaction(network, comptroller, 'setCompLogic(address)', [config.CompLogic.address], override);
+    }
   }
+
   // Comptroller
   let old_comptroller = config.Comptroller.address;
   config.Comptroller = await deployOrInput(ethers, network, override, config.Comptroller, true);
@@ -120,7 +146,8 @@ const main = async () => {
     config.ProxyAdmin.address
   );
   writeConfig(netConfig.name, config);
-  // set Comptroller
+
+  // set comptroller on cTokens
   if (old_comptroller != config.Comptroller.address) {
     let isupdate = await confirm({
       message: '是否更新cToken的Comptroller？',
@@ -131,15 +158,21 @@ const main = async () => {
       for (let i = 0; i < tokens.length; i++) {
         if (tokens[i] != '') {
           let cToken = (await ethers.getContractAt('CErc20', tokens[i], wallet)) as CErc20;
-          await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
+          const comptrollerOnChain = await cToken.comptroller();
+          if (comptrollerOnChain.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+            const symbol = await cToken.symbol();
+            console.log(`更新：${symbol}.comptroller: ${comptrollerOnChain} -> ${config.Comptroller.address}`);
+            await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
+          }
         }
       }
     }
   }
-  // compLogic set comptroller address
+
+  // set comptroller on CompLogic
   const compLogic = (await ethers.getContractAt('CompLogic', config.CompLogic.address, wallet)) as CompLogic;
   const compLogic_comptroller_address = await compLogic.comptroller();
-  if (compLogic_comptroller_address.toLocaleLowerCase() != config.Comptroller.address.toLocaleLowerCase()) {
+  if (compLogic_comptroller_address.toLowerCase() != config.Comptroller.address.toLowerCase()) {
     console.log('设置CompLogic的Comptroller合约地址');
     await sendTransaction(
       network,
@@ -150,14 +183,15 @@ const main = async () => {
       DEFAULT_ADMIN_ROLE
     );
   }
-  // accountLiquidity set comptroller address
+
+  // set comptroller on AccountLiquidity
   const accountLiquidity = (await ethers.getContractAt(
     'AccountLiquidity',
     config.AccountLiquidity.address,
     wallet
   )) as AccountLiquidity;
   const accountLiquidity_comptroller_address = await accountLiquidity.comptroller();
-  if (accountLiquidity_comptroller_address.toLocaleLowerCase() != config.Comptroller.address.toLocaleLowerCase()) {
+  if (accountLiquidity_comptroller_address.toLowerCase() != config.Comptroller.address.toLowerCase()) {
     console.log('设置AccountLiquidity的Comptroller合约地址');
     await sendTransaction(
       network,
@@ -183,12 +217,14 @@ const main = async () => {
     console.log(JSON.stringify(setting.args));
     let confirm_setting = await confirm({
       message: '是否配置?',
+      default: false,
     });
     if (confirm_setting) {
       await sendTransaction(network, comptroller, setting.func, setting.args, override);
     }
   }
 
+  // deploy / config CEther
   if (config.CEther) {
     config.CEther = await deployOrInput(ethers, network, override, config.CEther, true);
     writeConfig(netConfig.name, config);
@@ -197,9 +233,12 @@ const main = async () => {
     writeConfig(netConfig.name, config);
     await cTokenSetting(ethers, comptroller, oracle, network, config.CEther);
   }
+
+  // deploy CErc20 Impl
   config.CErc20 = await deployOrInput(ethers, network, override, config.CErc20, true);
   writeConfig(netConfig.name, config);
 
+  // deploy / config CErc20 proxy
   for (let i = 0; i < config.CErc20.proxys.length; i++) {
     config.CErc20.proxys[i] = await deployProxyOrInput(
       ethers,
@@ -214,9 +253,11 @@ const main = async () => {
     writeConfig(netConfig.name, config);
   }
 
+  // deploy suErc20 Impl
   config.suErc20 = await deployOrInput(ethers, network, override, config.suErc20, true);
   writeConfig(netConfig.name, config);
 
+  // deploy / config suErc20 proxy
   for (let i = 0; i < config.suErc20.proxys.length; i++) {
     config.suErc20.proxys[i] = await deployProxyOrInput(
       ethers,
@@ -241,15 +282,18 @@ const main = async () => {
   config.Timelock = await deployOrInput(ethers, network, override, config.Timelock);
   writeConfig(netConfig.name, config);
 
-  console.log('设置Comptroller的Timelock合约地址');
-  await sendTransaction(
-    network,
-    comptroller,
-    'setTimelock(address)',
-    [config.Timelock.address],
-    override,
-    DEFAULT_ADMIN_ROLE
-  );
+  const tlOnChain = await comptroller.timelock();
+  if (tlOnChain.toLowerCase() != config.Timelock.toLowerCase()) {
+    console.log(`设置Comptroller.timelock：${tlOnChain} -> ${config.Timelock}`);
+    await sendTransaction(
+      network,
+      comptroller,
+      'setTimelock(address)',
+      [config.Timelock.address],
+      override,
+      DEFAULT_ADMIN_ROLE
+    );
+  }
 
   let cTokens: string[] = [];
   let borrowCaps: BigNumberish[] = [];
@@ -287,25 +331,26 @@ const main = async () => {
     }
   }
 
-  console.log('设置CToken的BorrowCap');
-  await sendTransaction(
-    network,
-    comptroller,
-    '_setMarketBorrowCaps(address[],uint256[])',
-    [cTokens, borrowCaps],
-    override,
-    DEFAULT_ADMIN_ROLE
-  );
-  console.log('设置CToken的MaxSupply');
+  // console.log('设置CToken的BorrowCap');
+  // await sendTransaction(
+  //   network,
+  //   comptroller,
+  //   '_setMarketBorrowCaps(address[],uint256[])',
+  //   [cTokens, borrowCaps],
+  //   override,
+  //   DEFAULT_ADMIN_ROLE
+  // );
+  // console.log('设置CToken的MaxSupply');
 
-  await sendTransaction(
-    network,
-    comptroller,
-    '_setMaxSupply(address[],uint256[])',
-    [cTokens, maxSupplys],
-    override,
-    DEFAULT_ADMIN_ROLE
-  );
+  // await sendTransaction(
+  //   network,
+  //   comptroller,
+  //   '_setMaxSupply(address[],uint256[])',
+  //   [cTokens, maxSupplys],
+  //   override,
+  //   DEFAULT_ADMIN_ROLE
+  // );
+  process.exit(1);
 };
 
 main();

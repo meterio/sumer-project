@@ -47,7 +47,8 @@ abstract contract CToken is CTokenStorage {
     uint8 decimals_,
     bool isCToken_,
     address payable _admin,
-    uint256 discountRateMantissa_
+    uint256 discountRateMantissa_,
+    uint256 reserveFactorMantissa_
   ) internal {
     admin = _admin;
     require(accrualBlockNumber == 0 && borrowIndex == 0, 'MMOB'); // market may only be initialized once
@@ -61,6 +62,7 @@ abstract contract CToken is CTokenStorage {
     discountRateMantissa = discountRateMantissa_;
     require(discountRateMantissa > 0 && discountRateMantissa <= 1e18, 'RMI'); // rate must in [0,100]
 
+    reserveFactorMantissa = reserveFactorMantissa_;
     // Set the comptroller
     // Set market's comptroller to newComptroller
     comptroller = comptroller_;

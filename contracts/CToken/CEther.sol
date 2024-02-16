@@ -32,7 +32,8 @@ contract CEther is CToken, Initializable {
     string memory symbol_,
     uint8 decimals_,
     address payable admin_,
-    uint256 discountRateMantissa_
+    uint256 discountRateMantissa_,
+    uint256 reserveFactorMantissa_
   ) public initializer {
     super.initialize(
       comptroller_,
@@ -43,7 +44,8 @@ contract CEther is CToken, Initializable {
       decimals_,
       true,
       admin_,
-      discountRateMantissa_
+      discountRateMantissa_,
+      reserveFactorMantissa_
     );
 
     isCEther = true;

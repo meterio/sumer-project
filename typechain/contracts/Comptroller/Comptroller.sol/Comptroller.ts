@@ -315,7 +315,7 @@ export interface ComptrollerInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "_supportMarket",
-    values: [AddressLike, BigNumberish]
+    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "accountAssets",
@@ -1384,7 +1384,12 @@ export interface Comptroller extends BaseContract {
   >;
 
   _supportMarket: TypedContractMethod<
-    [cToken: AddressLike, groupId: BigNumberish],
+    [
+      cToken: AddressLike,
+      groupId: BigNumberish,
+      borrowCap: BigNumberish,
+      supplyCap: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;
@@ -1857,7 +1862,12 @@ export interface Comptroller extends BaseContract {
   getFunction(
     nameOrSignature: "_supportMarket"
   ): TypedContractMethod<
-    [cToken: AddressLike, groupId: BigNumberish],
+    [
+      cToken: AddressLike,
+      groupId: BigNumberish,
+      borrowCap: BigNumberish,
+      supplyCap: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;

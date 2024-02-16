@@ -228,6 +228,7 @@ export interface CEtherInterface extends Interface {
       string,
       BigNumberish,
       AddressLike,
+      BigNumberish,
       BigNumberish
     ]
   ): string;
@@ -1020,7 +1021,8 @@ export interface CEther extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin_: AddressLike,
-      discountRateMantissa_: BigNumberish
+      discountRateMantissa_: BigNumberish,
+      reserveFactorMantissa_: BigNumberish
     ],
     [void],
     "nonpayable"
@@ -1262,7 +1264,8 @@ export interface CEther extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin_: AddressLike,
-      discountRateMantissa_: BigNumberish
+      discountRateMantissa_: BigNumberish,
+      reserveFactorMantissa_: BigNumberish
     ],
     [void],
     "nonpayable"

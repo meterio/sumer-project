@@ -34,7 +34,8 @@ contract CErc20 is CToken, ICErc20, Initializable {
     string memory symbol_,
     uint8 decimals_,
     address payable admin_,
-    uint256 discountRateMantissa_
+    uint256 discountRateMantissa_,
+    uint256 reserveFactorMantissa_
   ) public initializer {
     // CToken initialize does the bulk of the work
     super.initialize(
@@ -46,7 +47,8 @@ contract CErc20 is CToken, ICErc20, Initializable {
       decimals_,
       true,
       admin_,
-      discountRateMantissa_
+      discountRateMantissa_,
+      reserveFactorMantissa_
     );
 
     isCEther = false;
@@ -259,7 +261,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
       doTransferOut(payable(to), amount);
     }
   }
-    function accrueInterest() public virtual override returns (uint256) {
+  function accrueInterest() public virtual override returns (uint256) {
     /* Remember the initial block number */
     uint256 currentBlockNumber = getBlockNumber();
     uint256 accrualBlockNumberPrior = accrualBlockNumber;
@@ -356,5 +358,4 @@ contract CErc20 is CToken, ICErc20, Initializable {
 
     return uint256(Error.NO_ERROR);
   }
-
 }

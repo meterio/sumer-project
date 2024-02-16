@@ -235,6 +235,7 @@ export interface SuErc20Interface extends Interface {
       string,
       BigNumberish,
       AddressLike,
+      BigNumberish,
       BigNumberish
     ]
   ): string;
@@ -1043,7 +1044,8 @@ export interface SuErc20 extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin_: AddressLike,
-      discountRateMantissa_: BigNumberish
+      discountRateMantissa_: BigNumberish,
+      reserveFactorMantissa_: BigNumberish
     ],
     [void],
     "nonpayable"
@@ -1299,7 +1301,8 @@ export interface SuErc20 extends BaseContract {
       symbol_: string,
       decimals_: BigNumberish,
       admin_: AddressLike,
-      discountRateMantissa_: BigNumberish
+      discountRateMantissa_: BigNumberish,
+      reserveFactorMantissa_: BigNumberish
     ],
     [void],
     "nonpayable"
