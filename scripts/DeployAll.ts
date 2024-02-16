@@ -138,7 +138,7 @@ const main = async () => {
   }
   // compLogic set comptroller address
   const compLogic = (await ethers.getContractAt('CompLogic', config.CompLogic.address, wallet)) as CompLogic;
-  const compLogic_comptroller_address = await compLogic.comptroller(override);
+  const compLogic_comptroller_address = await compLogic.comptroller();
   if (compLogic_comptroller_address.toLocaleLowerCase() != config.Comptroller.address.toLocaleLowerCase()) {
     console.log('设置CompLogic的Comptroller合约地址');
     await sendTransaction(
@@ -156,7 +156,7 @@ const main = async () => {
     config.AccountLiquidity.address,
     wallet
   )) as AccountLiquidity;
-  const accountLiquidity_comptroller_address = await accountLiquidity.comptroller(override);
+  const accountLiquidity_comptroller_address = await accountLiquidity.comptroller();
   if (accountLiquidity_comptroller_address.toLocaleLowerCase() != config.Comptroller.address.toLocaleLowerCase()) {
     console.log('设置AccountLiquidity的Comptroller合约地址');
     await sendTransaction(

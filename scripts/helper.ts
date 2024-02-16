@@ -188,6 +188,12 @@ export async function sendTransaction(
       throw new Error(red('签名人不具有DEFAULT_ADMIN_ROLE权限!'));
     }
   }
+  const defaultGasPrice = (await network.provider.getFeeData()).gasPrice;
+  override.gasPrice = await input({
+    message: '输入Gas price:',
+    default: String(defaultGasPrice),
+    validate: (value = '') => value.length > 0 || 'Pass a valid value',
+  });
   override.nonce = Number(
     await input({
       message: '输入nonce:',
@@ -479,7 +485,7 @@ export async function cTokenSetting(
   isSuToken: boolean = false
 ) {
   // supportMarket
-  let market = await comptroller.markets(cTokenConfig.address, network.override);
+  let market = await comptroller.markets(cTokenConfig.address);
   if (!market.isListed) {
     console.log('设置Comptroller的supportMarket' + yellow(cTokenConfig.address));
     await sendTransaction(
