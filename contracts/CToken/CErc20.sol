@@ -36,9 +36,24 @@ contract CErc20 is CToken, ICErc20, Initializable {
     address payable admin_,
     uint256 discountRateMantissa_,
     uint256 reserveFactorMantissa_
-  ) public initializer {
+  ) public virtual initializer {
+    initInternal(underlying_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, name_, symbol_, decimals_, admin_, discountRateMantissa_, reserveFactorMantissa_);
+  }
+
+  function initInternal(
+    address underlying_,
+    address comptroller_,
+    address interestRateModel_,
+    uint256 initialExchangeRateMantissa_,
+    string memory name_,
+    string memory symbol_,
+    uint8 decimals_,
+    address payable admin_,
+    uint256 discountRateMantissa_,
+    uint256 reserveFactorMantissa_
+  ) internal onlyInitializing {
     // CToken initialize does the bulk of the work
-    super.initialize(
+    CToken.initialize(
       comptroller_,
       interestRateModel_,
       initialExchangeRateMantissa_,

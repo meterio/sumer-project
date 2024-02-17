@@ -544,12 +544,12 @@ export async function cTokenSetting(
       );
     }
     // changeCtoken
-    let suErc20 = await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet);
-    let isCToken = await suErc20.isCToken();
-    if (isCToken) {
-      console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
-      await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
-    }
+    // let suErc20 = await ethers.getContractAt('suErc20', cTokenConfig.address, network.wallet);
+    // let isCToken = await suErc20.isCToken();
+    // if (isCToken) {
+    //   console.log('设置suErc20' + yellow(cTokenConfig.address) + 'changeCtoken');
+    //   await sendTransaction(network, suErc20, 'changeCtoken()', [], network.override);
+    // }
   }
   // oracle feed
   let feeds = await oracle.feeds(cTokenConfig.address);

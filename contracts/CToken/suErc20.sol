@@ -10,6 +10,46 @@ import './CErc20.sol';
  */
 contract suErc20 is CErc20 {
   /**
+   * @notice Initialize the new money market
+   * @param underlying_ The address of the underlying asset
+   * @param comptroller_ The address of the Comptroller
+   * @param interestRateModel_ The address of the interest rate model
+   * @param initialExchangeRateMantissa_ The initial exchange rate, scaled by 1e18
+   * @param name_ ERC-20 name of this token
+   * @param symbol_ ERC-20 symbol of this token
+   * @param decimals_ ERC-20 decimal precision of this token
+   * @param admin_ Address of the administrator of this token
+   */
+  function initialize(
+    address underlying_,
+    address comptroller_,
+    address interestRateModel_,
+    uint256 initialExchangeRateMantissa_,
+    string memory name_,
+    string memory symbol_,
+    uint8 decimals_,
+    address payable admin_,
+    uint256 discountRateMantissa_,
+    uint256 reserveFactorMantissa_
+  ) public override initializer {
+    // CToken initialize does the bulk of the work
+    CErc20.initInternal(
+      underlying_,
+      comptroller_,
+      interestRateModel_,
+      initialExchangeRateMantissa_,
+      name_,
+      symbol_,
+      decimals_,
+      admin_,
+      discountRateMantissa_,
+      reserveFactorMantissa_
+    );
+
+    isCToken = false;
+  }
+
+  /**
    * @notice Gets balance of this contract in terms of the underlying
    * @dev This excludes the value of the current message, if any
    * @return The quantity of underlying tokens owned by this contract
