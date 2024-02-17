@@ -182,12 +182,17 @@ export default {
       url: 'https://base.blockpi.network/v1/rpc/public',
       chainId: 8453,
     },
+    sepolia: {
+      url: 'https://ethereum-sepolia.blockpi.network/v1/rpc/public',
+      chainId: 11155111,
+    },
   },
   etherscan: {
     apiKey: {
       arbitrum: process.env.ARBISCAN_API_KEY,
       ethereum: process.env.ETHERSCAN_API_KEY,
       basemain: process.env.BASESCAN_API_KEY,
+      sepolia: process.env.ETHERSCAN_API_KEY,
     },
 
     customChains: [

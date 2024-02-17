@@ -39,8 +39,6 @@ const verifyProxyContract = async (proxyAdmin: string, config: Config, implAddr?
     console.log(`跳过开源，请先部署 ${name}`);
     return;
   }
-  console.log(config);
-  console.log('implAddr: ', implAddr);
   if (!config.implementation && !implAddr) {
     throw new Error(`could not get impl address for proxy ${name}`);
   }
@@ -67,7 +65,7 @@ const verifyProxyContract = async (proxyAdmin: string, config: Config, implAddr?
   }
 };
 
-const verifyImplContract = async (contractMap: { [key: string]: string }, config: Config) => {
+const verifyImplContract = async (contractMap: { [key: string]: string }, config: Config, useArgsInConfig = false) => {
   const address = config.implementation || config.address;
   const name = config.contract || config.name;
   if (!name) {
@@ -91,8 +89,12 @@ const verifyImplContract = async (contractMap: { [key: string]: string }, config
   });
 
   if (answer == 'yes') {
-    console.log({ address, contract });
-    await hre.run('verify:verify', { address, contract, constructorArguments: [] });
+    console.log(`准备开源 ${contract} Impl at ${address}`);
+    await hre.run('verify:verify', {
+      address,
+      contract,
+      constructorArguments: useArgsInConfig ? config.args || [] : [],
+    });
   } else {
   }
 };
@@ -124,7 +126,7 @@ const main = async () => {
 
   // InterestRateModel
   for (const template of config.InterestRateModel) {
-    await verifyImplContract(contractMap, template);
+    await verifyImplContract(contractMap, template, true);
   }
 
   // AccountLiquidity
@@ -142,6 +144,7 @@ const main = async () => {
   // CEther
   if (config.CEther) {
     await verifyImplContract(contractMap, config.CEther);
+    await verifyProxyContract(proxyAdmin, config.CEther, config.CEther.implementation);
   }
 
   // CErc20
@@ -161,7 +164,8 @@ const main = async () => {
   }
 
   // Timelock
-  await verifyImplContract(contractMap, config.Timelock);
+  await verifyImplContract(contractMap, config.Timelock, true);
+  process.exit(1);
 };
 
 main();
