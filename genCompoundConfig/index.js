@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path')
 const { ethers } = require('ethers');
 
-const netwokrName = 'base'
+const netwokrName = 'sepolia'
 
-const readPath = path.join(__dirname, '../deployments/Base main', 'config.json')
+const readPath = path.join(__dirname, '../deployments/sepolia', 'config.json')
 const writePath = path.join(__dirname, `${netwokrName}_output_address.json`)
 const writePath2 = path.join(__dirname, `${netwokrName}_output_token_pairs.json`)
 const writePath3 = path.join(__dirname, `${netwokrName}_output_rate_modal.json`)

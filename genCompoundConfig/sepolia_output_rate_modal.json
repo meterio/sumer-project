@@ -1,0 +1,25 @@
+{
+  "sepolia": [
+    {
+      "name": "JumpRateModelV2",
+      "address": "0x77b9A38e931dEECA7f0c291FB13DD65a3CAC2344",
+      "tokens": [
+        "USDC",
+        "DAI",
+        "ETH"
+      ],
+      "baseRatePerYear": 0.02,
+      "multiplierPerYear": 0.12,
+      "jumpMultiplierPerYear": 1,
+      "kink": 0.75
+    },
+    {
+      "name": "ZeroInterestRateModel",
+      "address": "0x0f1cF673735516091770b34D7C4F35bE311B840c",
+      "tokens": [
+        "suUSD",
+        "suETH"
+      ]
+    }
+  ]
+}
