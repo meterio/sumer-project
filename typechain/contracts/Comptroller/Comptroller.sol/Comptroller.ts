@@ -23,10 +23,6 @@ import type {
   TypedContractMethod,
 } from "../../../common";
 
-export type ExpStruct = { mantissa: BigNumberish };
-
-export type ExpStructOutput = [mantissa: bigint] & { mantissa: bigint };
-
 export declare namespace IComptroller {
   export type AssetGroupStruct = {
     groupId: BigNumberish;
@@ -57,45 +53,6 @@ export declare namespace IComptroller {
     interCRateMantissa: bigint;
     interSuRateMantissa: bigint;
     exist: boolean;
-  };
-}
-
-export declare namespace IAccountLiquidity {
-  export type AccountGroupLocalVarsStruct = {
-    groupId: BigNumberish;
-    cDepositVal: BigNumberish;
-    cBorrowVal: BigNumberish;
-    suDepositVal: BigNumberish;
-    suBorrowVal: BigNumberish;
-    intraCRate: ExpStruct;
-    intraMintRate: ExpStruct;
-    intraSuRate: ExpStruct;
-    interCRate: ExpStruct;
-    interSuRate: ExpStruct;
-  };
-
-  export type AccountGroupLocalVarsStructOutput = [
-    groupId: bigint,
-    cDepositVal: bigint,
-    cBorrowVal: bigint,
-    suDepositVal: bigint,
-    suBorrowVal: bigint,
-    intraCRate: ExpStructOutput,
-    intraMintRate: ExpStructOutput,
-    intraSuRate: ExpStructOutput,
-    interCRate: ExpStructOutput,
-    interSuRate: ExpStructOutput
-  ] & {
-    groupId: bigint;
-    cDepositVal: bigint;
-    cBorrowVal: bigint;
-    suDepositVal: bigint;
-    suBorrowVal: bigint;
-    intraCRate: ExpStructOutput;
-    intraMintRate: ExpStructOutput;
-    intraSuRate: ExpStructOutput;
-    interCRate: ExpStructOutput;
-    interSuRate: ExpStructOutput;
   };
 }
 
@@ -142,9 +99,6 @@ export interface ComptrollerInterface extends Interface {
       | "enterMarkets"
       | "eqAssetGroup"
       | "exitMarket"
-      | "getAccountGroupSummary"
-      | "getAccountGroupVars"
-      | "getAccountIntermediateGroupSummary"
       | "getAccountLiquidity"
       | "getAccountSafeLimit"
       | "getAllAssetGroup"
@@ -373,18 +327,6 @@ export interface ComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "exitMarket",
     values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getAccountGroupSummary",
-    values: [AddressLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getAccountGroupVars",
-    values: [AddressLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getAccountIntermediateGroupSummary",
-    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountLiquidity",
@@ -740,18 +682,6 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "exitMarket", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getAccountGroupSummary",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getAccountGroupVars",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getAccountIntermediateGroupSummary",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "getAccountLiquidity",
     data: BytesLike
@@ -1456,24 +1386,6 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
-  getAccountGroupSummary: TypedContractMethod<
-    [account: AddressLike, cTokenTarget: AddressLike],
-    [[bigint, bigint, IAccountLiquidity.AccountGroupLocalVarsStructOutput]],
-    "view"
-  >;
-
-  getAccountGroupVars: TypedContractMethod<
-    [account: AddressLike, cTokenTarget: AddressLike],
-    [IAccountLiquidity.AccountGroupLocalVarsStructOutput[]],
-    "view"
-  >;
-
-  getAccountIntermediateGroupSummary: TypedContractMethod<
-    [account: AddressLike, cTokenTarget: AddressLike],
-    [[bigint, bigint, IAccountLiquidity.AccountGroupLocalVarsStructOutput]],
-    "view"
-  >;
-
   getAccountLiquidity: TypedContractMethod<
     [account: AddressLike],
     [[bigint, bigint, bigint]],
@@ -1932,27 +1844,6 @@ export interface Comptroller extends BaseContract {
   getFunction(
     nameOrSignature: "exitMarket"
   ): TypedContractMethod<[cTokenAddress: AddressLike], [bigint], "nonpayable">;
-  getFunction(
-    nameOrSignature: "getAccountGroupSummary"
-  ): TypedContractMethod<
-    [account: AddressLike, cTokenTarget: AddressLike],
-    [[bigint, bigint, IAccountLiquidity.AccountGroupLocalVarsStructOutput]],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getAccountGroupVars"
-  ): TypedContractMethod<
-    [account: AddressLike, cTokenTarget: AddressLike],
-    [IAccountLiquidity.AccountGroupLocalVarsStructOutput[]],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getAccountIntermediateGroupSummary"
-  ): TypedContractMethod<
-    [account: AddressLike, cTokenTarget: AddressLike],
-    [[bigint, bigint, IAccountLiquidity.AccountGroupLocalVarsStructOutput]],
-    "view"
-  >;
   getFunction(
     nameOrSignature: "getAccountLiquidity"
   ): TypedContractMethod<

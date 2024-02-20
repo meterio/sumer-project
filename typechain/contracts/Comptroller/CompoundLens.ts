@@ -572,7 +572,7 @@ export interface CompoundLens extends BaseContract {
   getAccountLimits: TypedContractMethod<
     [comptroller: AddressLike, account: AddressLike],
     [CompoundLens.AccountLimitsStructOutput],
-    "nonpayable"
+    "view"
   >;
 
   getCompBalanceMetadata: TypedContractMethod<
@@ -698,7 +698,7 @@ export interface CompoundLens extends BaseContract {
   ): TypedContractMethod<
     [comptroller: AddressLike, account: AddressLike],
     [CompoundLens.AccountLimitsStructOutput],
-    "nonpayable"
+    "view"
   >;
   getFunction(
     nameOrSignature: "getCompBalanceMetadata"

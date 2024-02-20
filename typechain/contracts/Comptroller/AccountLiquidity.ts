@@ -23,59 +23,13 @@ import type {
   TypedContractMethod,
 } from "../../common";
 
-export type ExpStruct = { mantissa: BigNumberish };
-
-export type ExpStructOutput = [mantissa: bigint] & { mantissa: bigint };
-
-export declare namespace AccountLiquidity {
-  export type AccountGroupLocalVarsStruct = {
-    groupId: BigNumberish;
-    cDepositVal: BigNumberish;
-    cBorrowVal: BigNumberish;
-    suDepositVal: BigNumberish;
-    suBorrowVal: BigNumberish;
-    intraCRate: ExpStruct;
-    intraMintRate: ExpStruct;
-    intraSuRate: ExpStruct;
-    interCRate: ExpStruct;
-    interSuRate: ExpStruct;
-  };
-
-  export type AccountGroupLocalVarsStructOutput = [
-    groupId: bigint,
-    cDepositVal: bigint,
-    cBorrowVal: bigint,
-    suDepositVal: bigint,
-    suBorrowVal: bigint,
-    intraCRate: ExpStructOutput,
-    intraMintRate: ExpStructOutput,
-    intraSuRate: ExpStructOutput,
-    interCRate: ExpStructOutput,
-    interSuRate: ExpStructOutput
-  ] & {
-    groupId: bigint;
-    cDepositVal: bigint;
-    cBorrowVal: bigint;
-    suDepositVal: bigint;
-    suBorrowVal: bigint;
-    intraCRate: ExpStructOutput;
-    intraMintRate: ExpStructOutput;
-    intraSuRate: ExpStructOutput;
-    interCRate: ExpStructOutput;
-    interSuRate: ExpStructOutput;
-  };
-}
-
 export interface AccountLiquidityInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
       | "comptroller"
-      | "getGroupVars"
       | "getHypotheticalAccountLiquidity"
-      | "getHypotheticalGroupSummary"
       | "getHypotheticalSafeLimit"
-      | "getIntermediateGroupSummary"
       | "getRoleAdmin"
       | "getRoleMember"
       | "getRoleMemberCount"
@@ -105,23 +59,11 @@ export interface AccountLiquidityInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getGroupVars",
-    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
     values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getHypotheticalGroupSummary",
-    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getHypotheticalSafeLimit",
-    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getIntermediateGroupSummary",
     values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -174,23 +116,11 @@ export interface AccountLiquidityInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getGroupVars",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getHypotheticalAccountLiquidity",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getHypotheticalGroupSummary",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getHypotheticalSafeLimit",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getIntermediateGroupSummary",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -340,17 +270,6 @@ export interface AccountLiquidity extends BaseContract {
 
   comptroller: TypedContractMethod<[], [string], "view">;
 
-  getGroupVars: TypedContractMethod<
-    [
-      account: AddressLike,
-      cTokenModify: AddressLike,
-      redeemTokens: BigNumberish,
-      borrowAmount: BigNumberish
-    ],
-    [AccountLiquidity.AccountGroupLocalVarsStructOutput[]],
-    "view"
-  >;
-
   getHypotheticalAccountLiquidity: TypedContractMethod<
     [
       account: AddressLike,
@@ -362,17 +281,6 @@ export interface AccountLiquidity extends BaseContract {
     "view"
   >;
 
-  getHypotheticalGroupSummary: TypedContractMethod<
-    [
-      account: AddressLike,
-      cTokenModify: AddressLike,
-      redeemTokens: BigNumberish,
-      borrowAmount: BigNumberish
-    ],
-    [[bigint, bigint, AccountLiquidity.AccountGroupLocalVarsStructOutput]],
-    "view"
-  >;
-
   getHypotheticalSafeLimit: TypedContractMethod<
     [
       account: AddressLike,
@@ -381,17 +289,6 @@ export interface AccountLiquidity extends BaseContract {
       interSafeLimitMantissa: BigNumberish
     ],
     [bigint],
-    "view"
-  >;
-
-  getIntermediateGroupSummary: TypedContractMethod<
-    [
-      account: AddressLike,
-      cTokenModify: AddressLike,
-      redeemTokens: BigNumberish,
-      borrowAmount: BigNumberish
-    ],
-    [[bigint, bigint, AccountLiquidity.AccountGroupLocalVarsStructOutput]],
     "view"
   >;
 
@@ -454,18 +351,6 @@ export interface AccountLiquidity extends BaseContract {
     nameOrSignature: "comptroller"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "getGroupVars"
-  ): TypedContractMethod<
-    [
-      account: AddressLike,
-      cTokenModify: AddressLike,
-      redeemTokens: BigNumberish,
-      borrowAmount: BigNumberish
-    ],
-    [AccountLiquidity.AccountGroupLocalVarsStructOutput[]],
-    "view"
-  >;
-  getFunction(
     nameOrSignature: "getHypotheticalAccountLiquidity"
   ): TypedContractMethod<
     [
@@ -478,18 +363,6 @@ export interface AccountLiquidity extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "getHypotheticalGroupSummary"
-  ): TypedContractMethod<
-    [
-      account: AddressLike,
-      cTokenModify: AddressLike,
-      redeemTokens: BigNumberish,
-      borrowAmount: BigNumberish
-    ],
-    [[bigint, bigint, AccountLiquidity.AccountGroupLocalVarsStructOutput]],
-    "view"
-  >;
-  getFunction(
     nameOrSignature: "getHypotheticalSafeLimit"
   ): TypedContractMethod<
     [
@@ -499,18 +372,6 @@ export interface AccountLiquidity extends BaseContract {
       interSafeLimitMantissa: BigNumberish
     ],
     [bigint],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getIntermediateGroupSummary"
-  ): TypedContractMethod<
-    [
-      account: AddressLike,
-      cTokenModify: AddressLike,
-      redeemTokens: BigNumberish,
-      borrowAmount: BigNumberish
-    ],
-    [[bigint, bigint, AccountLiquidity.AccountGroupLocalVarsStructOutput]],
     "view"
   >;
   getFunction(

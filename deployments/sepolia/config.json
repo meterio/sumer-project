@@ -62,7 +62,7 @@
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0x9497795c7feCeB28BC4409Eb4c08830b5E0390aB",
+    "implementation": "0x97b1634c369b9f605Dd4931E2CCA7df500F6065f",
     "address": "0x863597A887FbC21635471b2939c65936C0193FCB",
     "constructorName": [
       "admin"
@@ -86,7 +86,7 @@
   },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0xcd4916c95f09096Ec4d2123ccBB896f66Ff94504",
+    "implementation": "0x41c8a152FE9aa9763f9A534364Ab9b6960ef8D3e",
     "address": "0x09Bf5c88De66Edf5Bc8AFdBFFB03E73DED4da4d9",
     "settings": [
       {
