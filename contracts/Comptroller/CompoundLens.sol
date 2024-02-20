@@ -199,7 +199,7 @@ contract CompoundLens {
     uint256 shortfall;
   }
 
-  function getAccountLimits(IComptroller comptroller, address account) public returns (AccountLimits memory) {
+  function getAccountLimits(IComptroller comptroller, address account) external view returns (AccountLimits memory) {
     (uint256 errorCode, uint256 liquidity, uint256 shortfall) = comptroller.getAccountLiquidity(account);
     require(errorCode == 0);
 

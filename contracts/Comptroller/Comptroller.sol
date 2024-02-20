@@ -50,26 +50,26 @@ interface IAccountLiquidity {
     uint256 interSafeLimitMantissa
   ) external view returns (uint256);
 
-  function getGroupVars(
-    address account,
-    address cTokenModify,
-    uint256 intraSafeLimitMantissa,
-    uint256 interSafeLimitMantissa
-  ) external view returns (AccountGroupLocalVars[] memory);
+  // function getGroupVars(
+  //   address account,
+  //   address cTokenModify,
+  //   uint256 intraSafeLimitMantissa,
+  //   uint256 interSafeLimitMantissa
+  // ) external view returns (AccountGroupLocalVars[] memory);
 
-  function getIntermediateGroupSummary(
-    address account,
-    address cTokenModify,
-    uint256 redeemTokens,
-    uint256 borrowAmount
-  ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
+  // function getIntermediateGroupSummary(
+  //   address account,
+  //   address cTokenModify,
+  //   uint256 redeemTokens,
+  //   uint256 borrowAmount
+  // ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
 
-  function getHypotheticalGroupSummary(
-    address account,
-    address cTokenModify,
-    uint256 redeemTokens,
-    uint256 borrowAmount
-  ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
+  // function getHypotheticalGroupSummary(
+  //   address account,
+  //   address cTokenModify,
+  //   uint256 redeemTokens,
+  //   uint256 borrowAmount
+  // ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
 }
 
 /**
@@ -540,7 +540,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
                 account liquidity in excess of collateral requirements,
      *          account shortfall below collateral requirements)
      */
-  function getAccountLiquidity(address account) public view returns (uint256, uint256, uint256) {
+  function getAccountLiquidity(address account) external view returns (uint256, uint256, uint256) {
     (uint256 err, uint256 liquidity, uint256 shortfall) = accountLiquidity.getHypotheticalAccountLiquidity(
       account,
       address(0),
@@ -556,31 +556,31 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     address cTokenTarget,
     uint256 intraSafeLimitMantissa,
     uint256 interSafeLimitMantissa
-  ) public view returns (uint256) {
+  ) external view returns (uint256) {
     return
       accountLiquidity.getHypotheticalSafeLimit(account, cTokenTarget, intraSafeLimitMantissa, interSafeLimitMantissa);
   }
 
-  function getAccountGroupVars(
-    address account,
-    address cTokenTarget
-  ) public view returns (IAccountLiquidity.AccountGroupLocalVars[] memory) {
-    return accountLiquidity.getGroupVars(account, cTokenTarget, 0, 0);
-  }
+  // function getAccountGroupVars(
+  //   address account,
+  //   address cTokenTarget
+  // ) external view returns (IAccountLiquidity.AccountGroupLocalVars[] memory) {
+  //   return accountLiquidity.getGroupVars(account, cTokenTarget, 0, 0);
+  // }
 
-  function getAccountIntermediateGroupSummary(
-    address account,
-    address cTokenTarget
-  ) public view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory) {
-    return accountLiquidity.getIntermediateGroupSummary(account, cTokenTarget, 0, 0);
-  }
+  // function getAccountIntermediateGroupSummary(
+  //   address account,
+  //   address cTokenTarget
+  // ) external view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory) {
+  //   return accountLiquidity.getIntermediateGroupSummary(account, cTokenTarget, 0, 0);
+  // }
 
-  function getAccountGroupSummary(
-    address account,
-    address cTokenTarget
-  ) public view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory) {
-    return accountLiquidity.getHypotheticalGroupSummary(account, cTokenTarget, 0, 0);
-  }
+  // function getAccountGroupSummary(
+  //   address account,
+  //   address cTokenTarget
+  // ) public view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory) {
+  //   return accountLiquidity.getHypotheticalGroupSummary(account, cTokenTarget, 0, 0);
+  // }
 
   /**
      * @notice Determine what the account liquidity would be if the given amounts were redeemed/borrowed
@@ -597,7 +597,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) public view returns (uint256, uint256, uint256) {
+  ) external view returns (uint256, uint256, uint256) {
     (uint256 err, uint256 liquidity, uint256 shortfall) = accountLiquidity.getHypotheticalAccountLiquidity(
       account,
       address(cTokenModify),
@@ -685,7 +685,12 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param cToken The address of the market (token) to list
    * @return uint 0=success, otherwise a failure. (See enum uint256 for details)
    */
-  function _supportMarket(address cToken, uint8 groupId, uint256 borrowCap, uint256 supplyCap) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+  function _supportMarket(
+    address cToken,
+    uint8 groupId,
+    uint256 borrowCap,
+    uint256 supplyCap
+  ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
     require(!markets[cToken].isListed, 'market already listed');
     require(groupId > 0, 'groupId > 0');
 

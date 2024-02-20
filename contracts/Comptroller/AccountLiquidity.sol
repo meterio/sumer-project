@@ -39,10 +39,11 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) public view returns (AccountGroupLocalVars[] memory) {
+  ) internal view returns (AccountGroupLocalVars[] memory) {
     uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](assetsGroupNum);
     IComptroller.AssetGroup[] memory assetGroups = IComptroller(comptroller).getAllAssetGroup();
+    IPriceOracle oracle = IPriceOracle(comptroller.oracle());
 
     for (uint256 i = 0; i < assetGroups.length; i++) {
       IComptroller.AssetGroup memory g = assetGroups[i];
@@ -75,7 +76,6 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       require(oErr == 0, 'snapshot error');
 
       // Get price of asset
-      IPriceOracle oracle = IPriceOracle(comptroller.oracle());
       uint256 oraclePriceMantissa = oracle.getUnderlyingPrice(asset);
       require(oraclePriceMantissa > 0, 'price error');
 
@@ -127,7 +127,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) public view returns (uint256, uint256, AccountGroupLocalVars memory) {
+  ) internal view returns (uint256, uint256, AccountGroupLocalVars memory) {
     uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
     AccountGroupLocalVars[] memory groupVars = getGroupVars(account, cTokenModify, redeemTokens, borrowAmount);
     AccountGroupLocalVars memory targetGroup;
@@ -181,7 +181,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) public view returns (uint256, uint256, AccountGroupLocalVars memory) {
+  ) internal view returns (uint256, uint256, AccountGroupLocalVars memory) {
     (
       uint256 sumLiquidity,
       uint256 sumBorrowPlusEffects,
@@ -223,7 +223,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     address cTokenModify,
     uint256 intraSafeLimitMantissa,
     uint256 interSafeLimitMantissa
-  ) public view returns (uint256) {
+  ) external view returns (uint256) {
     (
       uint256 sumLiquidity,
       uint256 sumBorrowPlusEffects,
@@ -281,7 +281,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) public view returns (uint256, uint256, uint256) {
+  ) external view returns (uint256, uint256, uint256) {
     (
       uint256 sumLiquidity,
       uint256 sumBorrowPlusEffects,
