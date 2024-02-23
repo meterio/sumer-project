@@ -937,6 +937,7 @@ abstract contract CToken is CTokenStorage {
      *  doTransferOut reverts if anything goes wrong, since we can't be sure if side effects occurred.
      */
     // doTransferOut(borrower, borrowAmount);
+
     transferToTimelock(true, borrower, borrowAmount);
 
     /* We emit a Borrow event */

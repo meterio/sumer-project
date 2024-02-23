@@ -37,7 +37,18 @@ contract CErc20 is CToken, ICErc20, Initializable {
     uint256 discountRateMantissa_,
     uint256 reserveFactorMantissa_
   ) public virtual initializer {
-    initInternal(underlying_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, name_, symbol_, decimals_, admin_, discountRateMantissa_, reserveFactorMantissa_);
+    initInternal(
+      underlying_,
+      comptroller_,
+      interestRateModel_,
+      initialExchangeRateMantissa_,
+      name_,
+      symbol_,
+      decimals_,
+      admin_,
+      discountRateMantissa_,
+      reserveFactorMantissa_
+    );
   }
 
   function initInternal(
@@ -266,7 +277,12 @@ contract CErc20 is CToken, ICErc20, Initializable {
 
   function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
     address timelock = IComptroller(comptroller).timelock();
-    if (ITimelock(timelock).isSupport(underlying)) {
+    address oracle = IComptroller(comptroller).oracle();
+
+    if (
+      ITimelock(timelock).isSupport(underlying) &&
+      ITimelock(timelock).overThreshold(underlying, oracle, amount, decimals)
+    ) {
       doTransferOut(payable(timelock), amount);
       ITimelock.TimeLockActionType actionType = isBorrow
         ? ITimelock.TimeLockActionType.BORROW
