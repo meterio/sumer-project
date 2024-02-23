@@ -66,7 +66,6 @@ export interface ComptrollerInterface extends Interface {
       | "_borrowGuardianPaused"
       | "_getBorrowCapGuardian"
       | "_getBorrowPaused"
-      | "_getMarketBorrowCap"
       | "_getMintPaused"
       | "_getPauseGuardian"
       | "_getSeizePaused"
@@ -197,10 +196,6 @@ export interface ComptrollerInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "_getBorrowPaused",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getMarketBorrowCap",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
@@ -560,10 +555,6 @@ export interface ComptrollerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_getBorrowPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getMarketBorrowCap",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1227,12 +1218,6 @@ export interface Comptroller extends BaseContract {
     "view"
   >;
 
-  _getMarketBorrowCap: TypedContractMethod<
-    [cToken: AddressLike],
-    [bigint],
-    "view"
-  >;
-
   _getMintPaused: TypedContractMethod<[cToken: AddressLike], [boolean], "view">;
 
   _getPauseGuardian: TypedContractMethod<[], [string], "view">;
@@ -1684,9 +1669,6 @@ export interface Comptroller extends BaseContract {
   getFunction(
     nameOrSignature: "_getBorrowPaused"
   ): TypedContractMethod<[cToken: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "_getMarketBorrowCap"
-  ): TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "_getMintPaused"
   ): TypedContractMethod<[cToken: AddressLike], [boolean], "view">;

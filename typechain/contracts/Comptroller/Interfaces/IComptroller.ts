@@ -60,12 +60,12 @@ export interface IComptrollerInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "_getBorrowPaused"
-      | "_getMarketBorrowCap"
       | "_getMintPaused"
       | "_getSeizePaused"
       | "_getTransferPaused"
       | "assetGroupIdToIndex"
       | "borrowAllowed"
+      | "borrowCaps"
       | "claimComp"
       | "closeFactorMantissa"
       | "compAccrued"
@@ -108,10 +108,6 @@ export interface IComptrollerInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "_getMarketBorrowCap",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "_getMintPaused",
     values: [AddressLike]
   ): string;
@@ -130,6 +126,10 @@ export interface IComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "borrowAllowed",
     values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "borrowCaps",
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "claimComp",
@@ -235,10 +235,6 @@ export interface IComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "_getMarketBorrowCap",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "_getMintPaused",
     data: BytesLike
   ): Result;
@@ -258,6 +254,7 @@ export interface IComptrollerInterface extends Interface {
     functionFragment: "borrowAllowed",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "claimComp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "closeFactorMantissa",
@@ -484,12 +481,6 @@ export interface IComptroller extends BaseContract {
     "view"
   >;
 
-  _getMarketBorrowCap: TypedContractMethod<
-    [cToken: AddressLike],
-    [bigint],
-    "view"
-  >;
-
   _getMintPaused: TypedContractMethod<
     [cToken: AddressLike],
     [boolean],
@@ -511,6 +502,8 @@ export interface IComptroller extends BaseContract {
     [bigint],
     "nonpayable"
   >;
+
+  borrowCaps: TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
 
   claimComp: TypedContractMethod<[arg0: AddressLike], [void], "nonpayable">;
 
@@ -654,9 +647,6 @@ export interface IComptroller extends BaseContract {
     nameOrSignature: "_getBorrowPaused"
   ): TypedContractMethod<[cToken: AddressLike], [boolean], "view">;
   getFunction(
-    nameOrSignature: "_getMarketBorrowCap"
-  ): TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
-  getFunction(
     nameOrSignature: "_getMintPaused"
   ): TypedContractMethod<[cToken: AddressLike], [boolean], "nonpayable">;
   getFunction(
@@ -675,6 +665,9 @@ export interface IComptroller extends BaseContract {
     [bigint],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "borrowCaps"
+  ): TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "claimComp"
   ): TypedContractMethod<[arg0: AddressLike], [void], "nonpayable">;

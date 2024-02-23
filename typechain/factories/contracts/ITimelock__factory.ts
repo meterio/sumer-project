@@ -10,16 +10,16 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "agreementId",
-        type: "uint256",
+        indexed: true,
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
       },
       {
-        indexed: false,
-        internalType: "enum ITimelock.TimeLockActionType",
-        name: "actionType",
-        type: "uint8",
+        indexed: true,
+        internalType: "uint256",
+        name: "agreementIndex",
+        type: "uint256",
       },
       {
         indexed: true,
@@ -29,15 +29,15 @@ const _abi = [
       },
       {
         indexed: false,
+        internalType: "enum ITimelock.TimeLockActionType",
+        name: "actionType",
+        type: "uint8",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
         name: "amount",
         type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "beneficiary",
-        type: "address",
       },
     ],
     name: "AgreementClaimed",
@@ -47,16 +47,16 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "agreementId",
-        type: "uint256",
+        indexed: true,
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
       },
       {
-        indexed: false,
-        internalType: "enum ITimelock.TimeLockActionType",
-        name: "actionType",
-        type: "uint8",
+        indexed: true,
+        internalType: "uint256",
+        name: "agreementIndex",
+        type: "uint256",
       },
       {
         indexed: true,
@@ -66,15 +66,15 @@ const _abi = [
       },
       {
         indexed: false,
+        internalType: "enum ITimelock.TimeLockActionType",
+        name: "actionType",
+        type: "uint8",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
         name: "amount",
         type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "beneficiary",
-        type: "address",
       },
       {
         indexed: false,
@@ -91,8 +91,14 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
-        name: "agreementId",
+        name: "agreementIndex",
         type: "uint256",
       },
       {
@@ -186,6 +192,40 @@ const _abi = [
       },
     ],
     name: "isSupport",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "oracle",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "usdValue",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "decimals",
+        type: "uint8",
+      },
+    ],
+    name: "overThreshold",
     outputs: [
       {
         internalType: "bool",

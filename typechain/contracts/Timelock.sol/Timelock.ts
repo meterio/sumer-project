@@ -24,51 +24,48 @@ import type {
 } from "../../common";
 
 export declare namespace ITimelock {
-  export type UnderlyingStruct = {
-    cToken: AddressLike;
-    totalBalance: BigNumberish;
-    lockDuration: BigNumberish;
-    isSupport: boolean;
-  };
-
-  export type UnderlyingStructOutput = [
-    cToken: string,
-    totalBalance: bigint,
-    lockDuration: bigint,
-    isSupport: boolean
-  ] & {
-    cToken: string;
-    totalBalance: bigint;
-    lockDuration: bigint;
-    isSupport: boolean;
-  };
-
   export type AgreementStruct = {
-    agreementId: BigNumberish;
     actionType: BigNumberish;
-    underlying: AddressLike;
     isFrozen: boolean;
-    beneficiary: AddressLike;
+    underlying: AddressLike;
     releaseTime: BigNumberish;
     amount: BigNumberish;
   };
 
   export type AgreementStructOutput = [
-    agreementId: bigint,
     actionType: bigint,
-    underlying: string,
     isFrozen: boolean,
-    beneficiary: string,
+    underlying: string,
     releaseTime: bigint,
     amount: bigint
   ] & {
-    agreementId: bigint;
     actionType: bigint;
-    underlying: string;
     isFrozen: boolean;
-    beneficiary: string;
+    underlying: string;
     releaseTime: bigint;
     amount: bigint;
+  };
+
+  export type UnderlyingStruct = {
+    isSupport: boolean;
+    cToken: AddressLike;
+    lockDuration: BigNumberish;
+    totalBalance: BigNumberish;
+    threshold: BigNumberish;
+  };
+
+  export type UnderlyingStructOutput = [
+    isSupport: boolean,
+    cToken: string,
+    lockDuration: bigint,
+    totalBalance: bigint,
+    threshold: bigint
+  ] & {
+    isSupport: boolean;
+    cToken: string;
+    lockDuration: bigint;
+    totalBalance: bigint;
+    threshold: bigint;
   };
 }
 
@@ -77,23 +74,25 @@ export interface TimelockInterface extends Interface {
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
       | "EMERGENCY_ADMIN"
-      | "agreementCount"
       | "cTokenToUnderlying"
       | "claim"
       | "createAgreement"
       | "freezeAgreement"
       | "freezeAllAgreements"
       | "frozen"
+      | "getAllAgreementsFor"
       | "getRoleAdmin"
       | "getRoleMember"
       | "getRoleMemberCount"
       | "grantRole"
       | "hasRole"
       | "isSupport"
+      | "overThreshold"
       | "renounceRole"
       | "rescueERC20"
       | "revokeRole"
       | "setLockDuration"
+      | "setThreshold"
       | "setUnderly"
       | "supportsInterface"
       | "underlyingDetail"
@@ -123,10 +122,6 @@ export interface TimelockInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "agreementCount",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "cTokenToUnderlying",
     values: [AddressLike]
   ): string;
@@ -140,13 +135,17 @@ export interface TimelockInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "freezeAgreement",
-    values: [BigNumberish]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "freezeAllAgreements",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "frozen", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "getAllAgreementsFor",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
@@ -172,6 +171,10 @@ export interface TimelockInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "overThreshold",
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
   ): string;
@@ -185,6 +188,10 @@ export interface TimelockInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setLockDuration",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setThreshold",
     values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -209,7 +216,7 @@ export interface TimelockInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "userAgreements",
-    values: [AddressLike]
+    values: [AddressLike, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -218,10 +225,6 @@ export interface TimelockInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "EMERGENCY_ADMIN",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "agreementCount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -243,6 +246,10 @@ export interface TimelockInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "frozen", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getAllAgreementsFor",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
@@ -258,6 +265,10 @@ export interface TimelockInterface extends Interface {
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isSupport", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "overThreshold",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -268,6 +279,10 @@ export interface TimelockInterface extends Interface {
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setLockDuration",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setThreshold",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setUnderly", data: BytesLike): Result;
@@ -295,25 +310,25 @@ export interface TimelockInterface extends Interface {
 
 export namespace AgreementClaimedEvent {
   export type InputTuple = [
-    agreementId: BigNumberish,
-    actionType: BigNumberish,
+    beneficiary: AddressLike,
+    agreementIndex: BigNumberish,
     asset: AddressLike,
-    amount: BigNumberish,
-    beneficiary: AddressLike
+    actionType: BigNumberish,
+    amount: BigNumberish
   ];
   export type OutputTuple = [
-    agreementId: bigint,
-    actionType: bigint,
+    beneficiary: string,
+    agreementIndex: bigint,
     asset: string,
-    amount: bigint,
-    beneficiary: string
+    actionType: bigint,
+    amount: bigint
   ];
   export interface OutputObject {
-    agreementId: bigint;
-    actionType: bigint;
-    asset: string;
-    amount: bigint;
     beneficiary: string;
+    agreementIndex: bigint;
+    asset: string;
+    actionType: bigint;
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -323,27 +338,27 @@ export namespace AgreementClaimedEvent {
 
 export namespace AgreementCreatedEvent {
   export type InputTuple = [
-    agreementId: BigNumberish,
-    actionType: BigNumberish,
-    asset: AddressLike,
-    amount: BigNumberish,
     beneficiary: AddressLike,
+    agreementIndex: BigNumberish,
+    asset: AddressLike,
+    actionType: BigNumberish,
+    amount: BigNumberish,
     releaseTime: BigNumberish
   ];
   export type OutputTuple = [
-    agreementId: bigint,
-    actionType: bigint,
-    asset: string,
-    amount: bigint,
     beneficiary: string,
+    agreementIndex: bigint,
+    asset: string,
+    actionType: bigint,
+    amount: bigint,
     releaseTime: bigint
   ];
   export interface OutputObject {
-    agreementId: bigint;
-    actionType: bigint;
-    asset: string;
-    amount: bigint;
     beneficiary: string;
+    agreementIndex: bigint;
+    asset: string;
+    actionType: bigint;
+    amount: bigint;
     releaseTime: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -353,10 +368,19 @@ export namespace AgreementCreatedEvent {
 }
 
 export namespace AgreementFrozenEvent {
-  export type InputTuple = [agreementId: BigNumberish, value: boolean];
-  export type OutputTuple = [agreementId: bigint, value: boolean];
+  export type InputTuple = [
+    beneficiary: AddressLike,
+    agreementIndex: BigNumberish,
+    value: boolean
+  ];
+  export type OutputTuple = [
+    beneficiary: string,
+    agreementIndex: bigint,
+    value: boolean
+  ];
   export interface OutputObject {
-    agreementId: bigint;
+    beneficiary: string;
+    agreementIndex: bigint;
     value: boolean;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -500,8 +524,6 @@ export interface Timelock extends BaseContract {
 
   EMERGENCY_ADMIN: TypedContractMethod<[], [string], "view">;
 
-  agreementCount: TypedContractMethod<[], [bigint], "view">;
-
   cTokenToUnderlying: TypedContractMethod<
     [arg0: AddressLike],
     [string],
@@ -509,7 +531,7 @@ export interface Timelock extends BaseContract {
   >;
 
   claim: TypedContractMethod<
-    [agreementIds: BigNumberish[]],
+    [agreementIndexes: BigNumberish[]],
     [void],
     "nonpayable"
   >;
@@ -526,7 +548,7 @@ export interface Timelock extends BaseContract {
   >;
 
   freezeAgreement: TypedContractMethod<
-    [agreementId: BigNumberish],
+    [beneficiary: AddressLike, agreementIndex: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -534,6 +556,12 @@ export interface Timelock extends BaseContract {
   freezeAllAgreements: TypedContractMethod<[], [void], "nonpayable">;
 
   frozen: TypedContractMethod<[], [boolean], "view">;
+
+  getAllAgreementsFor: TypedContractMethod<
+    [beneficiary: AddressLike],
+    [ITimelock.AgreementStructOutput[]],
+    "view"
+  >;
 
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
@@ -559,6 +587,17 @@ export interface Timelock extends BaseContract {
 
   isSupport: TypedContractMethod<[underlying: AddressLike], [boolean], "view">;
 
+  overThreshold: TypedContractMethod<
+    [
+      underlying: AddressLike,
+      oracle: AddressLike,
+      amount: BigNumberish,
+      decimals: BigNumberish
+    ],
+    [boolean],
+    "view"
+  >;
+
   renounceRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
     [void],
@@ -583,8 +622,14 @@ export interface Timelock extends BaseContract {
     "nonpayable"
   >;
 
+  setThreshold: TypedContractMethod<
+    [underlying: AddressLike, threshold: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setUnderly: TypedContractMethod<
-    [cToken: AddressLike, underlying: AddressLike, isSupport: boolean],
+    [cToken: AddressLike, underlying: AddressLike, isSupport_: boolean],
     [void],
     "nonpayable"
   >;
@@ -598,11 +643,12 @@ export interface Timelock extends BaseContract {
   underlyingDetail: TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, bigint, boolean] & {
-        cToken: string;
-        totalBalance: bigint;
-        lockDuration: bigint;
+      [boolean, string, bigint, bigint, bigint] & {
         isSupport: boolean;
+        cToken: string;
+        lockDuration: bigint;
+        totalBalance: bigint;
+        threshold: bigint;
       }
     ],
     "view"
@@ -617,8 +663,16 @@ export interface Timelock extends BaseContract {
   unfreezeAllAgreements: TypedContractMethod<[], [void], "nonpayable">;
 
   userAgreements: TypedContractMethod<
-    [user: AddressLike],
-    [ITimelock.AgreementStructOutput[]],
+    [arg0: AddressLike, arg1: BigNumberish],
+    [
+      [bigint, boolean, string, bigint, bigint] & {
+        actionType: bigint;
+        isFrozen: boolean;
+        underlying: string;
+        releaseTime: bigint;
+        amount: bigint;
+      }
+    ],
     "view"
   >;
 
@@ -633,14 +687,15 @@ export interface Timelock extends BaseContract {
     nameOrSignature: "EMERGENCY_ADMIN"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "agreementCount"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "cTokenToUnderlying"
   ): TypedContractMethod<[arg0: AddressLike], [string], "view">;
   getFunction(
     nameOrSignature: "claim"
-  ): TypedContractMethod<[agreementIds: BigNumberish[]], [void], "nonpayable">;
+  ): TypedContractMethod<
+    [agreementIndexes: BigNumberish[]],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "createAgreement"
   ): TypedContractMethod<
@@ -655,13 +710,24 @@ export interface Timelock extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "freezeAgreement"
-  ): TypedContractMethod<[agreementId: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<
+    [beneficiary: AddressLike, agreementIndex: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "freezeAllAgreements"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "frozen"
   ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getAllAgreementsFor"
+  ): TypedContractMethod<
+    [beneficiary: AddressLike],
+    [ITimelock.AgreementStructOutput[]],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "getRoleAdmin"
   ): TypedContractMethod<[role: BytesLike], [string], "view">;
@@ -693,6 +759,18 @@ export interface Timelock extends BaseContract {
     nameOrSignature: "isSupport"
   ): TypedContractMethod<[underlying: AddressLike], [boolean], "view">;
   getFunction(
+    nameOrSignature: "overThreshold"
+  ): TypedContractMethod<
+    [
+      underlying: AddressLike,
+      oracle: AddressLike,
+      amount: BigNumberish,
+      decimals: BigNumberish
+    ],
+    [boolean],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -721,9 +799,16 @@ export interface Timelock extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "setThreshold"
+  ): TypedContractMethod<
+    [underlying: AddressLike, threshold: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "setUnderly"
   ): TypedContractMethod<
-    [cToken: AddressLike, underlying: AddressLike, isSupport: boolean],
+    [cToken: AddressLike, underlying: AddressLike, isSupport_: boolean],
     [void],
     "nonpayable"
   >;
@@ -735,11 +820,12 @@ export interface Timelock extends BaseContract {
   ): TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, bigint, boolean] & {
-        cToken: string;
-        totalBalance: bigint;
-        lockDuration: bigint;
+      [boolean, string, bigint, bigint, bigint] & {
         isSupport: boolean;
+        cToken: string;
+        lockDuration: bigint;
+        totalBalance: bigint;
+        threshold: bigint;
       }
     ],
     "view"
@@ -757,8 +843,16 @@ export interface Timelock extends BaseContract {
   getFunction(
     nameOrSignature: "userAgreements"
   ): TypedContractMethod<
-    [user: AddressLike],
-    [ITimelock.AgreementStructOutput[]],
+    [arg0: AddressLike, arg1: BigNumberish],
+    [
+      [bigint, boolean, string, bigint, bigint] & {
+        actionType: bigint;
+        isFrozen: boolean;
+        underlying: string;
+        releaseTime: bigint;
+        amount: bigint;
+      }
+    ],
     "view"
   >;
 
@@ -820,7 +914,7 @@ export interface Timelock extends BaseContract {
   >;
 
   filters: {
-    "AgreementClaimed(uint256,uint8,address,uint256,address)": TypedContractEvent<
+    "AgreementClaimed(address,uint256,address,uint8,uint256)": TypedContractEvent<
       AgreementClaimedEvent.InputTuple,
       AgreementClaimedEvent.OutputTuple,
       AgreementClaimedEvent.OutputObject
@@ -831,7 +925,7 @@ export interface Timelock extends BaseContract {
       AgreementClaimedEvent.OutputObject
     >;
 
-    "AgreementCreated(uint256,uint8,address,uint256,address,uint256)": TypedContractEvent<
+    "AgreementCreated(address,uint256,address,uint8,uint256,uint256)": TypedContractEvent<
       AgreementCreatedEvent.InputTuple,
       AgreementCreatedEvent.OutputTuple,
       AgreementCreatedEvent.OutputObject
@@ -842,7 +936,7 @@ export interface Timelock extends BaseContract {
       AgreementCreatedEvent.OutputObject
     >;
 
-    "AgreementFrozen(uint256,bool)": TypedContractEvent<
+    "AgreementFrozen(address,uint256,bool)": TypedContractEvent<
       AgreementFrozenEvent.InputTuple,
       AgreementFrozenEvent.OutputTuple,
       AgreementFrozenEvent.OutputObject

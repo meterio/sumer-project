@@ -25,7 +25,7 @@ import type {
 
 export interface ITimelockInterface extends Interface {
   getFunction(
-    nameOrSignature: "createAgreement" | "isSupport"
+    nameOrSignature: "createAgreement" | "isSupport" | "overThreshold"
   ): FunctionFragment;
 
   getEvent(
@@ -45,35 +45,43 @@ export interface ITimelockInterface extends Interface {
     functionFragment: "isSupport",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "overThreshold",
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "createAgreement",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isSupport", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "overThreshold",
+    data: BytesLike
+  ): Result;
 }
 
 export namespace AgreementClaimedEvent {
   export type InputTuple = [
-    agreementId: BigNumberish,
-    actionType: BigNumberish,
+    beneficiary: AddressLike,
+    agreementIndex: BigNumberish,
     asset: AddressLike,
-    amount: BigNumberish,
-    beneficiary: AddressLike
+    actionType: BigNumberish,
+    amount: BigNumberish
   ];
   export type OutputTuple = [
-    agreementId: bigint,
-    actionType: bigint,
+    beneficiary: string,
+    agreementIndex: bigint,
     asset: string,
-    amount: bigint,
-    beneficiary: string
+    actionType: bigint,
+    amount: bigint
   ];
   export interface OutputObject {
-    agreementId: bigint;
-    actionType: bigint;
-    asset: string;
-    amount: bigint;
     beneficiary: string;
+    agreementIndex: bigint;
+    asset: string;
+    actionType: bigint;
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -83,27 +91,27 @@ export namespace AgreementClaimedEvent {
 
 export namespace AgreementCreatedEvent {
   export type InputTuple = [
-    agreementId: BigNumberish,
-    actionType: BigNumberish,
-    asset: AddressLike,
-    amount: BigNumberish,
     beneficiary: AddressLike,
+    agreementIndex: BigNumberish,
+    asset: AddressLike,
+    actionType: BigNumberish,
+    amount: BigNumberish,
     releaseTime: BigNumberish
   ];
   export type OutputTuple = [
-    agreementId: bigint,
-    actionType: bigint,
-    asset: string,
-    amount: bigint,
     beneficiary: string,
+    agreementIndex: bigint,
+    asset: string,
+    actionType: bigint,
+    amount: bigint,
     releaseTime: bigint
   ];
   export interface OutputObject {
-    agreementId: bigint;
-    actionType: bigint;
-    asset: string;
-    amount: bigint;
     beneficiary: string;
+    agreementIndex: bigint;
+    asset: string;
+    actionType: bigint;
+    amount: bigint;
     releaseTime: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -113,10 +121,19 @@ export namespace AgreementCreatedEvent {
 }
 
 export namespace AgreementFrozenEvent {
-  export type InputTuple = [agreementId: BigNumberish, value: boolean];
-  export type OutputTuple = [agreementId: bigint, value: boolean];
+  export type InputTuple = [
+    beneficiary: AddressLike,
+    agreementIndex: BigNumberish,
+    value: boolean
+  ];
+  export type OutputTuple = [
+    beneficiary: string,
+    agreementIndex: bigint,
+    value: boolean
+  ];
   export interface OutputObject {
-    agreementId: bigint;
+    beneficiary: string;
+    agreementIndex: bigint;
     value: boolean;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -211,6 +228,17 @@ export interface ITimelock extends BaseContract {
 
   isSupport: TypedContractMethod<[underlying: AddressLike], [boolean], "view">;
 
+  overThreshold: TypedContractMethod<
+    [
+      underlying: AddressLike,
+      oracle: AddressLike,
+      usdValue: BigNumberish,
+      decimals: BigNumberish
+    ],
+    [boolean],
+    "view"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -230,6 +258,18 @@ export interface ITimelock extends BaseContract {
   getFunction(
     nameOrSignature: "isSupport"
   ): TypedContractMethod<[underlying: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "overThreshold"
+  ): TypedContractMethod<
+    [
+      underlying: AddressLike,
+      oracle: AddressLike,
+      usdValue: BigNumberish,
+      decimals: BigNumberish
+    ],
+    [boolean],
+    "view"
+  >;
 
   getEvent(
     key: "AgreementClaimed"
@@ -268,7 +308,7 @@ export interface ITimelock extends BaseContract {
   >;
 
   filters: {
-    "AgreementClaimed(uint256,uint8,address,uint256,address)": TypedContractEvent<
+    "AgreementClaimed(address,uint256,address,uint8,uint256)": TypedContractEvent<
       AgreementClaimedEvent.InputTuple,
       AgreementClaimedEvent.OutputTuple,
       AgreementClaimedEvent.OutputObject
@@ -279,7 +319,7 @@ export interface ITimelock extends BaseContract {
       AgreementClaimedEvent.OutputObject
     >;
 
-    "AgreementCreated(uint256,uint8,address,uint256,address,uint256)": TypedContractEvent<
+    "AgreementCreated(address,uint256,address,uint8,uint256,uint256)": TypedContractEvent<
       AgreementCreatedEvent.InputTuple,
       AgreementCreatedEvent.OutputTuple,
       AgreementCreatedEvent.OutputObject
@@ -290,7 +330,7 @@ export interface ITimelock extends BaseContract {
       AgreementCreatedEvent.OutputObject
     >;
 
-    "AgreementFrozen(uint256,bool)": TypedContractEvent<
+    "AgreementFrozen(address,uint256,bool)": TypedContractEvent<
       AgreementFrozenEvent.InputTuple,
       AgreementFrozenEvent.OutputTuple,
       AgreementFrozenEvent.OutputObject

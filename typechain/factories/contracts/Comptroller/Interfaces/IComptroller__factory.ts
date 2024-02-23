@@ -137,25 +137,6 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "_getMarketBorrowCap",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "cToken",
-        type: "address",
-      },
-    ],
     name: "_getMintPaused",
     outputs: [
       {
@@ -239,6 +220,25 @@ const _abi = [
       },
     ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+    ],
+    name: "borrowCaps",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
