@@ -284,7 +284,7 @@ const main = async () => {
 
   const tlOnChain = await comptroller.timelock();
   if (tlOnChain.toLowerCase() != config.Timelock.address.toLowerCase()) {
-    console.log(`设置Comptroller.timelock：${tlOnChain} -> ${config.Timelock}`);
+    console.log(`设置Comptroller.timelock：${tlOnChain} -> ${config.Timelock.address}`);
     await sendTransaction(
       network,
       comptroller,

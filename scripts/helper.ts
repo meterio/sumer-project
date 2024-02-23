@@ -188,18 +188,18 @@ export async function sendTransaction(
       throw new Error(red('签名人不具有DEFAULT_ADMIN_ROLE权限!'));
     }
   }
-
-  override.nonce = Number(
-    await input({
-      message: '输入nonce:',
-      default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
-      validate: (value = '') => value.length > 0 || 'Pass a valid value',
-    })
-  );
-  override.gasLimit = await contract.getFunction(func).estimateGas(...args);
-  const defaultGasPrice = (await network.provider.getFeeData()).gasPrice;
-  override.gasPrice = defaultGasPrice;
-  console.log('gasLimit:', green(override.gasLimit!.toString()));
+  console.log(`sending tx to call ${blue(func)} ...`);
+  // override.nonce = Number(
+  //   await input({
+  //     message: '输入nonce:',
+  //     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
+  //     validate: (value = '') => value.length > 0 || 'Pass a valid value',
+  //   })
+  // );
+  // override.gasLimit = await contract.getFunction(func).estimateGas(...args);
+  // const defaultGasPrice = (await network.provider.getFeeData()).gasPrice;
+  // override.gasPrice = defaultGasPrice;
+  // console.log('gasLimit:', green(override.gasLimit!.toString()));
   let receipt = await contract.getFunction(func)(...args, override);
   await receipt.wait();
   console.log(`${blue(func)} tx:`, yellow(receipt.hash));
@@ -212,19 +212,19 @@ export async function deployContractV2(
   args: any[],
   override: Overrides = {}
 ): Promise<Contract> {
-  override.nonce = Number(
-    await input({
-      message: '输入nonce:',
-      default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
-      validate: (value = '') => value.length > 0 || 'Pass a valid value',
-    })
-  );
+  // override.nonce = Number(
+  //   await input({
+  //     message: '输入nonce:',
+  //     default: (await network.provider.getTransactionCount(network.wallet.address)).toString(),
+  //     validate: (value = '') => value.length > 0 || 'Pass a valid value',
+  //   })
+  // );
 
   const factory = await ethers.getContractFactory(contract, network.wallet);
 
-  override.gasLimit = await network.wallet.estimateGas(await factory.getDeployTransaction(...args));
-
-  console.log('gasLimit:', green(override.gasLimit.toString()));
+  // override.gasLimit = await network.wallet.estimateGas(await factory.getDeployTransaction(...args));
+  console.log(`deploying ${blue(contract)} ...`);
+  // console.log('gasLimit:', green(override.gasLimit.toString()));
   const deploy = await factory.deploy(...args, override);
   const deployed = await deploy.waitForDeployment();
   const tx = deploy.deploymentTransaction();
@@ -554,6 +554,13 @@ export async function cTokenSetting(
   // oracle feed
   let feeds = await oracle.feeds(cTokenConfig.address);
   if (Number(feeds.source) == 0) {
+    if (cTokenConfig.settings.oracle.func.startsWith('setFixedPrice')) {
+      const price = await oracle.getUnderlyingPrice(cTokenConfig.address);
+      const priceInSetting = cTokenConfig.settings.oracle.args[1];
+      if (price == BigInt(priceInSetting)) {
+        return cTokenConfig;
+      }
+    }
     cTokenConfig.settings.oracle.args[0] = cTokenConfig.address;
     console.log('设置cToken' + yellow(cTokenConfig.address) + '的Oracle feed');
     await sendTransaction(
