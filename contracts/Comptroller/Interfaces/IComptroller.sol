@@ -116,5 +116,5 @@ interface IComptroller {
 
   function getCompAddress() external view returns (address);
 
-  function _getMarketBorrowCap(address cToken) external view returns (uint256);
+  function borrowCaps(address cToken) external view returns (uint256);
 }

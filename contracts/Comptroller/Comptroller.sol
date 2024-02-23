@@ -50,13 +50,6 @@ interface IAccountLiquidity {
     uint256 interSafeLimitMantissa
   ) external view returns (uint256);
 
-  // function getGroupVars(
-  //   address account,
-  //   address cTokenModify,
-  //   uint256 intraSafeLimitMantissa,
-  //   uint256 interSafeLimitMantissa
-  // ) external view returns (AccountGroupLocalVars[] memory);
-
   // function getIntermediateGroupSummary(
   //   address account,
   //   address cTokenModify,
@@ -331,9 +324,10 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       assert(markets[cToken].accountMembership[minter]);
     }
 
+    // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
-    compLogic.updateCompSupplyIndex(cToken);
-    compLogic.distributeSupplierComp(cToken, minter);
+    // compLogic.updateCompSupplyIndex(cToken);
+    // compLogic.distributeSupplierComp(cToken, minter);
 
     require(
       maxSupply[cToken] == 0 ||
@@ -354,9 +348,10 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   function redeemAllowed(address cToken, address redeemer, uint256 redeemTokens) external returns (uint256) {
     redeemAllowedInternal(cToken, redeemer, redeemTokens);
 
+    // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
-    compLogic.updateCompSupplyIndex(cToken);
-    compLogic.distributeSupplierComp(cToken, redeemer);
+    // compLogic.updateCompSupplyIndex(cToken);
+    // compLogic.distributeSupplierComp(cToken, redeemer);
 
     return uint256(0);
   }
@@ -424,7 +419,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     require(oracle.getUnderlyingPrice(cToken) > 0, 'PRICE_ERROR');
 
     //uint borrowCap = borrowCaps[cToken];
-    uint256 borrowCap = IComptroller(address(this))._getMarketBorrowCap(cToken);
+    uint256 borrowCap = borrowCaps[cToken];
     // Borrow cap of 0 corresponds to unlimited borrowing
     if (borrowCap != 0) {
       uint256 totalBorrows = ICToken(cToken).totalBorrows();
@@ -435,10 +430,11 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     (, , uint256 shortfall) = accountLiquidity.getHypotheticalAccountLiquidity(borrower, cToken, 0, borrowAmount);
     require(shortfall <= 0, INSUFFICIENT_LIQUIDITY);
 
+    // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
-    Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
-    compLogic.updateCompBorrowIndex(cToken, borrowIndex);
-    compLogic.distributeBorrowerComp(cToken, borrower, borrowIndex);
+    // Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
+    // compLogic.updateCompBorrowIndex(cToken, borrowIndex);
+    // compLogic.distributeBorrowerComp(cToken, borrower, borrowIndex);
 
     return uint256(0);
   }
@@ -461,10 +457,11 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
     require(markets[cToken].isListed, MARKET_NOT_LISTED);
 
+    // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
-    Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
-    compLogic.updateCompBorrowIndex(cToken, borrowIndex);
-    compLogic.distributeBorrowerComp(cToken, borrower, borrowIndex);
+    // Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
+    // compLogic.updateCompBorrowIndex(cToken, borrowIndex);
+    // compLogic.distributeBorrowerComp(cToken, borrower, borrowIndex);
 
     return uint256(0);
   }
@@ -494,10 +491,11 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
     require(ICToken(cTokenCollateral).comptroller() == ICToken(cTokenBorrowed).comptroller(), 'comptroller mismatch');
 
+    // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
-    compLogic.updateCompSupplyIndex(cTokenCollateral);
-    compLogic.distributeSupplierComp(cTokenCollateral, borrower);
-    compLogic.distributeSupplierComp(cTokenCollateral, liquidator);
+    // compLogic.updateCompSupplyIndex(cTokenCollateral);
+    // compLogic.distributeSupplierComp(cTokenCollateral, borrower);
+    // compLogic.distributeSupplierComp(cTokenCollateral, liquidator);
 
     return uint256(0);
   }
@@ -524,10 +522,11 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     //  the src is allowed to redeem this many tokens
     redeemAllowedInternal(cToken, src, transferTokens);
 
+    // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
-    compLogic.updateCompSupplyIndex(cToken);
-    compLogic.distributeSupplierComp(cToken, src);
-    compLogic.distributeSupplierComp(cToken, dst);
+    // compLogic.updateCompSupplyIndex(cToken);
+    // compLogic.distributeSupplierComp(cToken, src);
+    // compLogic.distributeSupplierComp(cToken, dst);
 
     return uint256(0);
   }
@@ -560,13 +559,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     return
       accountLiquidity.getHypotheticalSafeLimit(account, cTokenTarget, intraSafeLimitMantissa, interSafeLimitMantissa);
   }
-
-  // function getAccountGroupVars(
-  //   address account,
-  //   address cTokenTarget
-  // ) external view returns (IAccountLiquidity.AccountGroupLocalVars[] memory) {
-  //   return accountLiquidity.getGroupVars(account, cTokenTarget, 0, 0);
-  // }
 
   // function getAccountIntermediateGroupSummary(
   //   address account,
@@ -1023,10 +1015,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     }
 
     return uint256(0);
-  }
-
-  function _getMarketBorrowCap(address cToken) external view returns (uint256) {
-    return borrowCaps[cToken];
   }
 
   /**

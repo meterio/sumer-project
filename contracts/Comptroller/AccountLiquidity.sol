@@ -34,18 +34,18 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
     Exp interSuRate;
   }
 
-  function getGroupVars(
+  function getIntermediateGroupSummary(
     address account,
     address cTokenModify,
     uint256 redeemTokens,
     uint256 borrowAmount
-  ) internal view returns (AccountGroupLocalVars[] memory) {
-    uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
-    AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](assetsGroupNum);
+  ) internal view returns (uint256, uint256, AccountGroupLocalVars memory) {
     IComptroller.AssetGroup[] memory assetGroups = IComptroller(comptroller).getAllAssetGroup();
+    uint256 assetsGroupNum = assetGroups.length;
+    AccountGroupLocalVars[] memory groupVars = new AccountGroupLocalVars[](assetsGroupNum);
     IPriceOracle oracle = IPriceOracle(comptroller.oracle());
 
-    for (uint256 i = 0; i < assetGroups.length; i++) {
+    for (uint256 i = 0; i < assetsGroupNum; i++) {
       IComptroller.AssetGroup memory g = assetGroups[i];
       groupVars[i] = AccountGroupLocalVars(
         g.groupId,
@@ -119,17 +119,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       }
     }
     // end of loop in assets
-    return groupVars;
-  }
 
-  function getIntermediateGroupSummary(
-    address account,
-    address cTokenModify,
-    uint256 redeemTokens,
-    uint256 borrowAmount
-  ) internal view returns (uint256, uint256, AccountGroupLocalVars memory) {
-    uint8 assetsGroupNum = IComptroller(comptroller).getAssetGroupNum();
-    AccountGroupLocalVars[] memory groupVars = getGroupVars(account, cTokenModify, redeemTokens, borrowAmount);
     AccountGroupLocalVars memory targetGroup;
     // loop in groups to calculate accumulated collateral/liability for two types:
     // inter-group and intra-group for target token

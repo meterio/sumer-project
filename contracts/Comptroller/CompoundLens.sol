@@ -94,7 +94,7 @@ contract CompoundLens {
         underlyingDecimals: underlyingDecimals,
         isCToken: cToken.isCToken(),
         isCEther: cToken.isCEther(),
-        borrowCap: comptroller._getMarketBorrowCap(address(cToken)),
+        borrowCap: comptroller.borrowCaps(address(cToken)),
         depositCap: ComptrollerStorage(address(comptroller)).maxSupply(address(cToken)),
         heteroLiquidationIncentive: heteroIncentiveMantissa,
         homoLiquidationIncentive: homoIncentiveMantissa,
