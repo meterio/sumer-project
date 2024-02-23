@@ -133,20 +133,23 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     return index;
   }
 
-  function _validateAndDeleteAgreement(uint256 agreementIndex) internal returns (Agreement memory) {
-    uint256 length = uint256(userAgreements[msg.sender].length);
+  function _validateAndDeleteAgreement(
+    address beneficiary,
+    uint256 agreementIndex
+  ) internal returns (Agreement memory) {
+    uint256 length = uint256(userAgreements[beneficiary].length);
     require(agreementIndex < length, 'index out of bound');
-    Agreement memory agreement = userAgreements[msg.sender][agreementIndex];
+    Agreement memory agreement = userAgreements[beneficiary][agreementIndex];
     require(block.timestamp >= agreement.releaseTime, 'Release time not reached');
     require(!agreement.isFrozen, 'Agreement frozen');
 
     // Move the last element to the deleted spot.
     // Remove the last element.
-    delete userAgreements[msg.sender][agreementIndex];
-    userAgreements[msg.sender][agreementIndex] = userAgreements[msg.sender][userAgreements[msg.sender].length - 1];
-    userAgreements[msg.sender].pop();
+    delete userAgreements[beneficiary][agreementIndex];
+    userAgreements[beneficiary][agreementIndex] = userAgreements[beneficiary][userAgreements[beneficiary].length - 1];
+    userAgreements[beneficiary].pop();
 
-    emit AgreementClaimed(msg.sender, agreementIndex, agreement.underlying, agreement.actionType, agreement.amount);
+    emit AgreementClaimed(beneficiary, agreementIndex, agreement.underlying, agreement.actionType, agreement.amount);
 
     return agreement;
   }
@@ -156,7 +159,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     require(!frozen, 'TimeLock is frozen');
 
     for (uint256 i = 0; i < agreementIndexes.length; i++) {
-      Agreement memory agreement = _validateAndDeleteAgreement(sorted[i]);
+      Agreement memory agreement = _validateAndDeleteAgreement(msg.sender, sorted[i]);
       if (agreement.underlying == address(1)) {
         // payable(agreement.beneficiary).transfer(agreement.amount);
         Address.sendValue(payable(msg.sender), agreement.amount);
@@ -187,7 +190,8 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     uint8 decimals
   ) external view returns (bool) {
     // Get price of asset
-    uint256 oraclePriceMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(this));
+    address ctoken = underlyingDetail[underlying].cToken;
+    uint256 oraclePriceMantissa = IPriceOracle(oracle).getUnderlyingPrice(ctoken);
     require(oraclePriceMantissa > 0, 'price error');
 
     // normalize price for asset with unit of 1e(36-token decimal)

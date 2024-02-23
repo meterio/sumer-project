@@ -267,7 +267,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0xD36a4C7BabE286ea11d67202F400ca5c042a6247",
+    "implementation": "0x31f60F1C5048AA456cd0d3d805AE5b47F618E446",
     "proxys": [
       {
         "contract": "suErc20",
@@ -355,7 +355,7 @@
   },
   "Timelock": {
     "contract": "Timelock",
-    "address": "0xCD6dEC0398B1917C1881566E4498d7AF05626587",
+    "address": "0x247F872F6331e12CaF3a92D19BD5078CE25fc825",
     "constructorName": [
       "cTokens"
     ],
