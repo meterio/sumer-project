@@ -24,7 +24,7 @@
   },
   "CompoundLens": {
     "contract": "CompoundLens",
-    "address": "0x91feA1C1648d5a732A07B17b1CB6391fdc41EB2b"
+    "address": "0x3BB0e110Aa7308Ae6e180c4B3D17777cECca9182"
   },
   "FeedPriceOracle": {
     "contract": "FeedPriceOracleSafe",
@@ -62,7 +62,7 @@
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0x97b1634c369b9f605Dd4931E2CCA7df500F6065f",
+    "implementation": "0x1Ee92726fE31E711ce01eb12831cE74BC5492CA7",
     "address": "0x863597A887FbC21635471b2939c65936C0193FCB",
     "constructorName": [
       "admin"
@@ -86,7 +86,7 @@
   },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0x41c8a152FE9aa9763f9A534364Ab9b6960ef8D3e",
+    "implementation": "0x5394040a9e96B3060bA260B650772d451E35d6a8",
     "address": "0x09Bf5c88De66Edf5Bc8AFdBFFB03E73DED4da4d9",
     "settings": [
       {
@@ -179,7 +179,7 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0x15d3A80e1Dc0c56087feA84FFc5f3F60117778A2",
+    "implementation": "0xe5BaA80cF813b0688d9a79A2949E8B7aF1691fe3",
     "proxys": [
       {
         "contract": "CErc20",
@@ -267,7 +267,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0x2C0847cca15762C47cEABbDAd28727eD184290ed",
+    "implementation": "0xD36a4C7BabE286ea11d67202F400ca5c042a6247",
     "proxys": [
       {
         "contract": "suErc20",
@@ -355,7 +355,7 @@
   },
   "Timelock": {
     "contract": "Timelock",
-    "address": "0xCc65c9d37427488996f5Ff4DBA2E84a3351f4a44",
+    "address": "0xCD6dEC0398B1917C1881566E4498d7AF05626587",
     "constructorName": [
       "cTokens"
     ],
