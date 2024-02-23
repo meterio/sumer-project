@@ -3,7 +3,8 @@ pragma solidity 0.8.19;
 
 interface ITimelock {
   /** @notice Event emitted when a new time-lock agreement is created
-   * @param agreementId ID of the created agreement
+   * @param beneficiary Beneficiary of the claimed agreement
+   * @param agreementIndex Index of the created agreement
    * @param actionType Type of action for the time-lock
    * @param asset Address of the asset
    * @param amount  amount
@@ -11,34 +12,36 @@ interface ITimelock {
    * @param releaseTime Timestamp when the assets can be claimed
    */
   event AgreementCreated(
-    uint256 agreementId,
-    TimeLockActionType actionType,
-    address indexed asset,
-    uint256 amount,
     address indexed beneficiary,
+    uint256 indexed agreementIndex,
+    address indexed asset,
+    TimeLockActionType actionType,
+    uint256 amount,
     uint256 releaseTime
   );
 
   /** @notice Event emitted when a time-lock agreement is claimed
-   * @param agreementId ID of the claimed agreement
-   * @param actionType Type of action for the time-lock
+   * @param beneficiary Beneficiary of the claimed agreement
+   * @param agreementIndex Index of the claimed agreement
    * @param asset Address of the asset
+   * @param actionType Type of action for the time-lock
    * @param amount amount
    * @param beneficiary Address of the beneficiary
    */
   event AgreementClaimed(
-    uint256 agreementId,
-    TimeLockActionType actionType,
+    address indexed beneficiary,
+    uint256 indexed agreementIndex,
     address indexed asset,
-    uint256 amount,
-    address indexed beneficiary
+    TimeLockActionType actionType,
+    uint256 amount
   );
 
   /** @notice Event emitted when a time-lock agreement is frozen or unfrozen
-   * @param agreementId ID of the affected agreement
+   * @param beneficiary Beneficiary of affected agreement
+   * @param agreementIndex Index of the affected agreement
    * @param value Indicates whether the agreement is frozen (true) or unfrozen (false)
    */
-  event AgreementFrozen(uint256 agreementId, bool value);
+  event AgreementFrozen(address beneficiary, uint256 agreementIndex, bool value);
 
   /** @notice Event emitted when the entire TimeLock contract is frozen or unfrozen
    * @param value Indicates whether the contract is frozen (true) or unfrozen (false)
@@ -58,20 +61,19 @@ interface ITimelock {
     REDEEM
   }
   struct Agreement {
-    uint256 agreementId;
     TimeLockActionType actionType;
-    address underlying;
     bool isFrozen;
-    address beneficiary;
-    uint256 releaseTime;
+    address underlying;
+    uint48 releaseTime;
     uint256 amount;
   }
 
   struct Underlying {
-    address cToken;
-    uint256 totalBalance;
-    uint256 lockDuration;
     bool isSupport;
+    address cToken;
+    uint48 lockDuration;
+    uint256 totalBalance;
+    uint256 threshold;
   }
 
   function createAgreement(
@@ -82,4 +84,10 @@ interface ITimelock {
   ) external returns (uint256);
 
   function isSupport(address underlying) external view returns (bool);
+  function overThreshold(
+    address underlying,
+    address oracle,
+    uint256 usdValue,
+    uint8 decimals
+  ) external view returns (bool);
 }

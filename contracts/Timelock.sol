@@ -6,6 +6,8 @@ import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/utils/Address.sol';
 import './ITimelock.sol';
+import './Comptroller/Interfaces/IPriceOracle.sol';
+import './Exponential/CarefulMath.sol';
 
 interface ICToken {
   function underlying() external view returns (address);
@@ -16,17 +18,16 @@ interface ICToken {
 contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
   using SafeERC20 for IERC20;
   using EnumerableSet for EnumerableSet.UintSet;
+  using CarefulMath for uint256;
 
   bytes32 public constant EMERGENCY_ADMIN = keccak256('EMERGENCY_ADMIN');
-  /// @notice user => agreements ids set
-  mapping(address => EnumerableSet.UintSet) private _userAgreements;
-  /// @notice ids => agreement
-  mapping(uint256 => Agreement) private agreements;
+  /// @notice address => agreement
+  mapping(address => Agreement[]) public userAgreements;
+
   /// @notice cToken => underlying
   mapping(address => address) public cTokenToUnderlying;
   /// @notice underlying => underlyDetial
   mapping(address => Underlying) public underlyingDetail;
-  uint256 public agreementCount;
   bool public frozen;
 
   constructor(address[] memory cTokens) {
@@ -43,6 +44,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
       cTokenToUnderlying[cToken] = underlying;
       underlyingDetail[underlying].cToken = cToken;
       underlyingDetail[underlying].isSupport = true;
+      underlyingDetail[underlying].threshold = 100;
     }
     _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     _setupRole(EMERGENCY_ADMIN, msg.sender);
@@ -66,19 +68,37 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     _;
   }
 
-  function setUnderly(address cToken, address underlying, bool isSupport) external onlyAdmin {
+  function setUnderly(address cToken, address underlying, bool isSupport_) external onlyAdmin {
     cTokenToUnderlying[cToken] = underlying;
     underlyingDetail[underlying].cToken = cToken;
-    underlyingDetail[underlying].isSupport = isSupport;
+    underlyingDetail[underlying].isSupport = isSupport_;
   }
 
-  function setLockDuration(address underlying, uint256 lockDuration) external onlyAdmin {
+  function setThreshold(address underlying, uint256 threshold) external onlyAdmin {
+    underlyingDetail[underlying].threshold = threshold;
+  }
+
+  function setLockDuration(address underlying, uint48 lockDuration) external onlyAdmin {
     underlyingDetail[underlying].lockDuration = lockDuration;
   }
 
   function rescueERC20(address token, address to, uint256 amount) external onlyEmergencyAdmin {
     IERC20(token).safeTransfer(to, amount);
     emit RescueERC20(token, to, amount);
+  }
+
+  function sort_array(uint256[] memory arr) private pure returns (uint256[] memory) {
+    uint256 l = arr.length;
+    for (uint i = 0; i < l; i++) {
+      for (uint j = i + 1; j < l; j++) {
+        if (arr[i] < arr[j]) {
+          uint256 temp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = temp;
+        }
+      }
+    }
+    return arr;
   }
 
   function createAgreement(
@@ -97,52 +117,51 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     require(underlyBalance >= underlyingDetail[underlying].totalBalance + amount, 'balance error');
     underlyingDetail[underlying].totalBalance = underlyBalance;
 
-    uint256 agreementId = agreementCount++;
-    uint256 releaseTime = block.timestamp + underlyingDetail[underlying].lockDuration;
-    agreements[agreementId] = Agreement({
-      actionType: actionType,
-      underlying: underlying,
-      amount: amount,
-      beneficiary: beneficiary,
-      releaseTime: releaseTime,
-      isFrozen: false,
-      agreementId: agreementId
-    });
-    _userAgreements[beneficiary].add(agreementId);
+    uint48 releaseTime = uint48(block.timestamp) + underlyingDetail[underlying].lockDuration;
+    uint256 index = userAgreements[beneficiary].length;
+    userAgreements[beneficiary].push(
+      Agreement({
+        actionType: actionType,
+        isFrozen: false,
+        underlying: underlying,
+        releaseTime: releaseTime,
+        amount: amount
+      })
+    );
 
-    emit AgreementCreated(agreementId, actionType, underlying, amount, beneficiary, releaseTime);
-    return agreementId;
+    emit AgreementCreated(beneficiary, index, underlying, actionType, amount, releaseTime);
+    return index;
   }
 
-  function _validateAndDeleteAgreement(uint256 agreementId) internal returns (Agreement memory) {
-    Agreement memory agreement = agreements[agreementId];
-    require(msg.sender == agreement.beneficiary, 'Not beneficiary');
+  function _validateAndDeleteAgreement(uint256 agreementIndex) internal returns (Agreement memory) {
+    uint256 length = uint256(userAgreements[msg.sender].length);
+    require(agreementIndex < length, 'index out of bound');
+    Agreement memory agreement = userAgreements[msg.sender][agreementIndex];
     require(block.timestamp >= agreement.releaseTime, 'Release time not reached');
     require(!agreement.isFrozen, 'Agreement frozen');
-    delete agreements[agreementId];
-    _userAgreements[agreement.beneficiary].remove(agreementId);
 
-    emit AgreementClaimed(
-      agreementId,
-      agreement.actionType,
-      agreement.underlying,
-      agreement.amount,
-      agreement.beneficiary
-    );
+    // Move the last element to the deleted spot.
+    // Remove the last element.
+    delete userAgreements[msg.sender][agreementIndex];
+    userAgreements[msg.sender][agreementIndex] = userAgreements[msg.sender][userAgreements[msg.sender].length - 1];
+    userAgreements[msg.sender].pop();
+
+    emit AgreementClaimed(msg.sender, agreementIndex, agreement.underlying, agreement.actionType, agreement.amount);
 
     return agreement;
   }
 
-  function claim(uint256[] calldata agreementIds) external nonReentrant {
+  function claim(uint256[] calldata agreementIndexes) external nonReentrant {
+    uint256[] memory sorted = sort_array(agreementIndexes);
     require(!frozen, 'TimeLock is frozen');
 
-    for (uint256 index = 0; index < agreementIds.length; index++) {
-      Agreement memory agreement = _validateAndDeleteAgreement(agreementIds[index]);
+    for (uint256 i = 0; i < agreementIndexes.length; i++) {
+      Agreement memory agreement = _validateAndDeleteAgreement(sorted[i]);
       if (agreement.underlying == address(1)) {
         // payable(agreement.beneficiary).transfer(agreement.amount);
-        Address.sendValue(payable(agreement.beneficiary), agreement.amount);
+        Address.sendValue(payable(msg.sender), agreement.amount);
       } else {
-        IERC20(agreement.underlying).safeTransfer(agreement.beneficiary, agreement.amount);
+        IERC20(agreement.underlying).safeTransfer(msg.sender, agreement.amount);
       }
       underlyingDetail[agreement.underlying].totalBalance -= agreement.amount;
     }
@@ -150,29 +169,46 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
 
   function underlyingDetails(address[] calldata underlyings) external view returns (Underlying[] memory) {
     uint256 underlyingLength = underlyings.length;
-    Underlying[] memory underlyingDetails = new Underlying[](underlyingLength);
+    Underlying[] memory details = new Underlying[](underlyingLength);
     for (uint256 i; i < underlyingLength; ++i) {
-      underlyingDetails[i] = underlyingDetail[underlyings[i]];
+      details[i] = underlyingDetail[underlyings[i]];
     }
-    return underlyingDetails;
-  }
-
-  function userAgreements(address user) external view returns (Agreement[] memory) {
-    uint256 agreementLength = _userAgreements[user].length();
-    Agreement[] memory userAgreements = new Agreement[](agreementLength);
-    for (uint256 i; i < agreementLength; ++i) {
-      userAgreements[i] = agreements[_userAgreements[user].at(i)];
-    }
-    return userAgreements;
+    return details;
   }
 
   function isSupport(address underlying) external view returns (bool) {
     return underlyingDetail[underlying].isSupport;
   }
 
-  function freezeAgreement(uint256 agreementId) external onlyEmergencyAdmin {
-    agreements[agreementId].isFrozen = true;
-    emit AgreementFrozen(agreementId, true);
+  function overThreshold(
+    address underlying,
+    address oracle,
+    uint256 amount,
+    uint8 decimals
+  ) external view returns (bool) {
+    // Get price of asset
+    uint256 oraclePriceMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(this));
+    require(oraclePriceMantissa > 0, 'price error');
+
+    // normalize price for asset with unit of 1e(36-token decimal)
+    if (decimals < 18) {
+      (, oraclePriceMantissa) = oraclePriceMantissa.mulUInt(10 ** (18 - decimals));
+    }
+    (, uint256 usdValue) = oraclePriceMantissa.mulUInt(amount);
+    (, usdValue) = usdValue.divUInt(10 ** 36);
+
+    return usdValue > underlyingDetail[underlying].threshold;
+  }
+
+  function getAllAgreementsFor(address beneficiary) external view returns (Agreement[] memory) {
+    Agreement[] memory agreements = userAgreements[beneficiary];
+    return agreements;
+  }
+
+  function freezeAgreement(address beneficiary, uint256 agreementIndex) external onlyEmergencyAdmin {
+    require(agreementIndex < userAgreements[beneficiary].length, 'index out of bound');
+    userAgreements[beneficiary][agreementIndex].isFrozen = true;
+    emit AgreementFrozen(beneficiary, agreementIndex, true);
   }
 
   function freezeAllAgreements() external onlyEmergencyAdmin {
