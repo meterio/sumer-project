@@ -155,16 +155,13 @@ export default {
       chainId: 82,
       timeout: 99999,
       gasPrice: 500000000000,
-      accounts: [process.env.PRIVATE_KEY_0, process.env.PRIVATE_KEY_1],
     },
     basetest: {
       url: argv.baseTestRpcUrl,
       chainId: 84531,
-      accounts: [process.env.PRIVATE_KET_BASE],
     },
     zkTestnet: {
       url: 'https://testnet.era.zksync.dev', // URL of the zkSync network RPC
-      accounts: { mnemonic: process.env.MNEMONIC_1 },
     },
     goerli: {
       url: 'https://ethereum-goerli.publicnode.com	',
