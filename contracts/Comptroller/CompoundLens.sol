@@ -493,7 +493,7 @@ contract CompoundLens {
     address oracle = comptroller.oracle();
     uint256 priceBorrowedMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenBorrowed));
     uint256 priceCollateralMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenCollateral));
-    require(priceBorrowedMantissa > 0 && priceCollateralMantissa > 0, 'PRICE_ERROR');
+    require(priceBorrowedMantissa > 0 && priceCollateralMantissa > 0, 'price error');
 
     /*
      * Get the exchange rate and calculate the number of collateral tokens to seize:
@@ -564,13 +564,13 @@ contract CompoundLens {
   ) external view returns (uint256) {
     // Shh - currently unused: liquidator;
 
-    require(comptroller.isListed(cTokenBorrowed) && comptroller.isListed(cTokenCollateral), 'MARKET_NOT_LISTED');
+    require(comptroller.isListed(cTokenBorrowed) && comptroller.isListed(cTokenCollateral), 'market not listed');
 
     uint256 borrowBalance = ICToken(cTokenBorrowed).borrowBalanceStored(borrower);
 
     /* allow accounts to be liquidated if the market is deprecated */
     if (isDeprecated(cTokenBorrowed, comptroller)) {
-      require(borrowBalance >= repayAmount, 'too much repay');
+      require(borrowBalance >= repayAmount, 'invalid repay');
     } else {
       /* The borrower must have shortfall in order to be liquidatable */
       (, , uint256 shortfall) = comptroller.getHypotheticalAccountLiquidity(borrower, cTokenBorrowed, 0, 0);
@@ -579,7 +579,7 @@ contract CompoundLens {
 
       /* The liquidator may not repay more than what is allowed by the closeFactor */
       uint256 maxClose = Exp({mantissa: comptroller.closeFactorMantissa()}).mul_ScalarTruncate(borrowBalance);
-      require(repayAmount <= maxClose, 'too much repay');
+      require(repayAmount <= maxClose, 'repay over close factor');
     }
     return uint256(0);
   }

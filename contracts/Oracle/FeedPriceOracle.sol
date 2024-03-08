@@ -56,7 +56,7 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
     uint8 feedDecimals,
     string memory name
   ) private {
-    require(addr != address(0), 'Address is Zero!');
+    require(addr != address(0), 'invalid address');
     if (feeds[cToken_].source != 0) {
       delete fixedPrices[cToken_];
     }
@@ -112,10 +112,10 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
     (bool success, bytes memory message) = feed.addr.staticcall(
       abi.encodeWithSelector(IPyth.getPriceUnsafe.selector, feed.feedId)
     );
-    require(success, 'pyth error!');
+    require(success, 'pyth error');
     (int64 price, , int32 expo, ) = (abi.decode(message, (int64, uint64, int32, uint256)));
     uint256 decimals = DECIMALS - uint32(expo * -1);
-    require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+    require(decimals <= DECIMALS, 'decimal underflow');
     return uint64(price) * (10 ** decimals);
   }
 
@@ -124,23 +124,23 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
     if (feed.addr != address(0)) {
       if (feed.source == uint8(1)) {
         uint256 decimals = uint256(DECIMALS - IChainlinkFeed(feed.addr).decimals());
-        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+        require(decimals <= DECIMALS, 'decimal underflow');
         (uint80 roundID, int256 answer, , uint256 updatedAt, uint80 answeredInRound) = IChainlinkFeed(feed.addr)
           .latestRoundData();
-        require(answeredInRound >= roundID, 'Stale price');
+        require(answeredInRound >= roundID, 'stale price');
         require(answer > 0, 'negative price');
         require(block.timestamp <= updatedAt + 86400, 'timeout');
         return uint256(answer) * (10 ** decimals);
       }
       if (feed.source == uint8(2)) {
         uint256 decimals = uint256(DECIMALS - feed.feedDecimals);
-        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+        require(decimals <= DECIMALS, 'decimal underflow');
         uint256 _temp = uint256(IWitnetFeed(feed.addr).lastPrice());
         return _temp * (10 ** decimals);
       }
       if (feed.source == uint8(3)) {
         uint256 decimals = uint256(DECIMALS - feed.feedDecimals);
-        require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+        require(decimals <= DECIMALS, 'decimal underflow');
         IStdReference.ReferenceData memory refData = IStdReference(feed.addr).getReferenceData(feed.name, 'USD');
         return refData.rate * (10 ** decimals);
       }

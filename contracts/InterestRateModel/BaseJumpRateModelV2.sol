@@ -88,7 +88,7 @@ abstract contract BaseJumpRateModelV2 is InterestRateModel {
     uint256 jumpMultiplierPerYear,
     uint256 kink_
   ) external virtual {
-    require(msg.sender == owner, 'only the owner may call this function.');
+    require(msg.sender == owner, 'only owner');
 
     _updateJumpRateModelInternal(blocksPerYear, baseRatePerYear, multiplierPerYear, jumpMultiplierPerYear, kink_);
   }

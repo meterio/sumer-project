@@ -25,7 +25,7 @@ abstract contract CToken is CTokenStorage {
 
   modifier onlyAdmin() {
     // Check caller is admin
-    require(msg.sender == admin, 'UNAUTHORIZED');
+    require(msg.sender == admin, 'only admin');
     _;
   }
 
@@ -51,16 +51,16 @@ abstract contract CToken is CTokenStorage {
     uint256 reserveFactorMantissa_
   ) internal {
     admin = _admin;
-    require(accrualBlockNumber == 0 && borrowIndex == 0, 'MMOB'); // market may only be initialized once
+    require(accrualBlockNumber == 0 && borrowIndex == 0, 'only initialize once'); // market may only be initialized once
 
     isCToken = isCToken_;
 
     // Set initial exchange rate
     initialExchangeRateMantissa = initialExchangeRateMantissa_;
-    require(initialExchangeRateMantissa > 0, 'IERM'); // initial exchange rate must be greater than zero
+    require(initialExchangeRateMantissa > 0, 'invalid ex rate'); // initial exchange rate must be greater than zero
 
     discountRateMantissa = discountRateMantissa_;
-    require(discountRateMantissa > 0 && discountRateMantissa <= 1e18, 'RMI'); // rate must in [0,100]
+    require(discountRateMantissa > 0 && discountRateMantissa <= 1e18, 'invalid rate'); // rate must in [0,100]
 
     reserveFactorMantissa = reserveFactorMantissa_;
     // Set the comptroller
@@ -1317,7 +1317,7 @@ abstract contract CToken is CTokenStorage {
     address oldPendingAdmin = pendingAdmin;
 
     // Store pendingAdmin with value newPendingAdmin
-    require(newPendingAdmin != address(0), 'AIZ'); // Address is Zero
+    require(newPendingAdmin != address(0), 'invalid address'); // Address is Zero
     pendingAdmin = newPendingAdmin;
 
     // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)
@@ -1361,7 +1361,7 @@ abstract contract CToken is CTokenStorage {
   function _setComptroller(address newComptroller) public override onlyAdmin returns (uint256) {
     address oldComptroller = comptroller;
     // Ensure invoke comptroller.isComptroller() returns true
-    require(IComptroller(newComptroller).isComptroller(), 'MMRF'); // market method returned false
+    require(IComptroller(newComptroller).isComptroller(), 'invalid comptroller'); // market method returned false
 
     // Set market's comptroller to newComptroller
     comptroller = newComptroller;
@@ -1553,7 +1553,7 @@ abstract contract CToken is CTokenStorage {
     oldInterestRateModel = interestRateModel;
 
     // Ensure invoke newInterestRateModel.isInterestRateModel() returns true
-    require(IInterestRateModel(interestRateModel).isInterestRateModel(), 'MMRF'); // market method returned false
+    require(IInterestRateModel(interestRateModel).isInterestRateModel(), 'invalid interest rate'); // market method returned false
 
     // Set the interest rate model to newInterestRateModel
     interestRateModel = newInterestRateModel;
@@ -1598,7 +1598,7 @@ abstract contract CToken is CTokenStorage {
    * @dev Prevents a contract from calling itself, directly or indirectly.
    */
   modifier nonReentrant() {
-    require(_notEntered, 'RE'); // re-entered
+    require(_notEntered, 're-entered'); // re-entered
     _notEntered = false;
     _;
     _notEntered = true; // get a gas-refund post-Istanbul
@@ -1727,7 +1727,7 @@ abstract contract CToken is CTokenStorage {
   }
 
   function _setDiscountRate(uint256 discountRateMantissa_) external returns (uint256) {
-    require(msg.sender == admin, 'UNAUTHORIZED');
+    require(msg.sender == admin, 'only admin');
     uint256 oldDiscountRateMantissa_ = discountRateMantissa;
     discountRateMantissa = discountRateMantissa_;
     emit NewDiscountRate(oldDiscountRateMantissa_, discountRateMantissa_);

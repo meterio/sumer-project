@@ -24,7 +24,7 @@ contract PythOracle {
     );
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "ONLY OWNER");
+        require(msg.sender == owner, "only owner");
         _;
     }
 
@@ -33,7 +33,7 @@ contract PythOracle {
     }
 
     function changeOwner(address owner_) public onlyOwner {
-        require(owner_ != address(0), "Address is Zero!");
+        require(owner_ != address(0), "invalid address");
         owner = owner_;
     }
 
@@ -58,8 +58,8 @@ contract PythOracle {
         uint8 tokenDecimals,
         string memory name
     ) private {
-        require(addr != address(0), "Address is Zero!");
-        require(feedId != bytes32(0), "feedId is Zero!");
+        require(addr != address(0), "invalid address");
+        require(feedId != bytes32(0), "invalid feedId");
 
         FeedData memory feedData = FeedData({
             feedId: feedId,
@@ -101,7 +101,7 @@ contract PythOracle {
                 uint256 decimals = DECIMALS -
                     feed.tokenDecimals -
                     uint32(price.expo * -1);
-                require(decimals <= DECIMALS, "DECIMAL UNDERFLOW");
+                require(decimals <= DECIMALS, "decimal underflow");
                 return uint64(price.price) * (10 ** decimals);
             }
         }

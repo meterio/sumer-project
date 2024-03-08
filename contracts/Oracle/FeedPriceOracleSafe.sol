@@ -9,10 +9,10 @@ contract FeedPriceOracleSafe is FeedPriceOracle {
     (bool success, bytes memory message) = feed.addr.staticcall(
       abi.encodeWithSelector(IPyth.getPriceNoOlderThan.selector, feed.feedId, validTimePeriod)
     );
-    require(success, 'pyth error!');
+    require(success, 'pyth error');
     (int64 price, , int32 expo, ) = (abi.decode(message, (int64, uint64, int32, uint256)));
     uint256 decimals = DECIMALS - uint32(expo * -1);
-    require(decimals <= DECIMALS, 'DECIMAL UNDERFLOW');
+    require(decimals <= DECIMALS, 'decimal underflow');
     return uint64(price) * (10 ** decimals);
   }
 

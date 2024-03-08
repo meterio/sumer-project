@@ -80,7 +80,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
     isCEther = false;
 
     // Set underlying and sanity check it
-    require(underlying_ != address(0), 'Address is Zero!');
+    require(underlying_ != address(0), 'invalid address');
     underlying = underlying_;
     // ICToken(underlying).totalSupply();
   }
@@ -170,12 +170,12 @@ contract CErc20 is CToken, ICErc20, Initializable {
    * @param token The address of the ERC-20 token to sweep
    */
   function sweepToken(address token) external override {
-    require(address(token) != underlying, 'CErc20::sweepToken: can not sweep underlying token');
+    require(address(token) != underlying, 'can not sweep underlying token');
     uint256 underlyingBalanceBefore = ICToken(underlying).balanceOf(address(this));
     uint256 balance = ICToken(token).balanceOf(address(this));
     ICToken(token).transfer(admin, balance);
     uint256 underlyingBalanceAfter = ICToken(underlying).balanceOf(address(this));
-    require(underlyingBalanceBefore == underlyingBalanceAfter, 'underlyingBalance error');
+    require(underlyingBalanceBefore == underlyingBalanceAfter, 'underlying balance error');
   }
 
   /**
@@ -231,11 +231,11 @@ contract CErc20 is CToken, ICErc20, Initializable {
         revert(0, 0)
       }
     }
-    require(success, 'TOKEN_TRANSFER_IN_FAILED');
+    require(success, 'token transfer in failed');
 
     // Calculate the amount that was *actually* transferred
     uint256 balanceAfter = ICToken(underlying).balanceOf(address(this));
-    require(balanceAfter >= balanceBefore, 'TOKEN_TRANSFER_IN_OVERFLOW');
+    require(balanceAfter >= balanceBefore, 'token transfer in overflow');
     uint256 finalAmount = balanceAfter - balanceBefore;
     underlyingBalance += finalAmount;
     return finalAmount; // underflow already checked above, just subtract
@@ -272,7 +272,7 @@ contract CErc20 is CToken, ICErc20, Initializable {
         revert(0, 0)
       }
     }
-    require(success, 'TOKEN_TRANSFER_OUT_FAILED');
+    require(success, 'token transfer out failed');
   }
 
   function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {

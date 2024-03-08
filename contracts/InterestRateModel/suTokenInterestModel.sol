@@ -23,7 +23,7 @@ contract SuTokenRateModel is InterestRateModel {
   uint256 public supplyRate;
 
   modifier onlyOwner() {
-    require(msg.sender == owner, 'ONLY OWNER');
+    require(msg.sender == owner, 'only owner');
     _;
   }
 
@@ -34,7 +34,7 @@ contract SuTokenRateModel is InterestRateModel {
   }
 
   function changeOwner(address owner_) public onlyOwner {
-    require(owner_ != address(0), 'Address is Zero!');
+    require(owner_ != address(0), 'invalid address');
     owner = owner_;
   }
 

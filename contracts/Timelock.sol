@@ -33,14 +33,14 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
   constructor(address[] memory cTokens) {
     for (uint i; i < cTokens.length; ++i) {
       address cToken = cTokens[i];
-      require(cToken != address(0), 'cToken is zero');
+      require(cToken != address(0), 'invalid cToken');
       address underlying;
       if (ICToken(cToken).isCEther()) {
         underlying = address(1);
       } else {
         underlying = ICToken(cToken).underlying();
       }
-      require(underlying != address(0), 'underlying is zero');
+      require(underlying != address(0), 'invalid underlying');
       cTokenToUnderlying[cToken] = underlying;
       underlyingDetail[underlying].cToken = cToken;
       underlyingDetail[underlying].isSupport = true;
@@ -53,18 +53,18 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
   receive() external payable {}
 
   modifier onlyAdmin() {
-    require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), 'CALLER_NOT_ADMIN');
+    require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), 'only admin');
     _;
   }
 
   modifier onlyEmergencyAdmin() {
-    require(hasRole(EMERGENCY_ADMIN, msg.sender), 'CALLER_NOT_EMERGENCY_ADMIN');
+    require(hasRole(EMERGENCY_ADMIN, msg.sender), 'only emergency admin');
     _;
   }
 
   modifier onlyCToken(address underlying) {
-    require(cTokenToUnderlying[msg.sender] == underlying && underlying != address(0), 'CALLER_NOT_CTOKEN');
-    require(underlyingDetail[underlying].isSupport, 'NOT_SUPPORT');
+    require(cTokenToUnderlying[msg.sender] == underlying && underlying != address(0), 'invalid underlying');
+    require(underlyingDetail[underlying].isSupport, 'only ctoken');
     _;
   }
 
@@ -107,14 +107,14 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     uint256 amount,
     address beneficiary
   ) external onlyCToken(underlying) returns (uint256) {
-    require(beneficiary != address(0), 'Beneficiary cant be zero address');
+    require(beneficiary != address(0), 'invalid beneficiary');
     uint256 underlyBalance;
     if (underlying == address(1)) {
       underlyBalance = address(this).balance;
     } else {
       underlyBalance = IERC20(underlying).balanceOf(address(this));
     }
-    require(underlyBalance >= underlyingDetail[underlying].totalBalance + amount, 'balance error');
+    require(underlyBalance >= underlyingDetail[underlying].totalBalance + amount, 'not enough underly balance');
     underlyingDetail[underlying].totalBalance = underlyBalance;
 
     uint48 releaseTime = uint48(block.timestamp) + underlyingDetail[underlying].lockDuration;
@@ -138,10 +138,10 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
     uint256 agreementIndex
   ) internal returns (Agreement memory) {
     uint256 length = uint256(userAgreements[beneficiary].length);
-    require(agreementIndex < length, 'index out of bound');
+    require(agreementIndex < length, 'agreement index out of bound');
     Agreement memory agreement = userAgreements[beneficiary][agreementIndex];
-    require(block.timestamp >= agreement.releaseTime, 'Release time not reached');
-    require(!agreement.isFrozen, 'Agreement frozen');
+    require(block.timestamp >= agreement.releaseTime, 'release time not reached');
+    require(!agreement.isFrozen, 'agreement frozen');
 
     // Move the last element to the deleted spot.
     // Remove the last element.
@@ -156,7 +156,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
 
   function claim(uint256[] calldata agreementIndexes) external nonReentrant {
     uint256[] memory sorted = sort_array(agreementIndexes);
-    require(!frozen, 'TimeLock is frozen');
+    require(!frozen, 'timeLock frozen');
 
     for (uint256 i = 0; i < agreementIndexes.length; i++) {
       Agreement memory agreement = _validateAndDeleteAgreement(msg.sender, sorted[i]);
@@ -210,7 +210,7 @@ contract Timelock is ITimelock, AccessControlEnumerable, ReentrancyGuard {
   }
 
   function freezeAgreement(address beneficiary, uint256 agreementIndex) external onlyEmergencyAdmin {
-    require(agreementIndex < userAgreements[beneficiary].length, 'index out of bound');
+    require(agreementIndex < userAgreements[beneficiary].length, 'agreement index out of bound');
     userAgreements[beneficiary][agreementIndex].isFrozen = true;
     emit AgreementFrozen(beneficiary, agreementIndex, true);
   }

@@ -29,14 +29,14 @@ contract ChainlinkFeedAdaptor_ETHToUSD {
       uint256 tokenUpdatedAt,
       uint80 tokenAnsweredInRound
     ) = IChainlinkFeed(tokenFeed).latestRoundData();
-    require(tokenAnsweredInRound >= tokenRoundID, 'Token Stale price');
+    require(tokenAnsweredInRound >= tokenRoundID, 'stale price');
     require(tokenAnswer > 0, 'negative price');
     require(block.timestamp <= tokenUpdatedAt + 86400, 'timeout');
 
     uint256 ethDecimals = IChainlinkFeed(ethFeed).decimals();
     (uint80 ethRoundID, int256 ethAnswer, , uint256 ethUpdatedAt, uint80 ethAnsweredInRound) = IChainlinkFeed(ethFeed)
       .latestRoundData();
-    require(ethAnsweredInRound >= ethRoundID, 'ETH Stale price');
+    require(ethAnsweredInRound >= ethRoundID, 'ETH stale price');
     require(ethAnswer > 0, 'negative price');
     require(block.timestamp <= ethUpdatedAt + 86400, 'timeout');
 
@@ -55,7 +55,7 @@ contract ChainlinkFeedAdaptor_ETHToUSD {
     returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
   {
     (roundId, answer, startedAt, updatedAt, answeredInRound) = IChainlinkFeed(ethFeed).latestRoundData();
-    require(answeredInRound >= roundId, 'ETH Stale price');
+    require(answeredInRound >= roundId, 'ETH stale price');
     require(answer > 0, 'negative price');
     require(block.timestamp <= updatedAt + 86400, 'timeout');
     return (roundId, answer, startedAt, updatedAt, answeredInRound);
@@ -67,7 +67,7 @@ contract ChainlinkFeedAdaptor_ETHToUSD {
     returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
   {
     (roundId, answer, startedAt, updatedAt, answeredInRound) = IChainlinkFeed(tokenFeed).latestRoundData();
-    require(answeredInRound >= roundId, 'Token Stale price');
+    require(answeredInRound >= roundId, 'stale price');
     require(answer > 0, 'negative price');
     require(block.timestamp <= updatedAt + 86400, 'timeout');
     return (roundId, answer, startedAt, updatedAt, answeredInRound);

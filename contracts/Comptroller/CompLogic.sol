@@ -65,7 +65,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
   );
 
   modifier onlyComptroller() {
-    require(msg.sender == address(comptroller), 'forbidden!');
+    require(msg.sender == address(comptroller), 'only comptroller');
     _;
   }
 
@@ -95,9 +95,9 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
 
   function _setCompSpeedInternal(address cToken, uint256 supplySpeed, uint256 borrowSpeed) private {
     (bool isListed, , ) = comptroller.markets(cToken);
-    require(isListed, 'comp market is not listed');
-    require(supplySpeed > 0, 'supplySpeed=0');
-    require(borrowSpeed > 0, 'borrowSpeed=0');
+    require(isListed, 'market not listed');
+    require(supplySpeed > 0, 'invalid supplySpeed');
+    require(borrowSpeed > 0, 'invlaid borrowSpeed');
 
     if (compSupplySpeeds[cToken] != supplySpeed) {
       // Supply speed updated so let's update supply state to ensure that
@@ -313,7 +313,7 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
     for (uint256 i = 0; i < cTokens.length; ++i) {
       address cToken = cTokens[i];
       (bool isListed, , ) = comptroller.markets(cToken);
-      require(isListed, 'market must be listed');
+      require(isListed, 'market not listed');
       if (borrowers) {
         Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
         _updateCompBorrowIndex(cToken, borrowIndex);

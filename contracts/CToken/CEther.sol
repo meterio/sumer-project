@@ -111,7 +111,7 @@ contract CEther is CToken, Initializable {
     if (received > borrows) {
       // payable(msg.sender).transfer(received - borrows);
       (bool success, ) = msg.sender.call{value: received - borrows}('');
-      require(success, 'Address: unable to send value, recipient may have reverted');
+      require(success, 'unable to send value, recipient may have reverted');
     }
     (uint256 err, ) = repayBorrowBehalfInternal(borrower, borrows);
     requireNoError(err, 'repayBorrowBehalf failed');
@@ -177,7 +177,7 @@ contract CEther is CToken, Initializable {
     /* Send the Ether, with minimal gas and revert on failure */
     // to.transfer(amount);
     (bool success, ) = to.call{value: amount}('');
-    require(success, 'Address: unable to send value, recipient may have reverted');
+    require(success, 'unable to send value, recipient may have reverted');
     underlyingBalance-= amount;
   }
 

@@ -90,7 +90,7 @@ contract suErc20 is CErc20 {
         revert(0, 0)
       }
     }
-    require(success, 'TOKEN_TRANSFER_IN_FAILED');
+    require(success, 'token transfer in failed');
 
     // Calculate the amount that was *actually* transferred
     return amount;
@@ -126,7 +126,7 @@ contract suErc20 is CErc20 {
         revert(0, 0)
       }
     }
-    require(success, 'TOKEN_TRANSFER_OUT_FAILED');
+    require(success, 'token transfer out failed');
   }
 
   function changeCtoken() public onlyAdmin {

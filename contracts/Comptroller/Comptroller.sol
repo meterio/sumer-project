@@ -332,7 +332,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     require(
       maxSupply[cToken] == 0 ||
         (maxSupply[cToken] > 0 && ICToken(cToken).totalSupply().add_(mintAmount) <= maxSupply[cToken]),
-      'cToken > maxSupply'
+      'supply cap reached'
     );
 
     return uint256(0);
@@ -407,7 +407,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
     if (!markets[cToken].accountMembership[borrower]) {
       // only cTokens may call borrowAllowed if borrower not in market
-      require(msg.sender == cToken, 'sender must be cToken');
+      require(msg.sender == cToken, 'only ctoken');
 
       // attempt to add borrower to the market
       addToMarketInternal(msg.sender, borrower);
@@ -416,7 +416,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       assert(markets[cToken].accountMembership[borrower]);
     }
 
-    require(oracle.getUnderlyingPrice(cToken) > 0, 'PRICE_ERROR');
+    require(oracle.getUnderlyingPrice(cToken) > 0, 'price error');
 
     //uint borrowCap = borrowCaps[cToken];
     uint256 borrowCap = borrowCaps[cToken];
@@ -628,7 +628,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @return uint 0=success, otherwise a failure
    */
   function _setCloseFactor(uint256 newCloseFactorMantissa) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-    require(newCloseFactorMantissa > 0, 'newCloseFactorMantissa=0');
+    require(newCloseFactorMantissa > 0, 'invalid close factor');
     // Check caller is admin
     uint256 oldCloseFactorMantissa = closeFactorMantissa;
     closeFactorMantissa = newCloseFactorMantissa;
@@ -684,11 +684,11 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 supplyCap
   ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
     require(!markets[cToken].isListed, 'market already listed');
-    require(groupId > 0, 'groupId > 0');
+    require(groupId > 0, 'invalid groupId');
 
     // ICToken(cToken).isCToken(); // Sanity check to make sure its really a address
     (bool success, ) = cToken.call(abi.encodeWithSignature('isCToken()'));
-    require(success && isContract(cToken), 'contract error!');
+    require(success && isContract(cToken), 'contract error');
 
     // Note that isComped is not in active use anymore
     // markets[cToken] = Market({isListed: true, isComped: false, assetGroupId: groupId});
@@ -878,7 +878,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @return uint 0=success, otherwise a failure. (See enum Error for details)
    */
   function _setPauseGuardian(address newPauseGuardian) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-    require(newPauseGuardian != address(0), 'Address is Zero!');
+    require(newPauseGuardian != address(0), 'invalid address');
 
     // Save current value for inclusion in log
     address oldPauseGuardian = pauseGuardian;
@@ -900,11 +900,11 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   modifier onlyAdminOrPauser(bool state) {
     if (state) {
-      require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), 'only admin can unpause');
+      require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), 'only admin');
     } else {
       require(
         hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(PAUSER_ROLE, msg.sender),
-        'only admin or pauser can pause'
+        'only admin or pauser'
       );
     }
     _;
@@ -967,7 +967,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    */
   function setGovTokenAddress(address _governanceToken) external onlyRole(DEFAULT_ADMIN_ROLE) {
     //require(adminOrInitializing(), "only admin can set governanceToken");
-    require(_governanceToken != address(0), 'Address is Zero!');
+    require(_governanceToken != address(0), 'invalid address');
     governanceToken = _governanceToken;
   }
 
@@ -1022,7 +1022,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param newBorrowCapGuardian The address of the new Borrow Cap Guardian
    */
   function _setBorrowCapGuardian(address newBorrowCapGuardian) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    require(newBorrowCapGuardian != address(0), 'Address is Zero!');
+    require(newBorrowCapGuardian != address(0), 'invalid address');
 
     // Save current value for inclusion in log
     address oldBorrowCapGuardian = borrowCapGuardian;
