@@ -246,14 +246,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SuErc20__factory>;
     getContractFactory(
-      name: "ErrorTest",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ErrorTest__factory>;
-    getContractFactory(
-      name: "TokenErrorReporter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TokenErrorReporter__factory>;
-    getContractFactory(
       name: "ERC20MinterBurnerPauser",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20MinterBurnerPauser__factory>;
@@ -685,16 +677,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.SuErc20>;
     getContractAt(
-      name: "ErrorTest",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ErrorTest>;
-    getContractAt(
-      name: "TokenErrorReporter",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.TokenErrorReporter>;
-    getContractAt(
       name: "ERC20MinterBurnerPauser",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -1102,14 +1084,6 @@ declare module "hardhat/types/runtime" {
       name: "SuErc20",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SuErc20>;
-    deployContract(
-      name: "ErrorTest",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ErrorTest>;
-    deployContract(
-      name: "TokenErrorReporter",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.TokenErrorReporter>;
     deployContract(
       name: "ERC20MinterBurnerPauser",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1541,16 +1515,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SuErc20>;
-    deployContract(
-      name: "ErrorTest",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ErrorTest>;
-    deployContract(
-      name: "TokenErrorReporter",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.TokenErrorReporter>;
     deployContract(
       name: "ERC20MinterBurnerPauser",
       args: any[],

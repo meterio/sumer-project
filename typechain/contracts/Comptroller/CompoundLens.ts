@@ -632,7 +632,7 @@ export interface CompoundLens extends BaseContract {
       repayAmount: BigNumberish,
       comptroller: AddressLike
     ],
-    [bigint],
+    [void],
     "view"
   >;
 
@@ -767,7 +767,7 @@ export interface CompoundLens extends BaseContract {
       repayAmount: BigNumberish,
       comptroller: AddressLike
     ],
-    [bigint],
+    [void],
     "view"
   >;
   getFunction(

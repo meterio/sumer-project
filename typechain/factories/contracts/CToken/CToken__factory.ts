@@ -7,27 +7,6 @@ import type { CToken, CTokenInterface } from "../../../contracts/CToken/CToken";
 
 const _abi = [
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "errorCode",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "infoCode",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "detailCode",
-        type: "uint256",
-      },
-    ],
-    name: "TokenError",
-    type: "error",
-  },
-  {
     anonymous: false,
     inputs: [
       {

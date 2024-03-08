@@ -297,9 +297,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param cToken The market to verify the mint against
    * @param minter The account which would get the minted tokens
    * @param mintAmount The amount of underlying being supplied to the market in exchange for tokens
-   * @return 0 if the mint is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
    */
-  function mintAllowed(address cToken, address minter, uint256 mintAmount) external returns (uint256) {
+  function mintAllowed(address cToken, address minter, uint256 mintAmount) external {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!mintGuardianPaused[cToken], "mint is paused");
     require(!IComptroller(address(this))._getMintPaused(cToken), 'mint paused');
@@ -334,8 +333,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
         (maxSupply[cToken] > 0 && ICToken(cToken).totalSupply().add_(mintAmount) <= maxSupply[cToken]),
       'supply cap reached'
     );
-
-    return uint256(0);
   }
 
   /**
@@ -343,36 +340,27 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param cToken The market to verify the redeem against
    * @param redeemer The account which would redeem the tokens
    * @param redeemTokens The number of cTokens to exchange for the underlying asset in the market
-   * @return 0 if the redeem is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
    */
-  function redeemAllowed(address cToken, address redeemer, uint256 redeemTokens) external returns (uint256) {
+  function redeemAllowed(address cToken, address redeemer, uint256 redeemTokens) external {
     redeemAllowedInternal(cToken, redeemer, redeemTokens);
 
     // TODO: temporarily comment out for less gas usage
     // Keep the flywheel moving
     // compLogic.updateCompSupplyIndex(cToken);
     // compLogic.distributeSupplierComp(cToken, redeemer);
-
-    return uint256(0);
   }
 
-  function redeemAllowedInternal(
-    address cToken,
-    address redeemer,
-    uint256 redeemTokens
-  ) internal view returns (uint256) {
+  function redeemAllowedInternal(address cToken, address redeemer, uint256 redeemTokens) internal view {
     require(markets[cToken].isListed, MARKET_NOT_LISTED);
 
     /* If the redeemer is not 'in' the market, then we can bypass the liquidity check */
     if (!markets[cToken].accountMembership[redeemer]) {
-      return uint256(0);
+      return;
     }
 
     /* Otherwise, perform a hypothetical liquidity check to guard against shortfall */
     (, , uint256 shortfall) = accountLiquidity.getHypotheticalAccountLiquidity(redeemer, cToken, redeemTokens, 0);
     require(shortfall == 0, INSUFFICIENT_LIQUIDITY);
-
-    return uint256(0);
   }
 
   /**
@@ -396,9 +384,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param cToken The market to verify the borrow against
    * @param borrower The account which would borrow the asset
    * @param borrowAmount The amount of underlying the account would borrow
-   * @return 0 if the borrow is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
    */
-  function borrowAllowed(address cToken, address borrower, uint256 borrowAmount) external returns (uint256) {
+  function borrowAllowed(address cToken, address borrower, uint256 borrowAmount) external {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!borrowGuardianPaused[cToken], "borrow is paused");
     require(!IComptroller(address(this))._getBorrowPaused(cToken), 'borrow paused');
@@ -435,8 +422,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     // Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
     // compLogic.updateCompBorrowIndex(cToken, borrowIndex);
     // compLogic.distributeBorrowerComp(cToken, borrower, borrowIndex);
-
-    return uint256(0);
   }
 
   /**
@@ -445,14 +430,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param payer The account which would repay the asset
    * @param borrower The account which would borrowed the asset
    * @param repayAmount The amount of the underlying asset the account would repay
-   * @return 0 if the repay is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
    */
-  function repayBorrowAllowed(
-    address cToken,
-    address payer,
-    address borrower,
-    uint256 repayAmount
-  ) external returns (uint256) {
+  function repayBorrowAllowed(address cToken, address payer, address borrower, uint256 repayAmount) external {
     // Shh - currently unused: repayAmount;
 
     require(markets[cToken].isListed, MARKET_NOT_LISTED);
@@ -462,8 +441,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     // Exp memory borrowIndex = Exp({mantissa: ICToken(cToken).borrowIndex()});
     // compLogic.updateCompBorrowIndex(cToken, borrowIndex);
     // compLogic.distributeBorrowerComp(cToken, borrower, borrowIndex);
-
-    return uint256(0);
   }
 
   /**
@@ -480,7 +457,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     address liquidator,
     address borrower,
     uint256 seizeTokens
-  ) external returns (uint256) {
+  ) external {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!seizeGuardianPaused, "seize is paused");
     require(!IComptroller(address(this))._getSeizePaused(), 'seize paused');
@@ -496,8 +473,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     // compLogic.updateCompSupplyIndex(cTokenCollateral);
     // compLogic.distributeSupplierComp(cTokenCollateral, borrower);
     // compLogic.distributeSupplierComp(cTokenCollateral, liquidator);
-
-    return uint256(0);
   }
 
   /**
@@ -506,14 +481,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param src The account which sources the tokens
    * @param dst The account which receives the tokens
    * @param transferTokens The number of cTokens to transfer
-   * @return 0 if the transfer is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
    */
-  function transferAllowed(
-    address cToken,
-    address src,
-    address dst,
-    uint256 transferTokens
-  ) external returns (uint256) {
+  function transferAllowed(address cToken, address src, address dst, uint256 transferTokens) external {
     // Pausing is a very serious situation - we revert to sound the alarms
     //require(!transferGuardianPaused, "transfer is paused");
     require(!IComptroller(address(this))._getTransferPaused(), 'transfer paused');
@@ -527,8 +496,6 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     // compLogic.updateCompSupplyIndex(cToken);
     // compLogic.distributeSupplierComp(cToken, src);
     // compLogic.distributeSupplierComp(cToken, dst);
-
-    return uint256(0);
   }
 
   /*** Liquidity/Liquidation Calculations ***/
@@ -902,10 +869,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     if (state) {
       require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), 'only admin');
     } else {
-      require(
-        hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(PAUSER_ROLE, msg.sender),
-        'only admin or pauser'
-      );
+      require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(PAUSER_ROLE, msg.sender), 'only admin or pauser');
     }
     _;
   }

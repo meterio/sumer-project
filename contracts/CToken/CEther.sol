@@ -169,7 +169,7 @@ contract CEther is CToken, Initializable {
     // Sanity checks
     require(msg.sender == from, 'sender mismatch');
     require(msg.value >= amount, 'value mismatch');
-    underlyingBalance+=amount;
+    underlyingBalance += amount;
     return amount;
   }
 
@@ -178,7 +178,7 @@ contract CEther is CToken, Initializable {
     // to.transfer(amount);
     (bool success, ) = to.call{value: amount}('');
     require(success, 'unable to send value, recipient may have reverted');
-    underlyingBalance-= amount;
+    underlyingBalance -= amount;
   }
 
   function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
@@ -195,7 +195,7 @@ contract CEther is CToken, Initializable {
   }
 
   function requireNoError(uint256 errCode, string memory message) internal pure {
-    if (errCode == uint256(Error.NO_ERROR)) {
+    if (errCode == uint256(0)) {
       return;
     }
 
@@ -212,6 +212,6 @@ contract CEther is CToken, Initializable {
     fullMessage[i + 3] = bytes1(uint8(48 + (errCode % 10)));
     fullMessage[i + 4] = bytes1(uint8(41));
 
-    require(errCode == uint256(Error.NO_ERROR), string(fullMessage));
+    require(errCode == uint256(0), string(fullMessage));
   }
 }

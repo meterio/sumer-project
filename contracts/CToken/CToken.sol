@@ -4,7 +4,6 @@ pragma solidity 0.8.19;
 import '../Comptroller/Interfaces/IComptroller.sol';
 import '../Comptroller/Interfaces/IPriceOracle.sol';
 import './Interfaces/IInterestRateModel.sol';
-import './TokenErrorReporter.sol';
 import './CTokenStorage.sol';
 import '../Exponential/Exponential.sol';
 
@@ -21,7 +20,6 @@ abstract contract CToken is CTokenStorage {
   using ExponentialNoError for uint256;
   using ExponentialNoError for Exp;
   using CarefulMath for uint256;
-  using TokenErrorReporter for Error;
 
   modifier onlyAdmin() {
     // Check caller is admin
@@ -97,14 +95,12 @@ abstract contract CToken is CTokenStorage {
    */
   function transferTokens(address spender, address src, address dst, uint256 tokens) internal returns (uint256) {
     /* Fail if transfer not allowed */
-    uint256 allowed = IComptroller(comptroller).transferAllowed(address(this), src, dst, tokens);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.TRANSFER_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).transferAllowed(address(this), src, dst, tokens);
 
     /* Do not allow self-transfers */
     if (src == dst) {
-      Error.BAD_INPUT.fail(FailureInfo.TRANSFER_NOT_ALLOWED);
+      // Error.BAD_INPUT.fail(FailureInfo.TRANSFER_NOT_ALLOWED);
+      revert('transfer not allowed');
     }
 
     /* Get the allowance, infinite for the account owner */
@@ -123,17 +119,20 @@ abstract contract CToken is CTokenStorage {
 
     (mathErr, allowanceNew) = startingAllowance.subUInt(tokens);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.TRANSFER_NOT_ALLOWED);
+      // 9.fail(FailureInfo.TRANSFER_NOT_ALLOWED);
+      revert('transfer not allowed');
     }
 
     (mathErr, srcTokensNew) = accountTokens[src].subUInt(tokens);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.TRANSFER_NOT_ENOUGH);
+      // 9.fail(FailureInfo.TRANSFER_NOT_ENOUGH);
+      revert('transfer not enough');
     }
 
     (mathErr, dstTokensNew) = accountTokens[dst].addUInt(tokens);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.TRANSFER_TOO_MUCH);
+      // 9.fail(FailureInfo.TRANSFER_TOO_MUCH);
+      revert('transfer too much');
     }
 
     /////////////////////////
@@ -154,7 +153,7 @@ abstract contract CToken is CTokenStorage {
     // unused function
     // comptroller.transferVerify(address(this), src, dst, tokens);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -164,7 +163,7 @@ abstract contract CToken is CTokenStorage {
    * @return Whether or not the transfer succeeded
    */
   function transfer(address dst, uint256 amount) external override nonReentrant returns (bool) {
-    return transferTokens(msg.sender, msg.sender, dst, amount) == uint256(Error.NO_ERROR);
+    return transferTokens(msg.sender, msg.sender, dst, amount) == uint256(0);
   }
 
   /**
@@ -175,7 +174,7 @@ abstract contract CToken is CTokenStorage {
    * @return Whether or not the transfer succeeded
    */
   function transferFrom(address src, address dst, uint256 amount) external override nonReentrant returns (bool) {
-    return transferTokens(msg.sender, src, dst, amount) == uint256(Error.NO_ERROR);
+    return transferTokens(msg.sender, src, dst, amount) == uint256(0);
   }
 
   /**
@@ -222,7 +221,8 @@ abstract contract CToken is CTokenStorage {
     Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
     (MathError mErr, uint256 balance) = exchangeRate.mulScalarTruncate(accountTokens[owner]);
     if (mErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.BALANCE_COULD_NOT_BE_CALCULATED);
+      // 9.fail(FailureInfo.BALANCE_COULD_NOT_BE_CALCULATED);
+      revert('calc failed');
     }
     return balance;
   }
@@ -242,15 +242,15 @@ abstract contract CToken is CTokenStorage {
 
     (mErr, borrowBalance) = borrowBalanceStoredInternal(account);
     if (mErr != MathError.NO_ERROR) {
-      return (uint256(Error.MATH_ERROR), 0, 0, 0);
+      return (uint256(9), 0, 0, 0);
     }
 
     (mErr, exchangeRateMantissa) = exchangeRateStoredInternal();
     if (mErr != MathError.NO_ERROR) {
-      return (uint256(Error.MATH_ERROR), 0, 0, 0);
+      return (uint256(9), 0, 0, 0);
     }
 
-    return (uint256(Error.NO_ERROR), cTokenBalance, borrowBalance, exchangeRateMantissa);
+    return (uint256(0), cTokenBalance, borrowBalance, exchangeRateMantissa);
   }
 
   /**
@@ -310,7 +310,8 @@ abstract contract CToken is CTokenStorage {
   function borrowBalanceStored(address account) public view override returns (uint256) {
     (MathError err, uint256 result) = borrowBalanceStoredInternal(account);
     if (err != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.BORROW_BALANCE_STORED_INTERNAL_FAILED);
+      // 9.fail(FailureInfo.BORROW_BALANCE_STORED_INTERNAL_FAILED);
+      revert('borrow balance failed');
     }
     return result;
   }
@@ -369,7 +370,8 @@ abstract contract CToken is CTokenStorage {
   function exchangeRateStored() public view override returns (uint256) {
     (MathError err, uint256 result) = exchangeRateStoredInternal();
     if (err != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.EXCHANGE_RATE_STORED_INTERNAL_FAILED);
+      // 9.fail(FailureInfo.EXCHANGE_RATE_STORED_INTERNAL_FAILED);
+      revert('ex rate failed');
     }
     return result;
   }
@@ -435,7 +437,7 @@ abstract contract CToken is CTokenStorage {
 
     /* Short-circuit accumulating 0 interest */
     if (accrualBlockNumberPrior == currentBlockNumber) {
-      return uint256(Error.NO_ERROR);
+      return uint256(0);
     }
 
     /* Read the previous values out of storage */
@@ -458,7 +460,8 @@ abstract contract CToken is CTokenStorage {
     /* Calculate the number of blocks elapsed since the last accrual */
     (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
+      // 9.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
+      revert('can not calc block delta');
     }
 
     /*
@@ -478,23 +481,26 @@ abstract contract CToken is CTokenStorage {
 
     (mathErr, simpleInterestFactor) = Exp({mantissa: borrowRateMantissa}).mulScalar(blockDelta);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(
-        FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
-        uint256(mathErr)
-      );
+      // 9.failOpaque(
+      //   FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
+      //   uint256(mathErr)
+      // );
+      revert('calc failed');
     }
 
     (mathErr, interestAccumulated) = simpleInterestFactor.mulScalarTruncate(borrowsPrior);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(
-        FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
-        uint256(mathErr)
-      );
+      // 9.failOpaque(
+      //   FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
+      //   uint256(mathErr)
+      // );
+      revert('calc failed 2');
     }
 
     (mathErr, totalBorrowsNew) = interestAccumulated.addUInt(borrowsPrior);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
+      // 9.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
+      revert('calc failed 3');
     }
 
     (mathErr, totalReservesNew) = Exp({mantissa: reserveFactorMantissa}).mulScalarTruncateAddUInt(
@@ -502,12 +508,14 @@ abstract contract CToken is CTokenStorage {
       reservesPrior
     );
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED, uint256(mathErr));
+      // 9.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED, uint256(mathErr));
+      revert('total reserve calc failed');
     }
 
     (mathErr, borrowIndexNew) = simpleInterestFactor.mulScalarTruncateAddUInt(borrowIndexPrior, borrowIndexPrior);
     if (mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
+      // 9.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
+      revert('borrow index calc failed');
     }
 
     /////////////////////////
@@ -523,7 +531,7 @@ abstract contract CToken is CTokenStorage {
     /* We emit an AccrueInterest event */
     emit AccrueInterest(cashPrior, interestAccumulated, borrowIndexNew, totalBorrowsNew);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -539,7 +547,6 @@ abstract contract CToken is CTokenStorage {
   }
 
   struct MintLocalVars {
-    Error err;
     MathError mathErr;
     uint256 exchangeRateMantissa;
     uint256 mintTokens;
@@ -557,21 +564,20 @@ abstract contract CToken is CTokenStorage {
    */
   function mintFresh(address minter, uint256 mintAmount) internal returns (uint256, uint256) {
     /* Fail if mint not allowed */
-    uint256 allowed = IComptroller(comptroller).mintAllowed(address(this), minter, mintAmount);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.MINT_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).mintAllowed(address(this), minter, mintAmount);
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.MINT_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.MINT_FRESHNESS_CHECK);
+      revert('market not fresh');
     }
 
     MintLocalVars memory vars;
 
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.MINT_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.MINT_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      revert('ex rate read failed');
     }
 
     /////////////////////////
@@ -597,7 +603,8 @@ abstract contract CToken is CTokenStorage {
       Exp({mantissa: vars.exchangeRateMantissa})
     );
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.MINT_EXCHANGE_CALCULATION_FAILED);
+      // 9.fail(FailureInfo.MINT_EXCHANGE_CALCULATION_FAILED);
+      revert('calc failed');
     }
 
     /*
@@ -607,12 +614,14 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.totalSupplyNew) = totalSupply.addUInt(vars.mintTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.MINT_NEW_TOTAL_SUPPLY_CALCULATION_FAILED);
+      // 9.fail(FailureInfo.MINT_NEW_TOTAL_SUPPLY_CALCULATION_FAILED);
+      revert('total supply calc failed');
     }
 
     (vars.mathErr, vars.accountTokensNew) = accountTokens[minter].addUInt(vars.mintTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.MINT_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED);
+      // 9.fail(FailureInfo.MINT_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED);
+      revert('acct balance calc failed');
     }
 
     /* We write previously calculated values into storage */
@@ -627,7 +636,7 @@ abstract contract CToken is CTokenStorage {
     // unused function
     // comptroller.mintVerify(address(this), minter, vars.actualMintAmount, vars.mintTokens);
 
-    return (uint256(Error.NO_ERROR), vars.actualMintAmount);
+    return (uint256(0), vars.actualMintAmount);
   }
 
   /**
@@ -655,7 +664,6 @@ abstract contract CToken is CTokenStorage {
   }
 
   struct RedeemLocalVars {
-    Error err;
     MathError mathErr;
     uint256 exchangeRateMantissa;
     uint256 redeemTokens;
@@ -678,14 +686,16 @@ abstract contract CToken is CTokenStorage {
     uint256 redeemAmountIn
   ) internal returns (uint256) {
     if (redeemTokensIn != 0 && redeemAmountIn != 0) {
-      Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
+      // Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
+      revert('one of tokenIn/amountIn must be zero');
     }
     RedeemLocalVars memory vars;
 
     /* exchangeRate = invoke Exchange Rate Stored() */
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      revert('ex rate read failed');
     }
 
     /* If redeemTokensIn > 0: */
@@ -699,7 +709,8 @@ abstract contract CToken is CTokenStorage {
 
       (vars.mathErr, vars.redeemAmount) = Exp({mantissa: vars.exchangeRateMantissa}).mulScalarTruncate(redeemTokensIn);
       if (vars.mathErr != MathError.NO_ERROR) {
-        Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_TOKENS_CALCULATION_FAILED, uint256(vars.mathErr));
+        // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_TOKENS_CALCULATION_FAILED, uint256(vars.mathErr));
+        revert('calc failed');
       }
     } else {
       /*
@@ -712,21 +723,20 @@ abstract contract CToken is CTokenStorage {
         Exp({mantissa: vars.exchangeRateMantissa})
       );
       if (vars.mathErr != MathError.NO_ERROR) {
-        Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_AMOUNT_CALCULATION_FAILED, uint256(vars.mathErr));
+        // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_AMOUNT_CALCULATION_FAILED, uint256(vars.mathErr));
+        revert('calc failed 2');
       }
 
       vars.redeemAmount = redeemAmountIn;
     }
 
     /* Fail if redeem not allowed */
-    uint256 allowed = IComptroller(comptroller).redeemAllowed(address(this), redeemer, vars.redeemTokens);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.REDEEM_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).redeemAllowed(address(this), redeemer, vars.redeemTokens);
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
+      revert('market not fresh');
     }
 
     /*
@@ -736,17 +746,20 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.totalSupplyNew) = totalSupply.subUInt(vars.redeemTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_NEW_TOTAL_SUPPLY_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_NEW_TOTAL_SUPPLY_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('total supply calc failed');
     }
 
     (vars.mathErr, vars.accountTokensNew) = accountTokens[redeemer].subUInt(vars.redeemTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('balance calc failed');
     }
 
     /* Fail gracefully if protocol has insufficient cash */
     if (isCToken && (getCashPrior() < vars.redeemAmount)) {
-      Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
+      // Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
+      revert('insufficient cash');
     }
 
     /////////////////////////
@@ -773,19 +786,21 @@ abstract contract CToken is CTokenStorage {
     /* We call the defense hook */
     IComptroller(comptroller).redeemVerify(address(this), redeemer, vars.redeemAmount, vars.redeemTokens);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   function redeemAndTransferFresh(address payable redeemer, uint256 redeemTokensIn) internal returns (uint256) {
     if (redeemTokensIn == 0) {
-      Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
+      // Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
+      revert('one of tokenIn/amountIn must be zero');
     }
     RedeemLocalVars memory vars;
 
     /* exchangeRate = invoke Exchange Rate Stored() */
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      revert('ex rate read failed');
     }
     /*
      * We calculate the exchange rate and the amount of underlying to be redeemed:
@@ -796,18 +811,17 @@ abstract contract CToken is CTokenStorage {
 
     (vars.mathErr, vars.redeemAmount) = Exp({mantissa: vars.exchangeRateMantissa}).mulScalarTruncate(redeemTokensIn);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_TOKENS_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_TOKENS_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('calc failed');
     }
 
     /* Fail if redeem not allowed */
-    uint256 allowed = IComptroller(comptroller).redeemAllowed(address(this), redeemer, vars.redeemTokens);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.REDEEM_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).redeemAllowed(address(this), redeemer, vars.redeemTokens);
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
+      revert('market not fresh');
     }
 
     /*
@@ -817,17 +831,20 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.totalSupplyNew) = totalSupply.subUInt(vars.redeemTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_NEW_TOTAL_SUPPLY_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_NEW_TOTAL_SUPPLY_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('calc failed');
     }
 
     (vars.mathErr, vars.accountTokensNew) = accountTokens[redeemer].subUInt(vars.redeemTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('calc failed 2');
     }
 
     /* Fail gracefully if protocol has insufficient cash */
     if (isCToken && (getCashPrior() < vars.redeemAmount)) {
-      Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
+      // Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE);
+      revert('insufficient cash');
     }
 
     /////////////////////////
@@ -853,7 +870,7 @@ abstract contract CToken is CTokenStorage {
     /* We call the defense hook */
     IComptroller(comptroller).redeemVerify(address(this), redeemer, vars.redeemAmount, vars.redeemTokens);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -881,19 +898,18 @@ abstract contract CToken is CTokenStorage {
    */
   function borrowFresh(address payable borrower, uint256 borrowAmount) internal returns (uint256) {
     /* Fail if borrow not allowed */
-    uint256 allowed = IComptroller(comptroller).borrowAllowed(address(this), borrower, borrowAmount);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.BORROW_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).borrowAllowed(address(this), borrower, borrowAmount);
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.BORROW_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.BORROW_FRESHNESS_CHECK);
+      revert('market not fresh');
     }
 
     /* Fail gracefully if protocol has insufficient underlying cash */
     if (isCToken && (getCashPrior() < borrowAmount)) {
-      Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.BORROW_CASH_NOT_AVAILABLE);
+      // Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.BORROW_CASH_NOT_AVAILABLE);
+      revert('insufficient cash');
     }
 
     BorrowLocalVars memory vars;
@@ -905,20 +921,23 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.accountBorrows) = borrowBalanceStoredInternal(borrower);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('calc failed');
     }
 
     (vars.mathErr, vars.accountBorrowsNew) = vars.accountBorrows.addUInt(borrowAmount);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(
-        FailureInfo.BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED,
-        uint256(vars.mathErr)
-      );
+      // 9.failOpaque(
+      //   FailureInfo.BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED,
+      //   uint256(vars.mathErr)
+      // );
+      revert('calc failed 2');
     }
 
     (vars.mathErr, vars.totalBorrowsNew) = totalBorrows.addUInt(borrowAmount);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED, uint256(vars.mathErr));
+      revert('calc failed 3');
     }
 
     /////////////////////////
@@ -947,7 +966,7 @@ abstract contract CToken is CTokenStorage {
     // unused function
     // comptroller.borrowVerify(address(this), borrower, borrowAmount);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -977,7 +996,6 @@ abstract contract CToken is CTokenStorage {
   }
 
   struct RepayBorrowLocalVars {
-    Error err;
     MathError mathErr;
     uint256 repayAmount;
     uint256 borrowerIndex;
@@ -996,14 +1014,12 @@ abstract contract CToken is CTokenStorage {
    */
   function repayBorrowFresh(address payer, address borrower, uint256 repayAmount) internal returns (uint256, uint256) {
     /* Fail if repayBorrow not allowed */
-    uint256 allowed = IComptroller(comptroller).repayBorrowAllowed(address(this), payer, borrower, repayAmount);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.REPAY_BORROW_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).repayBorrowAllowed(address(this), payer, borrower, repayAmount);
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.REPAY_BORROW_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.REPAY_BORROW_FRESHNESS_CHECK);
+      revert('market not fresh');
     }
 
     RepayBorrowLocalVars memory vars;
@@ -1014,10 +1030,11 @@ abstract contract CToken is CTokenStorage {
     /* We fetch the amount the borrower owes, with accumulated interest */
     (vars.mathErr, vars.accountBorrows) = borrowBalanceStoredInternal(borrower);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(
-        FailureInfo.REPAY_BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED,
-        uint256(vars.mathErr)
-      );
+      // 9.failOpaque(
+      //   FailureInfo.REPAY_BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED,
+      //   uint256(vars.mathErr)
+      // );
+      revert('calc failed');
     }
 
     /* If repayAmount == -1, repayAmount = accountBorrows */
@@ -1047,12 +1064,14 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.accountBorrowsNew) = vars.accountBorrows.subUInt(vars.actualRepayAmount);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.REPAY_BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED);
+      // 9.fail(FailureInfo.REPAY_BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED);
+      revert('calc failed');
     }
 
     (vars.mathErr, vars.totalBorrowsNew) = totalBorrows.subUInt(vars.actualRepayAmount);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.fail(FailureInfo.REPAY_BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED);
+      // 9.fail(FailureInfo.REPAY_BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED);
+      revert('borrow calc failed');
     }
 
     /* We write the previously calculated values into storage */
@@ -1067,7 +1086,7 @@ abstract contract CToken is CTokenStorage {
     // unused function
     // comptroller.repayBorrowVerify(address(this), payer, borrower, vars.actualRepayAmount, vars.borrowerIndex);
 
-    return (uint256(Error.NO_ERROR), vars.actualRepayAmount);
+    return (uint256(0), vars.actualRepayAmount);
   }
 
   /**
@@ -1106,33 +1125,35 @@ abstract contract CToken is CTokenStorage {
     address cTokenCollateral
   ) internal returns (uint256, uint256) {
     /* Fail if liquidate not allowed */
-    uint256 allowed = liquidateBorrowAllowed(address(cTokenCollateral), liquidator, borrower, repayAmount);
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.LIQUIDATE_COMPTROLLER_REJECTION, allowed);
-    }
+    liquidateBorrowAllowed(address(cTokenCollateral), liquidator, borrower, repayAmount);
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_FRESHNESS_CHECK);
+      revert('market not fresh');
     }
 
     /* Verify cTokenCollateral market's block number equals current block number */
     if (ICToken(cTokenCollateral).accrualBlockNumber() != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_COLLATERAL_FRESHNESS_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_COLLATERAL_FRESHNESS_CHECK);
+      revert('collateral market not fresh');
     }
 
     /* Fail if borrower = liquidator */
     if (borrower == liquidator) {
-      Error.INVALID_ACCOUNT_PAIR.fail(FailureInfo.LIQUIDATE_LIQUIDATOR_IS_BORROWER);
+      // Error.INVALID_ACCOUNT_PAIR.fail(FailureInfo.LIQUIDATE_LIQUIDATOR_IS_BORROWER);
+      revert('invalid account pair');
     }
 
     /* Fail if repayAmount = 0 */
     if (repayAmount == 0) {
-      Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_ZERO);
+      // Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_ZERO);
+      revert('repay is zero');
     }
 
     if (repayAmount == ~uint256(0)) {
-      Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_UINT_MAX);
+      // Error.INVALID_CLOSE_AMOUNT_REQUESTED.fail(FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_UINT_MAX);
+      revert('repay is max');
     }
 
     /* Fail if repayBorrow fails */
@@ -1168,7 +1189,8 @@ abstract contract CToken is CTokenStorage {
 
     /* Revert if borrower collateral token balance < seizeTokens */
     if (ICToken(cTokenCollateral).balanceOf(borrower) < seizeTokens) {
-      Error.TOKEN_ERROR.fail(FailureInfo.LIQUIDATE_SEIZE_TOO_MUCH);
+      // Error.TOKEN_ERROR.fail(FailureInfo.LIQUIDATE_SEIZE_TOO_MUCH);
+      revert('seize too much');
     }
 
     // If this is also the collateral, run seizeInternal to avoid re-entrancy, otherwise make an external call
@@ -1185,7 +1207,7 @@ abstract contract CToken is CTokenStorage {
     // unused function
     // comptroller.liquidateBorrowVerify(address(this), address(cTokenCollateral), liquidator, borrower, actualRepayAmount, seizeTokens);
 
-    return (uint256(Error.NO_ERROR), actualRepayAmount);
+    return (uint256(0), actualRepayAmount);
   }
 
   /**
@@ -1234,20 +1256,12 @@ abstract contract CToken is CTokenStorage {
     uint256 seizeTokens
   ) internal returns (uint256) {
     /* Fail if seize not allowed */
-    uint256 allowed = IComptroller(comptroller).seizeAllowed(
-      address(this),
-      seizerToken,
-      liquidator,
-      borrower,
-      seizeTokens
-    );
-    if (allowed != 0) {
-      Error.COMPTROLLER_REJECTION.failOpaque(FailureInfo.LIQUIDATE_SEIZE_COMPTROLLER_REJECTION, allowed);
-    }
+    IComptroller(comptroller).seizeAllowed(address(this), seizerToken, liquidator, borrower, seizeTokens);
 
     /* Fail if borrower = liquidator */
     if (borrower == liquidator) {
-      Error.INVALID_ACCOUNT_PAIR.fail(FailureInfo.LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER);
+      // Error.INVALID_ACCOUNT_PAIR.fail(FailureInfo.LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER);
+      revert('invalid account pair');
     }
 
     SeizeInternalLocalVars memory vars;
@@ -1259,7 +1273,8 @@ abstract contract CToken is CTokenStorage {
      */
     (vars.mathErr, vars.borrowerTokensNew) = accountTokens[borrower].subUInt(seizeTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.LIQUIDATE_SEIZE_BALANCE_DECREMENT_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.LIQUIDATE_SEIZE_BALANCE_DECREMENT_FAILED, uint256(vars.mathErr));
+      revert('decrement failed');
     }
 
     vars.protocolSeizeTokens = seizeTokens.mul_(Exp({mantissa: protocolSeizeShareMantissa}));
@@ -1267,7 +1282,8 @@ abstract contract CToken is CTokenStorage {
 
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
+      revert('ex rate read failed');
     }
 
     vars.protocolSeizeAmount = Exp({mantissa: vars.exchangeRateMantissa}).mul_ScalarTruncate(vars.protocolSeizeTokens);
@@ -1277,7 +1293,8 @@ abstract contract CToken is CTokenStorage {
 
     (vars.mathErr, vars.liquidatorTokensNew) = accountTokens[liquidator].addUInt(vars.liquidatorSeizeTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
-      Error.MATH_ERROR.failOpaque(FailureInfo.LIQUIDATE_SEIZE_BALANCE_INCREMENT_FAILED, uint256(vars.mathErr));
+      // 9.failOpaque(FailureInfo.LIQUIDATE_SEIZE_BALANCE_INCREMENT_FAILED, uint256(vars.mathErr));
+      revert('increment failed');
     }
 
     /////////////////////////
@@ -1301,7 +1318,7 @@ abstract contract CToken is CTokenStorage {
 
     redeemAndTransferFresh(payable(liquidator), vars.liquidatorSeizeTokens);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /*** Admin Functions ***/
@@ -1323,7 +1340,7 @@ abstract contract CToken is CTokenStorage {
     // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)
     emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -1334,7 +1351,8 @@ abstract contract CToken is CTokenStorage {
   function _acceptAdmin() external override returns (uint256) {
     // Check caller is pendingAdmin and pendingAdmin ≠ address(0)
     if (msg.sender != pendingAdmin || msg.sender == address(0)) {
-      Error.UNAUTHORIZED.fail(FailureInfo.ACCEPT_ADMIN_PENDING_ADMIN_CHECK);
+      // Error.UNAUTHORIZED.fail(FailureInfo.ACCEPT_ADMIN_PENDING_ADMIN_CHECK);
+      revert('only pending admin');
     }
 
     // Save current values for inclusion in log
@@ -1350,7 +1368,7 @@ abstract contract CToken is CTokenStorage {
     emit NewAdmin(oldAdmin, admin);
     emit NewPendingAdmin(oldPendingAdmin, pendingAdmin);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -1369,7 +1387,7 @@ abstract contract CToken is CTokenStorage {
     // Emit NewComptroller(oldComptroller, newComptroller)
     emit NewComptroller(oldComptroller, newComptroller);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -1391,12 +1409,14 @@ abstract contract CToken is CTokenStorage {
   function _setReserveFactorFresh(uint256 newReserveFactorMantissa) internal onlyAdmin returns (uint256) {
     // Verify market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_RESERVE_FACTOR_FRESH_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_RESERVE_FACTOR_FRESH_CHECK);
+      revert('market not fresh');
     }
 
     // Check newReserveFactor ≤ maxReserveFactor
     if (newReserveFactorMantissa > RESERVE_FACTOR_MAX_MANTISSA) {
-      Error.BAD_INPUT.fail(FailureInfo.SET_RESERVE_FACTOR_BOUNDS_CHECK);
+      // Error.BAD_INPUT.fail(FailureInfo.SET_RESERVE_FACTOR_BOUNDS_CHECK);
+      revert('invalid factor');
     }
 
     uint256 oldReserveFactorMantissa = reserveFactorMantissa;
@@ -1404,7 +1424,7 @@ abstract contract CToken is CTokenStorage {
 
     emit NewReserveFactor(oldReserveFactorMantissa, newReserveFactorMantissa);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -1432,7 +1452,8 @@ abstract contract CToken is CTokenStorage {
 
     // We fail gracefully unless market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.ADD_RESERVES_FRESH_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.ADD_RESERVES_FRESH_CHECK);
+      revert('market not fresh');
     }
 
     /////////////////////////
@@ -1453,7 +1474,8 @@ abstract contract CToken is CTokenStorage {
 
     /* Revert on overflow */
     if (totalReservesNew < totalReserves) {
-      Error.MATH_ERROR.fail(FailureInfo.ADD_RESERVES_UNEXPECTED_OVERFLOW);
+      // 9.fail(FailureInfo.ADD_RESERVES_UNEXPECTED_OVERFLOW);
+      revert('overflow');
     }
 
     // Store reserves[n+1] = reserves[n] + actualAddAmount
@@ -1463,7 +1485,7 @@ abstract contract CToken is CTokenStorage {
     emit ReservesAdded(msg.sender, actualAddAmount, totalReservesNew);
 
     /* Return (NO_ERROR, actualAddAmount) */
-    return (uint256(Error.NO_ERROR), actualAddAmount);
+    return (uint256(0), actualAddAmount);
   }
 
   /**
@@ -1489,17 +1511,20 @@ abstract contract CToken is CTokenStorage {
 
     // We fail gracefully unless market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.REDUCE_RESERVES_FRESH_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.REDUCE_RESERVES_FRESH_CHECK);
+      revert('market not fresh');
     }
 
     // Fail gracefully if protocol has insufficient underlying cash
     if (getCashPrior() < reduceAmount) {
-      Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDUCE_RESERVES_CASH_NOT_AVAILABLE);
+      // Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDUCE_RESERVES_CASH_NOT_AVAILABLE);
+      revert('reduce too much');
     }
 
     // Check reduceAmount ≤ reserves[n] (totalReserves)
     if (reduceAmount > totalReserves) {
-      Error.BAD_INPUT.fail(FailureInfo.REDUCE_RESERVES_VALIDATION);
+      // Error.BAD_INPUT.fail(FailureInfo.REDUCE_RESERVES_VALIDATION);
+      revert('invalid reduce amount');
     }
 
     /////////////////////////
@@ -1509,7 +1534,8 @@ abstract contract CToken is CTokenStorage {
     totalReservesNew = totalReserves - reduceAmount;
     // We checked reduceAmount <= totalReserves above, so this should never revert.
     if (totalReservesNew < totalReserves) {
-      Error.MATH_ERROR.fail(FailureInfo.ADD_RESERVES_UNEXPECTED_OVERFLOW);
+      // 9.fail(FailureInfo.ADD_RESERVES_UNEXPECTED_OVERFLOW);
+      revert('overflow');
     }
 
     // Store reserves[n+1] = reserves[n] - reduceAmount
@@ -1520,7 +1546,7 @@ abstract contract CToken is CTokenStorage {
 
     emit ReservesReduced(admin, reduceAmount, totalReservesNew);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   /**
@@ -1546,7 +1572,8 @@ abstract contract CToken is CTokenStorage {
     address oldInterestRateModel;
     // We fail gracefully unless market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
-      Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
+      // Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
+      revert('market not fresh');
     }
 
     // Track the market's current interest rate model
@@ -1561,7 +1588,7 @@ abstract contract CToken is CTokenStorage {
     // Emit NewMarketInterestRateModel(oldInterestRateModel, newInterestRateModel)
     emit NewMarketInterestRateModel(oldInterestRateModel, newInterestRateModel);
 
-    return uint256(Error.NO_ERROR);
+    return uint256(0);
   }
 
   function _syncUnderlyingBalance() external onlyAdmin {
@@ -1632,7 +1659,8 @@ abstract contract CToken is CTokenStorage {
     // Shh - currently unused:
     liquidator;
     if (!IComptroller(comptroller).isListed(address(this)) || !IComptroller(comptroller).isListed(cTokenCollateral)) {
-      Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
+      // Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
+      revert('market not listed');
     }
 
     (, uint256 borrowBalance) = borrowBalanceStoredInternal(borrower);
@@ -1640,7 +1668,8 @@ abstract contract CToken is CTokenStorage {
     /* allow accounts to be liquidated if the market is deprecated */
     if (isDeprecated()) {
       if (borrowBalance < repayAmount) {
-        Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+        // Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+        revert('too much repay');
       }
     } else {
       /* The borrower must have shortfall in order to be liquidatable */
@@ -1652,7 +1681,8 @@ abstract contract CToken is CTokenStorage {
       );
 
       if (shortfall <= 0) {
-        Error.TOKEN_ERROR.fail(FailureInfo.INSUFFICIENT_SHORTFALL);
+        // Error.TOKEN_ERROR.fail(FailureInfo.INSUFFICIENT_SHORTFALL);
+        revert('not enough shortfall');
       }
 
       /* The liquidator may not repay more than what is allowed by the closeFactor */
@@ -1660,7 +1690,8 @@ abstract contract CToken is CTokenStorage {
         borrowBalance
       );
       if (repayAmount > maxClose) {
-        Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+        // Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+        revert('too much repay');
       }
     }
     return uint256(0);
@@ -1683,7 +1714,8 @@ abstract contract CToken is CTokenStorage {
     uint256 priceBorrowedMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(address(this)));
     uint256 priceCollateralMantissa = IPriceOracle(oracle).getUnderlyingPrice(address(cTokenCollateral));
     if (priceBorrowedMantissa <= 0 || priceCollateralMantissa <= 0) {
-      Error.TOKEN_ERROR.fail(FailureInfo.PRICE_ERROR);
+      // Error.TOKEN_ERROR.fail(FailureInfo.PRICE_ERROR);
+      revert('price error');
     }
     /*
      * Get the exchange rate and calculate the number of collateral tokens to seize:

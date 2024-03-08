@@ -561,7 +561,7 @@ contract CompoundLens {
     address borrower,
     uint256 repayAmount,
     IComptroller comptroller
-  ) external view returns (uint256) {
+  ) external view {
     // Shh - currently unused: liquidator;
 
     require(comptroller.isListed(cTokenBorrowed) && comptroller.isListed(cTokenCollateral), 'market not listed');
@@ -581,6 +581,5 @@ contract CompoundLens {
       uint256 maxClose = Exp({mantissa: comptroller.closeFactorMantissa()}).mul_ScalarTruncate(borrowBalance);
       require(repayAmount <= maxClose, 'repay over close factor');
     }
-    return uint256(0);
   }
 }

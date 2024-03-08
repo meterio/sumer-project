@@ -120,10 +120,6 @@ export type { IInterestRateModel } from "./contracts/CToken/Interfaces/IInterest
 export { IInterestRateModel__factory } from "./factories/contracts/CToken/Interfaces/IInterestRateModel__factory";
 export type { SuErc20 } from "./contracts/CToken/SuErc20";
 export { SuErc20__factory } from "./factories/contracts/CToken/SuErc20__factory";
-export type { ErrorTest } from "./contracts/CToken/Test.sol/ErrorTest";
-export { ErrorTest__factory } from "./factories/contracts/CToken/Test.sol/ErrorTest__factory";
-export type { TokenErrorReporter } from "./contracts/CToken/TokenErrorReporter";
-export { TokenErrorReporter__factory } from "./factories/contracts/CToken/TokenErrorReporter__factory";
 export type { ERC20MinterBurnerPauser } from "./contracts/ERC20/ERC20MinterBurnerPauser";
 export { ERC20MinterBurnerPauser__factory } from "./factories/contracts/ERC20/ERC20MinterBurnerPauser__factory";
 export type { BaseJumpRateModelV2 } from "./contracts/InterestRateModel/BaseJumpRateModelV2";

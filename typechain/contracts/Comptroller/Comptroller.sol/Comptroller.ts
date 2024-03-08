@@ -1327,7 +1327,7 @@ export interface Comptroller extends BaseContract {
 
   borrowAllowed: TypedContractMethod<
     [cToken: AddressLike, borrower: AddressLike, borrowAmount: BigNumberish],
-    [bigint],
+    [void],
     "nonpayable"
   >;
 
@@ -1497,7 +1497,7 @@ export interface Comptroller extends BaseContract {
 
   mintAllowed: TypedContractMethod<
     [cToken: AddressLike, minter: AddressLike, mintAmount: BigNumberish],
-    [bigint],
+    [void],
     "nonpayable"
   >;
 
@@ -1513,7 +1513,7 @@ export interface Comptroller extends BaseContract {
 
   redeemAllowed: TypedContractMethod<
     [cToken: AddressLike, redeemer: AddressLike, redeemTokens: BigNumberish],
-    [bigint],
+    [void],
     "nonpayable"
   >;
 
@@ -1547,7 +1547,7 @@ export interface Comptroller extends BaseContract {
       borrower: AddressLike,
       repayAmount: BigNumberish
     ],
-    [bigint],
+    [void],
     "nonpayable"
   >;
 
@@ -1565,7 +1565,7 @@ export interface Comptroller extends BaseContract {
       borrower: AddressLike,
       seizeTokens: BigNumberish
     ],
-    [bigint],
+    [void],
     "nonpayable"
   >;
 
@@ -1638,7 +1638,7 @@ export interface Comptroller extends BaseContract {
       dst: AddressLike,
       transferTokens: BigNumberish
     ],
-    [bigint],
+    [void],
     "nonpayable"
   >;
 
@@ -1785,7 +1785,7 @@ export interface Comptroller extends BaseContract {
     nameOrSignature: "borrowAllowed"
   ): TypedContractMethod<
     [cToken: AddressLike, borrower: AddressLike, borrowAmount: BigNumberish],
-    [bigint],
+    [void],
     "nonpayable"
   >;
   getFunction(
@@ -1971,7 +1971,7 @@ export interface Comptroller extends BaseContract {
     nameOrSignature: "mintAllowed"
   ): TypedContractMethod<
     [cToken: AddressLike, minter: AddressLike, mintAmount: BigNumberish],
-    [bigint],
+    [void],
     "nonpayable"
   >;
   getFunction(
@@ -1987,7 +1987,7 @@ export interface Comptroller extends BaseContract {
     nameOrSignature: "redeemAllowed"
   ): TypedContractMethod<
     [cToken: AddressLike, redeemer: AddressLike, redeemTokens: BigNumberish],
-    [bigint],
+    [void],
     "nonpayable"
   >;
   getFunction(
@@ -2021,7 +2021,7 @@ export interface Comptroller extends BaseContract {
       borrower: AddressLike,
       repayAmount: BigNumberish
     ],
-    [bigint],
+    [void],
     "nonpayable"
   >;
   getFunction(
@@ -2041,7 +2041,7 @@ export interface Comptroller extends BaseContract {
       borrower: AddressLike,
       seizeTokens: BigNumberish
     ],
-    [bigint],
+    [void],
     "nonpayable"
   >;
   getFunction(
@@ -2106,7 +2106,7 @@ export interface Comptroller extends BaseContract {
       dst: AddressLike,
       transferTokens: BigNumberish
     ],
-    [bigint],
+    [void],
     "nonpayable"
   >;
   getFunction(
