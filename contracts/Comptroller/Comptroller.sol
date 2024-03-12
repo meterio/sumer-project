@@ -1003,4 +1003,51 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
   function _getBorrowCapGuardian() external view returns (address) {
     return borrowCapGuardian;
   }
+
+  /**
+   * @notice Checks if the liquidation should be allowed to occur
+   * @param cTokenCollateral Asset which was used as collateral and will be seized
+   * @param liquidator The address repaying the borrow and seizing the collateral
+   * @param borrower The address of the borrower
+   * @param repayAmount The amount of underlying being repaid
+   */
+  function liquidateBorrowAllowed(
+    address cTokenBorrowed,
+    address cTokenCollateral,
+    address liquidator,
+    address borrower,
+    uint256 repayAmount
+  ) public view {
+    // Shh - currently unused:
+    liquidator;
+    if (!markets[cTokenBorrowed].isListed || !markets[cTokenCollateral].isListed) {
+      // Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
+      revert('market not listed');
+    }
+
+    uint256 borrowBalance = ICToken(cTokenBorrowed).borrowBalanceStored(borrower);
+
+    /* allow accounts to be liquidated if the market is deprecated */
+    if (ICToken(cTokenBorrowed).isDeprecated()) {
+      if (borrowBalance < repayAmount) {
+        // Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+        revert('too much repay');
+      }
+    } else {
+      /* The borrower must have shortfall in order to be liquidatable */
+      (, , uint256 shortfall) = accountLiquidity.getHypotheticalAccountLiquidity(borrower, cTokenBorrowed, 0, 0);
+
+      if (shortfall <= 0) {
+        // Error.TOKEN_ERROR.fail(FailureInfo.INSUFFICIENT_SHORTFALL);
+        revert('not enough shortfall');
+      }
+
+      /* The liquidator may not repay more than what is allowed by the closeFactor */
+      uint256 maxClose = Exp({mantissa: closeFactorMantissa}).mul_ScalarTruncate(borrowBalance);
+      if (repayAmount > maxClose) {
+        // Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
+        revert('too much repay');
+      }
+    }
+  }
 }

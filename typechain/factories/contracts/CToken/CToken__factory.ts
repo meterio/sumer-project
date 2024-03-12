@@ -802,30 +802,6 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "getAccountBorrows",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "principal",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "interestIndex",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
     name: "getAccountSnapshot",
     outputs: [
       {
@@ -925,40 +901,6 @@ const _abi = [
         internalType: "bool",
         name: "",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "cTokenCollateral",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "liquidator",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "borrower",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "repayAmount",
-        type: "uint256",
-      },
-    ],
-    name: "liquidateBorrowAllowed",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
       },
     ],
     stateMutability: "view",

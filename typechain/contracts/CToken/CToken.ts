@@ -50,7 +50,6 @@ export interface CTokenInterface extends Interface {
       | "discountRateMantissa"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
-      | "getAccountBorrows"
       | "getAccountSnapshot"
       | "getCash"
       | "getDiscountRate"
@@ -58,7 +57,6 @@ export interface CTokenInterface extends Interface {
       | "isCEther"
       | "isCToken"
       | "isDeprecated"
-      | "liquidateBorrowAllowed"
       | "liquidateCalculateSeizeTokens"
       | "name"
       | "pendingAdmin"
@@ -188,10 +186,6 @@ export interface CTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getAccountBorrows",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getAccountSnapshot",
     values: [AddressLike]
   ): string;
@@ -209,10 +203,6 @@ export interface CTokenInterface extends Interface {
   encodeFunctionData(
     functionFragment: "isDeprecated",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "liquidateBorrowAllowed",
-    values: [AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
@@ -355,10 +345,6 @@ export interface CTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getAccountBorrows",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getAccountSnapshot",
     data: BytesLike
   ): Result;
@@ -375,10 +361,6 @@ export interface CTokenInterface extends Interface {
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isDeprecated",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidateBorrowAllowed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -899,12 +881,6 @@ export interface CToken extends BaseContract {
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
 
-  getAccountBorrows: TypedContractMethod<
-    [account: AddressLike],
-    [[bigint, bigint] & { principal: bigint; interestIndex: bigint }],
-    "view"
-  >;
-
   getAccountSnapshot: TypedContractMethod<
     [account: AddressLike],
     [[bigint, bigint, bigint, bigint]],
@@ -922,17 +898,6 @@ export interface CToken extends BaseContract {
   isCToken: TypedContractMethod<[], [boolean], "view">;
 
   isDeprecated: TypedContractMethod<[], [boolean], "view">;
-
-  liquidateBorrowAllowed: TypedContractMethod<
-    [
-      cTokenCollateral: AddressLike,
-      liquidator: AddressLike,
-      borrower: AddressLike,
-      repayAmount: BigNumberish
-    ],
-    [bigint],
-    "view"
-  >;
 
   liquidateCalculateSeizeTokens: TypedContractMethod<
     [
@@ -1087,13 +1052,6 @@ export interface CToken extends BaseContract {
     nameOrSignature: "exchangeRateStored"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getAccountBorrows"
-  ): TypedContractMethod<
-    [account: AddressLike],
-    [[bigint, bigint] & { principal: bigint; interestIndex: bigint }],
-    "view"
-  >;
-  getFunction(
     nameOrSignature: "getAccountSnapshot"
   ): TypedContractMethod<
     [account: AddressLike],
@@ -1118,18 +1076,6 @@ export interface CToken extends BaseContract {
   getFunction(
     nameOrSignature: "isDeprecated"
   ): TypedContractMethod<[], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "liquidateBorrowAllowed"
-  ): TypedContractMethod<
-    [
-      cTokenCollateral: AddressLike,
-      liquidator: AddressLike,
-      borrower: AddressLike,
-      repayAmount: BigNumberish
-    ],
-    [bigint],
-    "view"
-  >;
   getFunction(
     nameOrSignature: "liquidateCalculateSeizeTokens"
   ): TypedContractMethod<

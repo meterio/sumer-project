@@ -119,6 +119,7 @@ export interface ComptrollerInterface extends Interface {
       | "initialize"
       | "isComptroller"
       | "isListed"
+      | "liquidateBorrowAllowed"
       | "liquidationIncentiveMantissa"
       | "marketGroupId"
       | "markets"
@@ -416,6 +417,10 @@ export interface ComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "isListed",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateBorrowAllowed",
+    values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidationIncentiveMantissa",
@@ -745,6 +750,10 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isListed", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateBorrowAllowed",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "liquidationIncentiveMantissa",
     data: BytesLike
@@ -1473,6 +1482,18 @@ export interface Comptroller extends BaseContract {
 
   isListed: TypedContractMethod<[asset: AddressLike], [boolean], "view">;
 
+  liquidateBorrowAllowed: TypedContractMethod<
+    [
+      cTokenBorrowed: AddressLike,
+      cTokenCollateral: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish
+    ],
+    [void],
+    "view"
+  >;
+
   liquidationIncentiveMantissa: TypedContractMethod<
     [],
     [[bigint, bigint, bigint]],
@@ -1945,6 +1966,19 @@ export interface Comptroller extends BaseContract {
   getFunction(
     nameOrSignature: "isListed"
   ): TypedContractMethod<[asset: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "liquidateBorrowAllowed"
+  ): TypedContractMethod<
+    [
+      cTokenBorrowed: AddressLike,
+      cTokenCollateral: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish
+    ],
+    [void],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "liquidationIncentiveMantissa"
   ): TypedContractMethod<[], [[bigint, bigint, bigint]], "view">;

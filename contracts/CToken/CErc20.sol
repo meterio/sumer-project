@@ -313,17 +313,15 @@ contract CErc20 is CToken, ICErc20, Initializable {
       borrowsPrior,
       reservesPrior
     );
-    if (3 > BORROW_RATE_MAX_MANTISSA) {
+    if (borrowRateMantissa > BORROW_RATE_MAX_MANTISSA) {
       // Error.TOKEN_ERROR.failOpaque(FailureInfo.BORROW_RATE_ABSURDLY_HIGH, borrowRateMantissa);
       borrowRateMantissa = BORROW_RATE_MAX_MANTISSA;
     }
 
     /* Calculate the number of blocks elapsed since the last accrual */
     (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
-    if (mathErr != MathError.NO_ERROR) {
-      // Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
-      revert('calc failed');
-    }
+    require(mathErr == MathError.NO_ERROR, 'sub failed');
+    // Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
 
     /*
      * Calculate the interest accumulated into borrows and reserves and the new index:
@@ -341,28 +339,22 @@ contract CErc20 is CToken, ICErc20, Initializable {
     uint256 borrowIndexNew;
 
     (mathErr, simpleInterestFactor) = Exp({mantissa: borrowRateMantissa}).mulScalar(blockDelta);
-    if (mathErr != MathError.NO_ERROR) {
-      // Error.MATH_ERROR.failOpaque(
-      //   FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
-      //   uint256(mathErr)
-      // );
-      revert('calc failed');
-    }
+    require(mathErr == MathError.NO_ERROR, 'mul failed');
+    // Error.MATH_ERROR.failOpaque(
+    //   FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
+    //   uint256(mathErr)
+    // );
 
     (mathErr, interestAccumulated) = simpleInterestFactor.mulScalarTruncate(borrowsPrior);
-    if (mathErr != MathError.NO_ERROR) {
-      // Error.MATH_ERROR.failOpaque(
-      //   FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
-      //   uint256(mathErr)
-      // );
-      revert('calc failed 2');
-    }
+    require(mathErr == MathError.NO_ERROR, 'mul failed 2');
+    // Error.MATH_ERROR.failOpaque(
+    //   FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
+    //   uint256(mathErr)
+    // );
 
     (mathErr, totalBorrowsNew) = interestAccumulated.addUInt(borrowsPrior);
-    if (mathErr != MathError.NO_ERROR) {
-      // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
-      revert('calc failed');
-    }
+    require(mathErr == MathError.NO_ERROR, 'add failed');
+    // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
 
     (mathErr, totalReservesNew) = Exp({mantissa: reserveFactorMantissa}).mulScalarTruncateAddUInt(
       interestAccumulated,
@@ -370,13 +362,13 @@ contract CErc20 is CToken, ICErc20, Initializable {
     );
     if (mathErr != MathError.NO_ERROR) {
       // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED, uint256(mathErr));
-      revert('calc failed 2');
+      revert('calc failed');
     }
 
     (mathErr, borrowIndexNew) = simpleInterestFactor.mulScalarTruncateAddUInt(borrowIndexPrior, borrowIndexPrior);
     if (mathErr != MathError.NO_ERROR) {
       // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
-      revert('borrow index calc failed');
+      revert('calc failed 2');
     }
 
     /////////////////////////
@@ -393,5 +385,9 @@ contract CErc20 is CToken, ICErc20, Initializable {
     emit AccrueInterest(cashPrior, interestAccumulated, borrowIndexNew, totalBorrowsNew);
 
     return uint256(0);
+  }
+
+  function borrowAndMint(uint256 borrowAmount) external returns (uint256) {
+    return borrowAndMintInternal(borrowAmount);
   }
 }

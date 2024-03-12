@@ -52,7 +52,6 @@ export interface CEtherInterface extends Interface {
       | "discountRateMantissa"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
-      | "getAccountBorrows"
       | "getAccountSnapshot"
       | "getCash"
       | "getDiscountRate"
@@ -62,7 +61,6 @@ export interface CEtherInterface extends Interface {
       | "isCToken"
       | "isDeprecated"
       | "liquidateBorrow"
-      | "liquidateBorrowAllowed"
       | "liquidateCalculateSeizeTokens"
       | "mint"
       | "name"
@@ -206,10 +204,6 @@ export interface CEtherInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getAccountBorrows",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getAccountSnapshot",
     values: [AddressLike]
   ): string;
@@ -245,10 +239,6 @@ export interface CEtherInterface extends Interface {
   encodeFunctionData(
     functionFragment: "liquidateBorrow",
     values: [AddressLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "liquidateBorrowAllowed",
-    values: [AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateCalculateSeizeTokens",
@@ -413,10 +403,6 @@ export interface CEtherInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getAccountBorrows",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getAccountSnapshot",
     data: BytesLike
   ): Result;
@@ -438,10 +424,6 @@ export interface CEtherInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "liquidateBorrow",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidateBorrowAllowed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -996,12 +978,6 @@ export interface CEther extends BaseContract {
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
 
-  getAccountBorrows: TypedContractMethod<
-    [account: AddressLike],
-    [[bigint, bigint] & { principal: bigint; interestIndex: bigint }],
-    "view"
-  >;
-
   getAccountSnapshot: TypedContractMethod<
     [account: AddressLike],
     [[bigint, bigint, bigint, bigint]],
@@ -1040,17 +1016,6 @@ export interface CEther extends BaseContract {
     [borrower: AddressLike, cTokenCollateral: AddressLike],
     [void],
     "payable"
-  >;
-
-  liquidateBorrowAllowed: TypedContractMethod<
-    [
-      cTokenCollateral: AddressLike,
-      liquidator: AddressLike,
-      borrower: AddressLike,
-      repayAmount: BigNumberish
-    ],
-    [bigint],
-    "view"
   >;
 
   liquidateCalculateSeizeTokens: TypedContractMethod<
@@ -1234,13 +1199,6 @@ export interface CEther extends BaseContract {
     nameOrSignature: "exchangeRateStored"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getAccountBorrows"
-  ): TypedContractMethod<
-    [account: AddressLike],
-    [[bigint, bigint] & { principal: bigint; interestIndex: bigint }],
-    "view"
-  >;
-  getFunction(
     nameOrSignature: "getAccountSnapshot"
   ): TypedContractMethod<
     [account: AddressLike],
@@ -1288,18 +1246,6 @@ export interface CEther extends BaseContract {
     [borrower: AddressLike, cTokenCollateral: AddressLike],
     [void],
     "payable"
-  >;
-  getFunction(
-    nameOrSignature: "liquidateBorrowAllowed"
-  ): TypedContractMethod<
-    [
-      cTokenCollateral: AddressLike,
-      liquidator: AddressLike,
-      borrower: AddressLike,
-      repayAmount: BigNumberish
-    ],
-    [bigint],
-    "view"
   >;
   getFunction(
     nameOrSignature: "liquidateCalculateSeizeTokens"

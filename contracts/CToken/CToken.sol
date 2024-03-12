@@ -55,7 +55,7 @@ abstract contract CToken is CTokenStorage {
 
     // Set initial exchange rate
     initialExchangeRateMantissa = initialExchangeRateMantissa_;
-    require(initialExchangeRateMantissa > 0, 'invalid ex rate'); // initial exchange rate must be greater than zero
+    require(initialExchangeRateMantissa > 0, 'invalid exrate'); // initial exchange rate must be greater than zero
 
     discountRateMantissa = discountRateMantissa_;
     require(discountRateMantissa > 0 && discountRateMantissa <= 1e18, 'invalid rate'); // rate must in [0,100]
@@ -371,7 +371,7 @@ abstract contract CToken is CTokenStorage {
     (MathError err, uint256 result) = exchangeRateStoredInternal();
     if (err != MathError.NO_ERROR) {
       // 9.fail(FailureInfo.EXCHANGE_RATE_STORED_INTERNAL_FAILED);
-      revert('ex rate failed');
+      revert('exrate failed');
     }
     return result;
   }
@@ -461,7 +461,7 @@ abstract contract CToken is CTokenStorage {
     (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
     if (mathErr != MathError.NO_ERROR) {
       // 9.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
-      revert('can not calc block delta');
+      revert('calc delta failed');
     }
 
     /*
@@ -509,13 +509,13 @@ abstract contract CToken is CTokenStorage {
     );
     if (mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED, uint256(mathErr));
-      revert('total reserve calc failed');
+      revert('mul failed');
     }
 
     (mathErr, borrowIndexNew) = simpleInterestFactor.mulScalarTruncateAddUInt(borrowIndexPrior, borrowIndexPrior);
     if (mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
-      revert('borrow index calc failed');
+      revert('mul failed 2');
     }
 
     /////////////////////////
@@ -543,7 +543,7 @@ abstract contract CToken is CTokenStorage {
   function mintInternal(uint256 mintAmount) internal nonReentrant returns (uint256, uint256) {
     accrueInterest();
     // mintFresh emits the actual Mint event if successful and logs on errors, so we don't need to
-    return mintFresh(msg.sender, mintAmount);
+    return mintFresh(msg.sender, mintAmount, true);
   }
 
   struct MintLocalVars {
@@ -562,7 +562,7 @@ abstract contract CToken is CTokenStorage {
    * @param mintAmount The amount of the underlying asset to supply
    * @return (uint, uint) An error code (0=success, otherwise a failure, see ErrorReporter.sol), and the actual mint amount.
    */
-  function mintFresh(address minter, uint256 mintAmount) internal returns (uint256, uint256) {
+  function mintFresh(address minter, uint256 mintAmount, bool doTransfer) internal returns (uint256, uint256) {
     /* Fail if mint not allowed */
     IComptroller(comptroller).mintAllowed(address(this), minter, mintAmount);
 
@@ -577,7 +577,7 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.MINT_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
-      revert('ex rate read failed');
+      revert('exrate failed');
     }
 
     /////////////////////////
@@ -592,7 +592,11 @@ abstract contract CToken is CTokenStorage {
      *  in case of a fee. On success, the cToken holds an additional `actualMintAmount`
      *  of cash.
      */
-    vars.actualMintAmount = doTransferIn(minter, mintAmount);
+    if (doTransfer == true) {
+      vars.actualMintAmount = doTransferIn(minter, mintAmount);
+    } else {
+      vars.actualMintAmount = mintAmount;
+    }
 
     /*
      * We get the current exchange rate and calculate the number of cTokens to be minted:
@@ -615,13 +619,13 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.totalSupplyNew) = totalSupply.addUInt(vars.mintTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.fail(FailureInfo.MINT_NEW_TOTAL_SUPPLY_CALCULATION_FAILED);
-      revert('total supply calc failed');
+      revert('calc failed 2');
     }
 
     (vars.mathErr, vars.accountTokensNew) = accountTokens[minter].addUInt(vars.mintTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.fail(FailureInfo.MINT_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED);
-      revert('acct balance calc failed');
+      revert('calc failed 3');
     }
 
     /* We write previously calculated values into storage */
@@ -695,7 +699,7 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
-      revert('ex rate read failed');
+      revert('exrate failed');
     }
 
     /* If redeemTokensIn > 0: */
@@ -747,7 +751,7 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.totalSupplyNew) = totalSupply.subUInt(vars.redeemTokens);
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.REDEEM_NEW_TOTAL_SUPPLY_CALCULATION_FAILED, uint256(vars.mathErr));
-      revert('total supply calc failed');
+      revert('calc failed 3');
     }
 
     (vars.mathErr, vars.accountTokensNew) = accountTokens[redeemer].subUInt(vars.redeemTokens);
@@ -792,7 +796,7 @@ abstract contract CToken is CTokenStorage {
   function redeemAndTransferFresh(address payable redeemer, uint256 redeemTokensIn) internal returns (uint256) {
     if (redeemTokensIn == 0) {
       // Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
-      revert('one of tokenIn/amountIn must be zero');
+      revert('tokenIn is zero');
     }
     RedeemLocalVars memory vars;
 
@@ -800,7 +804,7 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
-      revert('ex rate read failed');
+      revert('exrate failed');
     }
     /*
      * We calculate the exchange rate and the amount of underlying to be redeemed:
@@ -881,7 +885,7 @@ abstract contract CToken is CTokenStorage {
   function borrowInternal(uint256 borrowAmount) internal nonReentrant returns (uint256) {
     accrueInterest();
     // borrowFresh emits borrow-specific logs on errors, so we don't need to
-    return borrowFresh(payable(msg.sender), borrowAmount);
+    return borrowFresh(payable(msg.sender), borrowAmount, true);
   }
 
   struct BorrowLocalVars {
@@ -896,7 +900,7 @@ abstract contract CToken is CTokenStorage {
    * @param borrowAmount The amount of the underlying asset to borrow
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
-  function borrowFresh(address payable borrower, uint256 borrowAmount) internal returns (uint256) {
+  function borrowFresh(address payable borrower, uint256 borrowAmount, bool doTransfer) internal returns (uint256) {
     /* Fail if borrow not allowed */
     IComptroller(comptroller).borrowAllowed(address(this), borrower, borrowAmount);
 
@@ -957,7 +961,9 @@ abstract contract CToken is CTokenStorage {
      */
     // doTransferOut(borrower, borrowAmount);
 
-    transferToTimelock(true, borrower, borrowAmount);
+    if (doTransfer == true) {
+      transferToTimelock(true, borrower, borrowAmount);
+    }
 
     /* We emit a Borrow event */
     emit Borrow(borrower, borrowAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
@@ -1125,7 +1131,13 @@ abstract contract CToken is CTokenStorage {
     address cTokenCollateral
   ) internal returns (uint256, uint256) {
     /* Fail if liquidate not allowed */
-    liquidateBorrowAllowed(address(cTokenCollateral), liquidator, borrower, repayAmount);
+    IComptroller(comptroller).liquidateBorrowAllowed(
+      address(this),
+      address(cTokenCollateral),
+      liquidator,
+      borrower,
+      repayAmount
+    );
 
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
@@ -1136,7 +1148,7 @@ abstract contract CToken is CTokenStorage {
     /* Verify cTokenCollateral market's block number equals current block number */
     if (ICToken(cTokenCollateral).accrualBlockNumber() != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_COLLATERAL_FRESHNESS_CHECK);
-      revert('collateral market not fresh');
+      revert('market not fresh');
     }
 
     /* Fail if borrower = liquidator */
@@ -1283,7 +1295,7 @@ abstract contract CToken is CTokenStorage {
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
     if (vars.mathErr != MathError.NO_ERROR) {
       // 9.failOpaque(FailureInfo.REDEEM_EXCHANGE_RATE_READ_FAILED, uint256(vars.mathErr));
-      revert('ex rate read failed');
+      revert('exrate failed');
     }
 
     vars.protocolSeizeAmount = Exp({mantissa: vars.exchangeRateMantissa}).mul_ScalarTruncate(vars.protocolSeizeTokens);
@@ -1644,60 +1656,6 @@ abstract contract CToken is CTokenStorage {
   }
 
   /**
-   * @notice Checks if the liquidation should be allowed to occur
-   * @param cTokenCollateral Asset which was used as collateral and will be seized
-   * @param liquidator The address repaying the borrow and seizing the collateral
-   * @param borrower The address of the borrower
-   * @param repayAmount The amount of underlying being repaid
-   */
-  function liquidateBorrowAllowed(
-    address cTokenCollateral,
-    address liquidator,
-    address borrower,
-    uint256 repayAmount
-  ) public view returns (uint256) {
-    // Shh - currently unused:
-    liquidator;
-    if (!IComptroller(comptroller).isListed(address(this)) || !IComptroller(comptroller).isListed(cTokenCollateral)) {
-      // Error.MARKET_NOT_LISTED.fail(FailureInfo.MARKET_NOT_LISTED);
-      revert('market not listed');
-    }
-
-    (, uint256 borrowBalance) = borrowBalanceStoredInternal(borrower);
-
-    /* allow accounts to be liquidated if the market is deprecated */
-    if (isDeprecated()) {
-      if (borrowBalance < repayAmount) {
-        // Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
-        revert('too much repay');
-      }
-    } else {
-      /* The borrower must have shortfall in order to be liquidatable */
-      (, , uint256 shortfall) = IComptroller(comptroller).getHypotheticalAccountLiquidity(
-        borrower,
-        address(this),
-        0,
-        0
-      );
-
-      if (shortfall <= 0) {
-        // Error.TOKEN_ERROR.fail(FailureInfo.INSUFFICIENT_SHORTFALL);
-        revert('not enough shortfall');
-      }
-
-      /* The liquidator may not repay more than what is allowed by the closeFactor */
-      uint256 maxClose = Exp({mantissa: IComptroller(comptroller).closeFactorMantissa()}).mul_ScalarTruncate(
-        borrowBalance
-      );
-      if (repayAmount > maxClose) {
-        // Error.TOKEN_ERROR.fail(FailureInfo.TOO_MUCH_REPAY);
-        revert('too much repay');
-      }
-    }
-    return uint256(0);
-  }
-
-  /**
    * @notice Calculate number of tokens of collateral asset to seize given an underlying amount
    * @dev Used in liquidation (called in ICToken(cToken).liquidateBorrowFresh)
    * @param cTokenCollateral The address of the collateral cToken
@@ -1748,12 +1706,6 @@ abstract contract CToken is CTokenStorage {
     return (uint256(0), seizeTokens);
   }
 
-  function getAccountBorrows(address account) public view returns (uint256 principal, uint256 interestIndex) {
-    BorrowSnapshot memory accountBorrow = accountBorrows[account];
-    principal = accountBorrow.principal;
-    interestIndex = accountBorrow.interestIndex;
-  }
-
   function getDiscountRate() public view returns (uint256) {
     return discountRateMantissa;
   }
@@ -1764,5 +1716,22 @@ abstract contract CToken is CTokenStorage {
     discountRateMantissa = discountRateMantissa_;
     emit NewDiscountRate(oldDiscountRateMantissa_, discountRateMantissa_);
     return discountRateMantissa;
+  }
+
+  /**
+   * @notice Sender borrows assets from the protocol and deposit all of them back to the protocol
+   * @param borrowAmount The amount of the underlying asset to borrow and deposit
+   * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+   */
+  function borrowAndMintInternal(uint256 borrowAmount) internal nonReentrant returns (uint256) {
+    accrueInterest();
+    // borrowFresh emits borrow-specific logs on errors, so we don't need to
+    return borrowAndMintFresh(payable(msg.sender), borrowAmount);
+  }
+
+  function borrowAndMintFresh(address payable borrower, uint256 borrowAmount) internal returns (uint256) {
+    borrowFresh(borrower, borrowAmount, false);
+    mintFresh(borrower, borrowAmount, false);
+    return uint256(0);
   }
 }

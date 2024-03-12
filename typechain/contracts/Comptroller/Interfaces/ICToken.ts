@@ -43,6 +43,7 @@ export interface ICTokenInterface extends Interface {
       | "getPriorVotes"
       | "isCEther"
       | "isCToken"
+      | "isDeprecated"
       | "reserveFactorMantissa"
       | "supplyRatePerBlock"
       | "totalBorrows"
@@ -115,6 +116,10 @@ export interface ICTokenInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "isCEther", values?: undefined): string;
   encodeFunctionData(functionFragment: "isCToken", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "isDeprecated",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "reserveFactorMantissa",
     values?: undefined
@@ -195,6 +200,10 @@ export interface ICTokenInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "isCEther", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isCToken", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isDeprecated",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "reserveFactorMantissa",
     data: BytesLike
@@ -327,6 +336,8 @@ export interface ICToken extends BaseContract {
 
   isCToken: TypedContractMethod<[], [boolean], "view">;
 
+  isDeprecated: TypedContractMethod<[], [boolean], "view">;
+
   reserveFactorMantissa: TypedContractMethod<[], [bigint], "view">;
 
   supplyRatePerBlock: TypedContractMethod<[], [bigint], "view">;
@@ -411,6 +422,9 @@ export interface ICToken extends BaseContract {
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
     nameOrSignature: "isCToken"
+  ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isDeprecated"
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
     nameOrSignature: "reserveFactorMantissa"

@@ -16,15 +16,7 @@ interface ICToken {
 
   function balanceOf(address owner) external view returns (uint256);
 
-  function getAccountSnapshot(address account)
-    external
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256
-    );
+  function getAccountSnapshot(address account) external view returns (uint256, uint256, uint256, uint256);
 
   function borrowBalanceStored(address account) external view returns (uint256);
 
@@ -59,4 +51,6 @@ interface ICToken {
   function getPriorVotes(address account, uint256 blockNumber) external view returns (uint96);
 
   function getDiscountRate() external view returns (uint256);
+
+  function isDeprecated() external view returns (bool);
 }

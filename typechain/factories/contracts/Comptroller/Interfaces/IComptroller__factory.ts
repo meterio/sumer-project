@@ -598,6 +598,39 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cTokenBorrowed",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "cTokenCollateral",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "liquidator",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "repayAmount",
+        type: "uint256",
+      },
+    ],
+    name: "liquidateBorrowAllowed",
+    outputs: [],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "liquidationIncentiveMantissa",
     outputs: [

@@ -337,6 +337,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "isDeprecated",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "reserveFactorMantissa",
     outputs: [
       {

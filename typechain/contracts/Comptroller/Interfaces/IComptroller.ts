@@ -81,6 +81,7 @@ export interface IComptrollerInterface extends Interface {
       | "getHypotheticalAccountLiquidity"
       | "isComptroller"
       | "isListed"
+      | "liquidateBorrowAllowed"
       | "liquidationIncentiveMantissa"
       | "marketGroupId"
       | "markets"
@@ -190,6 +191,10 @@ export interface IComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "isListed",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "liquidateBorrowAllowed",
+    values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidationIncentiveMantissa",
@@ -306,6 +311,10 @@ export interface IComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isListed", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "liquidateBorrowAllowed",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "liquidationIncentiveMantissa",
     data: BytesLike
@@ -564,6 +573,18 @@ export interface IComptroller extends BaseContract {
 
   isListed: TypedContractMethod<[asset: AddressLike], [boolean], "view">;
 
+  liquidateBorrowAllowed: TypedContractMethod<
+    [
+      cTokenBorrowed: AddressLike,
+      cTokenCollateral: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish
+    ],
+    [void],
+    "view"
+  >;
+
   liquidationIncentiveMantissa: TypedContractMethod<
     [],
     [[bigint, bigint, bigint]],
@@ -730,6 +751,19 @@ export interface IComptroller extends BaseContract {
   getFunction(
     nameOrSignature: "isListed"
   ): TypedContractMethod<[asset: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "liquidateBorrowAllowed"
+  ): TypedContractMethod<
+    [
+      cTokenBorrowed: AddressLike,
+      cTokenCollateral: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish
+    ],
+    [void],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "liquidationIncentiveMantissa"
   ): TypedContractMethod<[], [[bigint, bigint, bigint]], "view">;

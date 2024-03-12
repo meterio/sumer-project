@@ -112,4 +112,12 @@ interface IComptroller {
   function getCompAddress() external view returns (address);
 
   function borrowCaps(address cToken) external view returns (uint256);
+
+  function liquidateBorrowAllowed(
+    address cTokenBorrowed,
+    address cTokenCollateral,
+    address liquidator,
+    address borrower,
+    uint256 repayAmount
+  ) external view;
 }
