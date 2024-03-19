@@ -144,9 +144,20 @@
       "0x264b7316b535515db9759a77dc4041c0c2263527"
     ]
   },
+  "SortedBorrows": {
+    "contract": "SortedBorrows",
+    "implementation": "0x8BD868f285e6F7d4F6da86cD7b47f900CCB11e14",
+    "address": "0x159C068fC4557252E5A0cf138355Fc3846B6d593",
+    "constructorName": [
+      "admin"
+    ],
+    "args": [
+      "0x0205c2D862cA051010698b69b54278cbAf945C0b"
+    ]
+  },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0x5D150099E65290ebe174d113B4546d53A7decf96",
+    "implementation": "0xF409697434eb8A5Ba99662396266b49C612A6783",
     "address": "0xB6bf1515CAA8Be16f2FC3308974645CaEa458Ab1",
     "settings": [
       {
@@ -219,7 +230,8 @@
       "closeFactorMantissa",
       "heteroLiquidationIncentiveMantissa",
       "homoLiquidationIncentiveMantissa",
-      "sutokenLiquidationIncentiveMantissa"
+      "sutokenLiquidationIncentiveMantissa",
+      "SortedBorrows"
     ],
     "args": [
       "0x0205c2D862cA051010698b69b54278cbAf945C0b",
@@ -230,13 +242,14 @@
       "500000000000000000",
       "100000000000000000",
       "25000000000000000",
-      "2500000000000000"
+      "2500000000000000",
+      ""
     ]
   },
   "CEther": {
     "name": "Sumer MTR Deposit",
     "contract": "CEther",
-    "implementation": "0x49FDce3d17e7d51878e5c96Af18285D1009739cc",
+    "implementation": "0x1260e7Db39AEa39058a4541d2D516677BdfA373b",
     "address": "0xf9e3459233E08F88Cf7faDdEd8f734d80A04a35d",
     "constructorName": [
       "Comptroller",
@@ -275,7 +288,7 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0x6d96d3Fbf4c3F4ee1730C0cdf50367425C9D617d",
+    "implementation": "0xbf93A0a06D578dbe316167fD61893430eB3044c7",
     "proxys": [
       {
         "contract": "CErc20",
@@ -527,7 +540,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0x4B5229bf62f7B901525192Dc59EcdEdEeE1170cF",
+    "implementation": "0xf7482Db4ff7bAf56d417E1B91310410152504e4A",
     "proxys": [
       {
         "contract": "suErc20",

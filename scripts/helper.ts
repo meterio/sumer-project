@@ -20,6 +20,7 @@ import colors from 'colors';
 import { CToken, Comptroller, ERC20MinterBurnerPauser, FeedPriceOracle, SuErc20 } from '../typechain';
 import { Fragment, FunctionFragment } from 'ethers';
 import { BigNumber } from 'bignumber.js';
+import hardhatConfig from '../hardhat.config';
 colors.enable();
 
 export const yellow = colors.yellow;
@@ -128,15 +129,18 @@ export async function saveFile(
   }
 }
 
-export function getChoices(config: any[]) {
-  let result = [];
-  for (let i = 0; i < config.length; i++) {
-    result.push({
-      name: config[i].name,
-      value: i,
-    });
-  }
-  return result;
+export function getNetworkChoicesFromHardhat() {
+  const networkChoices = Object.keys(hardhatConfig.networks).map((n) => ({
+    name: `${n} (${hardhatConfig.networks[n as keyof typeof hardhatConfig.networks].chainId}) : ${
+      hardhatConfig.networks[n as keyof typeof hardhatConfig.networks].url
+    }`,
+    value: n,
+  }));
+  return networkChoices;
+}
+
+export function loadNetConfigFromHardhat(net: string) {
+  return hardhatConfig.networks[net as keyof typeof hardhatConfig.networks];
 }
 
 export type Network = {
@@ -145,22 +149,21 @@ export type Network = {
   wallet: Wallet;
   override: Overrides;
   netConfig: any;
-  networkIndex: number;
 };
 
 export async function setNetwork(config: any[], name: string = ''): Promise<Network> {
   let override: Overrides = {};
-  const networkIndex = await select({
+  const networkName = await select({
     message: `选择网络${green(name)}:`,
-    choices: getChoices(config),
+    choices: getNetworkChoicesFromHardhat(),
   });
   const privateKey = await password({
     message: `输入网络${green(name)}的Private Key:`,
     validate: (value = '') => isBytesLike(value) || 'Pass a valid Private Key value',
     mask: '*',
   });
-
-  const provider = new JsonRpcProvider(config[networkIndex].rpc);
+  const netConfig = { ...loadNetConfigFromHardhat(networkName), name: networkName };
+  const provider = new JsonRpcProvider(netConfig.url);
   const wallet = new Wallet(privateKey, provider);
   console.log('Signer:', yellow(wallet.address));
   const defaultGasPrice = (await provider.getFeeData()).gasPrice;
@@ -170,8 +173,7 @@ export async function setNetwork(config: any[], name: string = ''): Promise<Netw
     validate: (value = '') => value.length > 0 || 'Pass a valid value',
   });
 
-  const netConfig = config[networkIndex];
-  return { name, provider, wallet, override, netConfig, networkIndex };
+  return { name: networkName, provider, wallet, override, netConfig };
 }
 
 export async function sendTransaction(

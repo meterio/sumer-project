@@ -13,7 +13,7 @@ import {
   interestRateModel_select,
   InterestRateModel_template,
 } from './helper';
-import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle } from '../typechain';
+import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle, SortedBorrows } from '../typechain';
 import { confirm } from '@inquirer/prompts';
 import { BigNumberish } from 'ethers';
 
@@ -127,9 +127,39 @@ const main = async () => {
   if (config.Comptroller.address != '' && old_compLogic != config.CompLogic.address) {
     let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
     const clOnChain = await comptroller.compLogic();
-    if (clOnChain.toLowerCase() != config.Comptroller.address.toLowerCase()) {
-      console.log(`更新Comptroller.compLogic：${clOnChain} -> ${config.Comptroller.address}`);
+    if (clOnChain.toLowerCase() != config.CompLogic.address.toLowerCase()) {
+      console.log(`更新Comptroller.compLogic：${clOnChain} -> ${config.CompLogic.address}`);
       await sendTransaction(network, comptroller, 'setCompLogic(address)', [config.CompLogic.address], override);
+    }
+  }
+
+  // SortedBorrows
+  let old_sortedBorrows = config.SortedBorrows.address;
+  config.SortedBorrows = await deployOrInput(ethers, network, override, config.SortedBorrows, true);
+  writeConfig(netConfig.name, config);
+
+  config.SortedBorrows = await deployProxyOrInput(
+    ethers,
+    network,
+    override,
+    config.SortedBorrows,
+    config.ProxyAdmin.address
+  );
+  writeConfig(netConfig.name, config);
+
+  // set compLogic on Comptroller
+  if (config.Comptroller.address != '' && old_sortedBorrows != config.SortedBorrows.address) {
+    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
+    const sbOnChain = await comptroller.compLogic();
+    if (sbOnChain.toLowerCase() != config.SortedBorrows.address.toLowerCase()) {
+      console.log(`更新Comptroller.sortedBorrows ${sbOnChain} -> ${config.SortedBorrows.address}`);
+      await sendTransaction(
+        network,
+        comptroller,
+        'setSortedBorrows(address)',
+        [config.SortedBorrows.address],
+        override
+      );
     }
   }
 
@@ -196,6 +226,25 @@ const main = async () => {
     await sendTransaction(
       network,
       accountLiquidity,
+      'setComptroller(address)',
+      [config.Comptroller.address],
+      override,
+      DEFAULT_ADMIN_ROLE
+    );
+  }
+
+  // set comptroller on SortedBorrows
+  const sortedBorrows = (await ethers.getContractAt(
+    'SortedBorrows',
+    config.SortedBorrows.address,
+    wallet
+  )) as SortedBorrows;
+  const sortedBorrows_comptroller_address = await sortedBorrows.comptroller();
+  if (sortedBorrows_comptroller_address.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+    console.log('设置SortedBorrows的Comptroller合约地址');
+    await sendTransaction(
+      network,
+      sortedBorrows,
       'setComptroller(address)',
       [config.Comptroller.address],
       override,
