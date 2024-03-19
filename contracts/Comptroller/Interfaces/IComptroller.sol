@@ -37,8 +37,16 @@ interface IComptroller {
   function redeemVerify(address cToken, address redeemer, uint256 redeemAmount, uint256 redeemTokens) external;
 
   function borrowAllowed(address cToken, address borrower, uint256 borrowAmount) external;
+  function borrowVerify(address cToken, address borrower, uint borrowAmount) external;
 
   function repayBorrowAllowed(address cToken, address payer, address borrower, uint256 repayAmount) external;
+  function repayBorrowVerify(
+    address cToken,
+    address payer,
+    address borrower,
+    uint repayAmount,
+    uint borrowerIndex
+  ) external;
 
   function seizeAllowed(
     address cTokenCollateral,
@@ -46,6 +54,13 @@ interface IComptroller {
     address liquidator,
     address borrower,
     uint256 seizeTokens
+  ) external;
+  function seizeVerify(
+    address cTokenCollateral,
+    address cTokenBorrowed,
+    address liquidator,
+    address borrower,
+    uint seizeTokens
   ) external;
 
   function transferAllowed(address cToken, address src, address dst, uint256 transferTokens) external;
@@ -120,4 +135,12 @@ interface IComptroller {
     address borrower,
     uint256 repayAmount
   ) external view;
+  function liquidateBorrowVerify(
+    address cTokenBorrowed,
+    address cTokenCollateral,
+    address liquidator,
+    address borrower,
+    uint repayAmount,
+    uint seizeTokens
+  ) external;
 }

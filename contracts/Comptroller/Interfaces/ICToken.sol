@@ -53,4 +53,12 @@ interface ICToken {
   function getDiscountRate() external view returns (uint256);
 
   function isDeprecated() external view returns (bool);
+
+  function executeRedemption(
+    address redeemer,
+    address provider,
+    uint256 repayAmount,
+    address cTokenCollateral,
+    uint256 seizeAmount
+  ) external returns (uint256);
 }

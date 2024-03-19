@@ -90,7 +90,9 @@ contract suErc20 is CErc20 {
         revert(0, 0)
       }
     }
-    require(success, 'token transfer in failed');
+    if (!success) {
+      revert TokenTransferInFailed();
+    }
 
     // Calculate the amount that was *actually* transferred
     return amount;
@@ -126,10 +128,27 @@ contract suErc20 is CErc20 {
         revert(0, 0)
       }
     }
-    require(success, 'token transfer out failed');
+    if (!success) {
+      revert TokenTransferOutFailed();
+    }
   }
 
   function changeCtoken() public onlyAdmin {
     isCToken = !isCToken;
+  }
+
+  function executeRedemption(
+    address redeemer,
+    address provider,
+    uint256 repayAmount,
+    address cTokenCollateral,
+    uint256 seizeAmount
+  ) external nonReentrant returns (uint256) {
+    require(msg.sender != comptroller, 'only comptroller');
+    accrueInterest();
+    ICToken(cTokenCollateral).accrueInterest();
+    repayBorrowFresh(redeemer, provider, repayAmount);
+    ICToken(cTokenCollateral).seize(redeemer, provider, seizeAmount);
+    return uint256(0);
   }
 }

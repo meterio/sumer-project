@@ -9,6 +9,17 @@ import '../Exponential/Exponential.sol';
 
 uint256 constant expScale = 1e18;
 
+error OnlyAdmin();
+error MarketCanOnlyInitializeOnce();
+error CantSweepUnderlying();
+error UnderlyingBalanceError();
+error TokenTransferInFailed();
+error TokenTransferOutFailed();
+
+error InvalidAddress();
+error InvalidDiscountRate();
+error InvalidExchangeRate();
+
 /**
  * @title Compound's CToken Contract
  * @notice Abstract base for CTokens
@@ -23,7 +34,9 @@ abstract contract CToken is CTokenStorage {
 
   modifier onlyAdmin() {
     // Check caller is admin
-    require(msg.sender == admin, 'only admin');
+    if (msg.sender != admin) {
+      revert OnlyAdmin();
+    }
     _;
   }
 
@@ -49,16 +62,22 @@ abstract contract CToken is CTokenStorage {
     uint256 reserveFactorMantissa_
   ) internal {
     admin = _admin;
-    require(accrualBlockNumber == 0 && borrowIndex == 0, 'only initialize once'); // market may only be initialized once
+    if (accrualBlockNumber != 0 || borrowIndex != 0) {
+      revert MarketCanOnlyInitializeOnce(); // market may only be initialized once
+    }
 
     isCToken = isCToken_;
 
     // Set initial exchange rate
     initialExchangeRateMantissa = initialExchangeRateMantissa_;
-    require(initialExchangeRateMantissa > 0, 'invalid exrate'); // initial exchange rate must be greater than zero
+    if (initialExchangeRateMantissa <= 0) {
+      revert InvalidExchangeRate();
+    } // initial exchange rate must be greater than zero
 
     discountRateMantissa = discountRateMantissa_;
-    require(discountRateMantissa > 0 && discountRateMantissa <= 1e18, 'invalid rate'); // rate must in [0,100]
+    if (discountRateMantissa <= 0 || discountRateMantissa > 1e18) {
+      revert InvalidDiscountRate();
+    } // rate must in [0,100]
 
     reserveFactorMantissa = reserveFactorMantissa_;
     // Set the comptroller
@@ -969,8 +988,7 @@ abstract contract CToken is CTokenStorage {
     emit Borrow(borrower, borrowAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
 
     /* We call the defense hook */
-    // unused function
-    // comptroller.borrowVerify(address(this), borrower, borrowAmount);
+    IComptroller(comptroller).borrowVerify(address(this), borrower, borrowAmount);
 
     return uint256(0);
   }
@@ -1089,8 +1107,13 @@ abstract contract CToken is CTokenStorage {
     emit RepayBorrow(payer, borrower, vars.actualRepayAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
 
     /* We call the defense hook */
-    // unused function
-    // comptroller.repayBorrowVerify(address(this), payer, borrower, vars.actualRepayAmount, vars.borrowerIndex);
+    IComptroller(comptroller).repayBorrowVerify(
+      address(this),
+      payer,
+      borrower,
+      vars.actualRepayAmount,
+      vars.borrowerIndex
+    );
 
     return (uint256(0), vars.actualRepayAmount);
   }
@@ -1346,7 +1369,9 @@ abstract contract CToken is CTokenStorage {
     address oldPendingAdmin = pendingAdmin;
 
     // Store pendingAdmin with value newPendingAdmin
-    require(newPendingAdmin != address(0), 'invalid address'); // Address is Zero
+    if (newPendingAdmin == address(0)) {
+      revert InvalidAddress();
+    } // Address is Zero
     pendingAdmin = newPendingAdmin;
 
     // Emit NewPendingAdmin(oldPendingAdmin, newPendingAdmin)
@@ -1710,8 +1735,7 @@ abstract contract CToken is CTokenStorage {
     return discountRateMantissa;
   }
 
-  function _setDiscountRate(uint256 discountRateMantissa_) external returns (uint256) {
-    require(msg.sender == admin, 'only admin');
+  function _setDiscountRate(uint256 discountRateMantissa_) external onlyAdmin returns (uint256) {
     uint256 oldDiscountRateMantissa_ = discountRateMantissa;
     discountRateMantissa = discountRateMantissa_;
     emit NewDiscountRate(oldDiscountRateMantissa_, discountRateMantissa_);

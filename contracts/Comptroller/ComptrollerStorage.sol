@@ -2,6 +2,7 @@
 pragma solidity 0.8.19;
 
 import './Interfaces/IComptroller.sol';
+import '../CToken/Interfaces/ISortedBorrows.sol';
 
 contract ComptrollerStorage {
   /// @notice Indicator that this is a Comptroller contract (for inspection)
@@ -119,4 +120,6 @@ contract ComptrollerStorage {
 
   // @notice Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
   mapping(address => uint256) public borrowCaps;
+
+  ISortedBorrows public sortedBorrows;
 }

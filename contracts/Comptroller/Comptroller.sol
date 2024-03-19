@@ -22,6 +22,8 @@ interface ICompLogic {
   function initializeMarket(address cToken, uint32 blockNumber) external;
 }
 
+error NoRedemptionProvider();
+
 interface IAccountLiquidity {
   struct AccountGroupLocalVars {
     uint8 groupId;
@@ -108,7 +110,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 _closeFactorMantissa,
     uint256 _heteroLiquidationIncentiveMantissa,
     uint256 _homoLiquidationIncentiveMantissa,
-    uint256 _sutokenLiquidationIncentiveMantissa
+    uint256 _sutokenLiquidationIncentiveMantissa,
+    ISortedBorrows _sortedBorrows
   ) external initializer {
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
 
@@ -129,6 +132,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     heteroLiquidationIncentiveMantissa = _heteroLiquidationIncentiveMantissa;
     homoLiquidationIncentiveMantissa = _homoLiquidationIncentiveMantissa;
     sutokenLiquidationIncentiveMantissa = _sutokenLiquidationIncentiveMantissa;
+
+    sortedBorrows = _sortedBorrows;
     // Emit event with old incentive, new incentive
     emit NewLiquidationIncentive(
       0,
@@ -149,6 +154,15 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 interCRateMantissa,
     uint256 interSuRateMantissa,
     uint8 assetsGroupNum
+  );
+
+  event Redemption(
+    address redeemer,
+    address provider,
+    address redeemToken,
+    uint256 redeemAmount,
+    address seizeToken,
+    uint256 seizeAmount
   );
 
   /*** Assets You Are In ***/
@@ -705,6 +719,10 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     accountLiquidity = _accountLiquidity;
   }
 
+  function setSortedBorrows(ISortedBorrows _sortedBorrows) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    sortedBorrows = _sortedBorrows;
+  }
+
   /**
    * @notice Return all of the markets
    * @dev The automatic getter may be used to access an individual market.
@@ -1049,5 +1067,211 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
         revert('too much repay');
       }
     }
+  }
+
+  function redeemFaceValueWithOneCollateral(
+    address redeemer,
+    address provider,
+    address suToken,
+    uint256 amount,
+    address cToken,
+    Exp memory suPrice
+  ) internal returns (uint256) {
+    (uint256 oErr, uint256 depositBalance, , uint256 exchangeRateMantissa) = ICToken(cToken).getAccountSnapshot(
+      provider
+    );
+    require(oErr == 0, 'snapshot error');
+
+    if (depositBalance <= 0) {
+      return amount;
+    }
+
+    uint256 cPriceMantissa = oracle.getUnderlyingPrice(cToken);
+    require(cPriceMantissa > 0, 'price error');
+
+    // normalize price for asset with unit of 1e(36-token decimal)
+    Exp memory cPrice = Exp({mantissa: cPriceMantissa});
+    uint8 cDecimals = ICToken(suToken).decimals();
+    if (cDecimals < 18) cPrice = cPrice.mul_(10 ** (18 - cDecimals));
+
+    uint256 maxRepayable = cPrice
+      .mul_(depositBalance)
+      .mul_(exchangeRateMantissa)
+      .div_(suPrice.mantissa)
+      .div_(10 ** 18)
+      .truncate();
+    if (maxRepayable > amount) {
+      // partial redemption
+      uint256 actualSeize = suPrice.mul_(amount).div_(cPrice.mantissa).truncate();
+      ICToken(suToken).executeRedemption(redeemer, provider, amount, cToken, actualSeize);
+      emit Redemption(redeemer, provider, suToken, amount, cToken, actualSeize);
+      return 0;
+    } else {
+      // full redemption
+      uint256 actualSeize = suPrice.mul_(maxRepayable).div_(cPrice.mantissa).truncate();
+      ICToken(suToken).executeRedemption(redeemer, provider, maxRepayable, cToken, actualSeize);
+      emit Redemption(redeemer, provider, suToken, maxRepayable, cToken, actualSeize);
+      return amount - maxRepayable;
+    }
+  }
+
+  function redeemFaceValue(address suToken, uint256 amount) external {
+    require(!ICToken(suToken).isCToken(), 'invalid su token');
+    require(!sortedBorrows.isEmpty(suToken), 'no one borrows');
+    uint8 suGroupId = markets[suToken].assetGroupId;
+    uint256 suPriceMantissa = oracle.getUnderlyingPrice(suToken);
+    require(suPriceMantissa > 0, 'price error');
+
+    // normalize price for asset with unit of 1e(36-token decimal)
+    Exp memory suPrice = Exp({mantissa: suPriceMantissa});
+    uint8 decimals = ICToken(suToken).decimals();
+    if (decimals < 18) suPrice = suPrice.mul_(10 ** (18 - decimals));
+
+    uint256 targetRepayAmount = amount;
+    address provider = sortedBorrows.getFirst(suToken);
+    for (; targetRepayAmount > 0 && provider != address(0); ) {
+      address[] memory assets = accountAssets[provider];
+
+      // redeem face value with homo collateral
+      for (uint256 i = 0; i < assets.length && targetRepayAmount > 0; ++i) {
+        // only cToken is allowed to be collateral
+        if (!ICToken(assets[i]).isCToken()) {
+          continue;
+        }
+        uint8 cGroupId = markets[assets[i]].assetGroupId;
+        if (cGroupId == suGroupId) {
+          targetRepayAmount = redeemFaceValueWithOneCollateral(
+            msg.sender,
+            provider,
+            suToken,
+            targetRepayAmount,
+            assets[i],
+            suPrice
+          );
+        }
+      }
+
+      // redeem face value with hetero collateral
+      for (uint256 i = 0; i < assets.length && targetRepayAmount > 0; ++i) {
+        // only cToken is allowed to be collateral
+        if (!ICToken(assets[i]).isCToken()) {
+          continue;
+        }
+        uint8 cGroupId = markets[assets[i]].assetGroupId;
+        if (cGroupId != suGroupId) {
+          targetRepayAmount = redeemFaceValueWithOneCollateral(
+            msg.sender,
+            provider,
+            suToken,
+            targetRepayAmount,
+            assets[i],
+            suPrice
+          );
+        }
+      }
+      provider = sortedBorrows.getNext(suToken, provider);
+    }
+    if (targetRepayAmount > 0) {
+      revert NoRedemptionProvider();
+    }
+  }
+
+  function updateSortedBorrowsBatch(address[] memory borrowers) external {
+    for (uint256 i = 0; i < borrowers.length; i++) {
+      address[] memory assets = accountAssets[borrowers[i]];
+      for (uint256 k = 0; k < assets.length; k++) {
+        updateSortedBorrows(assets[k], borrowers[i]);
+      }
+    }
+  }
+
+  function updateSortedBorrows(address csuToken, address borrower) internal {
+    if (!ICToken(csuToken).isCToken()) {
+      uint256 borrowed = ICToken(csuToken).borrowBalanceStored(borrower);
+      if (sortedBorrows.contains(csuToken, borrower)) {
+        address prevId = sortedBorrows.getPrev(csuToken, borrower);
+        address nextId = sortedBorrows.getNext(csuToken, borrower);
+        sortedBorrows.reInsert(csuToken, borrower, borrowed, prevId, nextId);
+      } else {
+        sortedBorrows.insert(csuToken, borrower, borrowed, address(0), address(0));
+      }
+    }
+  }
+
+  /**
+   * @notice Validates borrow and reverts on rejection. May emit logs.
+   * @param cToken Asset whose underlying is being borrowed
+   * @param borrower The address borrowing the underlying
+   * @param borrowAmount The amount of the underlying asset requested to borrow
+   */
+  function borrowVerify(address cToken, address borrower, uint256 borrowAmount) external {
+    // Shh - currently unused
+    // cToken;
+    // borrower;
+    borrowAmount;
+    updateSortedBorrows(cToken, borrower);
+
+    // Shh - we don't ever want this hook to be marked pure
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
+  }
+
+  /**
+   * @notice Validates repayBorrow and reverts on rejection. May emit logs.
+   * @param cToken Asset being repaid
+   * @param payer The address repaying the borrow
+   * @param borrower The address of the borrower
+   * @param actualRepayAmount The amount of underlying being repaid
+   */
+  function repayBorrowVerify(
+    address cToken,
+    address payer,
+    address borrower,
+    uint256 actualRepayAmount,
+    uint256 borrowerIndex
+  ) external {
+    // Shh - currently unused
+    // cToken;
+    payer;
+    // borrower;
+    actualRepayAmount;
+    borrowerIndex;
+
+    updateSortedBorrows(cToken, borrower);
+
+    // Shh - we don't ever want this hook to be marked pure
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
+  }
+
+  /**
+   * @notice Validates seize and reverts on rejection. May emit logs.
+   * @param cTokenCollateral Asset which was used as collateral and will be seized
+   * @param cTokenBorrowed Asset which was borrowed by the borrower
+   * @param liquidator The address repaying the borrow and seizing the collateral
+   * @param borrower The address of the borrower
+   * @param seizeTokens The number of collateral tokens to seize
+   */
+  function seizeVerify(
+    address cTokenCollateral,
+    address cTokenBorrowed,
+    address liquidator,
+    address borrower,
+    uint256 seizeTokens
+  ) external {
+    // Shh - currently unused
+    cTokenCollateral;
+    // cTokenBorrowed;
+    liquidator;
+    // borrower;
+    seizeTokens;
+
+    updateSortedBorrows(cTokenBorrowed, borrower);
+    // Shh - we don't ever want this hook to be marked pure
+    // if (false) {
+    //   maxAssets = maxAssets;
+    // }
   }
 }

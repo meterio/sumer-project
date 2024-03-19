@@ -13,6 +13,7 @@ import '../ITimelock.sol';
 contract CErc20 is CToken, ICErc20, Initializable {
   using CarefulMath for uint256;
   using Exponential for Exp;
+
   /**
    * @notice Initialize the new money market
    * @param underlying_ The address of the underlying asset
@@ -79,7 +80,9 @@ contract CErc20 is CToken, ICErc20, Initializable {
     isCEther = false;
 
     // Set underlying and sanity check it
-    require(underlying_ != address(0), 'invalid address');
+    if (underlying_ == address(0)) {
+      revert InvalidAddress();
+    }
     underlying = underlying_;
     // ICToken(underlying).totalSupply();
   }
@@ -169,12 +172,16 @@ contract CErc20 is CToken, ICErc20, Initializable {
    * @param token The address of the ERC-20 token to sweep
    */
   function sweepToken(address token) external override {
-    require(address(token) != underlying, 'can not sweep underlying token');
+    if (address(token) == underlying) {
+      revert CantSweepUnderlying();
+    }
     uint256 underlyingBalanceBefore = ICToken(underlying).balanceOf(address(this));
     uint256 balance = ICToken(token).balanceOf(address(this));
     ICToken(token).transfer(admin, balance);
     uint256 underlyingBalanceAfter = ICToken(underlying).balanceOf(address(this));
-    require(underlyingBalanceBefore == underlyingBalanceAfter, 'underlying balance error');
+    if (underlyingBalanceBefore != underlyingBalanceAfter) {
+      revert UnderlyingBalanceError();
+    }
   }
 
   /**
@@ -230,11 +237,15 @@ contract CErc20 is CToken, ICErc20, Initializable {
         revert(0, 0)
       }
     }
-    require(success, 'token transfer in failed');
+    if (!success) {
+      revert TokenTransferInFailed();
+    }
 
     // Calculate the amount that was *actually* transferred
     uint256 balanceAfter = ICToken(underlying).balanceOf(address(this));
-    require(balanceAfter >= balanceBefore, 'token transfer in overflow');
+    if (balanceAfter < balanceBefore) {
+      revert TokenTransferInFailed();
+    }
     uint256 finalAmount = balanceAfter - balanceBefore;
     underlyingBalance += finalAmount;
     return finalAmount; // underflow already checked above, just subtract
@@ -271,7 +282,9 @@ contract CErc20 is CToken, ICErc20, Initializable {
         revert(0, 0)
       }
     }
-    require(success, 'token transfer out failed');
+    if (!success) {
+      revert TokenTransferOutFailed();
+    }
   }
 
   function transferToTimelock(bool isBorrow, address to, uint256 amount) internal virtual override {
@@ -291,103 +304,10 @@ contract CErc20 is CToken, ICErc20, Initializable {
       doTransferOut(payable(to), amount);
     }
   }
-  function accrueInterest() public virtual override returns (uint256) {
-    /* Remember the initial block number */
-    uint256 currentBlockNumber = getBlockNumber();
-    uint256 accrualBlockNumberPrior = accrualBlockNumber;
-
-    /* Short-circuit accumulating 0 interest */
-    if (accrualBlockNumberPrior == currentBlockNumber) {
-      return uint256(0);
-    }
-
-    /* Read the previous values out of storage */
-    uint256 cashPrior = getCashPrior();
-    uint256 borrowsPrior = totalBorrows;
-    uint256 reservesPrior = totalReserves;
-    uint256 borrowIndexPrior = borrowIndex;
-
-    /* Calculate the current borrow interest rate */
-    uint256 borrowRateMantissa = IInterestRateModel(interestRateModel).getBorrowRate(
-      cashPrior,
-      borrowsPrior,
-      reservesPrior
-    );
-    if (borrowRateMantissa > BORROW_RATE_MAX_MANTISSA) {
-      // Error.TOKEN_ERROR.failOpaque(FailureInfo.BORROW_RATE_ABSURDLY_HIGH, borrowRateMantissa);
-      borrowRateMantissa = BORROW_RATE_MAX_MANTISSA;
-    }
-
-    /* Calculate the number of blocks elapsed since the last accrual */
-    (MathError mathErr, uint256 blockDelta) = currentBlockNumber.subUInt(accrualBlockNumberPrior);
-    require(mathErr == MathError.NO_ERROR, 'sub failed');
-    // Error.MATH_ERROR.fail(FailureInfo.COULD_NOT_CACULATE_BLOCK_DELTA);
-
-    /*
-     * Calculate the interest accumulated into borrows and reserves and the new index:
-     *  simpleInterestFactor = borrowRate * blockDelta
-     *  interestAccumulated = simpleInterestFactor * totalBorrows
-     *  totalBorrowsNew = interestAccumulated + totalBorrows
-     *  totalReservesNew = interestAccumulated * reserveFactor + totalReserves
-     *  borrowIndexNew = simpleInterestFactor * borrowIndex + borrowIndex
-     */
-
-    Exp memory simpleInterestFactor;
-    uint256 interestAccumulated;
-    uint256 totalBorrowsNew;
-    uint256 totalReservesNew;
-    uint256 borrowIndexNew;
-
-    (mathErr, simpleInterestFactor) = Exp({mantissa: borrowRateMantissa}).mulScalar(blockDelta);
-    require(mathErr == MathError.NO_ERROR, 'mul failed');
-    // Error.MATH_ERROR.failOpaque(
-    //   FailureInfo.ACCRUE_INTEREST_SIMPLE_INTEREST_FACTOR_CALCULATION_FAILED,
-    //   uint256(mathErr)
-    // );
-
-    (mathErr, interestAccumulated) = simpleInterestFactor.mulScalarTruncate(borrowsPrior);
-    require(mathErr == MathError.NO_ERROR, 'mul failed 2');
-    // Error.MATH_ERROR.failOpaque(
-    //   FailureInfo.ACCRUE_INTEREST_ACCUMULATED_INTEREST_CALCULATION_FAILED,
-    //   uint256(mathErr)
-    // );
-
-    (mathErr, totalBorrowsNew) = interestAccumulated.addUInt(borrowsPrior);
-    require(mathErr == MathError.NO_ERROR, 'add failed');
-    // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_BORROWS_CALCULATION_FAILED, uint256(mathErr));
-
-    (mathErr, totalReservesNew) = Exp({mantissa: reserveFactorMantissa}).mulScalarTruncateAddUInt(
-      interestAccumulated,
-      reservesPrior
-    );
-    if (mathErr != MathError.NO_ERROR) {
-      // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_TOTAL_RESERVES_CALCULATION_FAILED, uint256(mathErr));
-      revert('calc failed');
-    }
-
-    (mathErr, borrowIndexNew) = simpleInterestFactor.mulScalarTruncateAddUInt(borrowIndexPrior, borrowIndexPrior);
-    if (mathErr != MathError.NO_ERROR) {
-      // Error.MATH_ERROR.failOpaque(FailureInfo.ACCRUE_INTEREST_NEW_BORROW_INDEX_CALCULATION_FAILED, uint256(mathErr));
-      revert('calc failed 2');
-    }
-
-    /////////////////////////
-    // EFFECTS & INTERACTIONS
-    // (No safe failures beyond this point)
-
-    /* We write the previously calculated values into storage */
-    accrualBlockNumber = currentBlockNumber;
-    borrowIndex = borrowIndexNew;
-    totalBorrows = totalBorrowsNew;
-    totalReserves = totalReservesNew;
-
-    /* We emit an AccrueInterest event */
-    emit AccrueInterest(cashPrior, interestAccumulated, borrowIndexNew, totalBorrowsNew);
-
-    return uint256(0);
-  }
 
   function borrowAndMint(uint256 borrowAmount) external returns (uint256) {
     return borrowAndMintInternal(borrowAmount);
   }
+
+  function executeRedemption(address redeemer, address provider, uint256 cAmount) external returns (uint256) {}
 }
