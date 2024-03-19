@@ -210,6 +210,45 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "redeemer",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "provider",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "repayAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "cTokenCollateral",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "seizeAmount",
+        type: "uint256",
+      },
+    ],
+    name: "executeRedemption",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "account",
         type: "address",
       },

@@ -7,6 +7,16 @@ import type { CToken, CTokenInterface } from "../../../contracts/CToken/CToken";
 
 const _abi = [
   {
+    inputs: [],
+    name: "InvalidAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "OnlyAdmin",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {

@@ -66,6 +66,7 @@ export interface IComptrollerInterface extends Interface {
       | "assetGroupIdToIndex"
       | "borrowAllowed"
       | "borrowCaps"
+      | "borrowVerify"
       | "claimComp"
       | "closeFactorMantissa"
       | "compAccrued"
@@ -82,6 +83,7 @@ export interface IComptrollerInterface extends Interface {
       | "isComptroller"
       | "isListed"
       | "liquidateBorrowAllowed"
+      | "liquidateBorrowVerify"
       | "liquidationIncentiveMantissa"
       | "marketGroupId"
       | "markets"
@@ -90,7 +92,9 @@ export interface IComptrollerInterface extends Interface {
       | "redeemAllowed"
       | "redeemVerify"
       | "repayBorrowAllowed"
+      | "repayBorrowVerify"
       | "seizeAllowed"
+      | "seizeVerify"
       | "timelock"
       | "transferAllowed"
   ): FunctionFragment;
@@ -131,6 +135,10 @@ export interface IComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "borrowCaps",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "borrowVerify",
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "claimComp",
@@ -197,6 +205,17 @@ export interface IComptrollerInterface extends Interface {
     values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "liquidateBorrowVerify",
+    values: [
+      AddressLike,
+      AddressLike,
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "liquidationIncentiveMantissa",
     values?: undefined
   ): string;
@@ -226,7 +245,15 @@ export interface IComptrollerInterface extends Interface {
     values: [AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "repayBorrowVerify",
+    values: [AddressLike, AddressLike, AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "seizeAllowed",
+    values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "seizeVerify",
     values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
@@ -260,6 +287,10 @@ export interface IComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "borrowVerify",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "claimComp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "closeFactorMantissa",
@@ -316,6 +347,10 @@ export interface IComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "liquidateBorrowVerify",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "liquidationIncentiveMantissa",
     data: BytesLike
   ): Result;
@@ -342,7 +377,15 @@ export interface IComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "repayBorrowVerify",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "seizeAllowed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "seizeVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
@@ -514,6 +557,12 @@ export interface IComptroller extends BaseContract {
 
   borrowCaps: TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
 
+  borrowVerify: TypedContractMethod<
+    [cToken: AddressLike, borrower: AddressLike, borrowAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   claimComp: TypedContractMethod<[arg0: AddressLike], [void], "nonpayable">;
 
   closeFactorMantissa: TypedContractMethod<[], [bigint], "view">;
@@ -585,6 +634,19 @@ export interface IComptroller extends BaseContract {
     "view"
   >;
 
+  liquidateBorrowVerify: TypedContractMethod<
+    [
+      cTokenBorrowed: AddressLike,
+      cTokenCollateral: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish,
+      seizeTokens: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
   liquidationIncentiveMantissa: TypedContractMethod<
     [],
     [[bigint, bigint, bigint]],
@@ -635,7 +697,31 @@ export interface IComptroller extends BaseContract {
     "nonpayable"
   >;
 
+  repayBorrowVerify: TypedContractMethod<
+    [
+      cToken: AddressLike,
+      payer: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish,
+      borrowerIndex: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
   seizeAllowed: TypedContractMethod<
+    [
+      cTokenCollateral: AddressLike,
+      cTokenBorrowed: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  seizeVerify: TypedContractMethod<
     [
       cTokenCollateral: AddressLike,
       cTokenBorrowed: AddressLike,
@@ -689,6 +775,13 @@ export interface IComptroller extends BaseContract {
   getFunction(
     nameOrSignature: "borrowCaps"
   ): TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "borrowVerify"
+  ): TypedContractMethod<
+    [cToken: AddressLike, borrower: AddressLike, borrowAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "claimComp"
   ): TypedContractMethod<[arg0: AddressLike], [void], "nonpayable">;
@@ -765,6 +858,20 @@ export interface IComptroller extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "liquidateBorrowVerify"
+  ): TypedContractMethod<
+    [
+      cTokenBorrowed: AddressLike,
+      cTokenCollateral: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish,
+      seizeTokens: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "liquidationIncentiveMantissa"
   ): TypedContractMethod<[], [[bigint, bigint, bigint]], "view">;
   getFunction(
@@ -819,7 +926,33 @@ export interface IComptroller extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "repayBorrowVerify"
+  ): TypedContractMethod<
+    [
+      cToken: AddressLike,
+      payer: AddressLike,
+      borrower: AddressLike,
+      repayAmount: BigNumberish,
+      borrowerIndex: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "seizeAllowed"
+  ): TypedContractMethod<
+    [
+      cTokenCollateral: AddressLike,
+      cTokenBorrowed: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "seizeVerify"
   ): TypedContractMethod<
     [
       cTokenCollateral: AddressLike,

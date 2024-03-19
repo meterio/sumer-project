@@ -91,6 +91,7 @@ export interface ComptrollerInterface extends Interface {
       | "borrowCapGuardian"
       | "borrowCaps"
       | "borrowGuardianPaused"
+      | "borrowVerify"
       | "checkMembership"
       | "cleanAssetGroup"
       | "closeFactorMantissa"
@@ -129,25 +130,31 @@ export interface ComptrollerInterface extends Interface {
       | "oracle"
       | "pauseGuardian"
       | "redeemAllowed"
+      | "redeemFaceValue"
       | "redeemVerify"
       | "removeAssetGroup"
       | "renounceRole"
       | "repayBorrowAllowed"
+      | "repayBorrowVerify"
       | "revokeRole"
       | "seizeAllowed"
       | "seizeGuardianPaused"
+      | "seizeVerify"
       | "setAccountLiquidity"
       | "setAssetGroup"
       | "setCompLogic"
       | "setCompSpeed"
       | "setGovTokenAddress"
+      | "setSortedBorrows"
       | "setTimelock"
+      | "sortedBorrows"
       | "suTokenRateMantissa"
       | "supportsInterface"
       | "sutokenLiquidationIncentiveMantissa"
       | "timelock"
       | "transferAllowed"
       | "transferGuardianPaused"
+      | "updateSortedBorrowsBatch"
   ): FunctionFragment;
 
   getEvent(
@@ -164,6 +171,7 @@ export interface ComptrollerInterface extends Interface {
       | "NewLiquidationIncentive"
       | "NewPauseGuardian"
       | "NewPriceOracle"
+      | "Redemption"
       | "RemoveAssetGroup"
       | "RoleAdminChanged"
       | "RoleGranted"
@@ -300,6 +308,10 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "borrowVerify",
+    values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "checkMembership",
     values: [AddressLike, AddressLike]
   ): string;
@@ -407,7 +419,8 @@ export interface ComptrollerInterface extends Interface {
       BigNumberish,
       BigNumberish,
       BigNumberish,
-      BigNumberish
+      BigNumberish,
+      AddressLike
     ]
   ): string;
   encodeFunctionData(
@@ -456,6 +469,10 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "redeemFaceValue",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "redeemVerify",
     values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
@@ -472,6 +489,10 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "repayBorrowVerify",
+    values: [AddressLike, AddressLike, AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, AddressLike]
   ): string;
@@ -482,6 +503,10 @@ export interface ComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "seizeGuardianPaused",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "seizeVerify",
+    values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setAccountLiquidity",
@@ -512,8 +537,16 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "setSortedBorrows",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setTimelock",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sortedBorrows",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "suTokenRateMantissa",
@@ -535,6 +568,10 @@ export interface ComptrollerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "transferGuardianPaused",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateSortedBorrowsBatch",
+    values: [AddressLike[]]
   ): string;
 
   decodeFunctionResult(
@@ -654,6 +691,10 @@ export interface ComptrollerInterface extends Interface {
   decodeFunctionResult(functionFragment: "borrowCaps", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "borrowGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "borrowVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -782,6 +823,10 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "redeemFaceValue",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "redeemVerify",
     data: BytesLike
   ): Result;
@@ -797,6 +842,10 @@ export interface ComptrollerInterface extends Interface {
     functionFragment: "repayBorrowAllowed",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "repayBorrowVerify",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "seizeAllowed",
@@ -804,6 +853,10 @@ export interface ComptrollerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "seizeGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "seizeVerify",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -827,7 +880,15 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setSortedBorrows",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setTimelock",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sortedBorrows",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -849,6 +910,10 @@ export interface ComptrollerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferGuardianPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateSortedBorrowsBatch",
     data: BytesLike
   ): Result;
 }
@@ -1072,6 +1137,37 @@ export namespace NewPriceOracleEvent {
   export interface OutputObject {
     oldPriceOracle: string;
     newPriceOracle: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RedemptionEvent {
+  export type InputTuple = [
+    redeemer: AddressLike,
+    provider: AddressLike,
+    redeemToken: AddressLike,
+    redeemAmount: BigNumberish,
+    seizeToken: AddressLike,
+    seizeAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    redeemer: string,
+    provider: string,
+    redeemToken: string,
+    redeemAmount: bigint,
+    seizeToken: string,
+    seizeAmount: bigint
+  ];
+  export interface OutputObject {
+    redeemer: string;
+    provider: string;
+    redeemToken: string;
+    redeemAmount: bigint;
+    seizeToken: string;
+    seizeAmount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -1350,6 +1446,12 @@ export interface Comptroller extends BaseContract {
     "view"
   >;
 
+  borrowVerify: TypedContractMethod<
+    [cToken: AddressLike, borrower: AddressLike, borrowAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   checkMembership: TypedContractMethod<
     [account: AddressLike, cToken: AddressLike],
     [boolean],
@@ -1472,7 +1574,8 @@ export interface Comptroller extends BaseContract {
       _closeFactorMantissa: BigNumberish,
       _heteroLiquidationIncentiveMantissa: BigNumberish,
       _homoLiquidationIncentiveMantissa: BigNumberish,
-      _sutokenLiquidationIncentiveMantissa: BigNumberish
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
+      _sortedBorrows: AddressLike
     ],
     [void],
     "nonpayable"
@@ -1538,6 +1641,12 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
+  redeemFaceValue: TypedContractMethod<
+    [suToken: AddressLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   redeemVerify: TypedContractMethod<
     [
       cToken: AddressLike,
@@ -1572,6 +1681,18 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
+  repayBorrowVerify: TypedContractMethod<
+    [
+      cToken: AddressLike,
+      payer: AddressLike,
+      borrower: AddressLike,
+      actualRepayAmount: BigNumberish,
+      borrowerIndex: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
   revokeRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
     [void],
@@ -1591,6 +1712,18 @@ export interface Comptroller extends BaseContract {
   >;
 
   seizeGuardianPaused: TypedContractMethod<[], [boolean], "view">;
+
+  seizeVerify: TypedContractMethod<
+    [
+      cTokenCollateral: AddressLike,
+      cTokenBorrowed: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
 
   setAccountLiquidity: TypedContractMethod<
     [_accountLiquidity: AddressLike],
@@ -1630,11 +1763,19 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
+  setSortedBorrows: TypedContractMethod<
+    [_sortedBorrows: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   setTimelock: TypedContractMethod<
     [_timelock: AddressLike],
     [void],
     "nonpayable"
   >;
+
+  sortedBorrows: TypedContractMethod<[], [string], "view">;
 
   suTokenRateMantissa: TypedContractMethod<[], [bigint], "view">;
 
@@ -1664,6 +1805,12 @@ export interface Comptroller extends BaseContract {
   >;
 
   transferGuardianPaused: TypedContractMethod<[], [boolean], "view">;
+
+  updateSortedBorrowsBatch: TypedContractMethod<
+    [borrowers: AddressLike[]],
+    [void],
+    "nonpayable"
+  >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -1819,6 +1966,13 @@ export interface Comptroller extends BaseContract {
     nameOrSignature: "borrowGuardianPaused"
   ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
   getFunction(
+    nameOrSignature: "borrowVerify"
+  ): TypedContractMethod<
+    [cToken: AddressLike, borrower: AddressLike, borrowAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "checkMembership"
   ): TypedContractMethod<
     [account: AddressLike, cToken: AddressLike],
@@ -1955,7 +2109,8 @@ export interface Comptroller extends BaseContract {
       _closeFactorMantissa: BigNumberish,
       _heteroLiquidationIncentiveMantissa: BigNumberish,
       _homoLiquidationIncentiveMantissa: BigNumberish,
-      _sutokenLiquidationIncentiveMantissa: BigNumberish
+      _sutokenLiquidationIncentiveMantissa: BigNumberish,
+      _sortedBorrows: AddressLike
     ],
     [void],
     "nonpayable"
@@ -2025,6 +2180,13 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "redeemFaceValue"
+  ): TypedContractMethod<
+    [suToken: AddressLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "redeemVerify"
   ): TypedContractMethod<
     [
@@ -2059,6 +2221,19 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "repayBorrowVerify"
+  ): TypedContractMethod<
+    [
+      cToken: AddressLike,
+      payer: AddressLike,
+      borrower: AddressLike,
+      actualRepayAmount: BigNumberish,
+      borrowerIndex: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "revokeRole"
   ): TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -2081,6 +2256,19 @@ export interface Comptroller extends BaseContract {
   getFunction(
     nameOrSignature: "seizeGuardianPaused"
   ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "seizeVerify"
+  ): TypedContractMethod<
+    [
+      cTokenCollateral: AddressLike,
+      cTokenBorrowed: AddressLike,
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "setAccountLiquidity"
   ): TypedContractMethod<
@@ -2117,8 +2305,14 @@ export interface Comptroller extends BaseContract {
     nameOrSignature: "setGovTokenAddress"
   ): TypedContractMethod<[_governanceToken: AddressLike], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "setSortedBorrows"
+  ): TypedContractMethod<[_sortedBorrows: AddressLike], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "setTimelock"
   ): TypedContractMethod<[_timelock: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "sortedBorrows"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "suTokenRateMantissa"
   ): TypedContractMethod<[], [bigint], "view">;
@@ -2146,6 +2340,9 @@ export interface Comptroller extends BaseContract {
   getFunction(
     nameOrSignature: "transferGuardianPaused"
   ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "updateSortedBorrowsBatch"
+  ): TypedContractMethod<[borrowers: AddressLike[]], [void], "nonpayable">;
 
   getEvent(
     key: "ActionPaused"
@@ -2230,6 +2427,13 @@ export interface Comptroller extends BaseContract {
     NewPriceOracleEvent.InputTuple,
     NewPriceOracleEvent.OutputTuple,
     NewPriceOracleEvent.OutputObject
+  >;
+  getEvent(
+    key: "Redemption"
+  ): TypedContractEvent<
+    RedemptionEvent.InputTuple,
+    RedemptionEvent.OutputTuple,
+    RedemptionEvent.OutputObject
   >;
   getEvent(
     key: "RemoveAssetGroup"
@@ -2398,6 +2602,17 @@ export interface Comptroller extends BaseContract {
       NewPriceOracleEvent.InputTuple,
       NewPriceOracleEvent.OutputTuple,
       NewPriceOracleEvent.OutputObject
+    >;
+
+    "Redemption(address,address,address,uint256,address,uint256)": TypedContractEvent<
+      RedemptionEvent.InputTuple,
+      RedemptionEvent.OutputTuple,
+      RedemptionEvent.OutputObject
+    >;
+    Redemption: TypedContractEvent<
+      RedemptionEvent.InputTuple,
+      RedemptionEvent.OutputTuple,
+      RedemptionEvent.OutputObject
     >;
 
     "RemoveAssetGroup(uint8,uint8)": TypedContractEvent<

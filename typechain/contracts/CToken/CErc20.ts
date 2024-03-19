@@ -53,6 +53,7 @@ export interface CErc20Interface extends Interface {
       | "discountRateMantissa"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
+      | "executeRedemption"
       | "getAccountSnapshot"
       | "getCash"
       | "getDiscountRate"
@@ -208,6 +209,10 @@ export interface CErc20Interface extends Interface {
   encodeFunctionData(
     functionFragment: "exchangeRateStored",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeRedemption",
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountSnapshot",
@@ -415,6 +420,10 @@ export interface CErc20Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "exchangeRateStored",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeRedemption",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1004,6 +1013,12 @@ export interface CErc20 extends BaseContract {
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
 
+  executeRedemption: TypedContractMethod<
+    [redeemer: AddressLike, provider: AddressLike, cAmount: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+
   getAccountSnapshot: TypedContractMethod<
     [account: AddressLike],
     [[bigint, bigint, bigint, bigint]],
@@ -1238,6 +1253,13 @@ export interface CErc20 extends BaseContract {
   getFunction(
     nameOrSignature: "exchangeRateStored"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "executeRedemption"
+  ): TypedContractMethod<
+    [redeemer: AddressLike, provider: AddressLike, cAmount: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "getAccountSnapshot"
   ): TypedContractMethod<

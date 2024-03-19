@@ -36,6 +36,7 @@ export interface ICTokenInterface extends Interface {
       | "delegates"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
+      | "executeRedemption"
       | "getAccountSnapshot"
       | "getCash"
       | "getCurrentVotes"
@@ -96,6 +97,10 @@ export interface ICTokenInterface extends Interface {
   encodeFunctionData(
     functionFragment: "exchangeRateStored",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeRedemption",
+    values: [AddressLike, AddressLike, BigNumberish, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountSnapshot",
@@ -179,6 +184,10 @@ export interface ICTokenInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "exchangeRateStored",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeRedemption",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -310,6 +319,18 @@ export interface ICToken extends BaseContract {
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
 
+  executeRedemption: TypedContractMethod<
+    [
+      redeemer: AddressLike,
+      provider: AddressLike,
+      repayAmount: BigNumberish,
+      cTokenCollateral: AddressLike,
+      seizeAmount: BigNumberish
+    ],
+    [bigint],
+    "nonpayable"
+  >;
+
   getAccountSnapshot: TypedContractMethod<
     [account: AddressLike],
     [[bigint, bigint, bigint, bigint]],
@@ -394,6 +415,19 @@ export interface ICToken extends BaseContract {
   getFunction(
     nameOrSignature: "exchangeRateStored"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "executeRedemption"
+  ): TypedContractMethod<
+    [
+      redeemer: AddressLike,
+      provider: AddressLike,
+      repayAmount: BigNumberish,
+      cTokenCollateral: AddressLike,
+      seizeAmount: BigNumberish
+    ],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "getAccountSnapshot"
   ): TypedContractMethod<

@@ -5,3 +5,4 @@ export type { ICErc20 } from "./ICErc20";
 export type { ICToken } from "./ICToken";
 export type { IEIP20NonStandard } from "./IEIP20NonStandard";
 export type { IInterestRateModel } from "./IInterestRateModel";
+export type { ISortedBorrows } from "./ISortedBorrows";

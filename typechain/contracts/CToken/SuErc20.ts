@@ -54,6 +54,8 @@ export interface SuErc20Interface extends Interface {
       | "discountRateMantissa"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
+      | "executeRedemption(address,address,uint256,address,uint256)"
+      | "executeRedemption(address,address,uint256)"
       | "getAccountSnapshot"
       | "getCash"
       | "getDiscountRate"
@@ -213,6 +215,14 @@ export interface SuErc20Interface extends Interface {
   encodeFunctionData(
     functionFragment: "exchangeRateStored",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeRedemption(address,address,uint256,address,uint256)",
+    values: [AddressLike, AddressLike, BigNumberish, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeRedemption(address,address,uint256)",
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountSnapshot",
@@ -424,6 +434,14 @@ export interface SuErc20Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "exchangeRateStored",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeRedemption(address,address,uint256,address,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeRedemption(address,address,uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1015,6 +1033,24 @@ export interface SuErc20 extends BaseContract {
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
 
+  "executeRedemption(address,address,uint256,address,uint256)": TypedContractMethod<
+    [
+      redeemer: AddressLike,
+      provider: AddressLike,
+      repayAmount: BigNumberish,
+      cTokenCollateral: AddressLike,
+      seizeAmount: BigNumberish
+    ],
+    [bigint],
+    "nonpayable"
+  >;
+
+  "executeRedemption(address,address,uint256)": TypedContractMethod<
+    [redeemer: AddressLike, provider: AddressLike, cAmount: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+
   getAccountSnapshot: TypedContractMethod<
     [account: AddressLike],
     [[bigint, bigint, bigint, bigint]],
@@ -1252,6 +1288,26 @@ export interface SuErc20 extends BaseContract {
   getFunction(
     nameOrSignature: "exchangeRateStored"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "executeRedemption(address,address,uint256,address,uint256)"
+  ): TypedContractMethod<
+    [
+      redeemer: AddressLike,
+      provider: AddressLike,
+      repayAmount: BigNumberish,
+      cTokenCollateral: AddressLike,
+      seizeAmount: BigNumberish
+    ],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "executeRedemption(address,address,uint256)"
+  ): TypedContractMethod<
+    [redeemer: AddressLike, provider: AddressLike, cAmount: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "getAccountSnapshot"
   ): TypedContractMethod<

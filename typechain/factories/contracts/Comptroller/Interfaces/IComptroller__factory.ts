@@ -239,6 +239,29 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "borrowAmount",
+        type: "uint256",
+      },
+    ],
+    name: "borrowVerify",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "",
         type: "address",
       },
@@ -631,6 +654,44 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cTokenBorrowed",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "cTokenCollateral",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "liquidator",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "repayAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "seizeTokens",
+        type: "uint256",
+      },
+    ],
+    name: "liquidateBorrowVerify",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "liquidationIncentiveMantissa",
     outputs: [
@@ -820,6 +881,39 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "cToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "payer",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "repayAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "borrowerIndex",
+        type: "uint256",
+      },
+    ],
+    name: "repayBorrowVerify",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "cTokenCollateral",
         type: "address",
       },
@@ -845,6 +939,39 @@ const _abi = [
       },
     ],
     name: "seizeAllowed",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "cTokenCollateral",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "cTokenBorrowed",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "liquidator",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "seizeTokens",
+        type: "uint256",
+      },
+    ],
+    name: "seizeVerify",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

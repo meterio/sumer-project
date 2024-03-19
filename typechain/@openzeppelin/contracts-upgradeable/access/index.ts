@@ -5,3 +5,4 @@ export type { AccessControlEnumerableUpgradeable } from "./AccessControlEnumerab
 export type { AccessControlUpgradeable } from "./AccessControlUpgradeable";
 export type { IAccessControlEnumerableUpgradeable } from "./IAccessControlEnumerableUpgradeable";
 export type { IAccessControlUpgradeable } from "./IAccessControlUpgradeable";
+export type { OwnableUpgradeable } from "./OwnableUpgradeable";
