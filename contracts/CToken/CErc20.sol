@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 import './CToken.sol';
-import './Interfaces/ICErc20.sol';
+import '../Interface/ICErc20.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '../ITimelock.sol';
 
@@ -308,6 +308,4 @@ contract CErc20 is CToken, ICErc20, Initializable {
   function borrowAndMint(uint256 borrowAmount) external returns (uint256) {
     return borrowAndMintInternal(borrowAmount);
   }
-
-  function executeRedemption(address redeemer, address provider, uint256 cAmount) external returns (uint256) {}
 }

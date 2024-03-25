@@ -58,6 +58,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getRedemptionRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -95,6 +108,30 @@ const _abi = [
     ],
     name: "setCompSpeed",
     outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "redeemAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_totalSupply",
+        type: "uint256",
+      },
+    ],
+    name: "updateBaseRateFromRedemption",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },

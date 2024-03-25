@@ -13,7 +13,17 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "MarketNotFresh",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "OnlyAdmin",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "TransferNotAllowed",
     type: "error",
   },
   {
@@ -853,19 +863,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "getDiscountRate",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "interestRateModel",
     outputs: [
       {
@@ -1017,6 +1014,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "seizeTokens",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "protocolShareMantissa",
         type: "uint256",
       },
     ],

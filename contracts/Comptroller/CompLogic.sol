@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 import '../Exponential/ExponentialNoError.sol';
-import './Interfaces/IComptroller.sol';
-import './Interfaces/ICToken.sol';
+import '../Interface/IComptroller.sol';
+import '../Interface/ICTokenExternal.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 
 contract CompLogic is AccessControlEnumerableUpgradeable {

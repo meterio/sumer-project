@@ -13,7 +13,15 @@ import {
   interestRateModel_select,
   InterestRateModel_template,
 } from './helper';
-import { AccountLiquidity, CErc20, CompLogic, Comptroller, FeedPriceOracle, SortedBorrows } from '../typechain';
+import {
+  AccountLiquidity,
+  CErc20,
+  CompLogic,
+  Comptroller,
+  FeedPriceOracle,
+  SortedBorrows,
+  RedemptionManager,
+} from '../typechain';
 import { confirm } from '@inquirer/prompts';
 import { BigNumberish } from 'ethers';
 
@@ -35,7 +43,6 @@ const main = async () => {
   writeConfig(netConfig.name, config);
 
   // FeedPriceOracle
-  let old_feedPriceOracle = config.FeedPriceOracle.address;
   config.FeedPriceOracle = await deployOrInput(ethers, network, override, config.FeedPriceOracle);
   writeConfig(netConfig.name, config);
   const oracle = (await ethers.getContractAt(
@@ -43,23 +50,6 @@ const main = async () => {
     config.FeedPriceOracle.address,
     network.wallet
   )) as FeedPriceOracle;
-
-  // set oracle on comptroller
-  if (config.Comptroller.address != '' && old_feedPriceOracle != config.FeedPriceOracle.address) {
-    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    const oracleOnChain = await comptroller.oracle();
-
-    if (oracleOnChain.toLowerCase() != config.FeedPriceOracle.address.toLowerCase()) {
-      console.log(`更新Comptroller.oracle: ${oracleOnChain} -> ${config.FeedPriceOracle.address}`);
-      await sendTransaction(
-        network,
-        comptroller,
-        '_setPriceOracle(address)',
-        [config.FeedPriceOracle.address],
-        override
-      );
-    }
-  }
 
   // CompoundLens
   config.CompoundLens = await deployOrInput(ethers, network, override, config.CompoundLens);
@@ -86,10 +76,10 @@ const main = async () => {
   } while (interestRateModel_selected != 'exit');
 
   // AccountLiquidity
-  let old_accountLiquidity = config.AccountLiquidity.address;
   config.AccountLiquidity = await deployOrInput(ethers, network, override, config.AccountLiquidity, true);
   writeConfig(netConfig.name, config);
 
+  // AccountLiquidity proxy
   config.AccountLiquidity = await deployProxyOrInput(
     ethers,
     network,
@@ -99,45 +89,19 @@ const main = async () => {
   );
   writeConfig(netConfig.name, config);
 
-  // set accountLiquidity on Comptroller
-  if (config.Comptroller.address != '' && old_accountLiquidity != config.AccountLiquidity.address) {
-    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    const alOnChain = await comptroller.accountLiquidity();
-    if (alOnChain.toLowerCase() != config.AccountLiquidity.address.toLowerCase()) {
-      console.log(`更新Comptroller.accountLiquidity: ${alOnChain} -> ${config.AccountLiquidity.address}`);
-      await sendTransaction(
-        network,
-        comptroller,
-        'setAccountLiquidity(address)',
-        [config.AccountLiquidity.address],
-        override
-      );
-    }
-  }
-
   // CompLogic
-  let old_compLogic = config.CompLogic.address;
   config.CompLogic = await deployOrInput(ethers, network, override, config.CompLogic, true);
   writeConfig(netConfig.name, config);
 
+  // CompLogic proxy
   config.CompLogic = await deployProxyOrInput(ethers, network, override, config.CompLogic, config.ProxyAdmin.address);
   writeConfig(netConfig.name, config);
 
-  // set compLogic on Comptroller
-  if (config.Comptroller.address != '' && old_compLogic != config.CompLogic.address) {
-    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    const clOnChain = await comptroller.compLogic();
-    if (clOnChain.toLowerCase() != config.CompLogic.address.toLowerCase()) {
-      console.log(`更新Comptroller.compLogic：${clOnChain} -> ${config.CompLogic.address}`);
-      await sendTransaction(network, comptroller, 'setCompLogic(address)', [config.CompLogic.address], override);
-    }
-  }
-
   // SortedBorrows
-  let old_sortedBorrows = config.SortedBorrows.address;
   config.SortedBorrows = await deployOrInput(ethers, network, override, config.SortedBorrows, true);
   writeConfig(netConfig.name, config);
 
+  // SortedBorrows proxy
   config.SortedBorrows = await deployProxyOrInput(
     ethers,
     network,
@@ -147,27 +111,61 @@ const main = async () => {
   );
   writeConfig(netConfig.name, config);
 
-  // set compLogic on Comptroller
-  if (config.Comptroller.address != '' && old_sortedBorrows != config.SortedBorrows.address) {
-    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
-    const sbOnChain = await comptroller.compLogic();
-    if (sbOnChain.toLowerCase() != config.SortedBorrows.address.toLowerCase()) {
-      console.log(`更新Comptroller.sortedBorrows ${sbOnChain} -> ${config.SortedBorrows.address}`);
-      await sendTransaction(
-        network,
-        comptroller,
-        'setSortedBorrows(address)',
-        [config.SortedBorrows.address],
-        override
-      );
-    }
+  // RedemptionManager
+  config.RedemptionManager = await deployOrInput(ethers, network, override, config.RedemptionManager, true);
+  writeConfig(netConfig.name, config);
+
+  // RedemptionManager proxy
+  config.RedemptionManager = await deployProxyOrInput(
+    ethers,
+    network,
+    override,
+    config.RedemptionManager,
+    config.ProxyAdmin.address
+  );
+  writeConfig(netConfig.name, config);
+
+  // set RedemptionManager.sortedBorrows
+  const redemptionManager = (await ethers.getContractAt(
+    'RedemptionManager',
+    config.RedemptionManager.address,
+    wallet
+  )) as RedemptionManager;
+  const sortedBorrowsOnRM = await redemptionManager.sortedBorrows();
+  if (sortedBorrowsOnRM.toLowerCase() != config.SortedBorrows.address.toLowerCase()) {
+    console.log(`更新 RedemptionManager.sortedBorrows ${sortedBorrowsOnRM} -> ${config.SortedBorrows.address}`);
+    await sendTransaction(
+      network,
+      redemptionManager,
+      'setSortedBorrows(address)',
+      [config.SortedBorrows.address],
+      override
+    );
+  }
+
+  // set SortedBorrows.redemptionManager
+  const sortedBorrows = (await ethers.getContractAt(
+    'SortedBorrows',
+    config.SortedBorrows.address,
+    wallet
+  )) as SortedBorrows;
+  const rmOnSortedBorrows = await sortedBorrows.redemptionManager();
+  if (rmOnSortedBorrows.toLowerCase() != config.RedemptionManager.address.toLowerCase()) {
+    console.log(`更新 SortedBorrows.redemptionManager ${rmOnSortedBorrows} -> ${config.RedemptionManager.address}`);
+    await sendTransaction(
+      network,
+      sortedBorrows,
+      'setRedemptionManager(address)',
+      [config.RedemptionManager.address],
+      override
+    );
   }
 
   // Comptroller
-  let old_comptroller = config.Comptroller.address;
   config.Comptroller = await deployOrInput(ethers, network, override, config.Comptroller, true);
   writeConfig(netConfig.name, config);
 
+  // Comptroller proxy
   config.Comptroller = await deployProxyOrInput(
     ethers,
     network,
@@ -177,33 +175,76 @@ const main = async () => {
   );
   writeConfig(netConfig.name, config);
 
-  // set comptroller on cTokens
-  if (old_comptroller != config.Comptroller.address) {
-    let isupdate = await confirm({
-      message: '是否更新cToken的Comptroller？',
-    });
-    if (isupdate) {
-      console.log('更新cToken的Comptroller：');
-      let tokens = getCTokens(network);
-      for (let i = 0; i < tokens.length; i++) {
-        if (tokens[i] != '') {
-          let cToken = (await ethers.getContractAt('CErc20', tokens[i], wallet)) as CErc20;
-          const comptrollerOnChain = await cToken.comptroller();
-          if (comptrollerOnChain.toLowerCase() != config.Comptroller.address.toLowerCase()) {
-            const symbol = await cToken.symbol();
-            console.log(`更新：${symbol}.comptroller: ${comptrollerOnChain} -> ${config.Comptroller.address}`);
-            await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
-          }
-        }
+  if (config.Comptroller.address != '') {
+    let comptroller = (await ethers.getContractAt('Comptroller', config.Comptroller.address, wallet)) as Comptroller;
+    const oracleOnChain = await comptroller.oracle();
+
+    // set Comptroller.oracle
+    if (oracleOnChain.toLowerCase() != config.FeedPriceOracle.address.toLowerCase()) {
+      console.log(`更新 Comptroller.oracle: ${oracleOnChain} -> ${config.FeedPriceOracle.address}`);
+      await sendTransaction(
+        network,
+        comptroller,
+        '_setPriceOracle(address)',
+        [config.FeedPriceOracle.address],
+        override
+      );
+    }
+
+    // set Comptroller.accountLiquidity
+    const alOnChain = await comptroller.accountLiquidity();
+    if (alOnChain.toLowerCase() != config.AccountLiquidity.address.toLowerCase()) {
+      console.log(`更新 Comptroller.accountLiquidity: ${alOnChain} -> ${config.AccountLiquidity.address}`);
+      await sendTransaction(
+        network,
+        comptroller,
+        'setAccountLiquidity(address)',
+        [config.AccountLiquidity.address],
+        override
+      );
+    }
+
+    // set Comptroller.compLogic
+    const clOnChain = await comptroller.compLogic();
+    if (clOnChain.toLowerCase() != config.CompLogic.address.toLowerCase()) {
+      console.log(`更新 Comptroller.compLogic：${clOnChain} -> ${config.CompLogic.address}`);
+      await sendTransaction(network, comptroller, 'setCompLogic(address)', [config.CompLogic.address], override);
+    }
+
+    // set Comptroller.redemptionManager
+    const rmOnChain = await comptroller.redemptionManager();
+    if (rmOnChain.toLowerCase() != config.SortedBorrows.address.toLowerCase()) {
+      console.log(`更新 Comptroller.redemptionManager ${rmOnChain} -> ${config.RedemptionManager.address}`);
+      await sendTransaction(
+        network,
+        comptroller,
+        'setRedemptionManager(address)',
+        [config.RedemptionManager.address],
+        override
+      );
+    }
+  }
+
+  // set cTokens.comptroller
+  console.log('更新cToken的Comptroller：');
+  let tokens = getCTokens(network);
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i] != '') {
+      let cToken = (await ethers.getContractAt('CErc20', tokens[i], wallet)) as CErc20;
+      const comptrollerOnChain = await cToken.comptroller();
+      if (comptrollerOnChain.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+        const symbol = await cToken.symbol();
+        console.log(`更新 ${symbol}.comptroller: ${comptrollerOnChain} -> ${config.Comptroller.address}`);
+        await sendTransaction(network, cToken, '_setComptroller(address)', [config.Comptroller.address], override);
       }
     }
   }
 
   // set comptroller on CompLogic
   const compLogic = (await ethers.getContractAt('CompLogic', config.CompLogic.address, wallet)) as CompLogic;
-  const compLogic_comptroller_address = await compLogic.comptroller();
-  if (compLogic_comptroller_address.toLowerCase() != config.Comptroller.address.toLowerCase()) {
-    console.log('设置CompLogic的Comptroller合约地址');
+  const comptrollerOnCompLogic = await compLogic.comptroller();
+  if (comptrollerOnCompLogic.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+    console.log(`更新 CompLogic.comptroller: ${comptrollerOnCompLogic} -> ${config.Comptroller.address}`);
     await sendTransaction(
       network,
       compLogic,
@@ -214,15 +255,15 @@ const main = async () => {
     );
   }
 
-  // set comptroller on AccountLiquidity
+  // set AccountLiquidity.comptroller
   const accountLiquidity = (await ethers.getContractAt(
     'AccountLiquidity',
     config.AccountLiquidity.address,
     wallet
   )) as AccountLiquidity;
-  const accountLiquidity_comptroller_address = await accountLiquidity.comptroller();
-  if (accountLiquidity_comptroller_address.toLowerCase() != config.Comptroller.address.toLowerCase()) {
-    console.log('设置AccountLiquidity的Comptroller合约地址');
+  const comptrollerOnAccountLiquidity = await accountLiquidity.comptroller();
+  if (comptrollerOnAccountLiquidity.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+    console.log(`更新 AccountLiquidity.comptroller: ${comptrollerOnAccountLiquidity} -> ${config.Comptroller.address}`);
     await sendTransaction(
       network,
       accountLiquidity,
@@ -233,18 +274,15 @@ const main = async () => {
     );
   }
 
-  // set comptroller on SortedBorrows
-  const sortedBorrows = (await ethers.getContractAt(
-    'SortedBorrows',
-    config.SortedBorrows.address,
-    wallet
-  )) as SortedBorrows;
-  const sortedBorrows_comptroller_address = await sortedBorrows.comptroller();
-  if (sortedBorrows_comptroller_address.toLowerCase() != config.Comptroller.address.toLowerCase()) {
-    console.log('设置SortedBorrows的Comptroller合约地址');
+  // set RedemptionManager.comptroller
+  const comptrollerOnRedemptionManager = await redemptionManager.comptroller();
+  if (comptrollerOnRedemptionManager.toLowerCase() != config.Comptroller.address.toLowerCase()) {
+    console.log(
+      `更新 RedemptionManager.comptroller: ${comptrollerOnRedemptionManager} -> ${config.Comptroller.address}`
+    );
     await sendTransaction(
       network,
-      sortedBorrows,
+      redemptionManager,
       'setComptroller(address)',
       [config.Comptroller.address],
       override,

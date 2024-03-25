@@ -52,7 +52,6 @@ export interface CTokenInterface extends Interface {
       | "exchangeRateStored"
       | "getAccountSnapshot"
       | "getCash"
-      | "getDiscountRate"
       | "interestRateModel"
       | "isCEther"
       | "isCToken"
@@ -191,10 +190,6 @@ export interface CTokenInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "getCash", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getDiscountRate",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "interestRateModel",
     values?: undefined
   ): string;
@@ -223,7 +218,7 @@ export interface CTokenInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "seize",
-    values: [AddressLike, AddressLike, BigNumberish]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supplyRatePerBlock",
@@ -349,10 +344,6 @@ export interface CTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getDiscountRate",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "interestRateModel",
     data: BytesLike
@@ -889,8 +880,6 @@ export interface CToken extends BaseContract {
 
   getCash: TypedContractMethod<[], [bigint], "view">;
 
-  getDiscountRate: TypedContractMethod<[], [bigint], "view">;
-
   interestRateModel: TypedContractMethod<[], [string], "view">;
 
   isCEther: TypedContractMethod<[], [boolean], "view">;
@@ -918,7 +907,12 @@ export interface CToken extends BaseContract {
   reserveFactorMantissa: TypedContractMethod<[], [bigint], "view">;
 
   seize: TypedContractMethod<
-    [liquidator: AddressLike, borrower: AddressLike, seizeTokens: BigNumberish],
+    [
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish,
+      protocolShareMantissa: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;
@@ -1062,9 +1056,6 @@ export interface CToken extends BaseContract {
     nameOrSignature: "getCash"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getDiscountRate"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "interestRateModel"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
@@ -1102,7 +1093,12 @@ export interface CToken extends BaseContract {
   getFunction(
     nameOrSignature: "seize"
   ): TypedContractMethod<
-    [liquidator: AddressLike, borrower: AddressLike, seizeTokens: BigNumberish],
+    [
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish,
+      protocolShareMantissa: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;

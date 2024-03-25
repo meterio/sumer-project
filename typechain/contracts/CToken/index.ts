@@ -7,5 +7,4 @@ export type { CErc20 } from "./CErc20";
 export type { CEther } from "./CEther";
 export type { CToken } from "./CToken";
 export type { CTokenStorage } from "./CTokenStorage";
-export type { SortedBorrows } from "./SortedBorrows";
 export type { SuErc20 } from "./SuErc20";

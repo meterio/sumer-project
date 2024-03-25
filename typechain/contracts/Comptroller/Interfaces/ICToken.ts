@@ -34,13 +34,13 @@ export interface ICTokenInterface extends Interface {
       | "comptroller"
       | "decimals"
       | "delegates"
+      | "discountRateMantissa"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
       | "executeRedemption"
       | "getAccountSnapshot"
       | "getCash"
       | "getCurrentVotes"
-      | "getDiscountRate"
       | "getPriorVotes"
       | "isCEther"
       | "isCToken"
@@ -91,6 +91,10 @@ export interface ICTokenInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "discountRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "exchangeRateCurrent",
     values?: undefined
   ): string;
@@ -100,7 +104,14 @@ export interface ICTokenInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "executeRedemption",
-    values: [AddressLike, AddressLike, BigNumberish, AddressLike, BigNumberish]
+    values: [
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      AddressLike,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "getAccountSnapshot",
@@ -110,10 +121,6 @@ export interface ICTokenInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getCurrentVotes",
     values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDiscountRate",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getPriorVotes",
@@ -179,6 +186,10 @@ export interface ICTokenInterface extends Interface {
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "delegates", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "discountRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "exchangeRateCurrent",
     data: BytesLike
   ): Result;
@@ -197,10 +208,6 @@ export interface ICTokenInterface extends Interface {
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getCurrentVotes",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getDiscountRate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -315,6 +322,8 @@ export interface ICToken extends BaseContract {
 
   delegates: TypedContractMethod<[arg0: AddressLike], [string], "view">;
 
+  discountRateMantissa: TypedContractMethod<[], [bigint], "view">;
+
   exchangeRateCurrent: TypedContractMethod<[], [bigint], "nonpayable">;
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
@@ -325,7 +334,8 @@ export interface ICToken extends BaseContract {
       provider: AddressLike,
       repayAmount: BigNumberish,
       cTokenCollateral: AddressLike,
-      seizeAmount: BigNumberish
+      seizeAmount: BigNumberish,
+      redemptionRate: BigNumberish
     ],
     [bigint],
     "nonpayable"
@@ -344,8 +354,6 @@ export interface ICToken extends BaseContract {
     [bigint],
     "view"
   >;
-
-  getDiscountRate: TypedContractMethod<[], [bigint], "view">;
 
   getPriorVotes: TypedContractMethod<
     [account: AddressLike, blockNumber: BigNumberish],
@@ -410,6 +418,9 @@ export interface ICToken extends BaseContract {
     nameOrSignature: "delegates"
   ): TypedContractMethod<[arg0: AddressLike], [string], "view">;
   getFunction(
+    nameOrSignature: "discountRateMantissa"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "exchangeRateCurrent"
   ): TypedContractMethod<[], [bigint], "nonpayable">;
   getFunction(
@@ -423,7 +434,8 @@ export interface ICToken extends BaseContract {
       provider: AddressLike,
       repayAmount: BigNumberish,
       cTokenCollateral: AddressLike,
-      seizeAmount: BigNumberish
+      seizeAmount: BigNumberish,
+      redemptionRate: BigNumberish
     ],
     [bigint],
     "nonpayable"
@@ -441,9 +453,6 @@ export interface ICToken extends BaseContract {
   getFunction(
     nameOrSignature: "getCurrentVotes"
   ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "getDiscountRate"
-  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getPriorVotes"
   ): TypedContractMethod<

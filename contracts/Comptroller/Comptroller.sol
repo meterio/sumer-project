@@ -1,71 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
+import '../Interface/ICompLogic.sol';
+import '../Interface/IAccountLiquidity.sol';
+import '../Interface/IRedemptionManager.sol';
 import './ComptrollerStorage.sol';
 import '../Exponential/ExponentialNoError.sol';
-import './Interfaces/ICToken.sol';
-import './Interfaces/IPriceOracle.sol';
+import '../Interface/ICTokenExternal.sol';
+import '../Interface/IPriceOracle.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
-import './Interfaces/IComptroller.sol';
-
-interface ICompLogic {
-  function setCompSpeed(address cToken, uint256 supplySpeed, uint256 borrowSpeed) external;
-
-  function updateCompSupplyIndex(address cToken) external;
-
-  function updateCompBorrowIndex(address cToken, Exp memory marketBorrowIndex) external;
-
-  function distributeSupplierComp(address cToken, address supplier) external;
-
-  function distributeBorrowerComp(address cToken, address borrower, Exp memory marketBorrowIndex) external;
-
-  function initializeMarket(address cToken, uint32 blockNumber) external;
-}
+import '../Interface/IComptroller.sol';
 
 error NoRedemptionProvider();
-
-interface IAccountLiquidity {
-  struct AccountGroupLocalVars {
-    uint8 groupId;
-    uint256 cDepositVal;
-    uint256 cBorrowVal;
-    uint256 suDepositVal;
-    uint256 suBorrowVal;
-    Exp intraCRate;
-    Exp intraMintRate;
-    Exp intraSuRate;
-    Exp interCRate;
-    Exp interSuRate;
-  }
-
-  function getHypotheticalAccountLiquidity(
-    address account,
-    address cTokenModify,
-    uint256 redeemTokens,
-    uint256 borrowAmount
-  ) external view returns (uint256, uint256, uint256);
-
-  function getHypotheticalSafeLimit(
-    address account,
-    address cTokenModify,
-    uint256 intraSafeLimitMantissa,
-    uint256 interSafeLimitMantissa
-  ) external view returns (uint256);
-
-  // function getIntermediateGroupSummary(
-  //   address account,
-  //   address cTokenModify,
-  //   uint256 redeemTokens,
-  //   uint256 borrowAmount
-  // ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
-
-  // function getHypotheticalGroupSummary(
-  //   address account,
-  //   address cTokenModify,
-  //   uint256 redeemTokens,
-  //   uint256 borrowAmount
-  // ) external view returns (uint256, uint256, AccountGroupLocalVars memory);
-}
 
 /**
  * @title Compound's Comptroller Contract
@@ -86,6 +32,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
   bytes32 public constant CAPPER_ROLE = keccak256('CAPPER_ROLE');
+
+  IRedemptionManager public redemptionManager;
 
   /// @notice Emitted when an action is paused on a market
   event ActionPaused(address cToken, string action, bool pauseState);
@@ -111,7 +59,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     uint256 _heteroLiquidationIncentiveMantissa,
     uint256 _homoLiquidationIncentiveMantissa,
     uint256 _sutokenLiquidationIncentiveMantissa,
-    ISortedBorrows _sortedBorrows
+    IRedemptionManager _redemptionManager
   ) external initializer {
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
 
@@ -133,7 +81,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     homoLiquidationIncentiveMantissa = _homoLiquidationIncentiveMantissa;
     sutokenLiquidationIncentiveMantissa = _sutokenLiquidationIncentiveMantissa;
 
-    sortedBorrows = _sortedBorrows;
+    redemptionManager = _redemptionManager;
     // Emit event with old incentive, new incentive
     emit NewLiquidationIncentive(
       0,
@@ -514,6 +462,24 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   /*** Liquidity/Liquidation Calculations ***/
 
+  // function getIntermediateGroupSummary(
+  //   address account,
+  //   address cTokenModify,
+  //   uint256 redeemTokens,
+  //   uint256 borrowAmount
+  // ) external view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory){
+  //   return accountLiquidity.getIntermediateGroupSummary(account, cTokenModify, redeemTokens, borrowAmount);
+  // }
+
+  // function getHypotheticalGroupSummary(
+  //   address account,
+  //   address cTokenModify,
+  //   uint256 redeemTokens,
+  //   uint256 borrowAmount
+  // ) external view returns (uint256, uint256, IAccountLiquidity.AccountGroupLocalVars memory){
+  //   return accountLiquidity.getHypotheticalGroupSummary(account, cTokenModify, redeemTokens, borrowAmount);
+  // }
+
   /**
      * @notice Determine the current account liquidity wrt collateral requirements
      * @return (possible error code (semi-opaque),
@@ -719,8 +685,8 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     accountLiquidity = _accountLiquidity;
   }
 
-  function setSortedBorrows(ISortedBorrows _sortedBorrows) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    sortedBorrows = _sortedBorrows;
+  function setRedemptionManager(IRedemptionManager _redemptionManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    redemptionManager = _redemptionManager;
   }
 
   /**
@@ -829,7 +795,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     return uint256(0);
   }
 
-  function cleanAssetGroup() public {
+  function cleanAssetGroup() external {
     for (uint8 i = 0; i < _eqAssetGroups.length; i++) {
       uint8 groupId = _eqAssetGroups[i].groupId;
       delete assetGroupIdToIndex[groupId];
@@ -881,6 +847,12 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
 
   function _getPauseGuardian() external view returns (address) {
     return pauseGuardian;
+  }
+
+  modifier onlyCToken() {
+    require(isContract(msg.sender), 'only ctoken');
+    ICToken(msg.sender).isCToken();
+    _;
   }
 
   modifier onlyAdminOrPauser(bool state) {
@@ -1069,109 +1041,72 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     }
   }
 
-  function redeemFaceValueWithOneCollateral(
+  function redeemFaceValueWithTarget(
     address redeemer,
     address provider,
     address suToken,
-    uint256 amount,
     address cToken,
-    Exp memory suPrice
-  ) internal returns (uint256) {
-    (uint256 oErr, uint256 depositBalance, , uint256 exchangeRateMantissa) = ICToken(cToken).getAccountSnapshot(
-      provider
+    uint256 redeemAmount
+  ) public returns (uint256) {
+    uint256 redemptionRate = redemptionManager.getRedemptionRate();
+    (uint256 actualRepay, uint256 actualSeize) = redemptionManager.calcActualRepayAndSeize(
+      redeemAmount,
+      provider,
+      cToken,
+      suToken,
+      oracle
     );
-    require(oErr == 0, 'snapshot error');
-
-    if (depositBalance <= 0) {
-      return amount;
+    if (actualRepay <= 0) {
+      return redeemAmount;
     }
 
-    uint256 cPriceMantissa = oracle.getUnderlyingPrice(cToken);
-    require(cPriceMantissa > 0, 'price error');
-
-    // normalize price for asset with unit of 1e(36-token decimal)
-    Exp memory cPrice = Exp({mantissa: cPriceMantissa});
-    uint8 cDecimals = ICToken(suToken).decimals();
-    if (cDecimals < 18) cPrice = cPrice.mul_(10 ** (18 - cDecimals));
-
-    uint256 maxRepayable = cPrice
-      .mul_(depositBalance)
-      .mul_(exchangeRateMantissa)
-      .div_(suPrice.mantissa)
-      .div_(10 ** 18)
-      .truncate();
-    if (maxRepayable > amount) {
-      // partial redemption
-      uint256 actualSeize = suPrice.mul_(amount).div_(cPrice.mantissa).truncate();
-      ICToken(suToken).executeRedemption(redeemer, provider, amount, cToken, actualSeize);
-      emit Redemption(redeemer, provider, suToken, amount, cToken, actualSeize);
-      return 0;
-    } else {
-      // full redemption
-      uint256 actualSeize = suPrice.mul_(maxRepayable).div_(cPrice.mantissa).truncate();
-      ICToken(suToken).executeRedemption(redeemer, provider, maxRepayable, cToken, actualSeize);
-      emit Redemption(redeemer, provider, suToken, maxRepayable, cToken, actualSeize);
-      return amount - maxRepayable;
-    }
+    ICToken(suToken).executeRedemption(redeemer, provider, actualRepay, cToken, actualSeize, redemptionRate);
+    emit Redemption(redeemer, provider, suToken, actualRepay, cToken, actualSeize);
+    return actualRepay;
   }
 
   function redeemFaceValue(address suToken, uint256 amount) external {
     require(!ICToken(suToken).isCToken(), 'invalid su token');
-    require(!sortedBorrows.isEmpty(suToken), 'no one borrows');
+
+    redemptionManager.updateBaseRateFromRedemption(amount, ICToken(suToken).totalBorrows());
     uint8 suGroupId = markets[suToken].assetGroupId;
-    uint256 suPriceMantissa = oracle.getUnderlyingPrice(suToken);
-    require(suPriceMantissa > 0, 'price error');
 
-    // normalize price for asset with unit of 1e(36-token decimal)
-    Exp memory suPrice = Exp({mantissa: suPriceMantissa});
-    uint8 decimals = ICToken(suToken).decimals();
-    if (decimals < 18) suPrice = suPrice.mul_(10 ** (18 - decimals));
-
-    uint256 targetRepayAmount = amount;
-    address provider = sortedBorrows.getFirst(suToken);
-    for (; targetRepayAmount > 0 && provider != address(0); ) {
+    uint256 targetRedeemAmount = amount;
+    address provider = redemptionManager.getFirstProvider(suToken);
+    uint256 actualRedeem = 0;
+    for (; targetRedeemAmount > 0 && provider != address(0); ) {
       address[] memory assets = accountAssets[provider];
 
       // redeem face value with homo collateral
-      for (uint256 i = 0; i < assets.length && targetRepayAmount > 0; ++i) {
+      for (uint256 i = 0; i < assets.length && targetRedeemAmount > 0; ++i) {
         // only cToken is allowed to be collateral
         if (!ICToken(assets[i]).isCToken()) {
           continue;
         }
         uint8 cGroupId = markets[assets[i]].assetGroupId;
         if (cGroupId == suGroupId) {
-          targetRepayAmount = redeemFaceValueWithOneCollateral(
-            msg.sender,
-            provider,
-            suToken,
-            targetRepayAmount,
-            assets[i],
-            suPrice
-          );
+          actualRedeem = redeemFaceValueWithTarget(msg.sender, provider, assets[i], suToken, targetRedeemAmount);
+          require(actualRedeem < targetRedeemAmount, 'invalid redeem');
+          targetRedeemAmount = targetRedeemAmount.sub_(actualRedeem);
         }
       }
 
       // redeem face value with hetero collateral
-      for (uint256 i = 0; i < assets.length && targetRepayAmount > 0; ++i) {
+      for (uint256 i = 0; i < assets.length && targetRedeemAmount > 0; ++i) {
         // only cToken is allowed to be collateral
         if (!ICToken(assets[i]).isCToken()) {
           continue;
         }
         uint8 cGroupId = markets[assets[i]].assetGroupId;
         if (cGroupId != suGroupId) {
-          targetRepayAmount = redeemFaceValueWithOneCollateral(
-            msg.sender,
-            provider,
-            suToken,
-            targetRepayAmount,
-            assets[i],
-            suPrice
-          );
+          actualRedeem = redeemFaceValueWithTarget(msg.sender, provider, assets[i], suToken, targetRedeemAmount);
+          require(actualRedeem < targetRedeemAmount, 'invalid redeem');
+          targetRedeemAmount = targetRedeemAmount.sub_(actualRedeem);
         }
       }
-      provider = sortedBorrows.getNext(suToken, provider);
+      provider = redemptionManager.getNextProvider(suToken, provider);
     }
-    if (targetRepayAmount > 0) {
+    if (targetRedeemAmount > 0) {
       revert NoRedemptionProvider();
     }
   }
@@ -1180,20 +1115,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     for (uint256 i = 0; i < borrowers.length; i++) {
       address[] memory assets = accountAssets[borrowers[i]];
       for (uint256 k = 0; k < assets.length; k++) {
-        updateSortedBorrows(assets[k], borrowers[i]);
-      }
-    }
-  }
-
-  function updateSortedBorrows(address csuToken, address borrower) internal {
-    if (!ICToken(csuToken).isCToken()) {
-      uint256 borrowed = ICToken(csuToken).borrowBalanceStored(borrower);
-      if (sortedBorrows.contains(csuToken, borrower)) {
-        address prevId = sortedBorrows.getPrev(csuToken, borrower);
-        address nextId = sortedBorrows.getNext(csuToken, borrower);
-        sortedBorrows.reInsert(csuToken, borrower, borrowed, prevId, nextId);
-      } else {
-        sortedBorrows.insert(csuToken, borrower, borrowed, address(0), address(0));
+        redemptionManager.updateSortedBorrows(assets[k], borrowers[i]);
       }
     }
   }
@@ -1204,17 +1126,12 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
    * @param borrower The address borrowing the underlying
    * @param borrowAmount The amount of the underlying asset requested to borrow
    */
-  function borrowVerify(address cToken, address borrower, uint256 borrowAmount) external {
+  function borrowVerify(address cToken, address borrower, uint256 borrowAmount) external onlyCToken {
     // Shh - currently unused
-    // cToken;
-    // borrower;
+    cToken;
+    borrower;
     borrowAmount;
-    updateSortedBorrows(cToken, borrower);
-
-    // Shh - we don't ever want this hook to be marked pure
-    // if (false) {
-    //   maxAssets = maxAssets;
-    // }
+    redemptionManager.updateSortedBorrows(cToken, borrower);
   }
 
   /**
@@ -1230,20 +1147,15 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     address borrower,
     uint256 actualRepayAmount,
     uint256 borrowerIndex
-  ) external {
+  ) external onlyCToken {
     // Shh - currently unused
-    // cToken;
+    cToken;
     payer;
-    // borrower;
+    borrower;
     actualRepayAmount;
     borrowerIndex;
 
-    updateSortedBorrows(cToken, borrower);
-
-    // Shh - we don't ever want this hook to be marked pure
-    // if (false) {
-    //   maxAssets = maxAssets;
-    // }
+    redemptionManager.updateSortedBorrows(cToken, borrower);
   }
 
   /**
@@ -1260,18 +1172,14 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     address liquidator,
     address borrower,
     uint256 seizeTokens
-  ) external {
+  ) external onlyCToken {
     // Shh - currently unused
     cTokenCollateral;
-    // cTokenBorrowed;
+    cTokenBorrowed;
     liquidator;
-    // borrower;
+    borrower;
     seizeTokens;
 
-    updateSortedBorrows(cTokenBorrowed, borrower);
-    // Shh - we don't ever want this hook to be marked pure
-    // if (false) {
-    //   maxAssets = maxAssets;
-    // }
+    redemptionManager.updateSortedBorrows(cTokenBorrowed, borrower);
   }
 }

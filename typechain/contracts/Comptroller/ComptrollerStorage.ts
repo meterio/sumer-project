@@ -44,7 +44,6 @@ export interface ComptrollerStorageInterface extends Interface {
       | "mintGuardianPaused"
       | "pauseGuardian"
       | "seizeGuardianPaused"
-      | "sortedBorrows"
       | "suTokenRateMantissa"
       | "sutokenLiquidationIncentiveMantissa"
       | "transferGuardianPaused"
@@ -134,10 +133,6 @@ export interface ComptrollerStorageInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "sortedBorrows",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "suTokenRateMantissa",
     values?: undefined
   ): string;
@@ -208,10 +203,6 @@ export interface ComptrollerStorageInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "seizeGuardianPaused",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "sortedBorrows",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -450,8 +441,6 @@ export interface ComptrollerStorage extends BaseContract {
 
   seizeGuardianPaused: TypedContractMethod<[], [boolean], "view">;
 
-  sortedBorrows: TypedContractMethod<[], [string], "view">;
-
   suTokenRateMantissa: TypedContractMethod<[], [bigint], "view">;
 
   sutokenLiquidationIncentiveMantissa: TypedContractMethod<
@@ -534,9 +523,6 @@ export interface ComptrollerStorage extends BaseContract {
   getFunction(
     nameOrSignature: "seizeGuardianPaused"
   ): TypedContractMethod<[], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "sortedBorrows"
-  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "suTokenRateMantissa"
   ): TypedContractMethod<[], [bigint], "view">;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 import '../Exponential/ExponentialNoError.sol';
-import './Interfaces/IComptroller.sol';
-import './Interfaces/ICToken.sol';
-import './Interfaces/IPriceOracle.sol';
+import '../Interface/IComptroller.sol';
+import '../Interface/ICTokenExternal.sol';
+import '../Interface/IPriceOracle.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 
 contract AccountLiquidity is AccessControlEnumerableUpgradeable {
@@ -87,7 +87,7 @@ contract AccountLiquidity is AccessControlEnumerableUpgradeable {
       // Pre-compute a conversion factor from tokens -> USD (normalized price value)
       // tokensToDenom = oraclePrice * exchangeRate * discourntRate
       Exp memory exchangeRate = Exp({mantissa: exchangeRateMantissa});
-      Exp memory discountRate = Exp({mantissa: ICToken(asset).getDiscountRate()});
+      Exp memory discountRate = Exp({mantissa: ICToken(asset).discountRateMantissa()});
       Exp memory tokensToDenom = exchangeRate.mul_(oraclePrice).mul_(discountRate);
 
       depositVal = tokensToDenom.mul_ScalarTruncateAddUInt(depositBalance, depositVal);

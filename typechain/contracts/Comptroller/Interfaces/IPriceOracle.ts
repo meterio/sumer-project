@@ -21,15 +21,25 @@ import type {
 } from "../../../common";
 
 export interface IPriceOracleInterface extends Interface {
-  getFunction(nameOrSignature: "getUnderlyingPrice"): FunctionFragment;
+  getFunction(
+    nameOrSignature: "getUnderlyingPrice" | "getUnderlyingPriceNormalized"
+  ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "getUnderlyingPrice",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "getUnderlyingPriceNormalized",
+    values: [AddressLike]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "getUnderlyingPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getUnderlyingPriceNormalized",
     data: BytesLike
   ): Result;
 }
@@ -83,6 +93,12 @@ export interface IPriceOracle extends BaseContract {
     "view"
   >;
 
+  getUnderlyingPriceNormalized: TypedContractMethod<
+    [cToken_: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -90,6 +106,9 @@ export interface IPriceOracle extends BaseContract {
   getFunction(
     nameOrSignature: "getUnderlyingPrice"
   ): TypedContractMethod<[cToken: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getUnderlyingPriceNormalized"
+  ): TypedContractMethod<[cToken_: AddressLike], [bigint], "view">;
 
   filters: {};
 }

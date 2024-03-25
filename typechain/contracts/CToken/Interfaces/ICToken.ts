@@ -42,11 +42,11 @@ export interface ICTokenInterface extends Interface {
       | "borrowBalanceCurrent"
       | "borrowBalanceStored"
       | "borrowRatePerBlock"
+      | "discountRateMantissa"
       | "exchangeRateCurrent"
       | "exchangeRateStored"
       | "getAccountSnapshot"
       | "getCash"
-      | "getDiscountRate"
       | "seize"
       | "supplyRatePerBlock"
       | "totalBorrowsCurrent"
@@ -140,6 +140,10 @@ export interface ICTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "discountRateMantissa",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "exchangeRateCurrent",
     values?: undefined
   ): string;
@@ -153,12 +157,8 @@ export interface ICTokenInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "getCash", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getDiscountRate",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "seize",
-    values: [AddressLike, AddressLike, BigNumberish]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supplyRatePerBlock",
@@ -237,6 +237,10 @@ export interface ICTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "discountRateMantissa",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "exchangeRateCurrent",
     data: BytesLike
   ): Result;
@@ -249,10 +253,6 @@ export interface ICTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getDiscountRate",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "seize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supplyRatePerBlock",
@@ -724,6 +724,8 @@ export interface ICToken extends BaseContract {
 
   borrowRatePerBlock: TypedContractMethod<[], [bigint], "view">;
 
+  discountRateMantissa: TypedContractMethod<[], [bigint], "view">;
+
   exchangeRateCurrent: TypedContractMethod<[], [bigint], "nonpayable">;
 
   exchangeRateStored: TypedContractMethod<[], [bigint], "view">;
@@ -736,10 +738,13 @@ export interface ICToken extends BaseContract {
 
   getCash: TypedContractMethod<[], [bigint], "view">;
 
-  getDiscountRate: TypedContractMethod<[], [bigint], "view">;
-
   seize: TypedContractMethod<
-    [liquidator: AddressLike, borrower: AddressLike, seizeTokens: BigNumberish],
+    [
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish,
+      protocolShareMantissa: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;
@@ -839,6 +844,9 @@ export interface ICToken extends BaseContract {
     nameOrSignature: "borrowRatePerBlock"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "discountRateMantissa"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "exchangeRateCurrent"
   ): TypedContractMethod<[], [bigint], "nonpayable">;
   getFunction(
@@ -855,12 +863,14 @@ export interface ICToken extends BaseContract {
     nameOrSignature: "getCash"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getDiscountRate"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "seize"
   ): TypedContractMethod<
-    [liquidator: AddressLike, borrower: AddressLike, seizeTokens: BigNumberish],
+    [
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish,
+      protocolShareMantissa: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;

@@ -339,9 +339,6 @@ export interface CompoundLensInterface extends Interface {
       | "getGovBravoReceipts"
       | "getGovProposals"
       | "getGovReceipts"
-      | "isDeprecated"
-      | "liquidateBorrowAllowed"
-      | "liquidateCalculateSeizeTokens"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -400,25 +397,6 @@ export interface CompoundLensInterface extends Interface {
     functionFragment: "getGovReceipts",
     values: [AddressLike, AddressLike, BigNumberish[]]
   ): string;
-  encodeFunctionData(
-    functionFragment: "isDeprecated",
-    values: [AddressLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "liquidateBorrowAllowed",
-    values: [
-      AddressLike,
-      AddressLike,
-      AddressLike,
-      AddressLike,
-      BigNumberish,
-      AddressLike
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "liquidateCalculateSeizeTokens",
-    values: [AddressLike, AddressLike, BigNumberish, AddressLike]
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "cTokenBalances",
@@ -474,18 +452,6 @@ export interface CompoundLensInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getGovReceipts",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "isDeprecated",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidateBorrowAllowed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidateCalculateSeizeTokens",
     data: BytesLike
   ): Result;
 }
@@ -617,36 +583,6 @@ export interface CompoundLens extends BaseContract {
     "view"
   >;
 
-  isDeprecated: TypedContractMethod<
-    [cToken: AddressLike, comptroller: AddressLike],
-    [boolean],
-    "view"
-  >;
-
-  liquidateBorrowAllowed: TypedContractMethod<
-    [
-      cTokenBorrowed: AddressLike,
-      cTokenCollateral: AddressLike,
-      liquidator: AddressLike,
-      borrower: AddressLike,
-      repayAmount: BigNumberish,
-      comptroller: AddressLike
-    ],
-    [void],
-    "view"
-  >;
-
-  liquidateCalculateSeizeTokens: TypedContractMethod<
-    [
-      cTokenBorrowed: AddressLike,
-      cTokenCollateral: AddressLike,
-      actualRepayAmount: BigNumberish,
-      comptroller: AddressLike
-    ],
-    [[bigint, bigint]],
-    "view"
-  >;
-
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -747,39 +683,6 @@ export interface CompoundLens extends BaseContract {
   ): TypedContractMethod<
     [governor: AddressLike, voter: AddressLike, proposalIds: BigNumberish[]],
     [CompoundLens.GovReceiptStructOutput[]],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "isDeprecated"
-  ): TypedContractMethod<
-    [cToken: AddressLike, comptroller: AddressLike],
-    [boolean],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "liquidateBorrowAllowed"
-  ): TypedContractMethod<
-    [
-      cTokenBorrowed: AddressLike,
-      cTokenCollateral: AddressLike,
-      liquidator: AddressLike,
-      borrower: AddressLike,
-      repayAmount: BigNumberish,
-      comptroller: AddressLike
-    ],
-    [void],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "liquidateCalculateSeizeTokens"
-  ): TypedContractMethod<
-    [
-      cTokenBorrowed: AddressLike,
-      cTokenCollateral: AddressLike,
-      actualRepayAmount: BigNumberish,
-      comptroller: AddressLike
-    ],
-    [[bigint, bigint]],
     "view"
   >;
 

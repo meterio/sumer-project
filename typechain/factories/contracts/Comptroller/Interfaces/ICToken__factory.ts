@@ -182,6 +182,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "discountRateMantissa",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "exchangeRateCurrent",
     outputs: [
       {
@@ -231,6 +244,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "seizeAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "redemptionRate",
         type: "uint256",
       },
     ],
@@ -306,19 +324,6 @@ const _abi = [
         internalType: "uint96",
         name: "",
         type: "uint96",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getDiscountRate",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
       },
     ],
     stateMutability: "view",

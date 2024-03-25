@@ -6,7 +6,7 @@ import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/utils/Address.sol';
 import './ITimelock.sol';
-import './Comptroller/Interfaces/IPriceOracle.sol';
+import './Interface/IPriceOracle.sol';
 import './Exponential/CarefulMath.sol';
 
 interface ICToken {

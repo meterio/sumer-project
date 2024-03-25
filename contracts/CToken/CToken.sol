@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import '../Comptroller/Interfaces/IComptroller.sol';
-import '../Comptroller/Interfaces/IPriceOracle.sol';
-import './Interfaces/IInterestRateModel.sol';
+import '../Interface/IComptroller.sol';
+import '../Interface/IPriceOracle.sol';
+import '../Interface/IInterestRateModel.sol';
 import './CTokenStorage.sol';
 import '../Exponential/Exponential.sol';
 
@@ -15,6 +15,9 @@ error CantSweepUnderlying();
 error UnderlyingBalanceError();
 error TokenTransferInFailed();
 error TokenTransferOutFailed();
+error TransferNotAllowed();
+error MarketNotFresh();
+error TokenInOrAmountInMustBeZero();
 
 error InvalidAddress();
 error InvalidDiscountRate();
@@ -119,7 +122,7 @@ abstract contract CToken is CTokenStorage {
     /* Do not allow self-transfers */
     if (src == dst) {
       // Error.BAD_INPUT.fail(FailureInfo.TRANSFER_NOT_ALLOWED);
-      revert('transfer not allowed');
+      revert TransferNotAllowed();
     }
 
     /* Get the allowance, infinite for the account owner */
@@ -139,7 +142,7 @@ abstract contract CToken is CTokenStorage {
     (mathErr, allowanceNew) = startingAllowance.subUInt(tokens);
     if (mathErr != MathError.NO_ERROR) {
       // 9.fail(FailureInfo.TRANSFER_NOT_ALLOWED);
-      revert('transfer not allowed');
+      revert TransferNotAllowed();
     }
 
     (mathErr, srcTokensNew) = accountTokens[src].subUInt(tokens);
@@ -588,7 +591,7 @@ abstract contract CToken is CTokenStorage {
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.MINT_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     MintLocalVars memory vars;
@@ -710,7 +713,7 @@ abstract contract CToken is CTokenStorage {
   ) internal returns (uint256) {
     if (redeemTokensIn != 0 && redeemAmountIn != 0) {
       // Error.BAD_INPUT.fail(FailureInfo.ONE_OF_REDEEM_TOKENS_IN_OR_REDEEM_AMOUNT_IN_MUST_BE_ZERO);
-      revert('one of tokenIn/amountIn must be zero');
+      revert TokenInOrAmountInMustBeZero();
     }
     RedeemLocalVars memory vars;
 
@@ -759,7 +762,7 @@ abstract contract CToken is CTokenStorage {
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     /*
@@ -844,7 +847,7 @@ abstract contract CToken is CTokenStorage {
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.REDEEM_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     /*
@@ -926,7 +929,7 @@ abstract contract CToken is CTokenStorage {
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.BORROW_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     /* Fail gracefully if protocol has insufficient underlying cash */
@@ -1043,7 +1046,7 @@ abstract contract CToken is CTokenStorage {
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.REPAY_BORROW_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     RepayBorrowLocalVars memory vars;
@@ -1165,13 +1168,13 @@ abstract contract CToken is CTokenStorage {
     /* Verify market's block number equals current block number */
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     /* Verify cTokenCollateral market's block number equals current block number */
     if (ICToken(cTokenCollateral).accrualBlockNumber() != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.LIQUIDATE_COLLATERAL_FRESHNESS_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     /* Fail if borrower = liquidator */
@@ -1230,9 +1233,9 @@ abstract contract CToken is CTokenStorage {
 
     // If this is also the collateral, run seizeInternal to avoid re-entrancy, otherwise make an external call
     if (cTokenCollateral == address(this)) {
-      seizeInternal(address(this), liquidator, borrower, seizeTokens);
+      seizeInternal(address(this), liquidator, borrower, seizeTokens, protocolSeizeShareMantissa);
     } else {
-      ICToken(cTokenCollateral).seize(liquidator, borrower, seizeTokens);
+      ICToken(cTokenCollateral).seize(liquidator, borrower, seizeTokens, uint256(0));
     }
 
     /* We emit a LiquidateBorrow event */
@@ -1257,9 +1260,14 @@ abstract contract CToken is CTokenStorage {
   function seize(
     address liquidator,
     address borrower,
-    uint256 seizeTokens
+    uint256 seizeTokens,
+    uint256 protocolShareMantissa
   ) external override nonReentrant returns (uint256) {
-    return seizeInternal(msg.sender, liquidator, borrower, seizeTokens);
+    if (protocolShareMantissa <= 0 || protocolShareMantissa > expScale) {
+      return seizeInternal(msg.sender, liquidator, borrower, seizeTokens, protocolShareMantissa);
+    } else {
+      return seizeInternal(msg.sender, liquidator, borrower, seizeTokens, protocolSeizeShareMantissa);
+    }
   }
 
   struct SeizeInternalLocalVars {
@@ -1288,7 +1296,8 @@ abstract contract CToken is CTokenStorage {
     address seizerToken,
     address liquidator,
     address borrower,
-    uint256 seizeTokens
+    uint256 seizeTokens,
+    uint256 protocolShareMantissa
   ) internal returns (uint256) {
     /* Fail if seize not allowed */
     IComptroller(comptroller).seizeAllowed(address(this), seizerToken, liquidator, borrower, seizeTokens);
@@ -1312,7 +1321,7 @@ abstract contract CToken is CTokenStorage {
       revert('decrement failed');
     }
 
-    vars.protocolSeizeTokens = seizeTokens.mul_(Exp({mantissa: protocolSeizeShareMantissa}));
+    vars.protocolSeizeTokens = seizeTokens.mul_(Exp({mantissa: protocolShareMantissa}));
     vars.liquidatorSeizeTokens = seizeTokens.sub_(vars.protocolSeizeTokens);
 
     (vars.mathErr, vars.exchangeRateMantissa) = exchangeRateStoredInternal();
@@ -1447,7 +1456,7 @@ abstract contract CToken is CTokenStorage {
     // Verify market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_RESERVE_FACTOR_FRESH_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     // Check newReserveFactor ≤ maxReserveFactor
@@ -1490,7 +1499,7 @@ abstract contract CToken is CTokenStorage {
     // We fail gracefully unless market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.ADD_RESERVES_FRESH_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     /////////////////////////
@@ -1549,13 +1558,13 @@ abstract contract CToken is CTokenStorage {
     // We fail gracefully unless market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.REDUCE_RESERVES_FRESH_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     // Fail gracefully if protocol has insufficient underlying cash
     if (getCashPrior() < reduceAmount) {
       // Error.TOKEN_INSUFFICIENT_CASH.fail(FailureInfo.REDUCE_RESERVES_CASH_NOT_AVAILABLE);
-      revert('reduce too much');
+      revert MarketNotFresh();
     }
 
     // Check reduceAmount ≤ reserves[n] (totalReserves)
@@ -1610,7 +1619,7 @@ abstract contract CToken is CTokenStorage {
     // We fail gracefully unless market's block number equals current block number
     if (accrualBlockNumber != getBlockNumber()) {
       // Error.MARKET_NOT_FRESH.fail(FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
-      revert('market not fresh');
+      revert MarketNotFresh();
     }
 
     // Track the market's current interest rate model
@@ -1729,10 +1738,6 @@ abstract contract CToken is CTokenStorage {
     seizeTokens = ratio.mul_ScalarTruncate(actualRepayAmount);
 
     return (uint256(0), seizeTokens);
-  }
-
-  function getDiscountRate() public view returns (uint256) {
-    return discountRateMantissa;
   }
 
   function _setDiscountRate(uint256 discountRateMantissa_) external onlyAdmin returns (uint256) {

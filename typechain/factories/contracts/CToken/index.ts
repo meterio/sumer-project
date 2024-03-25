@@ -6,5 +6,4 @@ export { CErc20__factory } from "./CErc20__factory";
 export { CEther__factory } from "./CEther__factory";
 export { CToken__factory } from "./CToken__factory";
 export { CTokenStorage__factory } from "./CTokenStorage__factory";
-export { SortedBorrows__factory } from "./SortedBorrows__factory";
 export { SuErc20__factory } from "./SuErc20__factory";

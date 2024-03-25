@@ -5,4 +5,3 @@ export { ICErc20__factory } from "./ICErc20__factory";
 export { ICToken__factory } from "./ICToken__factory";
 export { IEIP20NonStandard__factory } from "./IEIP20NonStandard__factory";
 export { IInterestRateModel__factory } from "./IInterestRateModel__factory";
-export { ISortedBorrows__factory } from "./ISortedBorrows__factory";

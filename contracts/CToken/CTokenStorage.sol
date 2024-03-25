@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
-import './Interfaces/ICToken.sol';
+import '../Interface/ICToken.sol';
 
 abstract contract CTokenStorage is ICToken {
   bool public isCToken;

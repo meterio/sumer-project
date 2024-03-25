@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 import './CToken.sol';
-import './Interfaces/ICErc20.sol';
+import '../Interface/ICErc20.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '../ITimelock.sol';
 

@@ -296,7 +296,7 @@ export async function deployOrInput(
   implementation: boolean = false
 ): Promise<Config> {
   let name = config.name || config.contract;
-  name = implementation ? green(name) + '的' + green('Implementation') : green(name);
+  name = implementation ? green(name) + '的' + green('Impl') : green(name);
   let address: string;
   address = implementation ? config.implementation : config.address;
   let choices = [

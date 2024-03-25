@@ -5,6 +5,7 @@ export * as cToken from "./CToken";
 export * as comptroller from "./Comptroller";
 export * as erc20 from "./ERC20";
 export * as interestRateModel from "./InterestRateModel";
+export * as interface from "./Interface";
 export * as oracle from "./Oracle";
 export * as timelockSol from "./Timelock.sol";
 export * as proxy from "./proxy";

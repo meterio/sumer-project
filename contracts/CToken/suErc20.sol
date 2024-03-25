@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
-import './Interfaces/IEIP20NonStandard.sol';
+import '../Interface/IEIP20NonStandard.sol';
 import './CErc20.sol';
 
 /**
@@ -54,11 +54,11 @@ contract suErc20 is CErc20 {
    * @dev This excludes the value of the current message, if any
    * @return The quantity of underlying tokens owned by this contract
    */
-  function getCashPrior() internal view virtual override returns (uint256) {
-    // ICToken token = ICToken(underlying);
-    // return token.balanceOf(address(this));
-    return underlyingBalance;
-  }
+  // function getCashPrior() internal view virtual override returns (uint256) {
+  //   // ICToken token = ICToken(underlying);
+  //   // return token.balanceOf(address(this));
+  //   return underlyingBalance;
+  // }
 
   /**
    * @dev Similar to EIP20 transfer, except it handles a False result from `transferFrom` and reverts in that case.
@@ -133,22 +133,19 @@ contract suErc20 is CErc20 {
     }
   }
 
-  function changeCtoken() public onlyAdmin {
-    isCToken = !isCToken;
-  }
-
   function executeRedemption(
     address redeemer,
     address provider,
     uint256 repayAmount,
     address cTokenCollateral,
-    uint256 seizeAmount
+    uint256 seizeAmount,
+    uint256 redemptionRate
   ) external nonReentrant returns (uint256) {
-    require(msg.sender != comptroller, 'only comptroller');
+    require(msg.sender == comptroller, 'only comptroller');
     accrueInterest();
     ICToken(cTokenCollateral).accrueInterest();
     repayBorrowFresh(redeemer, provider, repayAmount);
-    ICToken(cTokenCollateral).seize(redeemer, provider, seizeAmount);
+    ICToken(cTokenCollateral).seize(redeemer, provider, seizeAmount, redemptionRate);
     return uint256(0);
   }
 }

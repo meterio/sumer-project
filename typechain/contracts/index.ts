@@ -9,6 +9,8 @@ import type * as erc20 from "./ERC20";
 export type { erc20 };
 import type * as interestRateModel from "./InterestRateModel";
 export type { interestRateModel };
+import type * as interface from "./Interface";
+export type { interface };
 import type * as oracle from "./Oracle";
 export type { oracle };
 import type * as timelockSol from "./Timelock.sol";

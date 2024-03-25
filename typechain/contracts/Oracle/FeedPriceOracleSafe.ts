@@ -56,6 +56,7 @@ export interface FeedPriceOracleSafeInterface extends Interface {
       | "getFeed"
       | "getFixedPrice"
       | "getUnderlyingPrice"
+      | "getUnderlyingPriceNormalized"
       | "getUnderlyingPrices"
       | "isPriceOracle"
       | "owner"
@@ -100,6 +101,10 @@ export interface FeedPriceOracleSafeInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getUnderlyingPrice",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getUnderlyingPriceNormalized",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
@@ -180,6 +185,10 @@ export interface FeedPriceOracleSafeInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getUnderlyingPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getUnderlyingPriceNormalized",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -371,6 +380,12 @@ export interface FeedPriceOracleSafe extends BaseContract {
     "view"
   >;
 
+  getUnderlyingPriceNormalized: TypedContractMethod<
+    [cToken_: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   getUnderlyingPrices: TypedContractMethod<
     [cTokens: AddressLike[]],
     [bigint[]],
@@ -485,6 +500,9 @@ export interface FeedPriceOracleSafe extends BaseContract {
   ): TypedContractMethod<[cToken_: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "getUnderlyingPrice"
+  ): TypedContractMethod<[cToken_: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getUnderlyingPriceNormalized"
   ): TypedContractMethod<[cToken_: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "getUnderlyingPrices"

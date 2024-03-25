@@ -131,7 +131,9 @@ export interface ComptrollerInterface extends Interface {
       | "pauseGuardian"
       | "redeemAllowed"
       | "redeemFaceValue"
+      | "redeemFaceValueWithTarget"
       | "redeemVerify"
+      | "redemptionManager"
       | "removeAssetGroup"
       | "renounceRole"
       | "repayBorrowAllowed"
@@ -145,9 +147,8 @@ export interface ComptrollerInterface extends Interface {
       | "setCompLogic"
       | "setCompSpeed"
       | "setGovTokenAddress"
-      | "setSortedBorrows"
+      | "setRedemptionManager"
       | "setTimelock"
-      | "sortedBorrows"
       | "suTokenRateMantissa"
       | "supportsInterface"
       | "sutokenLiquidationIncentiveMantissa"
@@ -473,8 +474,16 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "redeemFaceValueWithTarget",
+    values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "redeemVerify",
     values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "redemptionManager",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "removeAssetGroup",
@@ -537,16 +546,12 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setSortedBorrows",
+    functionFragment: "setRedemptionManager",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setTimelock",
     values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "sortedBorrows",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "suTokenRateMantissa",
@@ -827,7 +832,15 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "redeemFaceValueWithTarget",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "redeemVerify",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "redemptionManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -880,15 +893,11 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setSortedBorrows",
+    functionFragment: "setRedemptionManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setTimelock",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "sortedBorrows",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1575,7 +1584,7 @@ export interface Comptroller extends BaseContract {
       _heteroLiquidationIncentiveMantissa: BigNumberish,
       _homoLiquidationIncentiveMantissa: BigNumberish,
       _sutokenLiquidationIncentiveMantissa: BigNumberish,
-      _sortedBorrows: AddressLike
+      _redemptionManager: AddressLike
     ],
     [void],
     "nonpayable"
@@ -1647,6 +1656,18 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
+  redeemFaceValueWithTarget: TypedContractMethod<
+    [
+      redeemer: AddressLike,
+      provider: AddressLike,
+      suToken: AddressLike,
+      cToken: AddressLike,
+      redeemAmount: BigNumberish
+    ],
+    [bigint],
+    "nonpayable"
+  >;
+
   redeemVerify: TypedContractMethod<
     [
       cToken: AddressLike,
@@ -1657,6 +1678,8 @@ export interface Comptroller extends BaseContract {
     [void],
     "nonpayable"
   >;
+
+  redemptionManager: TypedContractMethod<[], [string], "view">;
 
   removeAssetGroup: TypedContractMethod<
     [groupId: BigNumberish],
@@ -1763,8 +1786,8 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
-  setSortedBorrows: TypedContractMethod<
-    [_sortedBorrows: AddressLike],
+  setRedemptionManager: TypedContractMethod<
+    [_redemptionManager: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -1774,8 +1797,6 @@ export interface Comptroller extends BaseContract {
     [void],
     "nonpayable"
   >;
-
-  sortedBorrows: TypedContractMethod<[], [string], "view">;
 
   suTokenRateMantissa: TypedContractMethod<[], [bigint], "view">;
 
@@ -2110,7 +2131,7 @@ export interface Comptroller extends BaseContract {
       _heteroLiquidationIncentiveMantissa: BigNumberish,
       _homoLiquidationIncentiveMantissa: BigNumberish,
       _sutokenLiquidationIncentiveMantissa: BigNumberish,
-      _sortedBorrows: AddressLike
+      _redemptionManager: AddressLike
     ],
     [void],
     "nonpayable"
@@ -2187,6 +2208,19 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "redeemFaceValueWithTarget"
+  ): TypedContractMethod<
+    [
+      redeemer: AddressLike,
+      provider: AddressLike,
+      suToken: AddressLike,
+      cToken: AddressLike,
+      redeemAmount: BigNumberish
+    ],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "redeemVerify"
   ): TypedContractMethod<
     [
@@ -2198,6 +2232,9 @@ export interface Comptroller extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "redemptionManager"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "removeAssetGroup"
   ): TypedContractMethod<[groupId: BigNumberish], [bigint], "nonpayable">;
@@ -2305,14 +2342,15 @@ export interface Comptroller extends BaseContract {
     nameOrSignature: "setGovTokenAddress"
   ): TypedContractMethod<[_governanceToken: AddressLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "setSortedBorrows"
-  ): TypedContractMethod<[_sortedBorrows: AddressLike], [void], "nonpayable">;
+    nameOrSignature: "setRedemptionManager"
+  ): TypedContractMethod<
+    [_redemptionManager: AddressLike],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "setTimelock"
   ): TypedContractMethod<[_timelock: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "sortedBorrows"
-  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "suTokenRateMantissa"
   ): TypedContractMethod<[], [bigint], "view">;

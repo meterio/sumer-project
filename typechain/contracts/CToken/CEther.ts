@@ -54,7 +54,6 @@ export interface CEtherInterface extends Interface {
       | "exchangeRateStored"
       | "getAccountSnapshot"
       | "getCash"
-      | "getDiscountRate"
       | "initialize"
       | "interestRateModel"
       | "isCEther"
@@ -209,10 +208,6 @@ export interface CEtherInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "getCash", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getDiscountRate",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "initialize",
     values: [
       AddressLike,
@@ -276,7 +271,7 @@ export interface CEtherInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "seize",
-    values: [AddressLike, AddressLike, BigNumberish]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "supplyRatePerBlock",
@@ -407,10 +402,6 @@ export interface CEtherInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getDiscountRate",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "interestRateModel",
@@ -986,8 +977,6 @@ export interface CEther extends BaseContract {
 
   getCash: TypedContractMethod<[], [bigint], "view">;
 
-  getDiscountRate: TypedContractMethod<[], [bigint], "view">;
-
   initialize: TypedContractMethod<
     [
       comptroller_: AddressLike,
@@ -1059,7 +1048,12 @@ export interface CEther extends BaseContract {
   reserveFactorMantissa: TypedContractMethod<[], [bigint], "view">;
 
   seize: TypedContractMethod<
-    [liquidator: AddressLike, borrower: AddressLike, seizeTokens: BigNumberish],
+    [
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish,
+      protocolShareMantissa: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;
@@ -1209,9 +1203,6 @@ export interface CEther extends BaseContract {
     nameOrSignature: "getCash"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getDiscountRate"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "initialize"
   ): TypedContractMethod<
     [
@@ -1288,7 +1279,12 @@ export interface CEther extends BaseContract {
   getFunction(
     nameOrSignature: "seize"
   ): TypedContractMethod<
-    [liquidator: AddressLike, borrower: AddressLike, seizeTokens: BigNumberish],
+    [
+      liquidator: AddressLike,
+      borrower: AddressLike,
+      seizeTokens: BigNumberish,
+      protocolShareMantissa: BigNumberish
+    ],
     [bigint],
     "nonpayable"
   >;

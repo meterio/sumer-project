@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 import './PriceOracle.sol';
-import './Interfaces/IStdReference.sol';
-import './Interfaces/IWitnetFeed.sol';
-import './Interfaces/IChainlinkFeed.sol';
-import './Interfaces/IVoltPair.sol';
+import '../Interface/IStdReference.sol';
+import '../Interface/IWitnetFeed.sol';
+import '../Interface/IChainlinkFeed.sol';
+import '../Interface/IVoltPair.sol';
 import '@pythnetwork/pyth-sdk-solidity/IPyth.sol';
 import '@openzeppelin/contracts/access/Ownable2Step.sol';
 import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract FeedPriceOracle is PriceOracle, Ownable2Step {
+  using SafeMath for uint256;
   struct FeedData {
     bytes32 feedId; // Pyth price feed ID
     uint8 source; // 1 - chainlink feed, 2 - witnet router, 3 - Band
@@ -152,6 +154,15 @@ contract FeedPriceOracle is PriceOracle, Ownable2Step {
       }
     }
     return fixedPrices[cToken_];
+  }
+
+  function getUnderlyingPriceNormalized(address cToken_) external view returns (uint256) {
+    uint256 cPriceMantissa = getUnderlyingPrice(cToken_);
+
+    if (IERC20Metadata(cToken_).decimals() < 18) {
+      cPriceMantissa = cPriceMantissa.mul(10 ** (18 - IERC20Metadata(cToken_).decimals()));
+    }
+    return cPriceMantissa;
   }
 
   function getUnderlyingPrices(address[] memory cTokens) public view returns (uint256[] memory) {
