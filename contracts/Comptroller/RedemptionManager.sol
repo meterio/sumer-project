@@ -67,12 +67,12 @@ contract RedemptionManager is AccessControlEnumerableUpgradeable, IRedemptionMan
    * 2) increases the baseRate based on the amount redeemed, as a proportion of total supply
    */
   function updateBaseRateFromRedemption(uint redeemAmount, uint _totalSupply) external onlyComptroller returns (uint) {
-    require(msg.sender == address(comptroller), 'only comptroller');
+    // require(msg.sender == address(comptroller), 'only comptroller');
     uint decayedBaseRate = _calcDecayedBaseRate();
 
     /* Convert the drawn ETH back to LUSD at face value rate (1 LUSD:1 USD), in order to get
      * the fraction of total supply that was redeemed at face value. */
-    uint redeemedLUSDFraction = redeemAmount.div(_totalSupply);
+    uint redeemedLUSDFraction = redeemAmount.mul(DECIMAL_PRECISION).div(_totalSupply);
 
     uint newBaseRate = decayedBaseRate.add(redeemedLUSDFraction.div(BETA));
     newBaseRate = LiquityMath._min(newBaseRate, DECIMAL_PRECISION); // cap baseRate at a maximum of 100%
@@ -88,18 +88,12 @@ contract RedemptionManager is AccessControlEnumerableUpgradeable, IRedemptionMan
     return newBaseRate;
   }
 
-  // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
-  function _updateLastFeeOpTime() internal {
-    uint timePassed = block.timestamp.sub(lastFeeOperationTime);
-
-    if (timePassed >= SECONDS_IN_ONE_MINUTE) {
-      lastFeeOperationTime = block.timestamp;
-      emit LastFeeOpTimeUpdated(block.timestamp);
-    }
-  }
-
   function _minutesPassedSinceLastFeeOp() internal view returns (uint) {
     return (block.timestamp.sub(lastFeeOperationTime)).div(SECONDS_IN_ONE_MINUTE);
+  }
+
+  function getRedemptionRateWithDecay() external view returns (uint) {
+    return _calcRedemptionRate(_calcDecayedBaseRate());
   }
 
   function _calcDecayedBaseRate() internal view returns (uint) {
@@ -134,6 +128,7 @@ contract RedemptionManager is AccessControlEnumerableUpgradeable, IRedemptionMan
   function updateSortedBorrows(address csuToken, address borrower) external onlyComptroller {
     if (!ICToken(csuToken).isCToken()) {
       uint256 borrowed = ICToken(csuToken).borrowBalanceStored(borrower);
+      if (borrowed <= 0) return;
       if (sortedBorrows.contains(csuToken, borrower)) {
         address prevId = sortedBorrows.getPrev(csuToken, borrower);
         address nextId = sortedBorrows.getNext(csuToken, borrower);
@@ -150,14 +145,14 @@ contract RedemptionManager is AccessControlEnumerableUpgradeable, IRedemptionMan
     address cToken,
     address suToken,
     IPriceOracle oracle
-  ) external returns (uint256, uint256) {
+  ) external returns (uint256, uint256, uint256, uint256) {
     (uint256 oErr, uint256 depositBalance, , uint256 exchangeRateMantissa) = ICToken(cToken).getAccountSnapshot(
       provider
     );
     require(oErr == 0, 'snapshot error');
 
     if (depositBalance <= 0) {
-      return (uint256(0), uint256(0));
+      return (uint256(0), uint256(0), uint256(0), uint256(0));
     }
 
     // get price for suToken
@@ -180,11 +175,11 @@ contract RedemptionManager is AccessControlEnumerableUpgradeable, IRedemptionMan
 
     uint256 exRateMantissa = ICToken(cToken).exchangeRateCurrent();
     Exp memory cExRate = Exp({mantissa: exRateMantissa});
-    uint256 maxRepayable = cPrice.mul_(depositBalance).mul_(exchangeRateMantissa).div_(suPrice).truncate();
+    uint256 maxRepayable = cPrice.mul_(depositBalance).mul_(cExRate).div_(suPrice).truncate();
     uint256 actualRepay = LiquityMath._min(maxRepayable, redeemAmount);
     uint256 actualSeize = suPrice.mul_(actualRepay).div_(cPrice).div_(cExRate).truncate();
 
-    return (actualRepay, actualSeize);
+    return (actualRepay, actualSeize, suPriceMantissa, cPriceMantissa);
   }
 
   function hasNoProvider(address _asset) external view returns (bool) {
@@ -197,5 +192,26 @@ contract RedemptionManager is AccessControlEnumerableUpgradeable, IRedemptionMan
 
   function getNextProvider(address _asset, address _id) external view returns (address) {
     return sortedBorrows.getNext(_asset, _id);
+  }
+
+  // Updates the baseRate state variable based on time elapsed since the last redemption or LUSD borrowing operation.
+  function decayBaseRateFromBorrowing() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    uint decayedBaseRate = _calcDecayedBaseRate();
+    assert(decayedBaseRate <= DECIMAL_PRECISION); // The baseRate can decay to 0
+
+    baseRate = decayedBaseRate;
+    emit BaseRateUpdated(decayedBaseRate);
+
+    _updateLastFeeOpTime();
+  }
+
+  // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
+  function _updateLastFeeOpTime() internal {
+    uint timePassed = block.timestamp.sub(lastFeeOperationTime);
+
+    if (timePassed >= SECONDS_IN_ONE_MINUTE) {
+      lastFeeOperationTime = block.timestamp;
+      emit LastFeeOpTimeUpdated(block.timestamp);
+    }
   }
 }

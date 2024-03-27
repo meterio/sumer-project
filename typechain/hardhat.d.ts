@@ -174,46 +174,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ComptrollerStorage__factory>;
     getContractFactory(
-      name: "IAccountLiquidity",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IAccountLiquidity__factory>;
-    getContractFactory(
-      name: "ICompLogic",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ICompLogic__factory>;
-    getContractFactory(
-      name: "IComptroller",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IComptroller__factory>;
-    getContractFactory(
-      name: "ICToken",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ICToken__factory>;
-    getContractFactory(
-      name: "IGovernorAlpha",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IGovernorAlpha__factory>;
-    getContractFactory(
-      name: "IGovernorBravo",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IGovernorBravo__factory>;
-    getContractFactory(
-      name: "IPriceOracle",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IPriceOracle__factory>;
-    getContractFactory(
-      name: "IRedemptionManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IRedemptionManager__factory>;
-    getContractFactory(
-      name: "ISortedBorrows",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ISortedBorrows__factory>;
-    getContractFactory(
-      name: "IUnitroller",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUnitroller__factory>;
-    getContractFactory(
       name: "RedemptionManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RedemptionManager__factory>;
@@ -238,22 +198,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CTokenStorage__factory>;
     getContractFactory(
-      name: "ICErc20",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ICErc20__factory>;
-    getContractFactory(
-      name: "ICToken",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ICToken__factory>;
-    getContractFactory(
-      name: "IEIP20NonStandard",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IEIP20NonStandard__factory>;
-    getContractFactory(
-      name: "IInterestRateModel",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IInterestRateModel__factory>;
-    getContractFactory(
       name: "SuErc20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SuErc20__factory>;
@@ -261,10 +205,6 @@ declare module "hardhat/types/runtime" {
       name: "ERC20MinterBurnerPauser",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20MinterBurnerPauser__factory>;
-    getContractFactory(
-      name: "BaseJumpRateModelV2",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.BaseJumpRateModelV2__factory>;
     getContractFactory(
       name: "InterestRateModel",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -381,22 +321,6 @@ declare module "hardhat/types/runtime" {
       name: "FeedPriceOracleSafe",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FeedPriceOracleSafe__factory>;
-    getContractFactory(
-      name: "IChainlinkFeed",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IChainlinkFeed__factory>;
-    getContractFactory(
-      name: "IStdReference",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IStdReference__factory>;
-    getContractFactory(
-      name: "IVoltPair",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IVoltPair__factory>;
-    getContractFactory(
-      name: "IWitnetFeed",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IWitnetFeed__factory>;
     getContractFactory(
       name: "PriceOracle",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -671,56 +595,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ComptrollerStorage>;
     getContractAt(
-      name: "IAccountLiquidity",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IAccountLiquidity>;
-    getContractAt(
-      name: "ICompLogic",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ICompLogic>;
-    getContractAt(
-      name: "IComptroller",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IComptroller>;
-    getContractAt(
-      name: "ICToken",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ICToken>;
-    getContractAt(
-      name: "IGovernorAlpha",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IGovernorAlpha>;
-    getContractAt(
-      name: "IGovernorBravo",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IGovernorBravo>;
-    getContractAt(
-      name: "IPriceOracle",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IPriceOracle>;
-    getContractAt(
-      name: "IRedemptionManager",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IRedemptionManager>;
-    getContractAt(
-      name: "ISortedBorrows",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ISortedBorrows>;
-    getContractAt(
-      name: "IUnitroller",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUnitroller>;
-    getContractAt(
       name: "RedemptionManager",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -751,26 +625,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.CTokenStorage>;
     getContractAt(
-      name: "ICErc20",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ICErc20>;
-    getContractAt(
-      name: "ICToken",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ICToken>;
-    getContractAt(
-      name: "IEIP20NonStandard",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IEIP20NonStandard>;
-    getContractAt(
-      name: "IInterestRateModel",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IInterestRateModel>;
-    getContractAt(
       name: "SuErc20",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -780,11 +634,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC20MinterBurnerPauser>;
-    getContractAt(
-      name: "BaseJumpRateModelV2",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.BaseJumpRateModelV2>;
     getContractAt(
       name: "InterestRateModel",
       address: string | ethers.Addressable,
@@ -930,26 +779,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.FeedPriceOracleSafe>;
-    getContractAt(
-      name: "IChainlinkFeed",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IChainlinkFeed>;
-    getContractAt(
-      name: "IStdReference",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IStdReference>;
-    getContractAt(
-      name: "IVoltPair",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IVoltPair>;
-    getContractAt(
-      name: "IWitnetFeed",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IWitnetFeed>;
     getContractAt(
       name: "PriceOracle",
       address: string | ethers.Addressable,
@@ -1202,46 +1031,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ComptrollerStorage>;
     deployContract(
-      name: "IAccountLiquidity",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IAccountLiquidity>;
-    deployContract(
-      name: "ICompLogic",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICompLogic>;
-    deployContract(
-      name: "IComptroller",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IComptroller>;
-    deployContract(
-      name: "ICToken",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICToken>;
-    deployContract(
-      name: "IGovernorAlpha",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IGovernorAlpha>;
-    deployContract(
-      name: "IGovernorBravo",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IGovernorBravo>;
-    deployContract(
-      name: "IPriceOracle",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IPriceOracle>;
-    deployContract(
-      name: "IRedemptionManager",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IRedemptionManager>;
-    deployContract(
-      name: "ISortedBorrows",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ISortedBorrows>;
-    deployContract(
-      name: "IUnitroller",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IUnitroller>;
-    deployContract(
       name: "RedemptionManager",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RedemptionManager>;
@@ -1266,22 +1055,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.CTokenStorage>;
     deployContract(
-      name: "ICErc20",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICErc20>;
-    deployContract(
-      name: "ICToken",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICToken>;
-    deployContract(
-      name: "IEIP20NonStandard",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IEIP20NonStandard>;
-    deployContract(
-      name: "IInterestRateModel",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IInterestRateModel>;
-    deployContract(
       name: "SuErc20",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SuErc20>;
@@ -1289,10 +1062,6 @@ declare module "hardhat/types/runtime" {
       name: "ERC20MinterBurnerPauser",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20MinterBurnerPauser>;
-    deployContract(
-      name: "BaseJumpRateModelV2",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.BaseJumpRateModelV2>;
     deployContract(
       name: "InterestRateModel",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1409,22 +1178,6 @@ declare module "hardhat/types/runtime" {
       name: "FeedPriceOracleSafe",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.FeedPriceOracleSafe>;
-    deployContract(
-      name: "IChainlinkFeed",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IChainlinkFeed>;
-    deployContract(
-      name: "IStdReference",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IStdReference>;
-    deployContract(
-      name: "IVoltPair",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IVoltPair>;
-    deployContract(
-      name: "IWitnetFeed",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IWitnetFeed>;
     deployContract(
       name: "PriceOracle",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1699,56 +1452,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ComptrollerStorage>;
     deployContract(
-      name: "IAccountLiquidity",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IAccountLiquidity>;
-    deployContract(
-      name: "ICompLogic",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICompLogic>;
-    deployContract(
-      name: "IComptroller",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IComptroller>;
-    deployContract(
-      name: "ICToken",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICToken>;
-    deployContract(
-      name: "IGovernorAlpha",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IGovernorAlpha>;
-    deployContract(
-      name: "IGovernorBravo",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IGovernorBravo>;
-    deployContract(
-      name: "IPriceOracle",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IPriceOracle>;
-    deployContract(
-      name: "IRedemptionManager",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IRedemptionManager>;
-    deployContract(
-      name: "ISortedBorrows",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ISortedBorrows>;
-    deployContract(
-      name: "IUnitroller",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IUnitroller>;
-    deployContract(
       name: "RedemptionManager",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1779,26 +1482,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.CTokenStorage>;
     deployContract(
-      name: "ICErc20",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICErc20>;
-    deployContract(
-      name: "ICToken",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ICToken>;
-    deployContract(
-      name: "IEIP20NonStandard",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IEIP20NonStandard>;
-    deployContract(
-      name: "IInterestRateModel",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IInterestRateModel>;
-    deployContract(
       name: "SuErc20",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1808,11 +1491,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20MinterBurnerPauser>;
-    deployContract(
-      name: "BaseJumpRateModelV2",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.BaseJumpRateModelV2>;
     deployContract(
       name: "InterestRateModel",
       args: any[],
@@ -1958,26 +1636,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.FeedPriceOracleSafe>;
-    deployContract(
-      name: "IChainlinkFeed",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IChainlinkFeed>;
-    deployContract(
-      name: "IStdReference",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IStdReference>;
-    deployContract(
-      name: "IVoltPair",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IVoltPair>;
-    deployContract(
-      name: "IWitnetFeed",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IWitnetFeed>;
     deployContract(
       name: "PriceOracle",
       args: any[],

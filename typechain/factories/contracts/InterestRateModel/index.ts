@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as suTokenInterestModelSol from "./suTokenInterestModel.sol";
-export { BaseJumpRateModelV2__factory } from "./BaseJumpRateModelV2__factory";
 export { InterestRateModel__factory } from "./InterestRateModel__factory";
 export { JumpRateModel__factory } from "./JumpRateModel__factory";
 export { JumpRateModelV2__factory } from "./JumpRateModelV2__factory";

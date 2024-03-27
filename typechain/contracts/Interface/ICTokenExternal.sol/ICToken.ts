@@ -41,7 +41,6 @@ export interface ICTokenInterface extends Interface {
       | "getAccountSnapshot"
       | "getCash"
       | "getCurrentVotes"
-      | "getDiscountRate"
       | "getPriorVotes"
       | "isCEther"
       | "isCToken"
@@ -122,10 +121,6 @@ export interface ICTokenInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getCurrentVotes",
     values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDiscountRate",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getPriorVotes",
@@ -213,10 +208,6 @@ export interface ICTokenInterface extends Interface {
   decodeFunctionResult(functionFragment: "getCash", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getCurrentVotes",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getDiscountRate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -364,8 +355,6 @@ export interface ICToken extends BaseContract {
     "view"
   >;
 
-  getDiscountRate: TypedContractMethod<[], [bigint], "view">;
-
   getPriorVotes: TypedContractMethod<
     [account: AddressLike, blockNumber: BigNumberish],
     [bigint],
@@ -464,9 +453,6 @@ export interface ICToken extends BaseContract {
   getFunction(
     nameOrSignature: "getCurrentVotes"
   ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "getDiscountRate"
-  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getPriorVotes"
   ): TypedContractMethod<

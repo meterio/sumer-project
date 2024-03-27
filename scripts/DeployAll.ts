@@ -213,7 +213,7 @@ const main = async () => {
 
     // set Comptroller.redemptionManager
     const rmOnChain = await comptroller.redemptionManager();
-    if (rmOnChain.toLowerCase() != config.SortedBorrows.address.toLowerCase()) {
+    if (rmOnChain.toLowerCase() != config.RedemptionManager.address.toLowerCase()) {
       console.log(`更新 Comptroller.redemptionManager ${rmOnChain} -> ${config.RedemptionManager.address}`);
       await sendTransaction(
         network,

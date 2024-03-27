@@ -359,7 +359,8 @@ contract CompLogic is AccessControlEnumerableUpgradeable {
 
     uint256 compRemaining = ICToken(comp).balanceOf(address(this));
     if (amount > 0 && amount <= compRemaining) {
-      comp.call(abi.encodeWithSignature('transfer(address,uint256)', user, amount));
+      (bool success, )=comp.call(abi.encodeWithSignature('transfer(address,uint256)', user, amount));
+      require(success, "cant transfer");
       return 0;
     }
     return amount;

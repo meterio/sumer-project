@@ -131,7 +131,7 @@ export interface ComptrollerInterface extends Interface {
       | "pauseGuardian"
       | "redeemAllowed"
       | "redeemFaceValue"
-      | "redeemFaceValueWithTarget"
+      | "redeemFaceValueWithTargetPlan"
       | "redeemVerify"
       | "redemptionManager"
       | "removeAssetGroup"
@@ -474,7 +474,7 @@ export interface ComptrollerInterface extends Interface {
     values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "redeemFaceValueWithTarget",
+    functionFragment: "redeemFaceValueWithTargetPlan",
     values: [AddressLike, AddressLike, AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -832,7 +832,7 @@ export interface ComptrollerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "redeemFaceValueWithTarget",
+    functionFragment: "redeemFaceValueWithTargetPlan",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1656,15 +1656,15 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
 
-  redeemFaceValueWithTarget: TypedContractMethod<
+  redeemFaceValueWithTargetPlan: TypedContractMethod<
     [
       redeemer: AddressLike,
       provider: AddressLike,
-      suToken: AddressLike,
       cToken: AddressLike,
+      suToken: AddressLike,
       redeemAmount: BigNumberish
     ],
-    [bigint],
+    [[bigint, bigint, bigint, bigint, bigint]],
     "nonpayable"
   >;
 
@@ -2208,16 +2208,16 @@ export interface Comptroller extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "redeemFaceValueWithTarget"
+    nameOrSignature: "redeemFaceValueWithTargetPlan"
   ): TypedContractMethod<
     [
       redeemer: AddressLike,
       provider: AddressLike,
-      suToken: AddressLike,
       cToken: AddressLike,
+      suToken: AddressLike,
       redeemAmount: BigNumberish
     ],
-    [bigint],
+    [[bigint, bigint, bigint, bigint, bigint]],
     "nonpayable"
   >;
   getFunction(

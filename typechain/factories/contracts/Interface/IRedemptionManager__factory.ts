@@ -49,6 +49,16 @@ const _abi = [
         name: "",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
     stateMutability: "nonpayable",
     type: "function",
@@ -99,6 +109,19 @@ const _abi = [
   {
     inputs: [],
     name: "getRedemptionRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getRedemptionRateWithDecay",
     outputs: [
       {
         internalType: "uint256",

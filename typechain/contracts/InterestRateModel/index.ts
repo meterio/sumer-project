@@ -3,7 +3,6 @@
 /* eslint-disable */
 import type * as suTokenInterestModelSol from "./suTokenInterestModel.sol";
 export type { suTokenInterestModelSol };
-export type { BaseJumpRateModelV2 } from "./BaseJumpRateModelV2";
 export type { InterestRateModel } from "./InterestRateModel";
 export type { JumpRateModel } from "./JumpRateModel";
 export type { JumpRateModelV2 } from "./JumpRateModelV2";

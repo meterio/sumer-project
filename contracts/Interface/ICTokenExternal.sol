@@ -50,8 +50,6 @@ interface ICToken {
 
   function getPriorVotes(address account, uint256 blockNumber) external view returns (uint96);
 
-  function getDiscountRate() external view returns (uint256);
-
   function isDeprecated() external view returns (bool);
 
   function executeRedemption(

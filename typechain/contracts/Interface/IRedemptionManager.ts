@@ -28,6 +28,7 @@ export interface IRedemptionManagerInterface extends Interface {
       | "getFirstProvider"
       | "getNextProvider"
       | "getRedemptionRate"
+      | "getRedemptionRateWithDecay"
       | "hasNoProvider"
       | "updateBaseRateFromRedemption"
       | "updateSortedBorrows"
@@ -47,6 +48,10 @@ export interface IRedemptionManagerInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getRedemptionRate",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRedemptionRateWithDecay",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -76,6 +81,10 @@ export interface IRedemptionManagerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getRedemptionRate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRedemptionRateWithDecay",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -143,7 +152,7 @@ export interface IRedemptionManager extends BaseContract {
       suToken: AddressLike,
       oracle: AddressLike
     ],
-    [[bigint, bigint]],
+    [[bigint, bigint, bigint, bigint]],
     "nonpayable"
   >;
 
@@ -160,6 +169,8 @@ export interface IRedemptionManager extends BaseContract {
   >;
 
   getRedemptionRate: TypedContractMethod<[], [bigint], "view">;
+
+  getRedemptionRateWithDecay: TypedContractMethod<[], [bigint], "view">;
 
   hasNoProvider: TypedContractMethod<[_asset: AddressLike], [boolean], "view">;
 
@@ -189,7 +200,7 @@ export interface IRedemptionManager extends BaseContract {
       suToken: AddressLike,
       oracle: AddressLike
     ],
-    [[bigint, bigint]],
+    [[bigint, bigint, bigint, bigint]],
     "nonpayable"
   >;
   getFunction(
@@ -204,6 +215,9 @@ export interface IRedemptionManager extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "getRedemptionRate"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getRedemptionRateWithDecay"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "hasNoProvider"

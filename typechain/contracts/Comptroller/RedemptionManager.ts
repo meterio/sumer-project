@@ -36,9 +36,11 @@ export interface RedemptionManagerInterface extends Interface {
       | "baseRate"
       | "calcActualRepayAndSeize"
       | "comptroller"
+      | "decayBaseRateFromBorrowing"
       | "getFirstProvider"
       | "getNextProvider"
       | "getRedemptionRate"
+      | "getRedemptionRateWithDecay"
       | "getRoleAdmin"
       | "getRoleMember"
       | "getRoleMemberCount"
@@ -102,6 +104,10 @@ export interface RedemptionManagerInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "decayBaseRateFromBorrowing",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getFirstProvider",
     values: [AddressLike]
   ): string;
@@ -111,6 +117,10 @@ export interface RedemptionManagerInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getRedemptionRate",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRedemptionRateWithDecay",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -213,6 +223,10 @@ export interface RedemptionManagerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "decayBaseRateFromBorrowing",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getFirstProvider",
     data: BytesLike
   ): Result;
@@ -222,6 +236,10 @@ export interface RedemptionManagerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getRedemptionRate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRedemptionRateWithDecay",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -439,11 +457,13 @@ export interface RedemptionManager extends BaseContract {
       suToken: AddressLike,
       oracle: AddressLike
     ],
-    [[bigint, bigint]],
+    [[bigint, bigint, bigint, bigint]],
     "nonpayable"
   >;
 
   comptroller: TypedContractMethod<[], [string], "view">;
+
+  decayBaseRateFromBorrowing: TypedContractMethod<[], [void], "nonpayable">;
 
   getFirstProvider: TypedContractMethod<
     [_asset: AddressLike],
@@ -458,6 +478,8 @@ export interface RedemptionManager extends BaseContract {
   >;
 
   getRedemptionRate: TypedContractMethod<[], [bigint], "view">;
+
+  getRedemptionRateWithDecay: TypedContractMethod<[], [bigint], "view">;
 
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
@@ -573,12 +595,15 @@ export interface RedemptionManager extends BaseContract {
       suToken: AddressLike,
       oracle: AddressLike
     ],
-    [[bigint, bigint]],
+    [[bigint, bigint, bigint, bigint]],
     "nonpayable"
   >;
   getFunction(
     nameOrSignature: "comptroller"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "decayBaseRateFromBorrowing"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "getFirstProvider"
   ): TypedContractMethod<[_asset: AddressLike], [string], "view">;
@@ -591,6 +616,9 @@ export interface RedemptionManager extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "getRedemptionRate"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getRedemptionRateWithDecay"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getRoleAdmin"

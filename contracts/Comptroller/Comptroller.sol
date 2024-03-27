@@ -1041,15 +1041,39 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
     }
   }
 
+  function redeemFaceValueWithTargetPlan(
+    address redeemer,
+    address provider,
+    address cToken,
+    address suToken,
+    uint256 redeemAmount
+  ) external view returns (uint256, uint256, uint256, uint256, uint256) {
+    if (redeemer == provider) {
+      return (uint256(0), uint256(0), uint256(0), uint256(0), uint256(0));
+    }
+    uint256 redemptionRate = redemptionManager.getRedemptionRateWithDecay();
+    (uint256 actualRepay, uint256 actualSeize, uint256 repayPrice, uint256 seizePrice) = redemptionManager
+      .calcActualRepayAndSeize(redeemAmount, provider, cToken, suToken, oracle);
+    if (actualRepay <= 0 || actualSeize <= 0) {
+      return (uint256(0), uint256(0), uint256(0), repayPrice, seizePrice);
+    }
+    Exp memory redemptionFee = Exp({mantissa: redemptionRate});
+    redemptionFee = redemptionFee.mul_(actualSeize);
+
+    uint256 protocolSeizeTokens = actualSeize.mul_(Exp({mantissa: redemptionRate}));
+    actualSeize = actualSeize.sub_(protocolSeizeTokens);
+    return (actualRepay, actualSeize, protocolSeizeTokens, repayPrice, seizePrice);
+  }
+
   function redeemFaceValueWithTarget(
     address redeemer,
     address provider,
-    address suToken,
     address cToken,
+    address suToken,
     uint256 redeemAmount
-  ) public returns (uint256) {
+  ) internal returns (uint256) {
     uint256 redemptionRate = redemptionManager.getRedemptionRate();
-    (uint256 actualRepay, uint256 actualSeize) = redemptionManager.calcActualRepayAndSeize(
+    (uint256 actualRepay, uint256 actualSeize, , ) = redemptionManager.calcActualRepayAndSeize(
       redeemAmount,
       provider,
       cToken,
@@ -1057,7 +1081,7 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
       oracle
     );
     if (actualRepay <= 0) {
-      return redeemAmount;
+      return 0;
     }
 
     ICToken(suToken).executeRedemption(redeemer, provider, actualRepay, cToken, actualSeize, redemptionRate);
@@ -1083,11 +1107,17 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
         if (!ICToken(assets[i]).isCToken()) {
           continue;
         }
+        if (msg.sender == provider) {
+          continue;
+        }
         uint8 cGroupId = markets[assets[i]].assetGroupId;
         if (cGroupId == suGroupId) {
           actualRedeem = redeemFaceValueWithTarget(msg.sender, provider, assets[i], suToken, targetRedeemAmount);
-          require(actualRedeem < targetRedeemAmount, 'invalid redeem');
-          targetRedeemAmount = targetRedeemAmount.sub_(actualRedeem);
+          if (actualRedeem < targetRedeemAmount) {
+            targetRedeemAmount = targetRedeemAmount.sub_(actualRedeem);
+          } else {
+            targetRedeemAmount = 0;
+          }
         }
       }
 
@@ -1097,11 +1127,18 @@ contract Comptroller is AccessControlEnumerableUpgradeable, ComptrollerStorage {
         if (!ICToken(assets[i]).isCToken()) {
           continue;
         }
+        if (msg.sender == provider) {
+          continue;
+        }
+
         uint8 cGroupId = markets[assets[i]].assetGroupId;
         if (cGroupId != suGroupId) {
           actualRedeem = redeemFaceValueWithTarget(msg.sender, provider, assets[i], suToken, targetRedeemAmount);
-          require(actualRedeem < targetRedeemAmount, 'invalid redeem');
-          targetRedeemAmount = targetRedeemAmount.sub_(actualRedeem);
+          if (actualRedeem < targetRedeemAmount) {
+            targetRedeemAmount = targetRedeemAmount.sub_(actualRedeem);
+          } else {
+            targetRedeemAmount = 0;
+          }
         }
       }
       provider = redemptionManager.getNextProvider(suToken, provider);

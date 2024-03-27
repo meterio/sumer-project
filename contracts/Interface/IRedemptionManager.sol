@@ -17,11 +17,13 @@ interface IRedemptionManager {
     address cToken,
     address suToken,
     IPriceOracle oracle
-  ) external returns (uint256, uint256);
+  ) external returns (uint256, uint256, uint256, uint256);
 
   function updateSortedBorrows(address csuToken, address borrower) external;
 
   function getRedemptionRate() external view returns (uint);
 
   function updateBaseRateFromRedemption(uint redeemAmount, uint _totalSupply) external returns (uint);
+
+  function getRedemptionRateWithDecay() external view returns (uint);
 }
