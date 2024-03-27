@@ -24,7 +24,7 @@
   },
   "CompoundLens": {
     "contract": "CompoundLens",
-    "address": "0x9c0DB1C5882b73DFAB66D727b51C617Ad4D9783e"
+    "address": "0xD062717E89eA3D5D4DFE43e7F6687914a1CCa9f1"
   },
   "FeedPriceOracle": {
     "contract": "FeedPriceOracleSafe",
@@ -122,7 +122,7 @@
   ],
   "AccountLiquidity": {
     "contract": "AccountLiquidity",
-    "implementation": "0x8Db07E63CfcDcd754d7F90540060ebcB4BfE3DCD",
+    "implementation": "0x5dAD36e50b4A1b41be79200f52AA4F2A9C5a48Be",
     "address": "0x20A8794d5BEcBa1B19A35D8CaA2b7e0e0b7CF832",
     "constructorName": [
       "admin"
@@ -146,8 +146,8 @@
   },
   "SortedBorrows": {
     "contract": "SortedBorrows",
-    "implementation": "0x8BD868f285e6F7d4F6da86cD7b47f900CCB11e14",
-    "address": "0x159C068fC4557252E5A0cf138355Fc3846B6d593",
+    "implementation": "0xd842B6B9233d053E31D262B53B217EF1B8688E74",
+    "address": "0x1dAcc0d2666C8b68cce3c6904b13d30737e0EABE",
     "constructorName": [
       "admin"
     ],
@@ -155,9 +155,22 @@
       "0x0205c2D862cA051010698b69b54278cbAf945C0b"
     ]
   },
+  "RedemptionManager": {
+    "contract": "RedemptionManager",
+    "implementation": "0x2aF7118cd6F715CD743adc2d441237c876b43EA8",
+    "address": "0x232011980E68a67fe2d21F47380f46B6Ec8fdc30",
+    "constructorName": [
+      "admin",
+      "SortedBorrows"
+    ],
+    "args": [
+      "0x0205c2D862cA051010698b69b54278cbAf945C0b",
+      "0x1dAcc0d2666C8b68cce3c6904b13d30737e0EABE"
+    ]
+  },
   "Comptroller": {
     "contract": "Comptroller",
-    "implementation": "0xF409697434eb8A5Ba99662396266b49C612A6783",
+    "implementation": "0x5f76068C833AE393c1b4f65ee7d67De2c59B5a0E",
     "address": "0xB6bf1515CAA8Be16f2FC3308974645CaEa458Ab1",
     "settings": [
       {
@@ -224,14 +237,14 @@
     "constructorName": [
       "admin",
       "FeedPriceOracle",
-      "gov",
+      "Sumer",
       "CompLogic",
       "AccountLiquidity",
       "closeFactorMantissa",
       "heteroLiquidationIncentiveMantissa",
       "homoLiquidationIncentiveMantissa",
       "sutokenLiquidationIncentiveMantissa",
-      "SortedBorrows"
+      "RedemptionManager"
     ],
     "args": [
       "0x0205c2D862cA051010698b69b54278cbAf945C0b",
@@ -247,9 +260,9 @@
     ]
   },
   "CEther": {
-    "name": "Sumer MTR Deposit",
     "contract": "CEther",
     "implementation": "0x1260e7Db39AEa39058a4541d2D516677BdfA373b",
+    "name": "Sumer MTR Deposit",
     "address": "0xf9e3459233E08F88Cf7faDdEd8f734d80A04a35d",
     "constructorName": [
       "Comptroller",
@@ -288,7 +301,7 @@
   },
   "CErc20": {
     "contract": "CErc20",
-    "implementation": "0xbf93A0a06D578dbe316167fD61893430eB3044c7",
+    "implementation": "0x1793E6d6A0e73064e9A7A9eFBfB600d14F122409",
     "proxys": [
       {
         "contract": "CErc20",
@@ -540,7 +553,7 @@
   },
   "suErc20": {
     "contract": "suErc20",
-    "implementation": "0xf7482Db4ff7bAf56d417E1B91310410152504e4A",
+    "implementation": "0x9f44F0FC7960E9FC8fA8375Eb077cF589E47bF9e",
     "proxys": [
       {
         "contract": "suErc20",
